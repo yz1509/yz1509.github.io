@@ -3,6 +3,29 @@
   
     
     <entry>
+      <title>认识STL</title>
+      <link href="//posts/64d148d3/"/>
+      <url>//posts/64d148d3/</url>
+      <content type="html"><![CDATA[<h1 id="顺序容器"><a href="#顺序容器" class="headerlink" title="顺序容器"></a>顺序容器</h1><h1 id="关联容器"><a href="#关联容器" class="headerlink" title="关联容器"></a>关联容器</h1><h1 id="常用泛型算法"><a href="#常用泛型算法" class="headerlink" title="常用泛型算法"></a>常用泛型算法</h1><h1 id="探索-vector"><a href="#探索-vector" class="headerlink" title="探索 vector"></a>探索 vector</h1>]]></content>
+      
+      <categories>
+          
+          <category> 语言类 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> C++ </tag>
+            
+            <tag> STL </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
       <title>C++面试知识点</title>
       <link href="//posts/db684f2c/"/>
       <url>//posts/db684f2c/</url>
@@ -10,7 +33,7 @@
       
       <categories>
           
-          <category> 2019 秋招 </category>
+          <category> 语言类 </category>
           
       </categories>
       
