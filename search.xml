@@ -91,7 +91,7 @@
       <title>吐血bug合集（持续更新）</title>
       <link href="//posts/afec8fb8/"/>
       <url>//posts/afec8fb8/</url>
-      <content type="html"><![CDATA[<ol><li>图片后缀名的大小写有区别，比如 ![avatar](sample.png) 本地可以正常加载 sample.PNG，但是静态网页加载失败 = =</li></ol>]]></content>
+      <content type="html"><![CDATA[<ol><li>图片后缀名的大小写有区别，比如 ![avatar](sample.png) 本地可以正常加载 sample.PNG，但是上传后静态网页加载失败 = =</li><li>使用表格时，一定要前后都有空行，不然显示出 bug.</li></ol>]]></content>
       
       <categories>
           

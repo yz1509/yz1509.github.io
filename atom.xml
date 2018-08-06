@@ -120,16 +120,17 @@
     <link href="https://yz1509.github.io//posts/afec8fb8/"/>
     <id>https://yz1509.github.io//posts/afec8fb8/</id>
     <published>2018-07-25T12:23:21.000Z</published>
-    <updated>2018-07-26T05:21:55.586Z</updated>
+    <updated>2018-08-06T08:49:30.752Z</updated>
     
-    <content type="html"><![CDATA[<ol><li>图片后缀名的大小写有区别，比如 ![avatar](sample.png) 本地可以正常加载 sample.PNG，但是静态网页加载失败 = =</li></ol>]]></content>
+    <content type="html"><![CDATA[<ol><li>图片后缀名的大小写有区别，比如 ![avatar](sample.png) 本地可以正常加载 sample.PNG，但是上传后静态网页加载失败 = =</li><li>使用表格时，一定要前后都有空行，不然显示出 bug.</li></ol>]]></content>
     
     <summary type="html">
     
       
       
         &lt;ol&gt;
-&lt;li&gt;图片后缀名的大小写有区别，比如 ![avatar](sample.png) 本地可以正常加载 sample.PNG，但是静态网页加载失败 = =&lt;/li&gt;
+&lt;li&gt;图片后缀名的大小写有区别，比如 ![avatar](sample.png) 本地可以正常加载 sample.PNG，但是上传后静态网页加载失败 = =&lt;/li&gt;
+&lt;li&gt;使用表格时，一定要前后都有空行，不然显示出 bug.&lt;/li&gt;
 &lt;/ol&gt;
 
       
