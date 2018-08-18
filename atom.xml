@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://yz1509.github.io/"/>
-  <updated>2018-08-06T08:42:48.995Z</updated>
+  <updated>2018-08-18T05:22:24.377Z</updated>
   <id>https://yz1509.github.io/</id>
   
   <author>
@@ -15,6 +15,44 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>运维开发工程师技能树</title>
+    <link href="https://yz1509.github.io//posts/7543f9ab/"/>
+    <id>https://yz1509.github.io//posts/7543f9ab/</id>
+    <published>2018-08-18T04:34:54.000Z</published>
+    <updated>2018-08-18T05:22:24.377Z</updated>
+    
+    <content type="html"><![CDATA[<p>整理自牛客网<strong>傻妞妞-MM</strong>的<a href="https://www.nowcoder.com/discuss/50625" target="_blank" rel="noopener">面经</a>。</p><h1 id="Linux-系统"><a href="#Linux-系统" class="headerlink" title="Linux 系统"></a>Linux 系统</h1><ul><li>基本命令（系统性能信息的各种查看命令、可能会继续向下延伸：比如实时 CPU 负载的获取、网卡流量的抓包获取等，建议有多详细整理多详细。防火墙，文件查看，各种常用命令，请参考鸟哥基础等等。）；</li><li>开机启动过程，run level 各个级别的意思；</li><li>文件系统区别；</li><li>shell 脚本对于日志文件获取有用信息的处理；</li><li>shell 中常使用参数的意义；</li><li>Awk、sed 等工具的使用；</li><li>软链接、硬链接；</li><li>常见的运维相关知识；</li></ul><h1 id="计算机网络"><a href="#计算机网络" class="headerlink" title="计算机网络"></a>计算机网络</h1><h2 id="TCP-和-UDP"><a href="#TCP-和-UDP" class="headerlink" title="TCP 和 UDP"></a>TCP 和 UDP</h2><ul><li>TCP 和 UDP 的区别</li><li>TCP 保证可靠的传输机制</li><li>TCP 的拥塞控制流量控制，拥塞控制中的四个算法</li><li>三次握手四次挥手，以及其中各个状态的转换</li><li>为什么是三次和四次</li><li>SYN 攻击以及解决办法</li><li>Time_wait 等待的意义</li><li>回退 N 帧协议</li></ul><h2 id="HHTP"><a href="#HHTP" class="headerlink" title="HHTP"></a>HHTP</h2><ul><li>常见状态码</li><li>长连接、短连接</li><li>Get 和 Post 的区别</li><li>HTTP 版本的区别</li><li>格式</li></ul><h2 id="DNS"><a href="#DNS" class="headerlink" title="DNS"></a>DNS</h2><ul><li>DNS 的解析过程</li><li>DNS 中的字段</li><li>DNS 的工作原理是什么？</li><li>如果 DNS 解析出现错误，怎么解决？</li></ul><h2 id="常见的其他问题"><a href="#常见的其他问题" class="headerlink" title="常见的其他问题"></a>常见的其他问题</h2><ul><li>Ping 和 traceroute 的工作原理</li><li>路由和交换机的区别</li><li>输入网址后，背后发生了什么？</li><li>B/S和C/S的区别</li><li>路由协议OSPF、BGP的区别（这个一般很少问，除非你说你懂网络协议）</li></ul><h1 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h1><h2 id="进程、线程"><a href="#进程、线程" class="headerlink" title="进程、线程"></a>进程、线程</h2><ul><li>进程和线程的区别</li><li>进程的切换方式？在进程处于就绪态时还会有发生哪些事情？进程的状态</li><li>线程与线程同步的方式有哪些</li><li>进程的通信方式有哪些</li><li>操作系统的常见进程调度算法  </li></ul><h2 id="死锁"><a href="#死锁" class="headerlink" title="死锁"></a>死锁</h2><ul><li>四个条件</li><li>方法</li></ul><h2 id="IO模型以及同步异步阻塞非阻塞的区别"><a href="#IO模型以及同步异步阻塞非阻塞的区别" class="headerlink" title="IO模型以及同步异步阻塞非阻塞的区别"></a>IO模型以及同步异步阻塞非阻塞的区别</h2><h2 id="分页和分段有什么区别"><a href="#分页和分段有什么区别" class="headerlink" title="分页和分段有什么区别"></a>分页和分段有什么区别</h2><h2 id="数据从内存写到磁盘上发生的过程，具体行为是什么"><a href="#数据从内存写到磁盘上发生的过程，具体行为是什么" class="headerlink" title="数据从内存写到磁盘上发生的过程，具体行为是什么"></a>数据从内存写到磁盘上发生的过程，具体行为是什么</h2><h1 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h1><ul><li>事务<ul><li>ACID性质，其中各个性质的含义</li><li>隔离级别</li><li>脏读、丢失修改、不可重复读</li></ul></li><li>常见的SQL语句（内外联结）</li><li>数据库的锁机制</li><li>索引、视图</li><li>Mysql 常见的引擎及区别</li><li>Mysql 的四种日志的意义</li><li>数据库的备份等</li><li>Mysql 的优化</li><li>Mysql 的复制</li></ul><h1 id="Python"><a href="#Python" class="headerlink" title="Python"></a>Python</h1><ul><li>深拷贝和浅拷贝</li><li>闭包、装饰器</li><li>迭代器、生成器</li><li>多线程</li><li>内存管理</li><li>垃圾回收机制</li><li>*args,**kwargs</li></ul><h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><ul><li>常见的<a href="https://yz1509.xyz/posts/7474c898/" target="_blank" rel="noopener">查找</a>、<a href="https://yz1509.xyz/posts/735e5788/" target="_blank" rel="noopener">排序</a>算法</li><li><a href="https://yz1509.xyz/posts/ee040603/" target="_blank" rel="noopener">图</a>、<a href="https://yz1509.xyz/posts/7b216a3b/" target="_blank" rel="noopener">树</a>、链表等各种知识点</li></ul><h1 id="运维相关"><a href="#运维相关" class="headerlink" title="运维相关"></a>运维相关</h1><h2 id="高可用、负载均衡"><a href="#高可用、负载均衡" class="headerlink" title="高可用、负载均衡"></a>高可用、负载均衡</h2><h2 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h2><h2 id="Nginx、lvs、keepalived、监控、cdn-等"><a href="#Nginx、lvs、keepalived、监控、cdn-等" class="headerlink" title="Nginx、lvs、keepalived、监控、cdn 等"></a>Nginx、lvs、keepalived、监控、cdn 等</h2>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;整理自牛客网&lt;strong&gt;傻妞妞-MM&lt;/strong&gt;的&lt;a href=&quot;https://www.nowcoder.com/discuss/50625&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;面经&lt;/a&gt;。&lt;/p&gt;
+&lt;h1 id=&quot;Linux-系
+      
+    
+    </summary>
+    
+      <category term="面经" scheme="https://yz1509.github.io/categories/%E9%9D%A2%E7%BB%8F/"/>
+    
+    
+      <category term="面经" scheme="https://yz1509.github.io/tags/%E9%9D%A2%E7%BB%8F/"/>
+    
+      <category term="运维开发工程师" scheme="https://yz1509.github.io/tags/%E8%BF%90%E7%BB%B4%E5%BC%80%E5%8F%91%E5%B7%A5%E7%A8%8B%E5%B8%88/"/>
+    
+      <category term="操作系统" scheme="https://yz1509.github.io/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/"/>
+    
+      <category term="计算机网络" scheme="https://yz1509.github.io/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"/>
+    
+      <category term="Linux" scheme="https://yz1509.github.io/tags/Linux/"/>
+    
+      <category term="Python" scheme="https://yz1509.github.io/tags/Python/"/>
+    
+      <category term="数据库" scheme="https://yz1509.github.io/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/"/>
+    
+  </entry>
   
   <entry>
     <title>认识STL</title>
