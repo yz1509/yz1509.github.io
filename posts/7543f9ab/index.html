@@ -133,10 +133,12 @@
 <meta property="og:site_name" content="兔子和阿铁">
 <meta property="og:description" content="整理自牛客网傻妞妞-MM的面经。 Linux 系统 基本命令（系统性能信息的各种查看命令、可能会继续向下延伸：比如实时 CPU 负载的获取、网卡流量的抓包获取等，建议有多详细整理多详细。防火墙，文件查看，各种常用命令，请参考鸟哥基础等等。）； 开机启动过程，run level 各个级别的意思； 文件系统区别； shell 脚本对于日志文件获取有用信息的处理； shell 中常使用参数的意义； Aw">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-08-18T05:22:24.377Z">
+<meta property="og:image" content="https://yz1509.github.io/posts/7543f9ab/ProcessState.png">
+<meta property="og:updated_time" content="2018-08-18T08:20:00.636Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="运维开发工程师技能树">
 <meta name="twitter:description" content="整理自牛客网傻妞妞-MM的面经。 Linux 系统 基本命令（系统性能信息的各种查看命令、可能会继续向下延伸：比如实时 CPU 负载的获取、网卡流量的抓包获取等，建议有多详细整理多详细。防火墙，文件查看，各种常用命令，请参考鸟哥基础等等。）； 开机启动过程，run level 各个级别的意思； 文件系统区别； shell 脚本对于日志文件获取有用信息的处理； shell 中常使用参数的意义； Aw">
+<meta name="twitter:image" content="https://yz1509.github.io/posts/7543f9ab/ProcessState.png">
 
 
 
@@ -401,7 +403,7 @@
                 
               
 
-              <time title="创建时间：2018-08-18 12:34:54 / 修改时间：13:22:24" itemprop="dateCreated datePublished" datetime="2018-08-18T12:34:54+08:00">2018-08-18</time>
+              <time title="创建时间：2018-08-18 12:34:54 / 修改时间：16:20:00" itemprop="dateCreated datePublished" datetime="2018-08-18T12:34:54+08:00">2018-08-18</time>
             
 
             
@@ -498,9 +500,21 @@
 <li>B/S和C/S的区别</li>
 <li>路由协议OSPF、BGP的区别（这个一般很少问，除非你说你懂网络协议）</li>
 </ul>
-<h1 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h1><h2 id="进程、线程"><a href="#进程、线程" class="headerlink" title="进程、线程"></a>进程、线程</h2><ul>
-<li>进程和线程的区别</li>
-<li>进程的切换方式？在进程处于就绪态时还会有发生哪些事情？进程的状态</li>
+<h1 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h1><h2 id="进程、线程"><a href="#进程、线程" class="headerlink" title="进程、线程"></a>进程、线程</h2><h3 id="1-进程"><a href="#1-进程" class="headerlink" title="1. 进程"></a>1. 进程</h3><p>进程是资源分配的基本单位。</p>
+<p>进程控制块 (Process Control Block, PCB) 描述进程的基本信息和运行状态，所谓的创建进程和撤销进程，都是指对 PCB 的操作。</p>
+<h3 id="2-线程"><a href="#2-线程" class="headerlink" title="2. 线程"></a>2. 线程</h3><p>线程是独立调度的基本单位。</p>
+<p>一个进程中可以有多个线程，它们共享进程资源。</p>
+<p>QQ 和浏览器是两个进程，浏览器进程里面有很多线程，例如 HTTP 请求线程、事件响应线程、渲染线程等等，线程的并发执行使得在浏览器中点击一个新链接从而发起 HTTP 请求时，浏览器还可以响应用户的其它事件。</p>
+<h3 id="3-进程和线程的区别"><a href="#3-进程和线程的区别" class="headerlink" title="3. 进程和线程的区别"></a>3. 进程和线程的区别</h3><p>（一）拥有资源</p>
+<p>进程是资源分配的基本单位，但是线程不拥有资源，线程可以访问隶属进程的资源。</p>
+<p>（二）调度</p>
+<p>线程是独立调度的基本单位，在同一进程中，线程的切换不会引起进程切换，从一个进程内的线程切换到另一个进程中的线程时，会引起进程切换。</p>
+<p>（三）系统开销</p>
+<p>由于创建或撤销进程时，系统都要为之分配或回收资源，如内存空间、I/O 设备等，所付出的开销远大于创建或撤销线程时的开销。类似地，在进行进程切换时，涉及当前执行进程 CPU 环境的保存及新调度进程 CPU 环境的设置，而线程切换时只需保存和设置少量寄存器内容，开销很小。</p>
+<p>（四）通信方面</p>
+<p>进程间通信 (IPC) 需要进程同步和互斥手段的辅助，以保证数据的一致性。而线程间可以通过直接读/写同一进程中的数据段（如全局变量）来进行通信。</p>
+<h3 id="4-进程的状态？进程的切换方式？在进程处于就绪态时还会有发生哪些事情？"><a href="#4-进程的状态？进程的切换方式？在进程处于就绪态时还会有发生哪些事情？" class="headerlink" title="4. 进程的状态？进程的切换方式？在进程处于就绪态时还会有发生哪些事情？"></a>4. 进程的状态？进程的切换方式？在进程处于就绪态时还会有发生哪些事情？</h3><p><div align="center"> <img src="/posts/7543f9ab/ProcessState.png" width="500"> </div><br></p>
+<ul>
 <li>线程与线程同步的方式有哪些</li>
 <li>进程的通信方式有哪些</li>
 <li>操作系统的常见进程调度算法  </li>
@@ -836,7 +850,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux-系统"><span class="nav-number">1.</span> <span class="nav-text">Linux 系统</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#计算机网络"><span class="nav-number">2.</span> <span class="nav-text">计算机网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-和-UDP"><span class="nav-number">2.1.</span> <span class="nav-text">TCP 和 UDP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HHTP"><span class="nav-number">2.2.</span> <span class="nav-text">HHTP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DNS"><span class="nav-number">2.3.</span> <span class="nav-text">DNS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见的其他问题"><span class="nav-number">2.4.</span> <span class="nav-text">常见的其他问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#操作系统"><span class="nav-number">3.</span> <span class="nav-text">操作系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#进程、线程"><span class="nav-number">3.1.</span> <span class="nav-text">进程、线程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#死锁"><span class="nav-number">3.2.</span> <span class="nav-text">死锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IO模型以及同步异步阻塞非阻塞的区别"><span class="nav-number">3.3.</span> <span class="nav-text">IO模型以及同步异步阻塞非阻塞的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分页和分段有什么区别"><span class="nav-number">3.4.</span> <span class="nav-text">分页和分段有什么区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据从内存写到磁盘上发生的过程，具体行为是什么"><span class="nav-number">3.5.</span> <span class="nav-text">数据从内存写到磁盘上发生的过程，具体行为是什么</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库"><span class="nav-number">4.</span> <span class="nav-text">数据库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Python"><span class="nav-number">5.</span> <span class="nav-text">Python</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据结构"><span class="nav-number">6.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#运维相关"><span class="nav-number">7.</span> <span class="nav-text">运维相关</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#高可用、负载均衡"><span class="nav-number">7.1.</span> <span class="nav-text">高可用、负载均衡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker"><span class="nav-number">7.2.</span> <span class="nav-text">Docker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nginx、lvs、keepalived、监控、cdn-等"><span class="nav-number">7.3.</span> <span class="nav-text">Nginx、lvs、keepalived、监控、cdn 等</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux-系统"><span class="nav-number">1.</span> <span class="nav-text">Linux 系统</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#计算机网络"><span class="nav-number">2.</span> <span class="nav-text">计算机网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-和-UDP"><span class="nav-number">2.1.</span> <span class="nav-text">TCP 和 UDP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HHTP"><span class="nav-number">2.2.</span> <span class="nav-text">HHTP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DNS"><span class="nav-number">2.3.</span> <span class="nav-text">DNS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见的其他问题"><span class="nav-number">2.4.</span> <span class="nav-text">常见的其他问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#操作系统"><span class="nav-number">3.</span> <span class="nav-text">操作系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#进程、线程"><span class="nav-number">3.1.</span> <span class="nav-text">进程、线程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-进程"><span class="nav-number">3.1.1.</span> <span class="nav-text">1. 进程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-线程"><span class="nav-number">3.1.2.</span> <span class="nav-text">2. 线程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-进程和线程的区别"><span class="nav-number">3.1.3.</span> <span class="nav-text">3. 进程和线程的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-进程的状态？进程的切换方式？在进程处于就绪态时还会有发生哪些事情？"><span class="nav-number">3.1.4.</span> <span class="nav-text">4. 进程的状态？进程的切换方式？在进程处于就绪态时还会有发生哪些事情？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#死锁"><span class="nav-number">3.2.</span> <span class="nav-text">死锁</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IO模型以及同步异步阻塞非阻塞的区别"><span class="nav-number">3.3.</span> <span class="nav-text">IO模型以及同步异步阻塞非阻塞的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分页和分段有什么区别"><span class="nav-number">3.4.</span> <span class="nav-text">分页和分段有什么区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据从内存写到磁盘上发生的过程，具体行为是什么"><span class="nav-number">3.5.</span> <span class="nav-text">数据从内存写到磁盘上发生的过程，具体行为是什么</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库"><span class="nav-number">4.</span> <span class="nav-text">数据库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Python"><span class="nav-number">5.</span> <span class="nav-text">Python</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据结构"><span class="nav-number">6.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#运维相关"><span class="nav-number">7.</span> <span class="nav-text">运维相关</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#高可用、负载均衡"><span class="nav-number">7.1.</span> <span class="nav-text">高可用、负载均衡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker"><span class="nav-number">7.2.</span> <span class="nav-text">Docker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nginx、lvs、keepalived、监控、cdn-等"><span class="nav-number">7.3.</span> <span class="nav-text">Nginx、lvs、keepalived、监控、cdn 等</span></a></li></ol></li></ol></div>
             
 
           </div>
