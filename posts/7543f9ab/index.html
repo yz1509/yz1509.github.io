@@ -144,7 +144,11 @@
 <meta property="og:image" content="https://yz1509.github.io/posts/7543f9ab/39ccb299-ee99-4dd1-b8b4-2f9ec9495cb4.png">
 <meta property="og:image" content="https://yz1509.github.io/posts/7543f9ab/How-HTTPS-Works.png">
 <meta property="og:image" content="https://yz1509.github.io/posts/7543f9ab/2017-06-11-ca.png">
-<meta property="og:updated_time" content="2018-08-26T08:24:42.570Z">
+<meta property="og:image" content="https://yz1509.github.io/posts/7543f9ab/dns.jpg">
+<meta property="og:image" content="https://yz1509.github.io/posts/7543f9ab/1492928416812_4.png">
+<meta property="og:image" content="https://yz1509.github.io/posts/7543f9ab/1492928416812_4.png">
+<meta property="og:image" content="https://yz1509.github.io/posts/7543f9ab/ProcessState.png">
+<meta property="og:updated_time" content="2018-08-26T17:58:19.435Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="运维开发工程师技能树">
 <meta name="twitter:description" content="整理自牛客网傻妞妞-MM的面经。 Linux 系统 基本命令（系统性能信息的各种查看命令、可能会继续向下延伸：比如实时 CPU 负载的获取、网卡流量的抓包获取等，建议有多详细整理多详细。防火墙，文件查看，各种常用命令，请参考鸟哥基础等等。）； 开机启动过程，run level 各个级别的意思； 文件系统区别； shell 脚本对于日志文件获取有用信息的处理； shell 中常使用参数的意义； Aw">
@@ -430,7 +434,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-08-26 16:24:42" itemprop="dateModified" datetime="2018-08-26T16:24:42+08:00">2018-08-26</time>
+                <time title="修改时间：2018-08-27 01:58:19" itemprop="dateModified" datetime="2018-08-27T01:58:19+08:00">2018-08-27</time>
               
             
           </span>
@@ -626,10 +630,8 @@
 <li>在 HTTP/1.1 之前默认是短连接的，如果需要使用长连接，则使用 <code>Connection : Keep-Alive</code>。</li>
 </ul>
 <h3 id="Get-和-Post-的区别"><a href="#Get-和-Post-的区别" class="headerlink" title="Get 和 Post 的区别"></a>Get 和 Post 的区别</h3><ol>
-<li><p>作用<br>GET 用于获取资源，而 POST 用于传输实体主体。</p>
-</li>
-<li><p>参数</p>
-</li>
+<li>作用<br>GET 用于获取资源，而 POST 用于传输实体主体。</li>
+<li>参数</li>
 </ol>
 <ul>
 <li>GET 和 POST 的请求都能使用额外的参数</li>
@@ -648,11 +650,12 @@
 </ol>
 <ul>
 <li>幂等的 HTTP 方法，同样的请求被执行一次与连续执行多次的效果是一样的，服务器的状态也是一样的。换句话说就是，幂等方法不应该具有副作用（统计用途除外）。</li>
-<li>在正确实现的条件下，GET，HEAD，PUT 和 DELETE 等方法都是幂等的，而 POST 方法不是。</li>
-</ul>
-<blockquote>
-<p>DELETE /idX/delete HTTP/1.1 是幂等的，即便不同的请求接收到的状态码不一样<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; DELETE /idX/delete HTTP/1.1   -&gt; Returns 200 if idX exists</span><br><span class="line">&gt; DELETE /idX/delete HTTP/1.1   -&gt; Returns 404 as it just got deleted</span><br><span class="line">&gt; DELETE /idX/delete HTTP/1.1   -&gt; Returns 404</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure></p>
+<li>在正确实现的条件下，GET，HEAD，PUT 和 DELETE 等方法都是幂等的，而 POST 方法不是。<blockquote>
+<p>DELETE /idX/delete HTTP/1.1 是幂等的，即便不同的请求接收到的状态码不一样</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; DELETE /idX/delete HTTP/1.1   -&gt; Returns 200 if idX exists</span><br><span class="line">&gt; DELETE /idX/delete HTTP/1.1   -&gt; Returns 404 as it just got deleted</span><br><span class="line">&gt; DELETE /idX/delete HTTP/1.1   -&gt; Returns 404</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure>
 </blockquote>
+</li>
+</ul>
 <ol>
 <li>可缓存<br>如果要对响应进行缓存，需要满足以下条件：</li>
 </ol>
@@ -738,22 +741,297 @@
 <li>因为需要进行加密解密等过程，因此速度会更慢；</li>
 <li>需要支付证书授权的高额费用。</li>
 </ul>
-<h2 id="DNS"><a href="#DNS" class="headerlink" title="DNS"></a>DNS</h2><h3 id="DNS-的解析过程"><a href="#DNS-的解析过程" class="headerlink" title="DNS 的解析过程"></a>DNS 的解析过程</h3><h3 id="DNS-中的字段"><a href="#DNS-中的字段" class="headerlink" title="DNS 中的字段"></a>DNS 中的字段</h3><h3 id="DNS-的工作原理是什么？"><a href="#DNS-的工作原理是什么？" class="headerlink" title="DNS 的工作原理是什么？"></a>DNS 的工作原理是什么？</h3><h3 id="如果-DNS-解析出现错误，怎么解决？"><a href="#如果-DNS-解析出现错误，怎么解决？" class="headerlink" title="如果 DNS 解析出现错误，怎么解决？"></a>如果 DNS 解析出现错误，怎么解决？</h3><h2 id="常见的其他问题"><a href="#常见的其他问题" class="headerlink" title="常见的其他问题"></a>常见的其他问题</h2><ul>
-<li>Ping 和 traceroute 的工作原理</li>
-<li>路由和交换机的区别</li>
-<li>输入网址后，背后发生了什么？</li>
-<li>B/S和C/S的区别</li>
-<li>路由协议OSPF、BGP的区别（这个一般很少问，除非你说你懂网络协议）</li>
+<h2 id="DNS"><a href="#DNS" class="headerlink" title="DNS"></a>DNS</h2><h3 id="DNS-的解析过程"><a href="#DNS-的解析过程" class="headerlink" title="DNS 的解析过程"></a>DNS 的解析过程</h3><p><div align="center"> <img src="/posts/7543f9ab/dns.jpg" width=""> </div><br></p>
+<ul>
+<li>DNS 中的字段</li>
+<li>DNS 的工作原理是什么？</li>
+<li>如果 DNS 解析出现错误，怎么解决？</li>
 </ul>
-<h1 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h1><h2 id="进程和线程的区别"><a href="#进程和线程的区别" class="headerlink" title="进程和线程的区别"></a>进程和线程的区别</h2><h2 id="进程的切换方式？在进程处于就绪态时还会有发生哪些事情？进程的状态"><a href="#进程的切换方式？在进程处于就绪态时还会有发生哪些事情？进程的状态" class="headerlink" title="进程的切换方式？在进程处于就绪态时还会有发生哪些事情？进程的状态"></a>进程的切换方式？在进程处于就绪态时还会有发生哪些事情？进程的状态</h2><h2 id="线程与线程同步的方式有哪些"><a href="#线程与线程同步的方式有哪些" class="headerlink" title="线程与线程同步的方式有哪些"></a>线程与线程同步的方式有哪些</h2><h2 id="进程的通信方式有哪些"><a href="#进程的通信方式有哪些" class="headerlink" title="进程的通信方式有哪些"></a>进程的通信方式有哪些</h2><h2 id="操作系统的常见进程调度算法"><a href="#操作系统的常见进程调度算法" class="headerlink" title="操作系统的常见进程调度算法"></a>操作系统的常见进程调度算法</h2><h2 id="死锁的四个条件，解决与避免的方法"><a href="#死锁的四个条件，解决与避免的方法" class="headerlink" title="死锁的四个条件，解决与避免的方法"></a>死锁的四个条件，解决与避免的方法</h2><h2 id="IO模型以及同步异步阻塞非阻塞的区别"><a href="#IO模型以及同步异步阻塞非阻塞的区别" class="headerlink" title="IO模型以及同步异步阻塞非阻塞的区别"></a>IO模型以及同步异步阻塞非阻塞的区别</h2><h2 id="分页和分段有什么区别"><a href="#分页和分段有什么区别" class="headerlink" title="分页和分段有什么区别"></a>分页和分段有什么区别</h2><h2 id="数据从内存写到磁盘上发生的过程，具体行为是什么"><a href="#数据从内存写到磁盘上发生的过程，具体行为是什么" class="headerlink" title="数据从内存写到磁盘上发生的过程，具体行为是什么"></a>数据从内存写到磁盘上发生的过程，具体行为是什么</h2><h1 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h1><ul>
-<li>事务<ul>
-<li>ACID性质，其中各个性质的含义</li>
-<li>隔离级别</li>
-<li>脏读、丢失修改、不可重复读</li>
+<h2 id="常见的其他问题"><a href="#常见的其他问题" class="headerlink" title="常见的其他问题"></a>常见的其他问题</h2><h3 id="Ping-和-Traceroute-的工作原理"><a href="#Ping-和-Traceroute-的工作原理" class="headerlink" title="Ping 和 Traceroute 的工作原理"></a>Ping 和 Traceroute 的工作原理</h3><p>网际控制报文协议 ICMP 是为了更有效地转发 IP 数据报和提高交付成功的机会。它封装在 IP 数据报中，但是不属于高层协议。</p>
+<p><strong>Ping</strong></p>
+<p>Ping 是 ICMP 的一个重要应用，主要用来测试两台主机之间的连通性。</p>
+<p>Ping 的原理是通过向目的主机发送 ICMP Echo 请求报文，目的主机收到之后会发送 Echo 回答报文。Ping 会根据时间和成功响应的次数估算出数据包往返时间以及丢包率。</p>
+<p><strong>Traceroute</strong></p>
+<p>Traceroute 是 ICMP 的另一个应用，用来跟踪一个分组从源点到终点的路径。</p>
+<p>Traceroute 发送的 IP 数据报封装的是无法交付的 UDP 用户数据报，并由目的主机发送终点不可达差错报告报文。</p>
+<ul>
+<li>源主机向目的主机发送一连串的 IP 数据报。第一个数据报 P1 的生存时间 TTL 设置为 1，当 P1 到达路径上的第一个路由器 R1 时，R1 收下它并把 TTL 减 1，此时 TTL 等于 0，R1 就把 P1 丢弃，并向源主机发送一个 ICMP 时间超过差错报告报文；</li>
+<li>源主机接着发送第二个数据报 P2，并把 TTL 设置为 2。P2 先到达 R1，R1 收下后把 TTL 减 1 再转发给 R2，R2 收下后也把 TTL 减 1，由于此时 TTL 等于 0，R2 就丢弃 P2，并向源主机发送一个 ICMP 时间超过差错报文。</li>
+<li>不断执行这样的步骤，直到最后一个数据报刚刚到达目的主机，主机不转发数据报，也不把 TTL 值减 1。但是因为数据报封装的是无法交付的 UDP，因此目的主机要向源主机发送 ICMP 终点不可达差错报告报文。</li>
+<li>之后源主机知道了到达目的主机所经过的路由器 IP 地址以及到达每个路由器的往返时间。</li>
+</ul>
+<h3 id="路由器和交换机的区别"><a href="#路由器和交换机的区别" class="headerlink" title="路由器和交换机的区别"></a>路由器和交换机的区别</h3><p><strong>路由器</strong></p>
+<p>路由器（Router）又称网关设备（Gateway）是用于连接多个逻辑上分开的网络，所谓逻辑网络是代表一个单独的网络或者一个子网。当数据从一个子网传输到另一个子网时，可通过路由器的路由功能来完成。因此，路由器具有判断网络地址和选择IP路径的功能，它能在多网络互联环境中，建立灵活的连接，可用完全不同的数据分组和介质访问方法连接各种子网，路由器只接受源站或其他路由器的信息，属网络层的一种互联设备。</p>
+<p><strong>交换机</strong></p>
+<p>交换机工作于OSI参考模型的第二层，即数据链路层。交换机内部的CPU会在每个端口成功连接时，通过将MAC地址和端口对应，形成一张MAC表。在今后的通讯中，发往该MAC地址的数据包将仅送往其对应的端口，而不是所有的端口。因此，交换机可用于划分数据链路层广播，即冲突域；但它不能划分网络层广播，即广播域。</p>
+<p><strong>区别</strong></p>
+<p>（一） 工作所在的OSI层次不一样（根本区别，导致接下来的区别） </p>
+<ul>
+<li>交换机工作在 OSI模型的数据链路层，所以工作原理比较简单； </li>
+<li>路由器工作在OSI模型的网络层，具备更多的网络协议信息，所以可以做出更好的数据转发策略。</li>
+</ul>
+<p>（二） 数据转发所依据的对象也不一样。 </p>
+<ul>
+<li>交换机工作在数据链路层，所以交换机转发数据依靠的是每个物理地址（MAC地址），MAC地址一般是设备生产商在设备出厂时固定在设备中的，不能进行更改。 </li>
+<li>路由器工作在网络层，所以其交换数据依靠网络地址（IP地址），而IP地址是由网络管理员自己分配或者系统自动获取的。</li>
+</ul>
+<p>（三） 是否可以分割广播域 </p>
+<ul>
+<li>由交换机连接的所有端口仍然属于同一个广播域，所以极有可能会产生数据拥堵； </li>
+<li>连接到路由器上的所有端口不在属于同一个广播域，所以不会产生类似的数据拥堵问题。</li>
+</ul>
+<h3 id="输入网址后，背后发生了什么？"><a href="#输入网址后，背后发生了什么？" class="headerlink" title="输入网址后，背后发生了什么？"></a>输入网址后，背后发生了什么？</h3><ol>
+<li>浏览器发起 DNS 查询请求</li>
+<li>域名服务器向客户端返回查询结果域名，从而完成域名到 IP 地址的转换。</li>
+<li>客户端向 web 服务器发送 HTTP 请求</li>
+<li>web 服务器发送响应数据给客户端</li>
+</ol>
+<h3 id="I-O-模型以及同步异步阻塞非阻塞的区别"><a href="#I-O-模型以及同步异步阻塞非阻塞的区别" class="headerlink" title="I/O 模型以及同步异步阻塞非阻塞的区别"></a>I/O 模型以及同步异步阻塞非阻塞的区别</h3><p><strong>I/O 模型</strong><br>一个输入操作通常包括两个阶段：</p>
+<ul>
+<li>等待数据准备好</li>
+<li>从内核向进程复制数据</li>
+</ul>
+<p>对于一个套接字上的输入操作，第一步通常涉及等待数据从网络中到达。当所等待分组到达时，它被复制到内核中的某个缓冲区。第二步就是把数据从内核缓冲区复制到应用进程缓冲区。</p>
+<p>Unix 下有五种 I/O 模型：</p>
+<ul>
+<li>阻塞式 I/O</li>
+<li>非阻塞式 I/O</li>
+<li>I/O 复用（select 和 poll）</li>
+<li>信号驱动式 I/O（SIGIO）</li>
+<li>异步 I/O（AIO）</li>
+</ul>
+<p><strong>阻塞式 I/O</strong></p>
+<p>应用进程被阻塞，直到数据复制到应用进程缓冲区中才返回。</p>
+<p>应该注意到，在阻塞的过程中，其它程序还可以执行，因此阻塞不意味着整个操作系统都被阻塞。因为其他程序还可以执行，因此不消耗 CPU 时间，这种模型的执行效率会比较高。</p>
+<p><div align="center"> <img src="/posts/7543f9ab/1492928416812_4.png"> </div><br></p>
+<p><strong>非阻塞式 I/O</strong></p>
+<p>应用进程执行系统调用之后，内核返回一个错误码。应用进程可以继续执行，但是需要不断的执行系统调用来获知 I/O 是否完成，这种方式称为轮询（polling）。</p>
+<p>由于 CPU 要处理更多的系统调用，因此这种模型是比较低效的。</p>
+<p><div align="center"> <img src="/posts/7543f9ab/1492928416812_4.png"> </div><br></p>
+<p><strong>同步 I/O 与异步 I/O</strong></p>
+<ul>
+<li>同步 I/O：应用进程在调用 recvfrom 操作时会阻塞。</li>
+<li>异步 I/O：不会阻塞。<br>阻塞式 I/O、非阻塞式 I/O、I/O 复用和信号驱动 I/O 都是同步 I/O，虽然非阻塞式 I/O 和信号驱动 I/O 在等待数据阶段不会阻塞，但是在之后的将数据从内核复制到应用进程这个操作会阻塞。</li>
+</ul>
+<h3 id="B-S和C-S的区别"><a href="#B-S和C-S的区别" class="headerlink" title="B/S和C/S的区别"></a>B/S和C/S的区别</h3><p>Client/Server 是建立在局域网的基础上的。Browser/Server 是建立在广域网的基础上的，但并不是说B/S结构不能在局域网上使用，如智赢 IPOWER，在单机，局限网，广域网均能使用。</p>
+<p>1．硬件环境不同: </p>
+<ul>
+<li>C/S 一般建立在专用的网络上, 小范围里的网络环境, 局域网之间再通过专门服务器提供连接和数据交换服务. </li>
+<li>B/S 建立在广域网之上的, 不必是专门的网络硬件环境,例与电话上网, 租用设备. 信息自己管理. 有比C/S更强的适应范围, 一般只要有操作系统和浏览器就行 </li>
+</ul>
+<p>2．对安全要求不同 </p>
+<ul>
+<li>C/S 对服务端、客户端都安全都要考虑。</li>
+<li>B/S 因没有客户端，所以只注重服务端安全即可。</li>
+</ul>
+<p>3．对程序架构不同 </p>
+<ul>
+<li>C/S 程序可以更加注重流程, 可以对权限多层次校验, 对系统运行速度可以较少考虑. </li>
+<li>B/S 对安全以及访问速度的多重的考虑, 建立在需要更加优化的基础之上. 比C/S有更高的要求 B/S结构的程序架构是发展的趋势, 从MS的.Net系列的BizTalk 2000 Exchange 2000 等, 全面支持网络的构件搭建的系统. SUN 和IBM推的JavaBean 构件技术等,使 B/S更加成熟. 例如智赢IPOWER，采用AJAX和数据存储优化技术，相比一般B/S架构软件速度提高 30%至99%。</li>
+</ul>
+<p>4．软件重用不同 </p>
+<ul>
+<li>C/S 程序可以不可避免的整体性考虑, 构件的重用性不如在B/S要求下的构件的重用性好. </li>
+<li>B/S 对的多重结构,要求构件相对独立的功能. 能够相对较好的重用.就入买来的餐桌可以再利用,而不是做在墙上的石头桌子 </li>
+<li><p>5．系统维护不同 </p>
+</li>
+<li><p>C/S 程序由于整体性, 必须整体考察, 处理出现的问题以及系统升级. 升级难. 可能是再做一个全新的系统 </p>
+</li>
+<li>B/S 构件组成,方面构件个别的更换,实现系统的无缝升级. 系统维护开销减到最小.用户从网上自己下载安装就可以实现升级. </li>
+</ul>
+<p>6．处理问题不同 </p>
+<ul>
+<li>C/S 程序可以处理用户面固定, 并且在相同区域, 安全要求高需求, 与操作系统相关. 应该都是相同的系统 </li>
+<li>B/S 建立在广域网上, 面向不同的用户群, 分散地域, 这是C/S无法作到的. 与操作系统平台关系最小. </li>
+</ul>
+<p>7．用户接口不同 </p>
+<ul>
+<li>C/S 多是建立的Window平台上,表现方法有限,对程序员普遍要求较高 </li>
+<li>B/S 建立在浏览器上, 通过WEB服务或其他公共可识别描述语言可跨平台，使用更灵活。不仅可应用在Window平台上，还可应用于unix/Linux等平台。</li>
+</ul>
+<p>8．信息流不同 </p>
+<ul>
+<li>C/S 程序一般是典型的中央集权的机械式处理, 交互性相对低 </li>
+<li>B/S 信息流向可变化, B-B B-C B-G等信息、流向的变化, 更象交易中心。</li>
+</ul>
+<hr>
+<ol>
+<li>路由协议OSPF、BGP的区别（这个一般很少问，除非你说你懂网络协议）</li>
+</ol>
+<h1 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h1><h2 id="进程和线程的区别"><a href="#进程和线程的区别" class="headerlink" title="进程和线程的区别"></a>进程和线程的区别</h2><p>进程是资源分配的基本单位，线程是独立调度的基本单位。<br>（一）拥有资源<br>进程是资源分配的基本单位，但是线程不拥有资源，线程可以访问隶属进程的资源。</p>
+<p>（二）调度<br>线程是独立调度的基本单位，在同一进程中，线程的切换不会引起进程切换，从一个进程内的线程切换到另一个进程中的线程时，会引起进程切换。</p>
+<p>（三）系统开销<br>由于创建或撤销进程时，系统都要为之分配或回收资源，如内存空间、I/O 设备等，所付出的开销远大于创建或撤销线程时的开销。类似地，在进行进程切换时，涉及当前执行进程 CPU 环境的保存及新调度进程 CPU 环境的设置，而线程切换时只需保存和设置少量寄存器内容，开销很小。</p>
+<p>（四）通信方面<br>进程间通信 (IPC) 需要进程同步和互斥手段的辅助，以保证数据的一致性。而线程间可以通过直接读/写同一进程中的数据段（如全局变量）来进行通信。</p>
+<h2 id="进程的状态？进程的切换方式？"><a href="#进程的状态？进程的切换方式？" class="headerlink" title="进程的状态？进程的切换方式？"></a>进程的状态？进程的切换方式？</h2><p><div align="center"> <img src="/posts/7543f9ab/ProcessState.png" width="500"> </div><br></p>
+<ul>
+<li>就绪状态（ready）：等待被调度</li>
+<li>运行状态（running）</li>
+<li>阻塞状态（waiting）：等待资源</li>
+</ul>
+<p>应该注意以下内容：</p>
+<ul>
+<li>只有就绪态和运行态可以相互转换，其它的都是单向转换。就绪状态的进程通过调度算法从而获得 CPU 时间，转为运行状态；而运行状态的进程，在分配给它的 CPU 时间片用完之后就会转为就绪状态，等待下一次调度。</li>
+<li>阻塞状态是缺少需要的资源从而由运行状态转换而来，但是该资源不包括 CPU 时间，缺少 CPU 时间会从运行态转换为就绪态。</li>
+</ul>
+<h2 id="进程同步的方式有哪些"><a href="#进程同步的方式有哪些" class="headerlink" title="进程同步的方式有哪些"></a>进程同步的方式有哪些</h2><ul>
+<li>信号量</li>
+<li>管程</li>
+</ul>
+<h2 id="进程的通信方式有哪些"><a href="#进程的通信方式有哪些" class="headerlink" title="进程的通信方式有哪些"></a>进程的通信方式有哪些</h2><ul>
+<li>管道</li>
+<li>FIFO</li>
+<li>消息队列</li>
+<li>信号量</li>
+<li>共享存储</li>
+<li>套接字</li>
+</ul>
+<h2 id="操作系统的常见进程调度算法"><a href="#操作系统的常见进程调度算法" class="headerlink" title="操作系统的常见进程调度算法"></a>操作系统的常见进程调度算法</h2><p>不同环境的调度算法目标不同，因此需要针对不同环境来讨论调度算法。</p>
+<p><strong>批处理系统</strong><br>批处理系统没有太多的用户操作，在该系统中，调度算法目标是保证吞吐量和周转时间（从提交到终止的时间）。</p>
+<ul>
+<li>先来先服务 first-come first-serverd（FCFS）</li>
+<li>短作业优先 shortest job first（SJF）</li>
+<li>最短剩余时间优先 shortest remaining time next（SRTN）</li>
+</ul>
+<p><strong>交互式系统</strong><br>交互式系统有大量的用户交互操作，在该系统中调度算法的目标是快速地进行响应。</p>
+<ul>
+<li>时间片轮转</li>
+<li>优先级调度</li>
+<li>多级反馈队列</li>
+</ul>
+<h2 id="死锁的四个条件，解决与避免的方法"><a href="#死锁的四个条件，解决与避免的方法" class="headerlink" title="死锁的四个条件，解决与避免的方法"></a>死锁的四个条件，解决与避免的方法</h2><p><strong>死锁的四个条件</strong></p>
+<ul>
+<li>互斥：每个资源要么已经分配给了一个进程，要么就是可用的。</li>
+<li>占有和等待：已经得到了某个资源的进程可以再请求新的资源。</li>
+<li>不可抢占：已经分配给一个进程的资源不能强制性地被抢占，它只能被占有它的进程显式地释放。</li>
+<li>环路等待：有两个或者两个以上的进程组成一条环路，该环路中的每个进程都在等待下一个进程所占有的资源。</li>
+</ul>
+<p><strong>办法</strong></p>
+<ul>
+<li>鸵鸟策略</li>
+<li>死锁检测与死锁恢复</li>
+<li>死锁预防</li>
+<li>死锁避免</li>
+</ul>
+<h2 id="分页和分段有什么区别"><a href="#分页和分段有什么区别" class="headerlink" title="分页和分段有什么区别"></a>分页和分段有什么区别</h2><ul>
+<li>虚拟内存采用的是分页技术，也就是将地址空间划分成固定大小的页，每一页再与内存进行映射。</li>
+<li>分段的做法是把每个表分成段，一个段构成一个独立的地址空间。每个段的长度可以不同，并且可以动态增长。</li>
+<li><strong>段页式</strong>：程序的地址空间划分成多个拥有独立地址空间的段，每个段上的地址空间划分成大小相同的页。这样既拥有分段系统的共享和保护，又拥有分页系统的虚拟内存功能。</li>
+</ul>
+<p><strong>分页与分段的比较</strong></p>
+<ul>
+<li>对程序员的透明性：分页透明，但是分段需要程序员显示划分每个段。</li>
+<li>地址空间的维度：分页是一维地址空间，分段是二维的。</li>
+<li>大小是否可以改变：页的大小不可变，段的大小可以动态改变。</li>
+<li>出现的原因：分页主要用于实现虚拟内存，从而获得更大的地址空间；分段主要是为了使程序和数据可以被划分为逻辑上独立的地址空间并且有助于共享和保护。</li>
+</ul>
+<hr>
+<ol>
+<li>数据从内存写到磁盘上发生的过程，具体行为是什么？</li>
+</ol>
+<h1 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h1><h2 id="事务"><a href="#事务" class="headerlink" title="事务"></a>事务</h2><p>事务指的是满足 ACID 特性的一组操作，可以通过 Commit 提交一个事务，也可以使用 Rollback 进行回滚。</p>
+<h3 id="ACID性质，其中各个性质的含义"><a href="#ACID性质，其中各个性质的含义" class="headerlink" title="ACID性质，其中各个性质的含义"></a>ACID性质，其中各个性质的含义</h3><ol>
+<li>原子性（Atomicity）</li>
+</ol>
+<p>事务被视为不可分割的最小单元，事务的所有操作要么全部提交成功，要么全部失败回滚。</p>
+<p>回滚可以用日志来实现，日志记录着事务所执行的修改操作，在回滚时反向执行这些修改操作即可。</p>
+<ol>
+<li>一致性（Consistency）</li>
+</ol>
+<p>数据库在事务执行前后都保持一致性状态。在一致性状态下，所有事务对一个数据的读取结果都是相同的。</p>
+<ol>
+<li>隔离性（Isolation）</li>
+</ol>
+<p>一个事务所做的修改在最终提交以前，对其它事务是不可见的。</p>
+<ol>
+<li>持久性（Durability）</li>
+</ol>
+<p>一旦事务提交，则其所做的修改将会永远保存到数据库中。即使系统发生崩溃，事务执行的结果也不能丢失。</p>
+<p>可以通过数据库备份和恢复来实现，在系统发生崩溃时，使用备份的数据库进行数据恢复。</p>
+<h3 id="脏读、丢失修改、不可重复读、幻影读"><a href="#脏读、丢失修改、不可重复读、幻影读" class="headerlink" title="脏读、丢失修改、不可重复读、幻影读"></a>脏读、丢失修改、不可重复读、幻影读</h3><p><strong>丢失修改</strong></p>
+<p>$T_1$ 和 $T_2$ 两个事务都对一个数据进行修改，$T_1$ 先修改，$T_2$ 随后修改，$T_2$ 的修改覆盖了 $T_1$ 的修改。</p>
+<p><strong>脏读</strong></p>
+<p>$T_1$ 修改一个数据，$T_2$ 随后读取这个数据。如果 $T_1$ 撤销了这次修改，那么 $T_2$ 读取的数据是脏数据。</p>
+<p><strong>不可重复读</strong></p>
+<p>$T_2$ 读取一个数据，$T_1$ 对该数据做了修改。如果 $T_2$ 再次读取这个数据，此时读取的结果和第一次读取的结果不同。</p>
+<p><strong>幻影读</strong></p>
+<p>$T_1$ 读取某个范围的数据，$T_2$ 在这个范围内插入新的数据，$T_1$ 再次读取这个范围的数据，此时读取的结果和和第一次读取的结果不同。（统计求和等）</p>
+<h3 id="隔离级别"><a href="#隔离级别" class="headerlink" title="隔离级别"></a>隔离级别</h3><ul>
+<li>未提交读（READ UNCOMMITTED）：事务中的修改，即使没有提交，对其它事务也是可见的。</li>
+<li>提交读（READ COMMITTED）：一个事务只能读取已经提交的事务所做的修改。换句话说，一个事务所做的修改在提交之前对其它事务是不可见的。</li>
+<li>可重复读（REPEATABLE READ）：保证在同一个事务中多次读取同样数据的结果是一样的。</li>
+<li>可串行化（SERIALIZABLE）：强制事务串行执行。</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">隔离级别</th>
+<th style="text-align:center">脏读</th>
+<th style="text-align:center">不可重复读</th>
+<th style="text-align:center">幻影读</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">未提交读</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√</td>
+</tr>
+<tr>
+<td style="text-align:center">提交读</td>
+<td style="text-align:center">×</td>
+<td style="text-align:center">√</td>
+<td style="text-align:center">√</td>
+</tr>
+<tr>
+<td style="text-align:center">可重复读</td>
+<td style="text-align:center">×</td>
+<td style="text-align:center">×</td>
+<td style="text-align:center">√</td>
+</tr>
+<tr>
+<td style="text-align:center">可串行化</td>
+<td style="text-align:center">×</td>
+<td style="text-align:center">×</td>
+<td style="text-align:center">×</td>
+</tr>
+</tbody>
+</table>
+<h2 id="数据库的锁机制"><a href="#数据库的锁机制" class="headerlink" title="数据库的锁机制"></a>数据库的锁机制</h2><p><strong>封锁粒度</strong></p>
+<ul>
+<li>行级锁</li>
+<li>表级锁</li>
+</ul>
+<p><strong>封锁类型</strong></p>
+<ul>
+<li><p>读写锁</p>
+<ul>
+<li>排它锁（Exclusive），简写为 X 锁，又称写锁。</li>
+<li>共享锁（Shared），简写为 S 锁，又称读锁。</li>
 </ul>
 </li>
+<li><p>意向锁：IX 、IS</p>
+</li>
+</ul>
+<p><strong>封锁协议</strong></p>
+<ul>
+<li><p>三级封锁协议</p>
+<ul>
+<li>一级封锁协议：事务 T 要修改数据 A 时必须加 X 锁，直到 T 结束才释放锁。可以解决丢失修改问题，因为不能同时有两个事务对同一个数据进行修改，那么事务的修改就不会被覆盖。</li>
+<li>二级封锁协议：在一级的基础上，要求读取数据 A 时必须加 S 锁，读取完马上释放 S 锁。可以解决读脏数据问题，因为如果一个事务在对数据 A 进行修改，根据 1 级封锁协议，会加 X 锁，那么就不能再加 S 锁了，也就是不会读入数据。</li>
+<li>三级封锁协议：在二级的基础上，要求读取数据 A 时必须加 S 锁，直到事务结束了才能释放 S 锁。可以解决不可重复读的问题，因为读 A 时，其它事务不能对 A 加 X 锁，从而避免了在读的期间数据发生改变。</li>
+</ul>
+</li>
+<li><p>两段锁协议</p>
+<ul>
+<li>加锁和解锁分为两个阶段进行。</li>
+<li>可串行化调度是指，通过并发控制，使得并发执行的事务结果与某个串行执行的事务结果相同。事务遵循两段锁协议是保证可串行化调度的充分条件，但不是必要条件。</li>
+</ul>
+</li>
+</ul>
+<hr>
+<ul>
 <li>常见的SQL语句（内外联结）</li>
-<li>数据库的锁机制</li>
 <li>索引、视图</li>
 <li>Mysql 常见的引擎及区别</li>
 <li>Mysql 的四种日志的意义</li>
@@ -761,8 +1039,14 @@
 <li>Mysql 的优化</li>
 <li>Mysql 的复制</li>
 </ul>
-<h1 id="Python"><a href="#Python" class="headerlink" title="Python"></a>Python</h1><ul>
-<li>深拷贝和浅拷贝</li>
+<h1 id="Python"><a href="#Python" class="headerlink" title="Python"></a>Python</h1><h2 id="深拷贝和浅拷贝"><a href="#深拷贝和浅拷贝" class="headerlink" title="深拷贝和浅拷贝"></a>深拷贝和浅拷贝</h2><p>在 python 中，对象赋值实际上是对象的引用。当创建一个对象，然后把它赋给另一个变量的时候，python 并没有拷贝这个对象，而只是拷贝了这个对象的引用。</p>
+<ol>
+<li>直接赋值，传递对象的引用而已，原始列表改变，被赋值的 b 也会做相同的改变</li>
+<li>copy 浅拷贝，没有拷贝子对象，所以原始数据改变，子对象会改变</li>
+<li>deepcopy 深拷贝，包含对象里面的自对象的拷贝，所以原始对象的改变不会造成深拷贝里任何子元素的改变</li>
+</ol>
+<hr>
+<ul>
 <li>闭包、装饰器</li>
 <li>迭代器、生成器</li>
 <li>多线程</li>
@@ -774,7 +1058,68 @@
 <li>常见的<a href="https://yz1509.xyz/posts/7474c898/" target="_blank" rel="noopener">查找</a>、<a href="https://yz1509.xyz/posts/735e5788/" target="_blank" rel="noopener">排序</a>算法</li>
 <li><a href="https://yz1509.xyz/posts/ee040603/" target="_blank" rel="noopener">图</a>、<a href="https://yz1509.xyz/posts/7b216a3b/" target="_blank" rel="noopener">树</a>、链表等各种知识点</li>
 </ul>
-<h1 id="运维相关"><a href="#运维相关" class="headerlink" title="运维相关"></a>运维相关</h1><h2 id="高可用、负载均衡"><a href="#高可用、负载均衡" class="headerlink" title="高可用、负载均衡"></a>高可用、负载均衡</h2><h2 id="Docker"><a href="#Docker" class="headerlink" title="Docker"></a>Docker</h2><h2 id="Nginx、lvs、keepalived、监控、cdn-等"><a href="#Nginx、lvs、keepalived、监控、cdn-等" class="headerlink" title="Nginx、lvs、keepalived、监控、cdn 等"></a>Nginx、lvs、keepalived、监控、cdn 等</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h1 id="运维相关"><a href="#运维相关" class="headerlink" title="运维相关"></a>运维相关</h1><h2 id="高可用性、负载均衡"><a href="#高可用性、负载均衡" class="headerlink" title="高可用性、负载均衡"></a>高可用性、负载均衡</h2><p><strong>高可用性</strong></p>
+<p>计算机系统的可用性用 [1]  平均无故障时间（MTTF）来度量，即计算机系统平均能够正常运行多长时间，才发生一次故障。系统的可用性越高，平均无故障时间越长。可维护性用平均维修时间（MTTR）来度量，即系统发生故障后维修和重新恢复正常运行平均花费的时间。系统的可维护性越好，平均维修时间越短。计算机系统的可用性定义为：MTTF/(MTTF+MTTR) * 100%。由此可见，计算机系统的可用性定义为系统保持正常运行时间的百分比。</p>
+<p>工作方式：</p>
+<ol>
+<li><p>主从方式 （非对称方式）<br>工作原理：主机工作，备机处于监控准备状况；当主机宕机时，备机接管主机的一切工作，待主机恢复正常后，按使用者的设定以自动或手动方式将服务切换到主机上运行，数据的一致性通过共享存储系统解决。</p>
+</li>
+<li><p>双机双工方式（互备互援）<br>工作原理：两台主机同时运行各自的服务工作且相互监测情况，当任一台主机宕机时，另一台主机立即接管它的一切工作，保证工作实时，应用服务系统的关键数据存放在共享存储系统中。</p>
+</li>
+<li><p>集群工作方式（多服务器互备方式）<br>工作原理：多台主机一起工作，各自运行一个或几个服务，各为服务定义一个或多个备用主机，当某个主机故障时，运行在其上的服务就可以被其它主机接管。</p>
+</li>
+</ol>
+<p><strong>负载均衡</strong></p>
+<p>负载均衡可以将任务分摊到多个处理单元，从而提高并发处理能力。</p>
+<p>（一） [协议层] HTTP 重定向协议实现负载均衡</p>
+<ul>
+<li>原理：根据用户的 HTTP 请求计算出一个真实的 web 服务器地址，并将该 web 服务器地址写入 HTTP 重定向响应中返回给浏览器，由浏览器重新进行访问。</li>
+<li>优点：比较简单</li>
+<li>缺点：<ul>
+<li>浏览器需要两次请求服务器才能完成一次访问，性能较差。</li>
+<li>HTTP 重定向服务器自身的处理能力可能成为瓶颈。</li>
+<li>使用 HTTP302 响应重定向，有可能使搜索引擎判断为 SEO 作弊，降低搜索排名。</li>
+</ul>
+</li>
+</ul>
+<p>（二） [协议层] DNS 域名解析负载均衡</p>
+<ul>
+<li>原理：在DNS服务器上配置多个域名对应IP的记录。例如一个域名<a href="http://www.baidu.com" target="_blank" rel="noopener">www.baidu.com</a> 对应一组 web 服务器 IP 地址，域名解析时经过 DNS 服务器的算法将一个域名请求分配到合适的真实服务器上。</li>
+<li>优点：将负载均衡的工作交给了 DNS，省却了网站管理维护负载均衡服务器的麻烦，同时许多 DNS 还支持基于地理位置的域名解析，将域名解析成距离用户地理最近的一个服务器地址，加快访问速度吗，改善性能。</li>
+<li>缺点：<ul>
+<li>目前的 DNS 解析是多级解析，每一级DNS都可能化缓存记录A，当某一服务器下线后，该服务器对应的 DNS 记录 A 可能仍然存在，导致分配到该服务器的用户访问失败。</li>
+<li>DNS负载均衡的控制权在域名服务商手里，网站可能无法做出过多的改善和管理。不能够按服务器的处理能力来分配负载。</li>
+<li>DNS 负载均衡采用的是简单的轮询算法，不能区分服务器之间的差异，不能反映服务器当前运行状态，所以其的负载均衡效果并不是太好。</li>
+<li>可能会造成额外的网络问题。为了使本 DNS 服务器和其他 DNS 服务器及时交互，保证 DNS 数据及时更新，使地址能随机分配，一般都要将 DNS 的刷新时间设置的较小，但太小将会使 DNS 流量大增造成额外的网络问题。</li>
+</ul>
+</li>
+</ul>
+<p>（三） [协议层] 反向代理负载均衡</p>
+<ul>
+<li>原理：反向代理处于 web 服务器这边，反向代理服务器提供负载均衡的功能，同时管理一组 web 服务器，它根据负载均衡算法将请求的浏览器访问转发到不同的web 服务器处理，处理结果经过反向服务器返回给浏览器。</li>
+<li>优点：部署简单，处于 HTTP 协议层面。</li>
+<li>缺点：使用了反向代理服务器后，web 服务器地址不能直接暴露在外，因此 web服务器不需要使用外部 IP 地址，而反向代理服务作为沟通桥梁就需要配置双网卡、外部内部两套 IP 地址。</li>
+</ul>
+<p>（四） [网络层] IP负载均衡</p>
+<ul>
+<li>原理：在网络层通过修改目标地址进行负载均衡。用户访问请求到达负载均衡服务器，负载均衡服务器在操作系统内核进程获取网络数据包，根据算法得到一台真实服务器地址，然后将用户请求的目标地址修改成该真实服务器地址，数据处理完后返回给负载均衡服务器，负载均衡服务器收到响应后将自身的地址修改成原用户访问地址后再讲数据返回回去。类似于反向服务器负载均衡。</li>
+<li>优点：在响应请求时速度较反向服务器负载均衡要快。</li>
+<li>缺点：当请求数据较大（大型视频或文件）时，速度较慢。</li>
+</ul>
+<p>（五） [链路层] 数据链路层负载均衡</p>
+<ul>
+<li>原理：在数据链路层修改 MAC 地址进行负载均衡。负载均衡服务器的 IP 和它所管理的 web 服务群的虚拟 IP 一致；负载均衡数据分发过程中不修改访问地址的 IP 地址，而是修改 MAC 地址；通过这两点达到不修改数据包的原地址和目标地址就可以进行正常的访问。</li>
+<li>优点：不需要负载均衡服务器进行地址的转换。数据响应时不需要经过负载均衡服务器。是目前大型网站所使用得最广的一种均衡手段。</li>
+<li>缺点：负载均衡服务器的网卡带宽要求较高。</li>
+</ul>
+<hr>
+<ol>
+<li><p><strong>Docker</strong></p>
+</li>
+<li><p><strong>Nginx、lvs、keepalived、监控、cdn 等</strong></p>
+</li>
+</ol>
+
       
     </div>
 
@@ -1072,7 +1417,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux-系统"><span class="nav-number">1.</span> <span class="nav-text">Linux 系统</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#计算机网络"><span class="nav-number">2.</span> <span class="nav-text">计算机网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-和-UDP"><span class="nav-number">2.1.</span> <span class="nav-text">TCP 和 UDP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-和-UDP-的区别"><span class="nav-number">2.1.1.</span> <span class="nav-text">TCP 和 UDP 的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三次握手四次挥手，以及其中各个状态的转换，为什么是三次和四次？Time-wait-等待的意义？"><span class="nav-number">2.1.2.</span> <span class="nav-text">三次握手四次挥手，以及其中各个状态的转换，为什么是三次和四次？Time_wait 等待的意义？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-保证可靠的传输机制"><span class="nav-number">2.1.3.</span> <span class="nav-text">TCP 保证可靠的传输机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-滑动窗口和回退-N-帧协议"><span class="nav-number">2.1.4.</span> <span class="nav-text">TCP 滑动窗口和回退 N 帧协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-的流量控制"><span class="nav-number">2.1.5.</span> <span class="nav-text">TCP 的流量控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-的拥塞控制，拥塞控制中的四个算法"><span class="nav-number">2.1.6.</span> <span class="nav-text">TCP 的拥塞控制，拥塞控制中的四个算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SYN-攻击以及解决办法"><span class="nav-number">2.1.7.</span> <span class="nav-text">SYN 攻击以及解决办法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP"><span class="nav-number">2.2.</span> <span class="nav-text">HTTP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#常见状态码"><span class="nav-number">2.2.1.</span> <span class="nav-text">常见状态码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#长连接、短连接"><span class="nav-number">2.2.2.</span> <span class="nav-text">长连接、短连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Get-和-Post-的区别"><span class="nav-number">2.2.3.</span> <span class="nav-text">Get 和 Post 的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP-版本的区别"><span class="nav-number">2.2.4.</span> <span class="nav-text">HTTP 版本的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTPS"><span class="nav-number">2.2.5.</span> <span class="nav-text">HTTPS</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DNS"><span class="nav-number">2.3.</span> <span class="nav-text">DNS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#DNS-的解析过程"><span class="nav-number">2.3.1.</span> <span class="nav-text">DNS 的解析过程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DNS-中的字段"><span class="nav-number">2.3.2.</span> <span class="nav-text">DNS 中的字段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DNS-的工作原理是什么？"><span class="nav-number">2.3.3.</span> <span class="nav-text">DNS 的工作原理是什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如果-DNS-解析出现错误，怎么解决？"><span class="nav-number">2.3.4.</span> <span class="nav-text">如果 DNS 解析出现错误，怎么解决？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见的其他问题"><span class="nav-number">2.4.</span> <span class="nav-text">常见的其他问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#操作系统"><span class="nav-number">3.</span> <span class="nav-text">操作系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#进程和线程的区别"><span class="nav-number">3.1.</span> <span class="nav-text">进程和线程的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程的切换方式？在进程处于就绪态时还会有发生哪些事情？进程的状态"><span class="nav-number">3.2.</span> <span class="nav-text">进程的切换方式？在进程处于就绪态时还会有发生哪些事情？进程的状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程与线程同步的方式有哪些"><span class="nav-number">3.3.</span> <span class="nav-text">线程与线程同步的方式有哪些</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程的通信方式有哪些"><span class="nav-number">3.4.</span> <span class="nav-text">进程的通信方式有哪些</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操作系统的常见进程调度算法"><span class="nav-number">3.5.</span> <span class="nav-text">操作系统的常见进程调度算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#死锁的四个条件，解决与避免的方法"><span class="nav-number">3.6.</span> <span class="nav-text">死锁的四个条件，解决与避免的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#IO模型以及同步异步阻塞非阻塞的区别"><span class="nav-number">3.7.</span> <span class="nav-text">IO模型以及同步异步阻塞非阻塞的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分页和分段有什么区别"><span class="nav-number">3.8.</span> <span class="nav-text">分页和分段有什么区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据从内存写到磁盘上发生的过程，具体行为是什么"><span class="nav-number">3.9.</span> <span class="nav-text">数据从内存写到磁盘上发生的过程，具体行为是什么</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库"><span class="nav-number">4.</span> <span class="nav-text">数据库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Python"><span class="nav-number">5.</span> <span class="nav-text">Python</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据结构"><span class="nav-number">6.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#运维相关"><span class="nav-number">7.</span> <span class="nav-text">运维相关</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#高可用、负载均衡"><span class="nav-number">7.1.</span> <span class="nav-text">高可用、负载均衡</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Docker"><span class="nav-number">7.2.</span> <span class="nav-text">Docker</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nginx、lvs、keepalived、监控、cdn-等"><span class="nav-number">7.3.</span> <span class="nav-text">Nginx、lvs、keepalived、监控、cdn 等</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux-系统"><span class="nav-number">1.</span> <span class="nav-text">Linux 系统</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#计算机网络"><span class="nav-number">2.</span> <span class="nav-text">计算机网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-和-UDP"><span class="nav-number">2.1.</span> <span class="nav-text">TCP 和 UDP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-和-UDP-的区别"><span class="nav-number">2.1.1.</span> <span class="nav-text">TCP 和 UDP 的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三次握手四次挥手，以及其中各个状态的转换，为什么是三次和四次？Time-wait-等待的意义？"><span class="nav-number">2.1.2.</span> <span class="nav-text">三次握手四次挥手，以及其中各个状态的转换，为什么是三次和四次？Time_wait 等待的意义？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-保证可靠的传输机制"><span class="nav-number">2.1.3.</span> <span class="nav-text">TCP 保证可靠的传输机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-滑动窗口和回退-N-帧协议"><span class="nav-number">2.1.4.</span> <span class="nav-text">TCP 滑动窗口和回退 N 帧协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-的流量控制"><span class="nav-number">2.1.5.</span> <span class="nav-text">TCP 的流量控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TCP-的拥塞控制，拥塞控制中的四个算法"><span class="nav-number">2.1.6.</span> <span class="nav-text">TCP 的拥塞控制，拥塞控制中的四个算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SYN-攻击以及解决办法"><span class="nav-number">2.1.7.</span> <span class="nav-text">SYN 攻击以及解决办法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP"><span class="nav-number">2.2.</span> <span class="nav-text">HTTP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#常见状态码"><span class="nav-number">2.2.1.</span> <span class="nav-text">常见状态码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#长连接、短连接"><span class="nav-number">2.2.2.</span> <span class="nav-text">长连接、短连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Get-和-Post-的区别"><span class="nav-number">2.2.3.</span> <span class="nav-text">Get 和 Post 的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP-版本的区别"><span class="nav-number">2.2.4.</span> <span class="nav-text">HTTP 版本的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTPS"><span class="nav-number">2.2.5.</span> <span class="nav-text">HTTPS</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#DNS"><span class="nav-number">2.3.</span> <span class="nav-text">DNS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#DNS-的解析过程"><span class="nav-number">2.3.1.</span> <span class="nav-text">DNS 的解析过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见的其他问题"><span class="nav-number">2.4.</span> <span class="nav-text">常见的其他问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Ping-和-Traceroute-的工作原理"><span class="nav-number">2.4.1.</span> <span class="nav-text">Ping 和 Traceroute 的工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#路由器和交换机的区别"><span class="nav-number">2.4.2.</span> <span class="nav-text">路由器和交换机的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#输入网址后，背后发生了什么？"><span class="nav-number">2.4.3.</span> <span class="nav-text">输入网址后，背后发生了什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#I-O-模型以及同步异步阻塞非阻塞的区别"><span class="nav-number">2.4.4.</span> <span class="nav-text">I/O 模型以及同步异步阻塞非阻塞的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#B-S和C-S的区别"><span class="nav-number">2.4.5.</span> <span class="nav-text">B/S和C/S的区别</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#操作系统"><span class="nav-number">3.</span> <span class="nav-text">操作系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#进程和线程的区别"><span class="nav-number">3.1.</span> <span class="nav-text">进程和线程的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程的状态？进程的切换方式？"><span class="nav-number">3.2.</span> <span class="nav-text">进程的状态？进程的切换方式？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程同步的方式有哪些"><span class="nav-number">3.3.</span> <span class="nav-text">进程同步的方式有哪些</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程的通信方式有哪些"><span class="nav-number">3.4.</span> <span class="nav-text">进程的通信方式有哪些</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操作系统的常见进程调度算法"><span class="nav-number">3.5.</span> <span class="nav-text">操作系统的常见进程调度算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#死锁的四个条件，解决与避免的方法"><span class="nav-number">3.6.</span> <span class="nav-text">死锁的四个条件，解决与避免的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分页和分段有什么区别"><span class="nav-number">3.7.</span> <span class="nav-text">分页和分段有什么区别</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库"><span class="nav-number">4.</span> <span class="nav-text">数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#事务"><span class="nav-number">4.1.</span> <span class="nav-text">事务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ACID性质，其中各个性质的含义"><span class="nav-number">4.1.1.</span> <span class="nav-text">ACID性质，其中各个性质的含义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#脏读、丢失修改、不可重复读、幻影读"><span class="nav-number">4.1.2.</span> <span class="nav-text">脏读、丢失修改、不可重复读、幻影读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#隔离级别"><span class="nav-number">4.1.3.</span> <span class="nav-text">隔离级别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库的锁机制"><span class="nav-number">4.2.</span> <span class="nav-text">数据库的锁机制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Python"><span class="nav-number">5.</span> <span class="nav-text">Python</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#深拷贝和浅拷贝"><span class="nav-number">5.1.</span> <span class="nav-text">深拷贝和浅拷贝</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据结构"><span class="nav-number">6.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#运维相关"><span class="nav-number">7.</span> <span class="nav-text">运维相关</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#高可用性、负载均衡"><span class="nav-number">7.1.</span> <span class="nav-text">高可用性、负载均衡</span></a></li></ol></li></ol></div>
             
 
           </div>
