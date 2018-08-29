@@ -1,0 +1,1347 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+<script>
+    (function(){
+        if(''){
+            if (prompt('请输入文章密码') !== ''){
+                alert('密码错误！');
+                history.back();
+            }
+        }
+    })();
+</script>
+
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch.jpg?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32x32.ico?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16x16.ico?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/mylogo.jpg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="C++Virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？static关键字修饰类的成员作用，和其他成员函数的区别c++调用c的关键字extern的作用map 和unodermap的区别，底层的实现C++的重载同名不同参数的函数，在链接的时候，符号表里会给同名函数取唯一的名字 C程序的编译过程 预处理：替换掉带#的东西，如#include,#define 编译：C源码翻译成汇编">
+<meta name="keywords" content="C++,后台开发,面经">
+<meta property="og:type" content="article">
+<meta property="og:title" content="后台开发面经">
+<meta property="og:url" content="https://yz1509.github.io/posts/afaab92b/index.html">
+<meta property="og:site_name" content="兔子和阿铁">
+<meta property="og:description" content="C++Virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？static关键字修饰类的成员作用，和其他成员函数的区别c++调用c的关键字extern的作用map 和unodermap的区别，底层的实现C++的重载同名不同参数的函数，在链接的时候，符号表里会给同名函数取唯一的名字 C程序的编译过程 预处理：替换掉带#的东西，如#include,#define 编译：C源码翻译成汇编">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-28T10:55:19.630Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="后台开发面经">
+<meta name="twitter:description" content="C++Virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？static关键字修饰类的成员作用，和其他成员函数的区别c++调用c的关键字extern的作用map 和unodermap的区别，底层的实现C++的重载同名不同参数的函数，在链接的时候，符号表里会给同名函数取唯一的名字 C程序的编译过程 预处理：替换掉带#的东西，如#include,#define 编译：C源码翻译成汇编">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="兔子和阿铁" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://yz1509.github.io/posts/afaab92b/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>后台开发面经 | 兔子和阿铁</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">兔子和阿铁</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">旅の途中</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/afaab92b/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="yz1509">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mylogo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="兔子和阿铁">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">后台开发面经
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-08-28 11:01:15 / 修改时间：18:55:19" itemprop="dateCreated datePublished" datetime="2018-08-28T11:01:15+08:00">2018-08-28</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/面经/" itemprop="url" rel="index"><span itemprop="name">面经</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="C"><a href="#C" class="headerlink" title="C++"></a>C++</h1><h2 id="Virtual-关键字的作用、构造和析构函数能不能定义虚函数？为什么？"><a href="#Virtual-关键字的作用、构造和析构函数能不能定义虚函数？为什么？" class="headerlink" title="Virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？"></a>Virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？</h2><h2 id="static关键字修饰类的成员作用，和其他成员函数的区别"><a href="#static关键字修饰类的成员作用，和其他成员函数的区别" class="headerlink" title="static关键字修饰类的成员作用，和其他成员函数的区别"></a>static关键字修饰类的成员作用，和其他成员函数的区别</h2><h2 id="c-调用c的关键字extern的作用"><a href="#c-调用c的关键字extern的作用" class="headerlink" title="c++调用c的关键字extern的作用"></a>c++调用c的关键字extern的作用</h2><h2 id="map-和unodermap的区别，底层的实现"><a href="#map-和unodermap的区别，底层的实现" class="headerlink" title="map 和unodermap的区别，底层的实现"></a>map 和unodermap的区别，底层的实现</h2><h2 id="C-的重载"><a href="#C-的重载" class="headerlink" title="C++的重载"></a>C++的重载</h2><p>同名不同参数的函数，在链接的时候，符号表里会给同名函数取唯一的名字</p>
+<h2 id="C程序的编译过程"><a href="#C程序的编译过程" class="headerlink" title="C程序的编译过程"></a>C程序的编译过程</h2><ol>
+<li>预处理：替换掉带#的东西，如#include,#define</li>
+<li>编译：C源码翻译成汇编</li>
+<li>汇编：汇编翻译成机器代码</li>
+<li>链接：符号解析和重定位，将程序每一个全局变量和全局函数的引用和符号表里的一个符号对应起来，重定位确定每一个模板模块的全局变量和函数在可执行文件内存空间的位置</li>
+</ol>
+<h2 id="C-程序的内存空间"><a href="#C-程序的内存空间" class="headerlink" title="C 程序的内存空间"></a>C 程序的内存空间</h2><h2 id="new-malloc的区别"><a href="#new-malloc的区别" class="headerlink" title="new/malloc的区别"></a>new/malloc的区别</h2><h2 id="析构函数的作用"><a href="#析构函数的作用" class="headerlink" title="析构函数的作用"></a>析构函数的作用</h2><h2 id="堆和栈的区别"><a href="#堆和栈的区别" class="headerlink" title="堆和栈的区别"></a>堆和栈的区别</h2><h2 id="bind的使用场景"><a href="#bind的使用场景" class="headerlink" title="bind的使用场景"></a>bind的使用场景</h2><h2 id="future是干嘛用的"><a href="#future是干嘛用的" class="headerlink" title="future是干嘛用的"></a>future是干嘛用的</h2><h2 id="lambda的实质（编译器层面）"><a href="#lambda的实质（编译器层面）" class="headerlink" title="lambda的实质（编译器层面）"></a>lambda的实质（编译器层面）</h2><h2 id="重载new运算符：什么时候需要重载，重载有什么坏处"><a href="#重载new运算符：什么时候需要重载，重载有什么坏处" class="headerlink" title="重载new运算符：什么时候需要重载，重载有什么坏处"></a>重载new运算符：什么时候需要重载，重载有什么坏处</h2><h1 id="计算机系统"><a href="#计算机系统" class="headerlink" title="计算机系统"></a>计算机系统</h1><h2 id="大端小端的区别、应用以及如何判断大端小端？"><a href="#大端小端的区别、应用以及如何判断大端小端？" class="headerlink" title="大端小端的区别、应用以及如何判断大端小端？"></a>大端小端的区别、应用以及如何判断大端小端？</h2><ul>
+<li>大端模式：Big-Endian 是指数据的高字节保存在内存的低地址中，而数据的低字节保存在内存的高地址中，这样的存储模式有点儿类似于把数据当作字符串顺序处理：地址由小向大增加，而数据从高位往低位放；这和我们的阅读习惯一致。</li>
+</ul>
+<p>低地址 ——————–&gt; 高地址<br>0x12  |  0x34  |  0x56  |  0x78</p>
+<ul>
+<li>小端模式：Little-Endian 是指数据的高字节保存在内存的高地址中，而数据的低字节保存在内存的低地址中，这种存储模式将地址的高低和数据位权有效地结合起来，高地址部分权值高，低地址部分权值低。</li>
+</ul>
+<p>低地址 ——————–&gt; 高地址<br>0x78  |  0x56  |  0x34  |  0x12</p>
+<p><strong>区别</strong>：大端小端没有谁优谁劣，各自优势便是对方劣势</p>
+<ul>
+<li>大端模式 ：符号位的判定固定为第一个字节，容易判断正负。</li>
+<li>小端模式 ：强制转换数据不需要调整字节内容，1、2、4字节的存储方式一样。</li>
+</ul>
+<p><strong>应用</strong>：一般操作系统都是小端，而通讯协议是大端的。</p>
+<ul>
+<li><p>常见 CPU 的字节序</p>
+<ul>
+<li>Big Endian : PowerPC、IBM、Sun</li>
+<li>Little Endian : x86、DEC</li>
+<li>ARM既可以工作在大端模式，也可以工作在小端模式。</li>
+</ul>
+</li>
+<li><p>常见文件的字节序</p>
+<ul>
+<li>Big Endian：Adobe PS、JPEG、MacPaint</li>
+<li>Little Endian：BMP、GIF、RTF</li>
+</ul>
+</li>
+</ul>
+<p><strong>判断</strong></p>
+<ul>
+<li>通过将 int 强制类型转换成 char 单字节，通过判断起始存储位置</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">IsBigEndian</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> a = <span class="number">0x1234</span>;</span><br><span class="line">    <span class="keyword">char</span> b = *(<span class="keyword">char</span> *)&amp;a;  <span class="comment">//等于 取b等于a的低地址部分  </span></span><br><span class="line">    <span class="keyword">if</span> (b == <span class="number">0x12</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>联合体 union 的存放顺序是所有成员都从低地址开始存放，利用该特性可以轻松地获得了 CPU 对内存采用 Little-endian 还是 Big-endian 模式读写</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">IsBigEndian</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">union</span> NUM</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">int</span> a;</span><br><span class="line">        <span class="keyword">char</span> b;</span><br><span class="line">    &#125;num;</span><br><span class="line">    num.a = <span class="number">0x1234</span>;</span><br><span class="line">    <span class="keyword">if</span> (num.b == <span class="number">0x12</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="一个进程有-10-个线程，如果-down-掉一个线程会不会对其他的有影响？"><a href="#一个进程有-10-个线程，如果-down-掉一个线程会不会对其他的有影响？" class="headerlink" title="一个进程有 10 个线程，如果 down 掉一个线程会不会对其他的有影响？"></a>一个进程有 10 个线程，如果 down 掉一个线程会不会对其他的有影响？</h2><h2 id="用户态和内核态"><a href="#用户态和内核态" class="headerlink" title="用户态和内核态"></a>用户态和内核态</h2><h2 id="sack和mss这两个东西了解过吗"><a href="#sack和mss这两个东西了解过吗" class="headerlink" title="sack和mss这两个东西了解过吗"></a>sack和mss这两个东西了解过吗</h2><h2 id="gdb用过吗？可以，那来讲下死锁应该怎么调试吧"><a href="#gdb用过吗？可以，那来讲下死锁应该怎么调试吧" class="headerlink" title="gdb用过吗？可以，那来讲下死锁应该怎么调试吧"></a>gdb用过吗？可以，那来讲下死锁应该怎么调试吧</h2><h2 id="查内存泄露用什么工具？自己使用过么"><a href="#查内存泄露用什么工具？自己使用过么" class="headerlink" title="查内存泄露用什么工具？自己使用过么"></a>查内存泄露用什么工具？自己使用过么</h2><h2 id="什么情况下会发生死锁，解决策略有哪些？"><a href="#什么情况下会发生死锁，解决策略有哪些？" class="headerlink" title="什么情况下会发生死锁，解决策略有哪些？"></a>什么情况下会发生死锁，解决策略有哪些？</h2><h2 id="项目里如何设计缓存来减少不必要的IO"><a href="#项目里如何设计缓存来减少不必要的IO" class="headerlink" title="项目里如何设计缓存来减少不必要的IO"></a>项目里如何设计缓存来减少不必要的IO</h2><h2 id="执行一个系统调用时，OS发生的过程，越详细越好"><a href="#执行一个系统调用时，OS发生的过程，越详细越好" class="headerlink" title="执行一个系统调用时，OS发生的过程，越详细越好"></a>执行一个系统调用时，OS发生的过程，越详细越好</h2><h2 id="执行一个IO调用写文件，到把数据写进磁盘发生的所有过程，越详细越好"><a href="#执行一个IO调用写文件，到把数据写进磁盘发生的所有过程，越详细越好" class="headerlink" title="执行一个IO调用写文件，到把数据写进磁盘发生的所有过程，越详细越好"></a>执行一个IO调用写文件，到把数据写进磁盘发生的所有过程，越详细越好</h2><h2 id="OS怎么实现用户态和内核态之间的切换"><a href="#OS怎么实现用户态和内核态之间的切换" class="headerlink" title="OS怎么实现用户态和内核态之间的切换"></a>OS怎么实现用户态和内核态之间的切换</h2><h2 id="内核态的函数调用和用户态的函数调用有何区别"><a href="#内核态的函数调用和用户态的函数调用有何区别" class="headerlink" title="内核态的函数调用和用户态的函数调用有何区别"></a>内核态的函数调用和用户态的函数调用有何区别</h2><h2 id="一个二进制文件从执行到打印结果操作系统做了什么（从切换（PCB、寄存器）、权限、内存（缺页异常、地址转化之类的）、磁盘（inode之类的）、用户态内核态之类的说了一遍，把还记着的操作系统知识全部编进去了）"><a href="#一个二进制文件从执行到打印结果操作系统做了什么（从切换（PCB、寄存器）、权限、内存（缺页异常、地址转化之类的）、磁盘（inode之类的）、用户态内核态之类的说了一遍，把还记着的操作系统知识全部编进去了）" class="headerlink" title="一个二进制文件从执行到打印结果操作系统做了什么（从切换（PCB、寄存器）、权限、内存（缺页异常、地址转化之类的）、磁盘（inode之类的）、用户态内核态之类的说了一遍，把还记着的操作系统知识全部编进去了）"></a>一个二进制文件从执行到打印结果操作系统做了什么（从切换（PCB、寄存器）、权限、内存（缺页异常、地址转化之类的）、磁盘（inode之类的）、用户态内核态之类的说了一遍，把还记着的操作系统知识全部编进去了）</h2><h2 id="gdb，怎么下断点，怎么追踪"><a href="#gdb，怎么下断点，怎么追踪" class="headerlink" title="gdb，怎么下断点，怎么追踪"></a>gdb，怎么下断点，怎么追踪</h2><h1 id="计算机网络"><a href="#计算机网络" class="headerlink" title="计算机网络"></a>计算机网络</h1><h2 id="TCP-有哪些状态，closing-状态出现在什么时候？"><a href="#TCP-有哪些状态，closing-状态出现在什么时候？" class="headerlink" title="TCP 有哪些状态，closing 状态出现在什么时候？"></a>TCP 有哪些状态，closing 状态出现在什么时候？</h2><h2 id="如何完全消除time-await？"><a href="#如何完全消除time-await？" class="headerlink" title="如何完全消除time await？"></a>如何完全消除time await？</h2><p>当初回答的时候设置属性和reuse都是判错的，要求从最后挥手的阶段开始分析</p>
+<h2 id="http-100-206-是什么。。304是什么？取缓存？好说一下过程，然后讲一下304中xxxxx的header有什么作用。http2-0了解吗？做了什么优化处理"><a href="#http-100-206-是什么。。304是什么？取缓存？好说一下过程，然后讲一下304中xxxxx的header有什么作用。http2-0了解吗？做了什么优化处理" class="headerlink" title="http 100 206 是什么。。304是什么？取缓存？好说一下过程，然后讲一下304中xxxxx的header有什么作用。http2.0了解吗？做了什么优化处理"></a>http 100 206 是什么。。304是什么？取缓存？好说一下过程，然后讲一下304中xxxxx的header有什么作用。http2.0了解吗？做了什么优化处理</h2><h2 id="怎么样设计一个比较好的函数完全读出一个socket的所有数据"><a href="#怎么样设计一个比较好的函数完全读出一个socket的所有数据" class="headerlink" title="怎么样设计一个比较好的函数完全读出一个socket的所有数据"></a>怎么样设计一个比较好的函数完全读出一个socket的所有数据</h2><h2 id="左连接"><a href="#左连接" class="headerlink" title="左连接"></a>左连接</h2><h2 id="TCP和UDP的区别"><a href="#TCP和UDP的区别" class="headerlink" title="TCP和UDP的区别"></a>TCP和UDP的区别</h2><h2 id="网络的4层结构？TCP协议属于哪一层？TCP四次挥手的过程？最后等待关闭连接要多长时间？（时间真忘了。。）超时重传是怎么做的？ACK序号是表示已收到的序号吗？（卧槽我说的是的。。没理解他想问的是重传这块。。）"><a href="#网络的4层结构？TCP协议属于哪一层？TCP四次挥手的过程？最后等待关闭连接要多长时间？（时间真忘了。。）超时重传是怎么做的？ACK序号是表示已收到的序号吗？（卧槽我说的是的。。没理解他想问的是重传这块。。）" class="headerlink" title="网络的4层结构？TCP协议属于哪一层？TCP四次挥手的过程？最后等待关闭连接要多长时间？（时间真忘了。。）超时重传是怎么做的？ACK序号是表示已收到的序号吗？（卧槽我说的是的。。没理解他想问的是重传这块。。）"></a>网络的4层结构？TCP协议属于哪一层？TCP四次挥手的过程？最后等待关闭连接要多长时间？（时间真忘了。。）超时重传是怎么做的？ACK序号是表示已收到的序号吗？（卧槽我说的是的。。没理解他想问的是重传这块。。）</h2><h2 id="TCP用了哪些措施保证其可靠性"><a href="#TCP用了哪些措施保证其可靠性" class="headerlink" title="TCP用了哪些措施保证其可靠性"></a>TCP用了哪些措施保证其可靠性</h2><h1 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h1><h2 id="数据库有啥索引，区别是什么，哪个插入快？为什么？你刚才提到了B-Tree索引，介绍一下B-TREE和B-TREE，他们的区别是啥？"><a href="#数据库有啥索引，区别是什么，哪个插入快？为什么？你刚才提到了B-Tree索引，介绍一下B-TREE和B-TREE，他们的区别是啥？" class="headerlink" title="数据库有啥索引，区别是什么，哪个插入快？为什么？你刚才提到了B+Tree索引，介绍一下B TREE和B+TREE，他们的区别是啥？"></a>数据库有啥索引，区别是什么，哪个插入快？为什么？你刚才提到了B+Tree索引，介绍一下B TREE和B+TREE，他们的区别是啥？</h2><p>## </p>
+<h1 id="Linux"><a href="#Linux" class="headerlink" title="Linux"></a>Linux</h1><h2 id="linux下改变文件权限的命令有哪些？"><a href="#linux下改变文件权限的命令有哪些？" class="headerlink" title="linux下改变文件权限的命令有哪些？"></a>linux下改变文件权限的命令有哪些？</h2><h2 id="硬链接和软链接的区别？"><a href="#硬链接和软链接的区别？" class="headerlink" title="硬链接和软链接的区别？"></a>硬链接和软链接的区别？</h2><h2 id="Linux下查看程序内存状况"><a href="#Linux下查看程序内存状况" class="headerlink" title="Linux下查看程序内存状况"></a>Linux下查看程序内存状况</h2><p>top 指令可以查看按内存大小排序的查询内存状况，或者查看 /proc/pid/status 文件，这个文件会记录进程 id 所代表的进程的内存状态</p>
+<h2 id="linux统计文本中每行第二个字段的和（awk搞定）"><a href="#linux统计文本中每行第二个字段的和（awk搞定）" class="headerlink" title="linux统计文本中每行第二个字段的和（awk搞定）"></a>linux统计文本中每行第二个字段的和（awk搞定）</h2><h1 id="算法题"><a href="#算法题" class="headerlink" title="算法题"></a>算法题</h1><h2 id="一个不知道头节点的单链表，如何在-p-节点前插入一个节点？"><a href="#一个不知道头节点的单链表，如何在-p-节点前插入一个节点？" class="headerlink" title="一个不知道头节点的单链表，如何在 p 节点前插入一个节点？"></a>一个不知道头节点的单链表，如何在 p 节点前插入一个节点？</h2><h2 id="1-亿个数字取-Top-K。分成多个小文件，用小跟堆，堆排取小文件-Top-k。之后再用外排或者继续堆排取所有的-Top-k。"><a href="#1-亿个数字取-Top-K。分成多个小文件，用小跟堆，堆排取小文件-Top-k。之后再用外排或者继续堆排取所有的-Top-k。" class="headerlink" title="1 亿个数字取 Top K。分成多个小文件，用小跟堆，堆排取小文件 Top k。之后再用外排或者继续堆排取所有的 Top k。"></a>1 亿个数字取 Top K。分成多个小文件，用小跟堆，堆排取小文件 Top k。之后再用外排或者继续堆排取所有的 Top k。</h2><h2 id="1000w个整数排序，范围0到100w，8g内存"><a href="#1000w个整数排序，范围0到100w，8g内存" class="headerlink" title="1000w个整数排序，范围0到100w，8g内存"></a>1000w个整数排序，范围0到100w，8g内存</h2><h2 id="非递归完成二叉树的先序遍历（差点没写出来。。用的左神教的Morris遍历。。）"><a href="#非递归完成二叉树的先序遍历（差点没写出来。。用的左神教的Morris遍历。。）" class="headerlink" title="非递归完成二叉树的先序遍历（差点没写出来。。用的左神教的Morris遍历。。）"></a>非递归完成二叉树的先序遍历（差点没写出来。。用的左神教的Morris遍历。。）</h2><h2 id="实现查询链表的倒数第1000个节点"><a href="#实现查询链表的倒数第1000个节点" class="headerlink" title="实现查询链表的倒数第1000个节点"></a>实现查询链表的倒数第1000个节点</h2><h2 id="1000万个关键字，每个关键字小于等于50字节，求前K个热词，内存为1M"><a href="#1000万个关键字，每个关键字小于等于50字节，求前K个热词，内存为1M" class="headerlink" title="1000万个关键字，每个关键字小于等于50字节，求前K个热词，内存为1M"></a>1000万个关键字，每个关键字小于等于50字节，求前K个热词，内存为1M</h2><h2 id="无向图两点之间最小跳数（回答的深度优先）"><a href="#无向图两点之间最小跳数（回答的深度优先）" class="headerlink" title="无向图两点之间最小跳数（回答的深度优先）"></a>无向图两点之间最小跳数（回答的深度优先）</h2><h2 id="数字数组中最长连续递增序列"><a href="#数字数组中最长连续递增序列" class="headerlink" title="数字数组中最长连续递增序列"></a>数字数组中最长连续递增序列</h2><h2 id="100W个无序数中是否包含给出的K个元素"><a href="#100W个无序数中是否包含给出的K个元素" class="headerlink" title="100W个无序数中是否包含给出的K个元素"></a>100W个无序数中是否包含给出的K个元素</h2><h2 id="100W个数字中前K大的数字"><a href="#100W个数字中前K大的数字" class="headerlink" title="100W个数字中前K大的数字"></a>100W个数字中前K大的数字</h2><h2 id="两个1T文件使用4G内存比较相似度"><a href="#两个1T文件使用4G内存比较相似度" class="headerlink" title="两个1T文件使用4G内存比较相似度"></a>两个1T文件使用4G内存比较相似度</h2><h2 id="二叉树两个节点之间距离"><a href="#二叉树两个节点之间距离" class="headerlink" title="二叉树两个节点之间距离"></a>二叉树两个节点之间距离</h2><h2 id="对单词进行排序，比如-aa-cee-ee-bb-a排序过后为a-aa-bb-cee-ee"><a href="#对单词进行排序，比如-aa-cee-ee-bb-a排序过后为a-aa-bb-cee-ee" class="headerlink" title="对单词进行排序，比如 aa cee ee bb a排序过后为a aa bb cee ee"></a>对单词进行排序，比如 aa cee ee bb a排序过后为a aa bb cee ee</h2>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/C/" rel="tag"><i class="fa fa-tag"></i> C++</a>
+          
+            <a href="/tags/后台开发/" rel="tag"><i class="fa fa-tag"></i> 后台开发</a>
+          
+            <a href="/tags/面经/" rel="tag"><i class="fa fa-tag"></i> 面经</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/posts/7543f9ab/" rel="next" title="运维开发工程师面经">
+                <i class="fa fa-chevron-left"></i> 运维开发工程师面经
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mylogo.jpg"
+                alt="yz1509" />
+            
+              <p class="site-author-name" itemprop="name">yz1509</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">11</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">5</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">38</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/yz1509" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:gf940312@mail.ustc.edu.cn" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#C"><span class="nav-number">1.</span> <span class="nav-text">C++</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Virtual-关键字的作用、构造和析构函数能不能定义虚函数？为什么？"><span class="nav-number">1.1.</span> <span class="nav-text">Virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#static关键字修饰类的成员作用，和其他成员函数的区别"><span class="nav-number">1.2.</span> <span class="nav-text">static关键字修饰类的成员作用，和其他成员函数的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c-调用c的关键字extern的作用"><span class="nav-number">1.3.</span> <span class="nav-text">c++调用c的关键字extern的作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#map-和unodermap的区别，底层的实现"><span class="nav-number">1.4.</span> <span class="nav-text">map 和unodermap的区别，底层的实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-的重载"><span class="nav-number">1.5.</span> <span class="nav-text">C++的重载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C程序的编译过程"><span class="nav-number">1.6.</span> <span class="nav-text">C程序的编译过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-程序的内存空间"><span class="nav-number">1.7.</span> <span class="nav-text">C 程序的内存空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#new-malloc的区别"><span class="nav-number">1.8.</span> <span class="nav-text">new/malloc的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#析构函数的作用"><span class="nav-number">1.9.</span> <span class="nav-text">析构函数的作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#堆和栈的区别"><span class="nav-number">1.10.</span> <span class="nav-text">堆和栈的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bind的使用场景"><span class="nav-number">1.11.</span> <span class="nav-text">bind的使用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#future是干嘛用的"><span class="nav-number">1.12.</span> <span class="nav-text">future是干嘛用的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#lambda的实质（编译器层面）"><span class="nav-number">1.13.</span> <span class="nav-text">lambda的实质（编译器层面）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重载new运算符：什么时候需要重载，重载有什么坏处"><span class="nav-number">1.14.</span> <span class="nav-text">重载new运算符：什么时候需要重载，重载有什么坏处</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#计算机系统"><span class="nav-number">2.</span> <span class="nav-text">计算机系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#大端小端的区别、应用以及如何判断大端小端？"><span class="nav-number">2.1.</span> <span class="nav-text">大端小端的区别、应用以及如何判断大端小端？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个进程有-10-个线程，如果-down-掉一个线程会不会对其他的有影响？"><span class="nav-number">2.2.</span> <span class="nav-text">一个进程有 10 个线程，如果 down 掉一个线程会不会对其他的有影响？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户态和内核态"><span class="nav-number">2.3.</span> <span class="nav-text">用户态和内核态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sack和mss这两个东西了解过吗"><span class="nav-number">2.4.</span> <span class="nav-text">sack和mss这两个东西了解过吗</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gdb用过吗？可以，那来讲下死锁应该怎么调试吧"><span class="nav-number">2.5.</span> <span class="nav-text">gdb用过吗？可以，那来讲下死锁应该怎么调试吧</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查内存泄露用什么工具？自己使用过么"><span class="nav-number">2.6.</span> <span class="nav-text">查内存泄露用什么工具？自己使用过么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么情况下会发生死锁，解决策略有哪些？"><span class="nav-number">2.7.</span> <span class="nav-text">什么情况下会发生死锁，解决策略有哪些？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#项目里如何设计缓存来减少不必要的IO"><span class="nav-number">2.8.</span> <span class="nav-text">项目里如何设计缓存来减少不必要的IO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行一个系统调用时，OS发生的过程，越详细越好"><span class="nav-number">2.9.</span> <span class="nav-text">执行一个系统调用时，OS发生的过程，越详细越好</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行一个IO调用写文件，到把数据写进磁盘发生的所有过程，越详细越好"><span class="nav-number">2.10.</span> <span class="nav-text">执行一个IO调用写文件，到把数据写进磁盘发生的所有过程，越详细越好</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#OS怎么实现用户态和内核态之间的切换"><span class="nav-number">2.11.</span> <span class="nav-text">OS怎么实现用户态和内核态之间的切换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#内核态的函数调用和用户态的函数调用有何区别"><span class="nav-number">2.12.</span> <span class="nav-text">内核态的函数调用和用户态的函数调用有何区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个二进制文件从执行到打印结果操作系统做了什么（从切换（PCB、寄存器）、权限、内存（缺页异常、地址转化之类的）、磁盘（inode之类的）、用户态内核态之类的说了一遍，把还记着的操作系统知识全部编进去了）"><span class="nav-number">2.13.</span> <span class="nav-text">一个二进制文件从执行到打印结果操作系统做了什么（从切换（PCB、寄存器）、权限、内存（缺页异常、地址转化之类的）、磁盘（inode之类的）、用户态内核态之类的说了一遍，把还记着的操作系统知识全部编进去了）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gdb，怎么下断点，怎么追踪"><span class="nav-number">2.14.</span> <span class="nav-text">gdb，怎么下断点，怎么追踪</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#计算机网络"><span class="nav-number">3.</span> <span class="nav-text">计算机网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-有哪些状态，closing-状态出现在什么时候？"><span class="nav-number">3.1.</span> <span class="nav-text">TCP 有哪些状态，closing 状态出现在什么时候？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何完全消除time-await？"><span class="nav-number">3.2.</span> <span class="nav-text">如何完全消除time await？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#http-100-206-是什么。。304是什么？取缓存？好说一下过程，然后讲一下304中xxxxx的header有什么作用。http2-0了解吗？做了什么优化处理"><span class="nav-number">3.3.</span> <span class="nav-text">http 100 206 是什么。。304是什么？取缓存？好说一下过程，然后讲一下304中xxxxx的header有什么作用。http2.0了解吗？做了什么优化处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#怎么样设计一个比较好的函数完全读出一个socket的所有数据"><span class="nav-number">3.4.</span> <span class="nav-text">怎么样设计一个比较好的函数完全读出一个socket的所有数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#左连接"><span class="nav-number">3.5.</span> <span class="nav-text">左连接</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP和UDP的区别"><span class="nav-number">3.6.</span> <span class="nav-text">TCP和UDP的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络的4层结构？TCP协议属于哪一层？TCP四次挥手的过程？最后等待关闭连接要多长时间？（时间真忘了。。）超时重传是怎么做的？ACK序号是表示已收到的序号吗？（卧槽我说的是的。。没理解他想问的是重传这块。。）"><span class="nav-number">3.7.</span> <span class="nav-text">网络的4层结构？TCP协议属于哪一层？TCP四次挥手的过程？最后等待关闭连接要多长时间？（时间真忘了。。）超时重传是怎么做的？ACK序号是表示已收到的序号吗？（卧槽我说的是的。。没理解他想问的是重传这块。。）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP用了哪些措施保证其可靠性"><span class="nav-number">3.8.</span> <span class="nav-text">TCP用了哪些措施保证其可靠性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库"><span class="nav-number">4.</span> <span class="nav-text">数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库有啥索引，区别是什么，哪个插入快？为什么？你刚才提到了B-Tree索引，介绍一下B-TREE和B-TREE，他们的区别是啥？"><span class="nav-number">4.1.</span> <span class="nav-text">数据库有啥索引，区别是什么，哪个插入快？为什么？你刚才提到了B+Tree索引，介绍一下B TREE和B+TREE，他们的区别是啥？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux"><span class="nav-number">5.</span> <span class="nav-text">Linux</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#linux下改变文件权限的命令有哪些？"><span class="nav-number">5.1.</span> <span class="nav-text">linux下改变文件权限的命令有哪些？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#硬链接和软链接的区别？"><span class="nav-number">5.2.</span> <span class="nav-text">硬链接和软链接的区别？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linux下查看程序内存状况"><span class="nav-number">5.3.</span> <span class="nav-text">Linux下查看程序内存状况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#linux统计文本中每行第二个字段的和（awk搞定）"><span class="nav-number">5.4.</span> <span class="nav-text">linux统计文本中每行第二个字段的和（awk搞定）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#算法题"><span class="nav-number">6.</span> <span class="nav-text">算法题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一个不知道头节点的单链表，如何在-p-节点前插入一个节点？"><span class="nav-number">6.1.</span> <span class="nav-text">一个不知道头节点的单链表，如何在 p 节点前插入一个节点？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-亿个数字取-Top-K。分成多个小文件，用小跟堆，堆排取小文件-Top-k。之后再用外排或者继续堆排取所有的-Top-k。"><span class="nav-number">6.2.</span> <span class="nav-text">1 亿个数字取 Top K。分成多个小文件，用小跟堆，堆排取小文件 Top k。之后再用外排或者继续堆排取所有的 Top k。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1000w个整数排序，范围0到100w，8g内存"><span class="nav-number">6.3.</span> <span class="nav-text">1000w个整数排序，范围0到100w，8g内存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#非递归完成二叉树的先序遍历（差点没写出来。。用的左神教的Morris遍历。。）"><span class="nav-number">6.4.</span> <span class="nav-text">非递归完成二叉树的先序遍历（差点没写出来。。用的左神教的Morris遍历。。）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现查询链表的倒数第1000个节点"><span class="nav-number">6.5.</span> <span class="nav-text">实现查询链表的倒数第1000个节点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1000万个关键字，每个关键字小于等于50字节，求前K个热词，内存为1M"><span class="nav-number">6.6.</span> <span class="nav-text">1000万个关键字，每个关键字小于等于50字节，求前K个热词，内存为1M</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#无向图两点之间最小跳数（回答的深度优先）"><span class="nav-number">6.7.</span> <span class="nav-text">无向图两点之间最小跳数（回答的深度优先）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数字数组中最长连续递增序列"><span class="nav-number">6.8.</span> <span class="nav-text">数字数组中最长连续递增序列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#100W个无序数中是否包含给出的K个元素"><span class="nav-number">6.9.</span> <span class="nav-text">100W个无序数中是否包含给出的K个元素</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#100W个数字中前K大的数字"><span class="nav-number">6.10.</span> <span class="nav-text">100W个数字中前K大的数字</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#两个1T文件使用4G内存比较相似度"><span class="nav-number">6.11.</span> <span class="nav-text">两个1T文件使用4G内存比较相似度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二叉树两个节点之间距离"><span class="nav-number">6.12.</span> <span class="nav-text">二叉树两个节点之间距离</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对单词进行排序，比如-aa-cee-ee-bb-a排序过后为a-aa-bb-cee-ee"><span class="nav-number">6.13.</span> <span class="nav-text">对单词进行排序，比如 aa cee ee bb a排序过后为a aa bb cee ee</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yz1509</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                //var articleUrl = decodeURIComponent(data.url);
+                var articleUrl = decodeURIComponent(data.url).substring(1);//截取第一位/斜杠
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
