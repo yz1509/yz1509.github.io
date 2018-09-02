@@ -125,24 +125,26 @@
 
 
 
-  <meta name="description" content="C++Virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？static 关键字修饰类的成员作用，和其他成员函数的区别？C++ 调用 C 的关键字 extern 的作用？map 和 unodermap 的区别，底层的实现C++的重载同名不同参数的函数，在链接的时候，符号表里会给同名函数取唯一的名字 C程序的编译过程 预处理：替换掉带#的东西，如#include,#define 编译">
+  <meta name="description" content="C++virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？基类希望其派生类覆盖的函数，通常将其定义为虚函数，通过指针或引用调用虚函数时，会在运行时解析该调用，在这种情况下对象的动态类型有可能与静态类型不同。这便是 OOP 的核心思想：多态性。 构造函数不能为虚函数，而析构函数可以且常常是虚函数。 首先，虚函数的实现原理是：在定义具有虚函数的类或者继承类的继承的时候，会相应建立一个">
 <meta name="keywords" content="C++,后台开发,面经,操作系统,计算机网络,Linux,数据库,算法,数据结构">
 <meta property="og:type" content="article">
 <meta property="og:title" content="后台开发面经">
 <meta property="og:url" content="https://yz1509.github.io/posts/afaab92b/index.html">
 <meta property="og:site_name" content="兔子和阿铁">
-<meta property="og:description" content="C++Virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？static 关键字修饰类的成员作用，和其他成员函数的区别？C++ 调用 C 的关键字 extern 的作用？map 和 unodermap 的区别，底层的实现C++的重载同名不同参数的函数，在链接的时候，符号表里会给同名函数取唯一的名字 C程序的编译过程 预处理：替换掉带#的东西，如#include,#define 编译">
+<meta property="og:description" content="C++virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？基类希望其派生类覆盖的函数，通常将其定义为虚函数，通过指针或引用调用虚函数时，会在运行时解析该调用，在这种情况下对象的动态类型有可能与静态类型不同。这便是 OOP 的核心思想：多态性。 构造函数不能为虚函数，而析构函数可以且常常是虚函数。 首先，虚函数的实现原理是：在定义具有虚函数的类或者继承类的继承的时候，会相应建立一个">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://yz1509.github.io/posts/afaab92b/GCC_CompilationProcess.png">
+<meta property="og:image" content="https://yz1509.github.io/posts/afaab92b/001.png">
 <meta property="og:image" content="https://yz1509.github.io/posts/afaab92b/426df589-6f97-4622-b74d-4a81fcb1da8e.png">
 <meta property="og:image" content="https://yz1509.github.io/posts/afaab92b/55dc4e84-573d-4c13-a765-52ed1dd251f9.png">
 <meta property="og:image" content="https://yz1509.github.io/posts/afaab92b/e92d0ebc-7d46-413b-aec1-34a39602f787.png">
 <meta property="og:image" content="https://yz1509.github.io/posts/afaab92b/f87afe72-c2df-4c12-ac03-9b8d581a8af8.jpg">
 <meta property="og:image" content="https://yz1509.github.io/posts/afaab92b/1350996969_2313.jpg">
-<meta property="og:updated_time" content="2018-09-01T15:24:16.457Z">
+<meta property="og:updated_time" content="2018-09-02T18:44:27.045Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="后台开发面经">
-<meta name="twitter:description" content="C++Virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？static 关键字修饰类的成员作用，和其他成员函数的区别？C++ 调用 C 的关键字 extern 的作用？map 和 unodermap 的区别，底层的实现C++的重载同名不同参数的函数，在链接的时候，符号表里会给同名函数取唯一的名字 C程序的编译过程 预处理：替换掉带#的东西，如#include,#define 编译">
-<meta name="twitter:image" content="https://yz1509.github.io/posts/afaab92b/426df589-6f97-4622-b74d-4a81fcb1da8e.png">
+<meta name="twitter:description" content="C++virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？基类希望其派生类覆盖的函数，通常将其定义为虚函数，通过指针或引用调用虚函数时，会在运行时解析该调用，在这种情况下对象的动态类型有可能与静态类型不同。这便是 OOP 的核心思想：多态性。 构造函数不能为虚函数，而析构函数可以且常常是虚函数。 首先，虚函数的实现原理是：在定义具有虚函数的类或者继承类的继承的时候，会相应建立一个">
+<meta name="twitter:image" content="https://yz1509.github.io/posts/afaab92b/GCC_CompilationProcess.png">
 
 
 
@@ -424,7 +426,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-09-01 23:24:16" itemprop="dateModified" datetime="2018-09-01T23:24:16+08:00">2018-09-01</time>
+                <time title="修改时间：2018-09-03 02:44:27" itemprop="dateModified" datetime="2018-09-03T02:44:27+08:00">2018-09-03</time>
               
             
           </span>
@@ -475,21 +477,120 @@
       
 
       
-        <h1 id="C"><a href="#C" class="headerlink" title="C++"></a>C++</h1><h2 id="Virtual-关键字的作用、构造和析构函数能不能定义虚函数？为什么？"><a href="#Virtual-关键字的作用、构造和析构函数能不能定义虚函数？为什么？" class="headerlink" title="Virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？"></a>Virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？</h2><h2 id="static-关键字修饰类的成员作用，和其他成员函数的区别？"><a href="#static-关键字修饰类的成员作用，和其他成员函数的区别？" class="headerlink" title="static 关键字修饰类的成员作用，和其他成员函数的区别？"></a>static 关键字修饰类的成员作用，和其他成员函数的区别？</h2><h2 id="C-调用-C-的关键字-extern-的作用？"><a href="#C-调用-C-的关键字-extern-的作用？" class="headerlink" title="C++ 调用 C 的关键字 extern 的作用？"></a>C++ 调用 C 的关键字 extern 的作用？</h2><h2 id="map-和-unodermap-的区别，底层的实现"><a href="#map-和-unodermap-的区别，底层的实现" class="headerlink" title="map 和 unodermap 的区别，底层的实现"></a>map 和 unodermap 的区别，底层的实现</h2><h2 id="C-的重载"><a href="#C-的重载" class="headerlink" title="C++的重载"></a>C++的重载</h2><p>同名不同参数的函数，在链接的时候，符号表里会给同名函数取唯一的名字</p>
-<h2 id="C程序的编译过程"><a href="#C程序的编译过程" class="headerlink" title="C程序的编译过程"></a>C程序的编译过程</h2><ol>
-<li>预处理：替换掉带#的东西，如#include,#define</li>
-<li>编译：C源码翻译成汇编</li>
-<li>汇编：汇编翻译成机器代码</li>
-<li>链接：符号解析和重定位，将程序每一个全局变量和全局函数的引用和符号表里的一个符号对应起来，重定位确定每一个模板模块的全局变量和函数在可执行文件内存空间的位置</li>
+        <h1 id="C"><a href="#C" class="headerlink" title="C++"></a>C++</h1><h2 id="virtual-关键字的作用、构造和析构函数能不能定义虚函数？为什么？"><a href="#virtual-关键字的作用、构造和析构函数能不能定义虚函数？为什么？" class="headerlink" title="virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？"></a>virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？</h2><p>基类希望其派生类覆盖的函数，通常将其定义为虚函数，通过指针或引用调用虚函数时，会在运行时解析该调用，在这种情况下对象的动态类型有可能与静态类型不同。这便是 OOP 的核心思想：多态性。</p>
+<p>构造函数不能为虚函数，而析构函数可以且常常是虚函数。</p>
+<p>首先，虚函数的实现原理是：在定义具有虚函数的类或者继承类的继承的时候，会相应建立一个虚函数表 vtable，即每个类都对应一个虚函数表，而在定义类的对象的时候，每个对象都会有一个指向相应类的虚表指针 vptr，vptr 指向虚表的入口地址，在调用相应的虚函数的时候，根据该入口地址寻找对应的函数。</p>
+<p>对于构造函数，其作用是在对象实例化的时候自动调用，对该对象进行初始化操作。前述中提到，虚函数是通过 vptr 来调用的，而调用构造函数的时候实例化并未完成，也就是说此时并不存在vptr，因而，无法使用 vptr 来调用构造函数。</p>
+<p>另一方面，虚函数的调用是虚调用，通过在运行时查询虚函数表得到具体函数入口地址，相当于只需要有部分信息就可以调用该函数。然而定义具体类的对象的时候，需要明确指定对象类型，而且在定义子类对象的时候首先调用的是父类的构造函数然后才是调用子类构造函数，如果使用了虚函数，那么仅仅是调用子类构造函数并不能完成对象的初始化。</p>
+<p>而对于析构函数，则需要定义为虚析构函数，防止内存泄露的发生。在继承的时候， 我们通常通过基类的指针来销毁对象，如果析构函数不为虚的话，就不能正确识别对象类型，从而不能正确销毁对象。</p>
+<h2 id="static-关键字修饰类的成员作用，和其他成员函数的区别？"><a href="#static-关键字修饰类的成员作用，和其他成员函数的区别？" class="headerlink" title="static 关键字修饰类的成员作用，和其他成员函数的区别？"></a>static 关键字修饰类的成员作用，和其他成员函数的区别？</h2><p>当使用 static 修饰成员变量和成员函数时，表示该变量或函数属于一个类，而不是该类的某个实例化对象。</p>
+<h2 id="C-调用-C-的关键字-extern-的作用？"><a href="#C-调用-C-的关键字-extern-的作用？" class="headerlink" title="C++ 调用 C 的关键字 extern 的作用？"></a>C++ 调用 C 的关键字 extern 的作用？</h2><p>extern可以置于变量或者函数前，以标示变量或者函数的定义在别的文件中，提示编译器遇到此变量和函数时在其他模块中寻找其定义。此外extern也可用来进行链接指定。也就是说extern有两个作用，</p>
+<ul>
+<li>第一，当它与 “C” 一起连用时，如: <code>extern &quot;C&quot; void fun(int a, int b);</code> 则告诉编译器在编译 fun 这个函数名时按着 C 的规则去翻译相应的函数名而不是 C++ 的，C++ 的规则在翻译这个函数名时会把 fun 这个名字变得面目全非，可能是 <code>fun@aBc_int_int#%$</code> 也可能是别的，这要看编译器的”脾气”了(不同的编译器采用的方法不一样)，为什么这么做呢，因为 C++ 支持函数的重载。</li>
+<li>第二，当 extern 不与 “C” 在一起修饰变量或函数时，如在头文件中: <code>extern int g_Int;</code> 它的作用就是声明函数或全局变量的作用范围的关键字，其声明的函数和变量可以在本模块活其他模块中使用，记住它是一个声明不是定义！也就是说 B 模块(编译单元)要是引用模块(编译单元) A 中定义的全局变量或函数时，它只要包含 A 模块的头文件即可。在编译阶段，模块 B 虽然找不到该函数或变量，但它不会报错，它会在连接时从模块 A 生成的目标代码中找到此函数。</li>
+</ul>
+<h2 id="map-和-unodered-map-的区别，底层的实现"><a href="#map-和-unodered-map-的区别，底层的实现" class="headerlink" title="map 和 unodered_map 的区别，底层的实现"></a>map 和 unodered_map 的区别，底层的实现</h2><ul>
+<li>map：自动排序，底层数据结构为红黑树。</li>
+<li>unoredered_map：乱序，底层数据结构为哈希表（开链法解决哈希冲突）。<ul>
+<li>用一个 vector 来作为一个指针数组来存储节点的指针，_size 来保存当前哈希表中的有效元素个数。</li>
+<li>由于是 K/V 结构，所以选择一个 pair 的结构来存储 K/V。</li>
+<li>vector 中的每一个元素都指向一个链表，所有节点中需要一个 next 域的指针来指向下一个节点（采用单链表表结构）。</li>
+<li>采用模板来实现哈希表可以存储任意数据类型的目的。</li>
+<li>使用了仿函数技术。</li>
+</ul>
+</li>
+</ul>
+<h2 id="哈希冲突如何解决"><a href="#哈希冲突如何解决" class="headerlink" title="哈希冲突如何解决"></a>哈希冲突如何解决</h2><ul>
+<li>开放定址法<ul>
+<li>线性探测再散列</li>
+<li>二次探测再散列</li>
+<li>伪随机探测再散列：增量序列伪随机</li>
+</ul>
+</li>
+<li>再哈希法：同时构造多个不同的哈希函数</li>
+<li>开链（哈希桶）</li>
+<li>建立公共溢出区：将哈希表分为基本表和溢出表两部分，凡是和基本表发生冲突的元素，一律填入溢出表。</li>
+</ul>
+<h2 id="C-的重载"><a href="#C-的重载" class="headerlink" title="C++ 的重载"></a>C++ 的重载</h2><ul>
+<li>函数名字相同但形参列表不同，称之为函数重载(overloaded)</li>
+<li>main 函数不能重载</li>
+<li>顶层 const 的形参和另一个没有顶层 const 不能区分，底层 const 则相反</li>
+</ul>
+<h2 id="C-程序的编译过程"><a href="#C-程序的编译过程" class="headerlink" title="C 程序的编译过程"></a>C 程序的编译过程</h2><p><img src="/posts/afaab92b/GCC_CompilationProcess.png" alt="编译过程"></p>
+<ol>
+<li>预处理(Preprocessing)：预处理用于将所有的 #include 头文件以及宏定义替换成其真正的内容，预处理之后得到的仍然是文本文件，但文件体积会大很多。</li>
+<li>编译(Compilation)：这里的编译不是指程序从源文件到二进制程序的全部过程，而是指将经过预处理之后的程序转换成特定汇编代码 (assembly code) 的过程。</li>
+<li>汇编(Assemble)：将上一步的汇编代码转换成机器码(machine code)，这一步产生的文件叫做目标文件，是二进制格式。</li>
+<li>链接(Linking)：符号解析和重定位，将程序每一个全局变量和全局函数的引用和符号表里的一个符号对应起来，重定位确定每一个模板模块的全局变量和函数在可执行文件内存空间的位置，将多个目标文以及所需的库文件 (.so等) 链接成最终的可执行文件 (executable file)。</li>
 </ol>
-<h2 id="C-程序的内存空间"><a href="#C-程序的内存空间" class="headerlink" title="C 程序的内存空间"></a>C 程序的内存空间</h2><h2 id="new-malloc的区别"><a href="#new-malloc的区别" class="headerlink" title="new/malloc的区别"></a>new/malloc的区别</h2><h2 id="析构函数的作用"><a href="#析构函数的作用" class="headerlink" title="析构函数的作用"></a>析构函数的作用</h2><h2 id="堆和栈的区别"><a href="#堆和栈的区别" class="headerlink" title="堆和栈的区别"></a>堆和栈的区别</h2><h2 id="bind的使用场景"><a href="#bind的使用场景" class="headerlink" title="bind的使用场景"></a>bind的使用场景</h2><h2 id="future是干嘛用的"><a href="#future是干嘛用的" class="headerlink" title="future是干嘛用的"></a>future是干嘛用的</h2><h2 id="lambda的实质（编译器层面）"><a href="#lambda的实质（编译器层面）" class="headerlink" title="lambda的实质（编译器层面）"></a>lambda的实质（编译器层面）</h2><h2 id="重载new运算符：什么时候需要重载，重载有什么坏处"><a href="#重载new运算符：什么时候需要重载，重载有什么坏处" class="headerlink" title="重载new运算符：什么时候需要重载，重载有什么坏处"></a>重载new运算符：什么时候需要重载，重载有什么坏处</h2><h2 id="哈希冲突如何解决"><a href="#哈希冲突如何解决" class="headerlink" title="哈希冲突如何解决"></a>哈希冲突如何解决</h2><h1 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h1><h2 id="大端小端的区别、应用以及如何判断大端小端？"><a href="#大端小端的区别、应用以及如何判断大端小端？" class="headerlink" title="大端小端的区别、应用以及如何判断大端小端？"></a>大端小端的区别、应用以及如何判断大端小端？</h2><ul>
+<h2 id="C-程序的内存空间"><a href="#C-程序的内存空间" class="headerlink" title="C 程序的内存空间"></a>C 程序的内存空间</h2><p>在多任务操作系统中，每个进程都运行在一个属于自己的虚拟内存中，而虚拟内存被分为许多页，并映射到物理内存中，被加载到物理内存中的文件才能够被执行。这里我们主要关注程序被装载后的内存布局，其可执行文件包含了代码段，数据段，BSS段，堆，栈等部分，其分布如下图所示。</p>
+<p><img src="/posts/afaab92b/001.png" alt="内存分布"></p>
+<ul>
+<li>代码段(.text)：用来存放可执行文件的机器指令。存放在只读区域，以防止被修改。</li>
+<li>只读数据段(.rodata)：用来存放常量存放在只读区域，如字符串常量、全局 const 变量等。</li>
+<li>可读写数据段(.data)：用来存放可执行文件中已初始化全局变量，即静态分配的变量和全局变量。</li>
+<li>BSS 段(.bss)：未初始化的全局变量和局部静态变量一般放在 .bss 的段里，以节省内存空间。</li>
+<li>堆：用来容纳应用程序动态分配的内存区域。当程序使用 malloc 或 new 分配内存时，得到的内存来自堆。堆通常位于栈的下方。</li>
+<li>栈：用于维护函数调用的上下文。栈通常分配在用户空间的最高地址处分配。</li>
+<li>动态链接库映射区：如果程序调用了动态链接库，则会有这一部分。该区域是用于映射装载的动态链接库。</li>
+<li>保留区：内存中受到保护而禁止访问的内存区域。</li>
+</ul>
+<h2 id="malloc-free-与-new-delete-的区别"><a href="#malloc-free-与-new-delete-的区别" class="headerlink" title="malloc/free 与 new/delete 的区别"></a>malloc/free 与 new/delete 的区别</h2><ul>
+<li>malloc 与 free 是 C/C++ 语言的标准库函数，new/delete 是 C++ 的运算符。它们都可用于申请和释放动态内存。</li>
+<li>对于非内部数据类型的对象而言，用 malloc/free 无法满足动态对象的要求。对象在创建的同时要自动执行构造函数，对象在消亡之前要自动执行析构函数。由于 malloc/free 是库函数而不是运算符，不在编译器控制权限之内，不能够把执行构造函数和析构函数的任务强加于 malloc/free，因此C++ 语言需要一个能完成动态内存分配和初始化工作的运算符 new，和一个能完成清理与释放内存工作的运算符 delete。</li>
+<li>new 可以认为是 malloc 加构造函数的执行。new 出来的指针是直接带类型信息的。而 malloc 返回的都是 void* 指针。new/delete 在实现上其实调用了 malloc/free 函数。</li>
+<li>new 建立的是一个对象；malloc 分配的是一块内存。</li>
+</ul>
+<h2 id="析构函数的作用"><a href="#析构函数的作用" class="headerlink" title="析构函数的作用"></a>析构函数的作用</h2><p>释放对象使用的资源，并销毁非 static 成员。</p>
+<h2 id="堆和栈的区别"><a href="#堆和栈的区别" class="headerlink" title="堆和栈的区别"></a>堆和栈的区别</h2><ol>
+<li>申请管理方式<ul>
+<li>栈：由编译器自动管理，无需我们手工控制。</li>
+<li>堆：堆的申请和释放工作由程序员控制，容易产生内存泄漏。</li>
+</ul>
+</li>
+<li>申请后系统的响应<ul>
+<li>栈：只要栈的剩余空间大于所申请空间，系统将为程序提供内存，否则将报异常提示栈溢出。</li>
+<li>堆：首先应该知道操作系统有一个记录空闲内存地址的链表，当系统收到程序的申请时，会遍历该链表，寻找第一个空间大于所申请空间的堆结点，然后将该结点从空闲结点链表中删除，并将该结点的空间分配给程序，另外，对于大多数系统，会在这块内存空间中的首地址处记录本次分配的大小，这样，代码中的 delete 语句才能正确的释放本内存空间。另外，由于找到的堆结点的大小不一定正好等于申请的大小，系统会自动的将多余的那部分重新放入空闲链表中。</li>
+</ul>
+</li>
+<li>申请大小的限制<ul>
+<li>栈：在 Windows 下，栈是向低地址扩展的数据结构，是一块连续的内存的区域。这句话的意思是栈顶的地址和栈的最大容量是系统预先规定好的，在 Windows 下，栈的大小是 1 M（可修改），如果申请的空间超过栈的剩余空间时，将提示 overflow。因此，能从栈获得的空间较小。</li>
+<li>堆：堆是向高地址扩展的数据结构，是不连续的内存区域。这是由于系统是用链表来存储的空闲内存地址的，自然是不连续的，而链表的遍历方向是由低地址向高地址。堆的大小受限于计算机系统中有效的虚拟内存。由此可见，堆获得的空间比较灵活，也比较大。</li>
+</ul>
+</li>
+<li>申请效率的比较<ul>
+<li>栈由系统自动分配，速度较快。但程序员是无法控制的。</li>
+<li>堆是由 new 分配的内存，一般速度比较慢，而且容易产生内存碎片，不过用起来最方便。另外，在 Windows 下，最好的方式是用 VirtualAlloc 分配内存，它不是在堆，也不是在栈而是直接在进程的地址空间中保留一块内存，虽然用起来最不方便。但是速度快，也最灵活。</li>
+</ul>
+</li>
+<li>堆与栈中的存储内容<ul>
+<li>栈：在函数调用时，第一个进栈的是主函数中后的下一条指令（函数调用语句的下一条可执行语句）的地址，然后是函数的各个参数，在大多数的 C 编译器中，参数是由右往左入栈的，然后是函数中的局部变量。注意静态变量是不入栈的。当本次函数调用结束后，局部变量先出栈，然后是参数，最后栈顶指针指向最开始存的地址，也就是主函数中的下一条指令，程序由该点继续运行。</li>
+<li>堆：一般是在堆的头部用一个字节存放堆的大小。堆中的具体内容由程序员安排。</li>
+</ul>
+</li>
+</ol>
+<p><strong>总结</strong>：堆和栈相比，由于大量 new/delete 的使用，容易造成大量的内存碎片；并且可能引发用户态和核心态的切换，内存的申请，代价变得更加昂贵。所以栈在程序中是应用最广泛的，就算是函数的调用也利用栈去完成，函数调用过程中的参数，返回地址，ebp 和局部变量都采用栈的方式存放。所以，推荐大家尽量用栈，而不是用堆。虽然栈有如此众多的好处，但是向堆申请内存更加灵活，有时候分配大量的内存空间，还是用堆好一些。</p>
+<h2 id="重载-new-运算符：什么时候需要重载"><a href="#重载-new-运算符：什么时候需要重载" class="headerlink" title="重载 new 运算符：什么时候需要重载"></a>重载 new 运算符：什么时候需要重载</h2><ul>
+<li>为了检测运用上的错误</li>
+<li>为了收集动态分配内存的使用统计信息</li>
+<li>为了增加分配和归还的速度</li>
+<li>为了降低缺省内存管理器带来的空间额外开销</li>
+<li>为了弥补缺省分配器中的非最佳齐位</li>
+<li>为了将相关对象成簇集中</li>
+<li>为了获得非传统的行为</li>
+</ul>
+<hr>
+<ul>
+<li>lambda 的实质（编译器层面）</li>
+</ul>
+<h1 id="操作系统"><a href="#操作系统" class="headerlink" title="操作系统"></a>操作系统</h1><h2 id="大端小端的区别、应用以及如何判断大端小端？"><a href="#大端小端的区别、应用以及如何判断大端小端？" class="headerlink" title="大端小端的区别、应用以及如何判断大端小端？"></a>大端小端的区别、应用以及如何判断大端小端？</h2><ul>
 <li>大端模式：Big-Endian 是指数据的高字节保存在内存的低地址中，而数据的低字节保存在内存的高地址中，这样的存储模式有点儿类似于把数据当作字符串顺序处理：地址由小向大增加，而数据从高位往低位放；这和我们的阅读习惯一致。</li>
 </ul>
-<p>低地址 ——————–&gt; 高地址<br>0x12  |  0x34  |  0x56  |  0x78</p>
+<p><code>低地址 --------------------&gt; 高地址</code><br><code>0x12  |  0x34  |  0x56  |  0x78</code></p>
 <ul>
 <li>小端模式：Little-Endian 是指数据的高字节保存在内存的高地址中，而数据的低字节保存在内存的低地址中，这种存储模式将地址的高低和数据位权有效地结合起来，高地址部分权值高，低地址部分权值低。</li>
 </ul>
-<p>低地址 ——————–&gt; 高地址<br>0x78  |  0x56  |  0x34  |  0x12</p>
+<p><code>低地址 --------------------&gt; 高地址</code><br><code>0x78  |  0x56  |  0x34  |  0x12</code></p>
 <p><strong>区别</strong>：大端小端没有谁优谁劣，各自优势便是对方劣势</p>
 <ul>
 <li>大端模式 ：符号位的判定固定为第一个字节，容易判断正负。</li>
@@ -774,7 +875,8 @@
 <li><p>怎么样设计一个比较好的函数完全读出一个 socket 的所有数据</p>
 </li>
 </ul>
-<h1 id="算法题"><a href="#算法题" class="headerlink" title="算法题"></a>算法题</h1><h2 id="一个不知道头节点的单链表，如何在-p-节点前插入一个节点？"><a href="#一个不知道头节点的单链表，如何在-p-节点前插入一个节点？" class="headerlink" title="一个不知道头节点的单链表，如何在 p 节点前插入一个节点？"></a>一个不知道头节点的单链表，如何在 p 节点前插入一个节点？</h2><h2 id="1-亿个数字取-Top-K。分成多个小文件，用小跟堆，堆排取小文件-Top-k。之后再用外排或者继续堆排取所有的-Top-k。"><a href="#1-亿个数字取-Top-K。分成多个小文件，用小跟堆，堆排取小文件-Top-k。之后再用外排或者继续堆排取所有的-Top-k。" class="headerlink" title="1 亿个数字取 Top K。分成多个小文件，用小跟堆，堆排取小文件 Top k。之后再用外排或者继续堆排取所有的 Top k。"></a>1 亿个数字取 Top K。分成多个小文件，用小跟堆，堆排取小文件 Top k。之后再用外排或者继续堆排取所有的 Top k。</h2><h2 id="1000w个整数排序，范围0到100w，8g内存"><a href="#1000w个整数排序，范围0到100w，8g内存" class="headerlink" title="1000w个整数排序，范围0到100w，8g内存"></a>1000w个整数排序，范围0到100w，8g内存</h2><h2 id="非递归完成二叉树的先序遍历（差点没写出来。。用的左神教的Morris遍历。。）"><a href="#非递归完成二叉树的先序遍历（差点没写出来。。用的左神教的Morris遍历。。）" class="headerlink" title="非递归完成二叉树的先序遍历（差点没写出来。。用的左神教的Morris遍历。。）"></a>非递归完成二叉树的先序遍历（差点没写出来。。用的左神教的Morris遍历。。）</h2><h2 id="实现查询链表的倒数第1000个节点"><a href="#实现查询链表的倒数第1000个节点" class="headerlink" title="实现查询链表的倒数第1000个节点"></a>实现查询链表的倒数第1000个节点</h2><h2 id="1000万个关键字，每个关键字小于等于50字节，求前K个热词，内存为1M"><a href="#1000万个关键字，每个关键字小于等于50字节，求前K个热词，内存为1M" class="headerlink" title="1000万个关键字，每个关键字小于等于50字节，求前K个热词，内存为1M"></a>1000万个关键字，每个关键字小于等于50字节，求前K个热词，内存为1M</h2><h2 id="无向图两点之间最小跳数（回答的深度优先）"><a href="#无向图两点之间最小跳数（回答的深度优先）" class="headerlink" title="无向图两点之间最小跳数（回答的深度优先）"></a>无向图两点之间最小跳数（回答的深度优先）</h2><h2 id="数字数组中最长连续递增序列"><a href="#数字数组中最长连续递增序列" class="headerlink" title="数字数组中最长连续递增序列"></a>数字数组中最长连续递增序列</h2><h2 id="100W个无序数中是否包含给出的K个元素"><a href="#100W个无序数中是否包含给出的K个元素" class="headerlink" title="100W个无序数中是否包含给出的K个元素"></a>100W个无序数中是否包含给出的K个元素</h2><h2 id="100W个数字中前K大的数字"><a href="#100W个数字中前K大的数字" class="headerlink" title="100W个数字中前K大的数字"></a>100W个数字中前K大的数字</h2><h2 id="两个-1T-文件使用-4G-内存比较相似度"><a href="#两个-1T-文件使用-4G-内存比较相似度" class="headerlink" title="两个 1T 文件使用 4G 内存比较相似度"></a>两个 1T 文件使用 4G 内存比较相似度</h2><h2 id="二叉树两个节点之间距离"><a href="#二叉树两个节点之间距离" class="headerlink" title="二叉树两个节点之间距离"></a>二叉树两个节点之间距离</h2><h2 id="对单词进行排序，比如-aa-cee-ee-bb-a-排序过后为-a-aa-bb-cee-ee"><a href="#对单词进行排序，比如-aa-cee-ee-bb-a-排序过后为-a-aa-bb-cee-ee" class="headerlink" title="对单词进行排序，比如 aa cee ee bb a 排序过后为 a aa bb cee ee"></a>对单词进行排序，比如 aa cee ee bb a 排序过后为 a aa bb cee ee</h2><h2 id="反转链表"><a href="#反转链表" class="headerlink" title="反转链表"></a>反转链表</h2><h1 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h1><ul>
+<h1 id="算法题"><a href="#算法题" class="headerlink" title="算法题"></a>算法题</h1><h2 id="一个不知道头节点的单链表，如何在-p-节点前插入一个节点？"><a href="#一个不知道头节点的单链表，如何在-p-节点前插入一个节点？" class="headerlink" title="一个不知道头节点的单链表，如何在 p 节点前插入一个节点？"></a>一个不知道头节点的单链表，如何在 p 节点前插入一个节点？</h2><h2 id="1-亿个数字取-Top-K。分成多个小文件，用小跟堆，堆排取小文件-Top-k。之后再用外排或者继续堆排取所有的-Top-k。"><a href="#1-亿个数字取-Top-K。分成多个小文件，用小跟堆，堆排取小文件-Top-k。之后再用外排或者继续堆排取所有的-Top-k。" class="headerlink" title="1 亿个数字取 Top K。分成多个小文件，用小跟堆，堆排取小文件 Top k。之后再用外排或者继续堆排取所有的 Top k。"></a>1 亿个数字取 Top K。分成多个小文件，用小跟堆，堆排取小文件 Top k。之后再用外排或者继续堆排取所有的 Top k。</h2><h2 id="1000w个整数排序，范围0到100w，8g内存"><a href="#1000w个整数排序，范围0到100w，8g内存" class="headerlink" title="1000w个整数排序，范围0到100w，8g内存"></a>1000w个整数排序，范围0到100w，8g内存</h2><h2 id="非递归完成二叉树的先序遍历"><a href="#非递归完成二叉树的先序遍历" class="headerlink" title="非递归完成二叉树的先序遍历"></a>非递归完成二叉树的先序遍历</h2><h2 id="实现查询链表的倒数第1000个节点"><a href="#实现查询链表的倒数第1000个节点" class="headerlink" title="实现查询链表的倒数第1000个节点"></a>实现查询链表的倒数第1000个节点</h2><h2 id="1000万个关键字，每个关键字小于等于50字节，求前K个热词，内存为1M"><a href="#1000万个关键字，每个关键字小于等于50字节，求前K个热词，内存为1M" class="headerlink" title="1000万个关键字，每个关键字小于等于50字节，求前K个热词，内存为1M"></a>1000万个关键字，每个关键字小于等于50字节，求前K个热词，内存为1M</h2><h2 id="无向图两点之间最小跳数（回答的深度优先）"><a href="#无向图两点之间最小跳数（回答的深度优先）" class="headerlink" title="无向图两点之间最小跳数（回答的深度优先）"></a>无向图两点之间最小跳数（回答的深度优先）</h2><h2 id="数字数组中最长连续递增序列"><a href="#数字数组中最长连续递增序列" class="headerlink" title="数字数组中最长连续递增序列"></a>数字数组中最长连续递增序列</h2><h2 id="100W个无序数中是否包含给出的K个元素"><a href="#100W个无序数中是否包含给出的K个元素" class="headerlink" title="100W个无序数中是否包含给出的K个元素"></a>100W个无序数中是否包含给出的K个元素</h2><h2 id="100W个数字中前K大的数字"><a href="#100W个数字中前K大的数字" class="headerlink" title="100W个数字中前K大的数字"></a>100W个数字中前K大的数字</h2><h2 id="两个-1T-文件使用-4G-内存比较相似度"><a href="#两个-1T-文件使用-4G-内存比较相似度" class="headerlink" title="两个 1T 文件使用 4G 内存比较相似度"></a>两个 1T 文件使用 4G 内存比较相似度</h2><h2 id="二叉树两个节点之间距离"><a href="#二叉树两个节点之间距离" class="headerlink" title="二叉树两个节点之间距离"></a>二叉树两个节点之间距离</h2><p>假设 lca 是两个节点的最低公共祖先节点：<br>$Dist(n_1,n_2) = Dist(root,n_1) + Dist(root,n_2) - 2 \cdot Dist(root,lca)​$</p>
+<h2 id="对单词进行排序，比如-aa-cee-ee-bb-a-排序过后为-a-aa-bb-cee-ee"><a href="#对单词进行排序，比如-aa-cee-ee-bb-a-排序过后为-a-aa-bb-cee-ee" class="headerlink" title="对单词进行排序，比如 aa cee ee bb a 排序过后为 a aa bb cee ee"></a>对单词进行排序，比如 aa cee ee bb a 排序过后为 a aa bb cee ee</h2><h2 id="反转链表"><a href="#反转链表" class="headerlink" title="反转链表"></a>反转链表</h2><h1 id="数据库"><a href="#数据库" class="headerlink" title="数据库"></a>数据库</h1><ul>
 <li>数据库有啥索引，区别是什么，哪个插入快？为什么？你刚才提到了 B+Tree 索引，介绍一下B TREE 和 B+TREE，他们的区别是啥？</li>
 <li>左连接</li>
 </ul>
@@ -1099,7 +1201,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#C"><span class="nav-number">1.</span> <span class="nav-text">C++</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Virtual-关键字的作用、构造和析构函数能不能定义虚函数？为什么？"><span class="nav-number">1.1.</span> <span class="nav-text">Virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#static-关键字修饰类的成员作用，和其他成员函数的区别？"><span class="nav-number">1.2.</span> <span class="nav-text">static 关键字修饰类的成员作用，和其他成员函数的区别？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-调用-C-的关键字-extern-的作用？"><span class="nav-number">1.3.</span> <span class="nav-text">C++ 调用 C 的关键字 extern 的作用？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#map-和-unodermap-的区别，底层的实现"><span class="nav-number">1.4.</span> <span class="nav-text">map 和 unodermap 的区别，底层的实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-的重载"><span class="nav-number">1.5.</span> <span class="nav-text">C++的重载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C程序的编译过程"><span class="nav-number">1.6.</span> <span class="nav-text">C程序的编译过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-程序的内存空间"><span class="nav-number">1.7.</span> <span class="nav-text">C 程序的内存空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#new-malloc的区别"><span class="nav-number">1.8.</span> <span class="nav-text">new/malloc的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#析构函数的作用"><span class="nav-number">1.9.</span> <span class="nav-text">析构函数的作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#堆和栈的区别"><span class="nav-number">1.10.</span> <span class="nav-text">堆和栈的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#bind的使用场景"><span class="nav-number">1.11.</span> <span class="nav-text">bind的使用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#future是干嘛用的"><span class="nav-number">1.12.</span> <span class="nav-text">future是干嘛用的</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#lambda的实质（编译器层面）"><span class="nav-number">1.13.</span> <span class="nav-text">lambda的实质（编译器层面）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重载new运算符：什么时候需要重载，重载有什么坏处"><span class="nav-number">1.14.</span> <span class="nav-text">重载new运算符：什么时候需要重载，重载有什么坏处</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#哈希冲突如何解决"><span class="nav-number">1.15.</span> <span class="nav-text">哈希冲突如何解决</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#操作系统"><span class="nav-number">2.</span> <span class="nav-text">操作系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#大端小端的区别、应用以及如何判断大端小端？"><span class="nav-number">2.1.</span> <span class="nav-text">大端小端的区别、应用以及如何判断大端小端？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程和进程的区别"><span class="nav-number">2.2.</span> <span class="nav-text">线程和进程的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个进程有-10-个线程，如果-down-掉一个线程会不会对其他的有影响？"><span class="nav-number">2.3.</span> <span class="nav-text">一个进程有 10 个线程，如果 down 掉一个线程会不会对其他的有影响？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么情况下会发生死锁，解决策略有哪些？"><span class="nav-number">2.4.</span> <span class="nav-text">什么情况下会发生死锁，解决策略有哪些？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户态和内核态"><span class="nav-number">2.5.</span> <span class="nav-text">用户态和内核态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行一个系统调用时，OS-发生的过程，越详细越好"><span class="nav-number">2.6.</span> <span class="nav-text">执行一个系统调用时，OS 发生的过程，越详细越好</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行一个-IO-调用读-写文件，到把数据写进磁盘发生的所有过程，越详细越好"><span class="nav-number">2.7.</span> <span class="nav-text">执行一个 IO 调用读/写文件，到把数据写进磁盘发生的所有过程，越详细越好</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#计算机网络"><span class="nav-number">3.</span> <span class="nav-text">计算机网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#网络的-4-层结构？TCP协议属于哪一层？"><span class="nav-number">3.1.</span> <span class="nav-text">网络的 4 层结构？TCP协议属于哪一层？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP和UDP的区别"><span class="nav-number">3.2.</span> <span class="nav-text">TCP和UDP的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-首部格式"><span class="nav-number">3.3.</span> <span class="nav-text">TCP 首部格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-三次握手，四次挥手的过程？最后等待关闭连接要多长时间？"><span class="nav-number">3.4.</span> <span class="nav-text">TCP 三次握手，四次挥手的过程？最后等待关闭连接要多长时间？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-有哪些状态，CLOSED-状态出现在什么时候？"><span class="nav-number">3.5.</span> <span class="nav-text">TCP 有哪些状态，CLOSED 状态出现在什么时候？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-用了哪些措施保证其可靠性"><span class="nav-number">3.6.</span> <span class="nav-text">TCP 用了哪些措施保证其可靠性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#http-100-206-304-是什么？-304-中-xxxxx-的-header-有什么作用？"><span class="nav-number">3.7.</span> <span class="nav-text">http 100 206 304 是什么？ 304 中 xxxxx 的 header 有什么作用？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-2-0了解吗？做了什么优化处理？"><span class="nav-number">3.8.</span> <span class="nav-text">HTTP/2.0了解吗？做了什么优化处理？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SACK-和-MSS-这两个东西了解过吗？"><span class="nav-number">3.9.</span> <span class="nav-text">SACK 和 MSS 这两个东西了解过吗？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#算法题"><span class="nav-number">4.</span> <span class="nav-text">算法题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一个不知道头节点的单链表，如何在-p-节点前插入一个节点？"><span class="nav-number">4.1.</span> <span class="nav-text">一个不知道头节点的单链表，如何在 p 节点前插入一个节点？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-亿个数字取-Top-K。分成多个小文件，用小跟堆，堆排取小文件-Top-k。之后再用外排或者继续堆排取所有的-Top-k。"><span class="nav-number">4.2.</span> <span class="nav-text">1 亿个数字取 Top K。分成多个小文件，用小跟堆，堆排取小文件 Top k。之后再用外排或者继续堆排取所有的 Top k。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1000w个整数排序，范围0到100w，8g内存"><span class="nav-number">4.3.</span> <span class="nav-text">1000w个整数排序，范围0到100w，8g内存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#非递归完成二叉树的先序遍历（差点没写出来。。用的左神教的Morris遍历。。）"><span class="nav-number">4.4.</span> <span class="nav-text">非递归完成二叉树的先序遍历（差点没写出来。。用的左神教的Morris遍历。。）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现查询链表的倒数第1000个节点"><span class="nav-number">4.5.</span> <span class="nav-text">实现查询链表的倒数第1000个节点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1000万个关键字，每个关键字小于等于50字节，求前K个热词，内存为1M"><span class="nav-number">4.6.</span> <span class="nav-text">1000万个关键字，每个关键字小于等于50字节，求前K个热词，内存为1M</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#无向图两点之间最小跳数（回答的深度优先）"><span class="nav-number">4.7.</span> <span class="nav-text">无向图两点之间最小跳数（回答的深度优先）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数字数组中最长连续递增序列"><span class="nav-number">4.8.</span> <span class="nav-text">数字数组中最长连续递增序列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#100W个无序数中是否包含给出的K个元素"><span class="nav-number">4.9.</span> <span class="nav-text">100W个无序数中是否包含给出的K个元素</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#100W个数字中前K大的数字"><span class="nav-number">4.10.</span> <span class="nav-text">100W个数字中前K大的数字</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#两个-1T-文件使用-4G-内存比较相似度"><span class="nav-number">4.11.</span> <span class="nav-text">两个 1T 文件使用 4G 内存比较相似度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二叉树两个节点之间距离"><span class="nav-number">4.12.</span> <span class="nav-text">二叉树两个节点之间距离</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对单词进行排序，比如-aa-cee-ee-bb-a-排序过后为-a-aa-bb-cee-ee"><span class="nav-number">4.13.</span> <span class="nav-text">对单词进行排序，比如 aa cee ee bb a 排序过后为 a aa bb cee ee</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反转链表"><span class="nav-number">4.14.</span> <span class="nav-text">反转链表</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库"><span class="nav-number">5.</span> <span class="nav-text">数据库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux"><span class="nav-number">6.</span> <span class="nav-text">Linux</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#C"><span class="nav-number">1.</span> <span class="nav-text">C++</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#virtual-关键字的作用、构造和析构函数能不能定义虚函数？为什么？"><span class="nav-number">1.1.</span> <span class="nav-text">virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#static-关键字修饰类的成员作用，和其他成员函数的区别？"><span class="nav-number">1.2.</span> <span class="nav-text">static 关键字修饰类的成员作用，和其他成员函数的区别？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-调用-C-的关键字-extern-的作用？"><span class="nav-number">1.3.</span> <span class="nav-text">C++ 调用 C 的关键字 extern 的作用？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#map-和-unodered-map-的区别，底层的实现"><span class="nav-number">1.4.</span> <span class="nav-text">map 和 unodered_map 的区别，底层的实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#哈希冲突如何解决"><span class="nav-number">1.5.</span> <span class="nav-text">哈希冲突如何解决</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-的重载"><span class="nav-number">1.6.</span> <span class="nav-text">C++ 的重载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-程序的编译过程"><span class="nav-number">1.7.</span> <span class="nav-text">C 程序的编译过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-程序的内存空间"><span class="nav-number">1.8.</span> <span class="nav-text">C 程序的内存空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#malloc-free-与-new-delete-的区别"><span class="nav-number">1.9.</span> <span class="nav-text">malloc/free 与 new/delete 的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#析构函数的作用"><span class="nav-number">1.10.</span> <span class="nav-text">析构函数的作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#堆和栈的区别"><span class="nav-number">1.11.</span> <span class="nav-text">堆和栈的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重载-new-运算符：什么时候需要重载"><span class="nav-number">1.12.</span> <span class="nav-text">重载 new 运算符：什么时候需要重载</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#操作系统"><span class="nav-number">2.</span> <span class="nav-text">操作系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#大端小端的区别、应用以及如何判断大端小端？"><span class="nav-number">2.1.</span> <span class="nav-text">大端小端的区别、应用以及如何判断大端小端？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程和进程的区别"><span class="nav-number">2.2.</span> <span class="nav-text">线程和进程的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个进程有-10-个线程，如果-down-掉一个线程会不会对其他的有影响？"><span class="nav-number">2.3.</span> <span class="nav-text">一个进程有 10 个线程，如果 down 掉一个线程会不会对其他的有影响？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么情况下会发生死锁，解决策略有哪些？"><span class="nav-number">2.4.</span> <span class="nav-text">什么情况下会发生死锁，解决策略有哪些？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户态和内核态"><span class="nav-number">2.5.</span> <span class="nav-text">用户态和内核态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行一个系统调用时，OS-发生的过程，越详细越好"><span class="nav-number">2.6.</span> <span class="nav-text">执行一个系统调用时，OS 发生的过程，越详细越好</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行一个-IO-调用读-写文件，到把数据写进磁盘发生的所有过程，越详细越好"><span class="nav-number">2.7.</span> <span class="nav-text">执行一个 IO 调用读/写文件，到把数据写进磁盘发生的所有过程，越详细越好</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#计算机网络"><span class="nav-number">3.</span> <span class="nav-text">计算机网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#网络的-4-层结构？TCP协议属于哪一层？"><span class="nav-number">3.1.</span> <span class="nav-text">网络的 4 层结构？TCP协议属于哪一层？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP和UDP的区别"><span class="nav-number">3.2.</span> <span class="nav-text">TCP和UDP的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-首部格式"><span class="nav-number">3.3.</span> <span class="nav-text">TCP 首部格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-三次握手，四次挥手的过程？最后等待关闭连接要多长时间？"><span class="nav-number">3.4.</span> <span class="nav-text">TCP 三次握手，四次挥手的过程？最后等待关闭连接要多长时间？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-有哪些状态，CLOSED-状态出现在什么时候？"><span class="nav-number">3.5.</span> <span class="nav-text">TCP 有哪些状态，CLOSED 状态出现在什么时候？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#TCP-用了哪些措施保证其可靠性"><span class="nav-number">3.6.</span> <span class="nav-text">TCP 用了哪些措施保证其可靠性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#http-100-206-304-是什么？-304-中-xxxxx-的-header-有什么作用？"><span class="nav-number">3.7.</span> <span class="nav-text">http 100 206 304 是什么？ 304 中 xxxxx 的 header 有什么作用？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-2-0了解吗？做了什么优化处理？"><span class="nav-number">3.8.</span> <span class="nav-text">HTTP/2.0了解吗？做了什么优化处理？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SACK-和-MSS-这两个东西了解过吗？"><span class="nav-number">3.9.</span> <span class="nav-text">SACK 和 MSS 这两个东西了解过吗？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#算法题"><span class="nav-number">4.</span> <span class="nav-text">算法题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#一个不知道头节点的单链表，如何在-p-节点前插入一个节点？"><span class="nav-number">4.1.</span> <span class="nav-text">一个不知道头节点的单链表，如何在 p 节点前插入一个节点？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-亿个数字取-Top-K。分成多个小文件，用小跟堆，堆排取小文件-Top-k。之后再用外排或者继续堆排取所有的-Top-k。"><span class="nav-number">4.2.</span> <span class="nav-text">1 亿个数字取 Top K。分成多个小文件，用小跟堆，堆排取小文件 Top k。之后再用外排或者继续堆排取所有的 Top k。</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1000w个整数排序，范围0到100w，8g内存"><span class="nav-number">4.3.</span> <span class="nav-text">1000w个整数排序，范围0到100w，8g内存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#非递归完成二叉树的先序遍历"><span class="nav-number">4.4.</span> <span class="nav-text">非递归完成二叉树的先序遍历</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现查询链表的倒数第1000个节点"><span class="nav-number">4.5.</span> <span class="nav-text">实现查询链表的倒数第1000个节点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1000万个关键字，每个关键字小于等于50字节，求前K个热词，内存为1M"><span class="nav-number">4.6.</span> <span class="nav-text">1000万个关键字，每个关键字小于等于50字节，求前K个热词，内存为1M</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#无向图两点之间最小跳数（回答的深度优先）"><span class="nav-number">4.7.</span> <span class="nav-text">无向图两点之间最小跳数（回答的深度优先）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数字数组中最长连续递增序列"><span class="nav-number">4.8.</span> <span class="nav-text">数字数组中最长连续递增序列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#100W个无序数中是否包含给出的K个元素"><span class="nav-number">4.9.</span> <span class="nav-text">100W个无序数中是否包含给出的K个元素</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#100W个数字中前K大的数字"><span class="nav-number">4.10.</span> <span class="nav-text">100W个数字中前K大的数字</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#两个-1T-文件使用-4G-内存比较相似度"><span class="nav-number">4.11.</span> <span class="nav-text">两个 1T 文件使用 4G 内存比较相似度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二叉树两个节点之间距离"><span class="nav-number">4.12.</span> <span class="nav-text">二叉树两个节点之间距离</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对单词进行排序，比如-aa-cee-ee-bb-a-排序过后为-a-aa-bb-cee-ee"><span class="nav-number">4.13.</span> <span class="nav-text">对单词进行排序，比如 aa cee ee bb a 排序过后为 a aa bb cee ee</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#反转链表"><span class="nav-number">4.14.</span> <span class="nav-text">反转链表</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库"><span class="nav-number">5.</span> <span class="nav-text">数据库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux"><span class="nav-number">6.</span> <span class="nav-text">Linux</span></a></li></ol></div>
             
 
           </div>
