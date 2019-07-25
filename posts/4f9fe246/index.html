@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+<script>
+    (function(){
+        if(''){
+            if (prompt('请输入文章密码') !== ''){
+                alert('密码错误！');
+                history.back();
+            }
+        }
+    })();
+</script>
+
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch.jpg?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32x32.ico?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16x16.ico?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/mylogo.jpg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="基本概念Redis Sentinel 相关名词解释    名词 逻辑结构 物理结构     主节点(master) Redis 主服务/数据库 一个独立的 Redis 进程   从节点(slave) Redis 从服务/数据库 一个独立的 Redis 进程   Redis 数据节点 主节点和从节点 主节点和从节点的进程   Sentinel 节点 监控 Redis 数据节点 一个独立的 Senti">
+<meta name="keywords" content="Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis-09-哨兵">
+<meta property="og:url" content="https://yz1509.github.io/posts/4f9fe246/index.html">
+<meta property="og:site_name" content="兔子和阿铁">
+<meta property="og:description" content="基本概念Redis Sentinel 相关名词解释    名词 逻辑结构 物理结构     主节点(master) Redis 主服务/数据库 一个独立的 Redis 进程   从节点(slave) Redis 从服务/数据库 一个独立的 Redis 进程   Redis 数据节点 主节点和从节点 主节点和从节点的进程   Sentinel 节点 监控 Redis 数据节点 一个独立的 Senti">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-07-25T17:00:32.370Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis-09-哨兵">
+<meta name="twitter:description" content="基本概念Redis Sentinel 相关名词解释    名词 逻辑结构 物理结构     主节点(master) Redis 主服务/数据库 一个独立的 Redis 进程   从节点(slave) Redis 从服务/数据库 一个独立的 Redis 进程   Redis 数据节点 主节点和从节点 主节点和从节点的进程   Sentinel 节点 监控 Redis 数据节点 一个独立的 Senti">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="兔子和阿铁" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://yz1509.github.io/posts/4f9fe246/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Redis-09-哨兵 | 兔子和阿铁</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">兔子和阿铁</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">旅の途中</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/4f9fe246/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="yz1509">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mylogo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="兔子和阿铁">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Redis-09-哨兵
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-26 00:37:05 / 修改时间：01:00:32" itemprop="dateCreated datePublished" datetime="2019-07-26T00:37:05+08:00">2019-07-26</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后端技术栈/" itemprop="url" rel="index"><span itemprop="name">后端技术栈</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h1><p>Redis Sentinel 相关名词解释</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">名词</th>
+<th style="text-align:left">逻辑结构</th>
+<th style="text-align:left">物理结构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">主节点(master)</td>
+<td style="text-align:left">Redis 主服务/数据库</td>
+<td style="text-align:left">一个独立的 Redis 进程</td>
+</tr>
+<tr>
+<td style="text-align:left">从节点(slave)</td>
+<td style="text-align:left">Redis 从服务/数据库</td>
+<td style="text-align:left">一个独立的 Redis 进程</td>
+</tr>
+<tr>
+<td style="text-align:left">Redis 数据节点</td>
+<td style="text-align:left">主节点和从节点</td>
+<td style="text-align:left">主节点和从节点的进程</td>
+</tr>
+<tr>
+<td style="text-align:left">Sentinel 节点</td>
+<td style="text-align:left">监控 Redis 数据节点</td>
+<td style="text-align:left">一个独立的 Sentinel 进程</td>
+</tr>
+<tr>
+<td style="text-align:left">Sentinel 节点集合</td>
+<td style="text-align:left">若干 Sentinel 节点的抽象组合</td>
+<td style="text-align:left">若干 Sentinel 节点进程</td>
+</tr>
+<tr>
+<td style="text-align:left">Redis Sentinel</td>
+<td style="text-align:left">Redis 高可用实现方案</td>
+<td style="text-align:left">Sentinel 节点集合和 Redis 数据节点进程</td>
+</tr>
+<tr>
+<td style="text-align:left">应用方</td>
+<td style="text-align:left">泛指一个或多个客户端</td>
+<td style="text-align:left">一个或者多个客户端进程或线程</td>
+</tr>
+</tbody>
+</table>
+<h2 id="主从复制的问题"><a href="#主从复制的问题" class="headerlink" title="主从复制的问题"></a>主从复制的问题</h2><ul>
+<li>一旦主节点出现故障，需要手动将一个从节点晋升为主节点，同时需要修改应用方的主节点地址，还需要命令其他从节点去复制新的主节点，整个过程都需要人工干预</li>
+<li>主节点的写能力受到单机的限制</li>
+<li>主节点的存储能力受到单机的限制</li>
+</ul>
+<h2 id="Redis-Sentinel-的高可用性"><a href="#Redis-Sentinel-的高可用性" class="headerlink" title="Redis Sentinel 的高可用性"></a>Redis Sentinel 的高可用性</h2><p>Redis Sentinel 是一个分布式架构，其中包含若干个 Sentinel 节点和 Redis 数据节点，每个 Sentinel 节点会对数据节点和其余 Sentinel 节点进行监控，当它发现节点不可达时，会对节点做下线标识。如果被标识的是主节点，它还会和其他 Sentinel 节点进行“协商”，当大多数Sentinel 节点都认为主节点不可达时，它们会选举出一个 Sentinel 节点来完成自动故障转移的工作，同时会将这个变化实时通知给 Redis 应用方。整个过程完全是自动的，不需要人工<br>来介入，所以这套方案很有效地解决了 Redis 的高可用问题。</p>
+<p>注意：这里的分布式是指 Redis 数据节点、Sentinel 节点集合、客户端分布在多个物理节点的架构。</p>
+<p>Redis Sentinel 具有以下几个功能：</p>
+<ul>
+<li>监控：Sentinel 节点会定期检测 Redis 数据节点、其余 Sentinel 节点是否可达</li>
+<li>通知：Sentinel 节点会将故障转移的结果通知给应用方</li>
+<li>主节点故障转移：实现从节点晋升为主节点并维护后续正确的主从关系</li>
+<li>配置提供者：在 Redis Sentinel 结构中，客户端在初始化的时候连接的是 Sentinel 节点集合，从中获取主节点信息</li>
+</ul>
+<p>Sentinel 节点本身就是独立的 Redis 节点，它们不存储数据，只支持部分命令。</p>
+<h1 id="安装与部署"><a href="#安装与部署" class="headerlink" title="安装与部署"></a>安装与部署</h1><h2 id="部署步骤"><a href="#部署步骤" class="headerlink" title="部署步骤"></a>部署步骤</h2><ol>
+<li>部署拓扑结构</li>
+<li><p>部署 Redis 数据节点<br>a) 启动主节点<br>b) 启动从节点<br>c) 确认主从关系</p>
+</li>
+<li><p>部署 Sentinel 节点<br>a) 配置 Sentinel 节点<br>b) 启动 Sentinel 节点<br>c) 确认节点信息</p>
+</li>
+</ol>
+<h2 id="配置优化"><a href="#配置优化" class="headerlink" title="配置优化"></a>配置优化</h2><ol>
+<li><p>配置说明和优化</p>
+<ul>
+<li><code>sentinel monitor &lt;matser-name&gt; &lt;ip&gt; &lt;port&gt; &lt;quorum&gt;</code><ul>
+<li>quorum 代表要判定主节点最终不可达所需要的票数</li>
+</ul>
+</li>
+<li><code>sentinel down-after-milliseconds &lt;master-name&gt; &lt;times&gt;</code><ul>
+<li>每个 Sentinel 节点都要通过定期发送 ping 命令来判断 Redis 数据节点和其余Sentinel 节点是否可达，如果超过了 down-after-milliseconds 配置的时间且没有有效的回复，则判定节点不可达，times（单位为毫秒）就是超时时间。</li>
+<li>down-after-milliseconds 虽然以 master-name 为参数，但实际上对 Sentinel节点、主节点、从节点的失败判定同时有效。</li>
+</ul>
+</li>
+<li><code>sentinel parallel-sysncs &lt;master-name&gt; &lt;nums&gt;</code><ul>
+<li>parallel-syncs 是用来限制在一次故障转移之后，每次向新的主节点发起复制操作的从节点个数</li>
+</ul>
+</li>
+<li><code>sentinel failover-timeout &lt;master-name&gt; &lt;times&gt;</code> <ul>
+<li>failover-timeout 通常被解释成故障转移超时时间，但实际上它作用于故障转移的各个阶段：<br>  1) 选择合适从节点<br>  2) 将选出的从节点晋升为主节点<br>  3) 命令其他从节点复制新的主节点<br>  4) 等待原主节点恢复后命令它去复制新的主节点</li>
+<li>failover-timeout 的作用具体体现在四个方面：<ul>
+<li>如果 Redis Sentinel 对一个主节点故障转移失败，那么下次再对该主节点做故障转移的起始时间是 failover-timeout 的 2 倍</li>
+<li>在 2) 阶段时，如果 Sentinel 节点向 1) 阶段选出来的从节点执行 slaveof no one 一直失败（例如该从节点此时出现故障），当此过程超 failover-timeout 时，则故障转移失败</li>
+<li>在 2) 阶段如果执行成功，Sentinel 节点还会执行 <code>info</code> 命令来确认 1) 阶段选出来的节点确实晋升为主节点，如果此过程执行时间超过 failover-timeout时，则故障转移失败</li>
+<li>如果 3) 阶段执行时间超过了 failover-timeout（不包含复制时间），则故障转移失败。注意即使超过了这个时间，Sentinel 节点也会最终配置从节点去同步最新的主节点</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><code>sentinel auth-pass &lt;mymaster-name&gt; &lt;password&gt;</code> <ul>
+<li>如果 Sentinel 监控的主节点配置了密码，sentinel auth-pass 配置通过添加主节点的密码，防止 Sentinel 节点对主节点无法监控</li>
+</ul>
+</li>
+<li><code>sentinel notification-script &lt;mymaster-name&gt; &lt;script-path&gt;</code><ul>
+<li>sentinel notification-script 的作用是在故障转移期间，当一些警告级别的Sentinel 事件发生（指重要事件，例如-sdown：客观下线、-odown：主观下线）时，会触发对应路径的脚本，并向脚本发送相应的事件参数 </li>
+</ul>
+</li>
+<li><code>sentinel client-reconfig-script &lt;master-name&gt; &lt;script-path&gt;</code> <ul>
+<li>sentinel client-reconfig-script 的作用是在故障转移结束后，会触发对应路径的脚本，并向脚本发送故障转移结果的相关参数</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>监控多个节点</p>
+<p>Redis Sentinel 可以同时监控多个主节点，只需要指定多个 masterName 来区分不同的主节点即可。</p>
+</li>
+<li><p>调整配置</p>
+<p><code>sentinel set &lt;param&gt; &lt;value&gt;</code></p>
+<p>注意:</p>
+<ul>
+<li>sentinel set 命令只对当前 Sentinel 节点有效</li>
+<li>sentinel set 命令如果执行成功会立即刷新配置文件，这点和 Redis 普通数据节点设置配置需要执行 <code>config rewrite</code> 刷新到配置文件不同</li>
+<li>建议所有 Sentinel 节点的配置尽可能一致，这样在故障发现和转移时比较容易达成一致</li>
+<li>Sentinel 对外不支持 config 命令</li>
+</ul>
+</li>
+</ol>
+<h2 id="部署技巧"><a href="#部署技巧" class="headerlink" title="部署技巧"></a>部署技巧</h2><ol>
+<li>Sentinel 节点不应该部署在一台物理机器上</li>
+<li>部署至少三个且奇数个的 Sentinel 节点</li>
+<li>只有一套 Sentinel，还是每个主节点配置一套 Sentinel？<ul>
+<li>如果 Sentinel 节点集合监控的是同一个业务的多个主节点集合，那么使用一套 Sentinel，否则一般建议采用多套 Sentinel</li>
+</ul>
+</li>
+</ol>
+<h1 id="API"><a href="#API" class="headerlink" title="API"></a>API</h1><ol>
+<li><code>sentinel masters</code>：展示被监控的主节点状态以及相关的统计信息</li>
+<li><code>sentinel master &lt;master name&gt;</code>：展示指定 master name 的主节点状态以及相关的统计信息</li>
+<li><code>sentinel slaves &lt;master name&gt;</code>：展示指定 master name 的从节点状态以及相关的统计信息</li>
+<li><code>sentinel sentinels &lt;master name&gt;</code>：展示指定 master name 的 sentinel 节点集合（不包含当前 sentinel 节点）</li>
+<li><code>sentinel get-master-addr-by-name &lt;master name&gt;</code>：返回指定 master name 主节点的 IP 地址和端口</li>
+<li><code>sentinel reset &lt;pattern&gt;</code>：当前 Sentinel 节点对符合 pattern（通配符风格）主节点的配置进行重置，包含清除主节点的相关状态（例如故障转移），重新发现从节点和 Sentinel 节点</li>
+<li><code>sentinel failover &lt;master name&gt;</code>：对指定 master name 主节点进行强制故障转移（没有和其他 Sentinel 节点“协商”），当故障转移完成后，其他 Sentinel 节点按照故障转移的结果更新自身配置</li>
+<li><code>sentinel ckquorum &lt;master name&gt;</code>：检测当前可达的 Sentinel 节点总数是否达到 quorum 的个数</li>
+<li><code>sentinel flushconfig</code>：将 Sentinel 节点的配置强制刷到磁盘上</li>
+<li><code>sentinel remove &lt;master name&gt;</code>：取消当前 Sentinel 节点对于指定 master name 主节点的监控，注意这个命令仅仅对当前 Sentinel 节点有效</li>
+<li><code>sentinel monitor &lt;matser name&gt; &lt;ip&gt; &lt;port&gt; &lt;quorum&gt;</code></li>
+<li><code>sentinel set &lt;master name&gt;</code>：动态修改 Sentinel 节点配置选项</li>
+<li><code>sentinel is-master-down-by-addr &lt;ip&gt; &lt;port&gt; &lt;current_epoch&gt; &lt;runid&gt;</code>：Sentinel 节点之间用来交换对主节点是否下线的判断，根据参数的不同，还可以作为 Sentinel 领导者选举的通信方式</li>
+</ol>
+<p>Sentinel 节点只支持如下命令：ping、sentinel、subscribe、unsubscribe、psubscribe、punsubscribe、publish、info、role、client、shutdown。</p>
+<h1 id="Redis-Sentinel-客户端"><a href="#Redis-Sentinel-客户端" class="headerlink" title="Redis Sentinel 客户端"></a>Redis Sentinel 客户端</h1><p>实现一个 Redis Sentinel 客户端的基本步骤如下：</p>
+<ol>
+<li>遍历 Sentinel 节点集合获取一个可用的 Sentinel 节点</li>
+<li>通过 <code>sentinel get-master-addr-by-name master-name</code> 这个 API 来获取对应主节点的相关信息</li>
+<li>验证当前获取的“主节点”是真正的主节点，这样做的目的是为了防止故障转移期间主节点的变化</li>
+<li>保持和 Sentinel 节点集合的“联系”，时刻获取关于主节点的相关“信息”</li>
+</ol>
+<h1 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h1><h2 id="三个定时监控任务"><a href="#三个定时监控任务" class="headerlink" title="三个定时监控任务"></a>三个定时监控任务</h2><ol>
+<li><p>每隔 10 秒，每个 Sentinel 节点会向主节点和从节点发送 <code>info</code> 命令获取最新的拓扑结构</p>
+<ul>
+<li>通过向主节点执行 <code>info</code> 命令，获取从节点的信息，这也是为什么 Sentinel 节点不需要显式配置监控从节点</li>
+<li>当有新的从节点加入时都可以立刻感知出来</li>
+<li>节点不可达或者故障转移后，可以通过 <code>info</code> 命令实时更新节点拓扑信息</li>
+</ul>
+</li>
+<li><p>每隔 2 秒，每个 Sentinel 节点会向 Redis 数据节点的 <code>__sentinel__：hello</code> 频道上发送该 Sentinel 节点对于主节点的判断以及当前 Sentinel 节点的信息，同时每个 Sentinel 节点也会订阅该频道，来了解其他 Sentinel 节点以及它们对主节点的判断，所以这个定时任务可以完成以下两个工作：</p>
+<ul>
+<li>发现新的 Sentinel 节点</li>
+<li>Sentinel 节点之间交换主节点的状态，作为后面客观下线以及领导者选举的依据</li>
+<li>Sentinel 节点 publish 的消息格式：<code>&lt;Sentinel IP&gt; &lt;Sentinel port&gt; &lt;Sentinel runId&gt; &lt;Sentinel 节点配置版本&gt; &lt;主节点名字&gt; &lt;主节点 IP&gt; &lt;主节点端口&gt; &lt;主节点配置版本&gt;</code></li>
+</ul>
+</li>
+<li><p>每隔 1 秒，每个 Sentinel 节点会向主节点、从节点、其余 Sentinel 节点发送一条 <code>ping</code> 命令做一次心跳检测，来确认这些节点当前是否可达</p>
+</li>
+</ol>
+<h2 id="主观下线和客观下线"><a href="#主观下线和客观下线" class="headerlink" title="主观下线和客观下线"></a>主观下线和客观下线</h2><ol>
+<li>主观下线：心跳检测中超过 down-after-milliseconds 没有进行有效回复，Sentinel 节点就会对该节点做失败判定，这个行为叫做主观下线</li>
+<li>当 Sentinel 主观下线的节点是主节点时，该 Sentinel 节点会通过 <code>sentinel is-master-down-by-addr</code> 命令向其他 Sentinel 节点询问对主节点的判断，当超过 quorum 个数，Sentinel 节点认为主节点确实有问题，这时该 Sentinel 节点会做出客观下线的决定</li>
+</ol>
+<p><code>sentinel is-master-down-by-addr &lt;ip&gt; &lt;port&gt; &lt;current_epoch&gt; &lt;runid&gt;</code></p>
+<ul>
+<li>ip：主节点 IP</li>
+<li>port：主节点端口</li>
+<li>current_epoch：当前配置纪元</li>
+<li>runid：此参数有两种类型，不同类型决定了此 API 作用的不同<ul>
+<li>当 runid 等于 * 时，作用是 Sentinel 节点直接交换对主节点下线的判定</li>
+<li>当 runid 等于当前 Sentinel 节点的 runid 时，作用是当前 Sentinel 节点希望目标 Sentinel 节点同意自己成为领导者的请求</li>
+</ul>
+</li>
+</ul>
+<p>询问对主节点的判断命令的返回结果包括：</p>
+<ul>
+<li>down_state：目标 Sentinel 节点对于主节点的下线判断，1 是下线，0 是在线</li>
+<li>leader_runid：当 leader_runid 等于 * 时，代表返回结果是用来做主节点是否不可达，当leader_runid等于具体的 runid，代表目标节点同意 runid 成为领导者</li>
+<li>leader_epoch：领导者纪元</li>
+</ul>
+<h2 id="领导者-Sentinel-节点选举"><a href="#领导者-Sentinel-节点选举" class="headerlink" title="领导者 Sentinel 节点选举"></a>领导者 Sentinel 节点选举</h2><p>Redis 使用了 <a href="https://raft.github.io/" target="_blank" rel="noopener">Raft 算法</a> 实现领导者选举</p>
+<h2 id="故障转移"><a href="#故障转移" class="headerlink" title="故障转移"></a>故障转移</h2><p>领导者选举出的 Sentinel 节点负责故障转移，具体步骤如下：</p>
+<ol>
+<li><p>在从节点列表中选出一个节点作为新的主节点，选择方法如下：</p>
+<ol>
+<li>过滤：“不健康”（主观下线、断线）、5 秒内没有回复过 Sentinel 节点 ping 响应、与主节点失联超过 $down-after-milliseconds * 10$ 秒</li>
+<li>选择 slave-priority（从节点优先级）最高的从节点列表，如果存在则返回，不存在则继续</li>
+<li>选择复制偏移量最大的从节点（复制的最完整），如果存在则返回，不存在则继续</li>
+<li>选择 runid 最小的从节点</li>
+</ol>
+</li>
+<li><p>Sentinel 领导者节点会对第一步选出来的从节点执行 <code>slaveof no one</code> 命令让其成为主节点</p>
+</li>
+<li><p>Sentinel 领导者节点会向剩余的从节点发送命令，让它们成为新主节点的从节点，复制规则和 parallel-syncs 参数有关</p>
+</li>
+<li><p>Sentinel 节点集合会将原来的主节点更新为从节点，并保持着对其关注，当其恢复后命令它去复制新的主节点</p>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Redis/" rel="tag"><i class="fa fa-tag"></i> Redis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/posts/bb9ea4f2/" rel="next" title="Redis-08-理解内存">
+                <i class="fa fa-chevron-left"></i> Redis-08-理解内存
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/posts/1572a53d/" rel="prev" title="Redis-10-集群">
+                Redis-10-集群 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mylogo.jpg"
+                alt="yz1509" />
+            
+              <p class="site-author-name" itemprop="name">yz1509</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">23</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">42</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/yz1509" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:gf940312@mail.ustc.edu.cn" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#基本概念"><span class="nav-number">1.</span> <span class="nav-text">基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#主从复制的问题"><span class="nav-number">1.1.</span> <span class="nav-text">主从复制的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Redis-Sentinel-的高可用性"><span class="nav-number">1.2.</span> <span class="nav-text">Redis Sentinel 的高可用性</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安装与部署"><span class="nav-number">2.</span> <span class="nav-text">安装与部署</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#部署步骤"><span class="nav-number">2.1.</span> <span class="nav-text">部署步骤</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#配置优化"><span class="nav-number">2.2.</span> <span class="nav-text">配置优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部署技巧"><span class="nav-number">2.3.</span> <span class="nav-text">部署技巧</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#API"><span class="nav-number">3.</span> <span class="nav-text">API</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Redis-Sentinel-客户端"><span class="nav-number">4.</span> <span class="nav-text">Redis Sentinel 客户端</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#实现原理"><span class="nav-number">5.</span> <span class="nav-text">实现原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#三个定时监控任务"><span class="nav-number">5.1.</span> <span class="nav-text">三个定时监控任务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#主观下线和客观下线"><span class="nav-number">5.2.</span> <span class="nav-text">主观下线和客观下线</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#领导者-Sentinel-节点选举"><span class="nav-number">5.3.</span> <span class="nav-text">领导者 Sentinel 节点选举</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#故障转移"><span class="nav-number">5.4.</span> <span class="nav-text">故障转移</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yz1509</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                //var articleUrl = decodeURIComponent(data.url);
+                var articleUrl = decodeURIComponent(data.url).substring(1);//截取第一位/斜杠
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+<script>
+    (function(){
+        if(''){
+            if (prompt('请输入文章密码') !== ''){
+                alert('密码错误！');
+                history.back();
+            }
+        }
+    })();
+</script>
+
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch.jpg?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32x32.ico?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16x16.ico?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/mylogo.jpg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="配置建立复制复制的数据流是单向的，只能从主节点复制到从节点。配置复制的方式有以下三种：  在配置文件中加入 slaveof {masterHost} {masterPort} 随 Redis 启动生效 在 redis-server 启动命令后加入 --slaveof {masterHost} {masterPort} 生效 直接使用命令：slaveof {masterHost} {masterPo">
+<meta name="keywords" content="Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis-06-复制">
+<meta property="og:url" content="https://yz1509.github.io/posts/3ef5e487/index.html">
+<meta property="og:site_name" content="兔子和阿铁">
+<meta property="og:description" content="配置建立复制复制的数据流是单向的，只能从主节点复制到从节点。配置复制的方式有以下三种：  在配置文件中加入 slaveof {masterHost} {masterPort} 随 Redis 启动生效 在 redis-server 启动命令后加入 --slaveof {masterHost} {masterPort} 生效 直接使用命令：slaveof {masterHost} {masterPo">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-07-25T17:00:32.360Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis-06-复制">
+<meta name="twitter:description" content="配置建立复制复制的数据流是单向的，只能从主节点复制到从节点。配置复制的方式有以下三种：  在配置文件中加入 slaveof {masterHost} {masterPort} 随 Redis 启动生效 在 redis-server 启动命令后加入 --slaveof {masterHost} {masterPort} 生效 直接使用命令：slaveof {masterHost} {masterPo">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="兔子和阿铁" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://yz1509.github.io/posts/3ef5e487/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Redis-06-复制 | 兔子和阿铁</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">兔子和阿铁</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">旅の途中</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/3ef5e487/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="yz1509">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mylogo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="兔子和阿铁">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Redis-06-复制
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-07-26 00:36:27 / 修改时间：01:00:32" itemprop="dateCreated datePublished" datetime="2019-07-26T00:36:27+08:00">2019-07-26</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后端技术栈/" itemprop="url" rel="index"><span itemprop="name">后端技术栈</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h1><h2 id="建立复制"><a href="#建立复制" class="headerlink" title="建立复制"></a>建立复制</h2><p>复制的数据流是单向的，只能从主节点复制到从节点。配置复制的方式有以下三种：</p>
+<ol>
+<li>在配置文件中加入 <code>slaveof {masterHost} {masterPort}</code> 随 Redis 启动生效</li>
+<li>在 <code>redis-server</code> 启动命令后加入 <code>--slaveof {masterHost} {masterPort}</code> 生效</li>
+<li>直接使用命令：<code>slaveof {masterHost} {masterPort}</code> 生效</li>
+</ol>
+<p>slaveof 本身是异步命令，执行 slaveof 命令时，节点只保存主节点信息后返回，后续复制流程在节点内部异步执行，主从节点复制成功建立后，可以使用 <code>info replication</code> 命令查看复制相关状态。</p>
+<h2 id="断开复制"><a href="#断开复制" class="headerlink" title="断开复制"></a>断开复制</h2><p>在从节点执行 <code>slaveof no one</code> 来断开与主节点复制关系，断开复制主要流程：</p>
+<ol>
+<li>断开与主节点复制关系</li>
+<li>从节点晋升为主节点</li>
+</ol>
+<p>通过执行 <code>slaveof {newMasterHost} {newMasterPort}</code> 命令可以实现切主操作，切主操作流程如下：</p>
+<ol>
+<li>断开与旧主节点复制关系</li>
+<li>与新主节点建立复制关系</li>
+<li>删除从节点当前所有数据</li>
+<li>对新主节点进行复制操作</li>
+</ol>
+<h2 id="安全性"><a href="#安全性" class="headerlink" title="安全性"></a>安全性</h2><p>主节点可设置 <code>requirepass</code> 参数进行密码验证，这时所有的客户端访问必须使用 <code>auth</code> 命令实行校验，因此需要配置从节点的 <code>masterauth</code> 参数与主节点密码保持一致，这样从节点才可以正确地连接到主节点并发起复制流程。</p>
+<h2 id="只读"><a href="#只读" class="headerlink" title="只读"></a>只读</h2><p>默认情况下，从节点使用 <code>slaveof-read-only = yes</code> 配置为只读模式。</p>
+<h2 id="传输延迟"><a href="#传输延迟" class="headerlink" title="传输延迟"></a>传输延迟</h2><p>Redis 提供了 <code>repl-disable-tcp-nodelay</code> 参数用于控制是否关闭 TCP_NODELAY，默认关闭。</p>
+<ul>
+<li>当关闭时，主节点产生的命令数据无论大小都会及时地发送给从节点，这样主从之间延迟会变小，但增加了网络带宽的消耗</li>
+<li>当开启时，主节点会合并较小的 TCP 数据包从而节省带宽，但增大了主从之间的延迟</li>
+</ul>
+<h1 id="拓扑结构"><a href="#拓扑结构" class="headerlink" title="拓扑结构"></a>拓扑结构</h1><p>Redis 的复制拓扑结构可以支持单层或多层复制关系，根据拓扑复杂性可以分为以下三种：一主一从、一主多从和树状主从结构。</p>
+<ol>
+<li>一主一从结构<br>一主一从结构是最简单的复制拓扑结构，用于主节点出现宕机时从节点提供故障转移支持。当应用写命令并发量较高且需要持久化时，可以只在从节点上开启 AOF，这样既保证数据安全性同时也避免了持久化对主节点的性能干扰。</li>
+<li>一主多从结构<br>一主多从结构（又称为星形拓扑结构）使得应用端可以利用多个从节点实现读写分离。对于读占比较大的场景，可以把读命令发送到从节点来分担主节点压力。对于写并发量较高的场景，多个从节点会导致主节点写命令的多次发送从而过度消耗网络带宽，同时也加重了主节点的负载影响服务稳定性。</li>
+<li>树状主从结构<br>树状主从结构（又称为树状拓扑结构）使得从节点不但可以复制主节点数据，同时可以作为其他从节点的主节点继续向下层复制。通过引入复制中间层，可以有效降低主节点负载和需要传送给从节点的数据量。当主节点需要挂载多个从节点时为了避免对主节点的性能干扰，可以采用树状主从结构降低主节点压力。</li>
+</ol>
+<h1 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h1><h2 id="复制过程"><a href="#复制过程" class="headerlink" title="复制过程"></a>复制过程</h2><ol>
+<li>保存主节点信息</li>
+<li>主从建立 socket 连接：从节点（slave）内部通过每秒运行的定时任务维护复制相关逻辑，当定时任务发现存在新的主节点后，会尝试与该节点建立网络连接</li>
+<li>发送 <code>ping</code> 命令</li>
+<li>权限验证</li>
+<li>同步数据集</li>
+<li>命令持续复制</li>
+</ol>
+<h2 id="数据同步"><a href="#数据同步" class="headerlink" title="数据同步"></a>数据同步</h2><p>Redis 使用 <code>psync</code> 命令完成主从数据同步，同步过程分为全量复制和部分复制。</p>
+<p><code>psync</code> 命令运行需要以下组件支持：</p>
+<ol>
+<li>主从节点复制偏移量<ul>
+<li>主节点（master）在处理完写入命令后，会把命令的字节长度做累加记录，统计信息在 <code>info relication</code> 中的 <code>master_repl_offset</code> 指标中</li>
+<li>从节点（slave）每秒钟上报自身的复制偏移量给主节点，因此主节点也会保存从节点的复制偏移量</li>
+<li>从节点在接收到主节点发送的命令后，也会累加记录自身的偏移量。统计信息在 <code>info relication</code> 中的 <code>slave_repl_offset</code> 指标中</li>
+</ul>
+</li>
+<li>主节点复制积压缓冲区<ul>
+<li>复制积压缓冲区是保存在主节点上的一个固定长度的队列，默认大小为 1 MB，本质上是先进先出的定长队列</li>
+<li>当主节点有连接的从节点（slave）时被创建，这时主节点（master）响应写命令时，不但会把命令发送给从节点，还会写入复制积压缓冲区</li>
+</ul>
+</li>
+<li>主节点运行 ID<ul>
+<li>每个 Redis 节点启动后都会动态分配一个40位的十六进制字符串作为运行 ID</li>
+<li>如果只使用 ip+port 的方式识别主节点，那么主节点重启变更了整体数据集（如替换 RDB/AOF 文件），从节点再基于偏移量复制数据将是不安全的，因此当运行 ID 变化后从节点将做全量复制</li>
+<li>可以使用 <code>debug reload</code> 命令重新加载 RDB 并保持运行 ID 不变，从而有效避免不必要的全量复制</li>
+<li>注意：debug reload 命令会阻塞当前 Redis 节点主线程，阻塞期间会生成本地 RDB 快照并清空数据之后再加载 RDB 文件。因此对于大数据量的主节点和无法容忍阻塞的应用场景，谨慎使用。</li>
+</ul>
+</li>
+</ol>
+<p>从节点使用 <code>psync</code> 命令完成部分复制和全量复制功能，命令格式 <code>psync {runId} {offset}</code>，<code>psync</code> 命令运行流程：</p>
+<ol>
+<li>从节点（slave）发送 <code>psync</code> 命令给主节点，参数 runId 是当前从节点保存的主节点运行ID，如果没有则默认值为 ?，参数 offset 是当前从节点保存的复制偏移量，如果是第一次参与复制则默认值为 -1。</li>
+<li>主节点（master）根据 <code>psync</code> 参数和自身数据情况决定响应结果：<ul>
+<li>如果回复 <code>+FULLRESYNC {runId} {offset}</code>，那么从节点将触发全量复制流程</li>
+<li>如果回复 <code>+CONTINUE</code>，从节点将触发部分复制流程</li>
+<li>如果回复 <code>+ERR</code>，说明主节点版本低于 Redis2.8，无法识别 <code>psync</code> 命令，从节点将发送旧版的 <code>sync</code> 命令触发全量复制流程。</li>
+</ul>
+</li>
+</ol>
+<h2 id="全量复制"><a href="#全量复制" class="headerlink" title="全量复制"></a>全量复制</h2><ol>
+<li>从节点发送 <code>psync</code> 命令进行数据同步，如果是第一次进行复制，从节点没有复制偏移量和主节点的运行 ID，所以发送 <code>psync ? -1</code></li>
+<li>主节点根据 <code>psync ? -1</code> 解析出当前为全量复制，回复 <code>+FULLRESYNC</code> 响应</li>
+<li>从节点接收主节点的响应数据保存运行 ID 和偏移量 offset</li>
+<li>主节点执行 <code>bgsave</code> 保存 RDB 文件到本地</li>
+<li>主节点发送 RDB 文件给从节点，从节点把接收的 RDB 文件保存在本地并直接作为从节点的数据文件<ul>
+<li>针对数据量较大的节点，建议调大 <code>repl-timeout</code> 参数防止出现全量同步数据超时</li>
+<li>关于无盘复制：为了降低主节点磁盘开销，Redis 支持无盘复制，生成的 RDB 文件不保存到硬盘而是直接通过网络发送给从节点，通过 <code>repldiskless-sync</code> 参数控制，默认关闭。无盘复制适用于主节点所在机器磁盘性能较差但网络带宽较充裕的场景。</li>
+</ul>
+</li>
+<li>对于从节点开始接收 RDB 快照到接收完成期间，主节点仍然响应读写命令，因此主节点会把这期间写命令数据保存在复制客户端缓冲区内，当从节点加载完 RDB 文件后，主节点再把缓冲区内的数据发送给从节点，保证主从之间数据一致性</li>
+<li>从节点接收完主节点传送来的全部数据后会清空自身旧数据</li>
+<li>从节点清空数据后开始加载 RDB 文件</li>
+<li>从节点成功加载完 RDB 后，如果当前节点开启了 AOF 持久化功能，它会立刻做 <code>bgrewriteaof</code> 操作，为了保证全量复制后 AOF 持久化文件立刻可用</li>
+</ol>
+<h2 id="部分复制"><a href="#部分复制" class="headerlink" title="部分复制"></a>部分复制</h2><p>使用 <code>psync {runId} {offset}</code>命令实现。当从节点（slave）正在复制主节点（master）时，如果出现网络闪断或者命令丢失等异常情况时，从节点会向主节点要求补发丢失的命令数据，如果主节点的复制积压缓冲区内存在这部分数据则直接发送给从节点，这样就可以保持主从节点复制的一致性。</p>
+<h2 id="心跳检测"><a href="#心跳检测" class="headerlink" title="心跳检测"></a>心跳检测</h2><p>主从节点在建立复制后，它们之间维护着长连接并彼此发送心跳命令，主从心跳判断机制：</p>
+<ol>
+<li>主从节点彼此都有心跳检测机制，各自模拟成对方的客户端进行通信，通过 <code>client list</code> 命令查看复制相关客户端信息，主节点的连接状态为 flags = M，从节点连接状态为 flags = S。</li>
+<li>主节点默认每隔 10 秒对从节点发送 <code>ping</code> 命令，判断从节点的存活性和连接状态。可通过参数 <code>repl-ping-slave-period</code> 控制发送频率。</li>
+<li>从节点在主线程中每隔 1 秒发送 <code>replconf ack {offset}</code> 命令，给主节点上报自身当前的复制偏移量。<code>replconf</code> 命令主要作用如下：<ul>
+<li>实时监测主从节点网络状态</li>
+<li>上报自身复制偏移量，检查复制数据是否丢失，如果从节点数据丢失，再从主节点的复制缓冲区中拉取丢失数据</li>
+<li>实现保证从节点的数量和延迟性功能，通过 <code>min-slaves-to-write</code>、<code>minslaves-max-lag</code> 参数配置定义</li>
+</ul>
+</li>
+</ol>
+<h2 id="异步复制"><a href="#异步复制" class="headerlink" title="异步复制"></a>异步复制</h2><p>写命令的发送过程是异步完成，也就是说主节点自身处理完写命令后直接返回给客户端，并不等待从节点复制完成。</p>
+<h1 id="开发与运维中的问题"><a href="#开发与运维中的问题" class="headerlink" title="开发与运维中的问题"></a>开发与运维中的问题</h1><h2 id="读写分离"><a href="#读写分离" class="headerlink" title="读写分离"></a>读写分离</h2><p>对于读占比较高的场景，可以通过把一部分读流量分摊到从节点（slave）来减轻主节点（master）压力，同时需要注意永远只对主节点执行写操作。</p>
+<p>当使用从节点响应读请求时，业务端可能会遇到如下问题：</p>
+<ul>
+<li>数据延迟</li>
+<li>读到过期数据</li>
+<li>从节点故障</li>
+</ul>
+<h2 id="主从配置不一致"><a href="#主从配置不一致" class="headerlink" title="主从配置不一致"></a>主从配置不一致</h2><h2 id="规避全量复制"><a href="#规避全量复制" class="headerlink" title="规避全量复制"></a>规避全量复制</h2><p>全量复制的场景：</p>
+<ol>
+<li><p>第一次建立复制</p>
+<ul>
+<li>无法规避，当对数据量较大且流量较高的主节点添加从节点时，建议在低峰时进行操作，或者尽量规避使用大数据量的 Redis 节点。</li>
+</ul>
+</li>
+<li><p>节点运行 ID 不匹配</p>
+<ul>
+<li>起因：如果主节点因故障重启，那么它的运行 ID 会改变，从节点发现主节点运行 ID 不匹配时，会认为自己复制的是一个新的主节点从而进行全量复制。</li>
+<li>方法：对于这种情况应该从架构上规避，比如提供故障转移功能。当主节点发生故障后，手动提升从节点为主节点或者采用支持自动故障转移的哨兵或集群方案。</li>
+</ul>
+</li>
+<li><p>复制积压缓冲区不足</p>
+<ul>
+<li>起因：当主从节点网络中断后，从节点再次连上主节点时会发送 <code>psync {offset} {runId}</code> 命令请求部分复制，如果请求的偏移量不在主节点的积压缓冲区内，则无法提供给从节点数据，因此部分复制会退化为全量复制。</li>
+<li>方法：针对这种情况需要根据网络中断时长，写命令数据量分析出合理的积压缓冲区大小。</li>
+</ul>
+</li>
+</ol>
+<h2 id="规避复制风暴"><a href="#规避复制风暴" class="headerlink" title="规避复制风暴"></a>规避复制风暴</h2><p>复制风暴是指大量从节点对同一主节点或者对同一台机器的多个主节点短时间内发起全量复制的过程。</p>
+<ol>
+<li><p>单主节点复制风暴</p>
+<p>单主节点复制风暴一般发生在主节点挂载多个从节点的场景，解决方案有：</p>
+<ul>
+<li>可以减少主节点（master）挂载从节点（slave）的数量</li>
+<li>采用树状复制结构，加入中间层从节点用来保护主节点</li>
+</ul>
+</li>
+<li><p>单机器复制风暴<br>当一台机器（machine）上同时部署多个主节点（master）时，如果这台机器出现故障或网络长时间中断，当它重启恢复后，会有大量从节点（slave）针对这台机器的主节点进行全量复制，会造成当前机器网络带宽耗尽。解决方案有：</p>
+<ul>
+<li>应该把主节点尽量分散在多台机器上，避免在单台机器上部署过多的主节点</li>
+<li>当主节点所在机器故障后提供故障转移机制，避免机器恢复后进行密集的全量复制</li>
+</ul>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Redis/" rel="tag"><i class="fa fa-tag"></i> Redis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/posts/35524ba0/" rel="next" title="Redis-05-持久化">
+                <i class="fa fa-chevron-left"></i> Redis-05-持久化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/posts/45ffe189/" rel="prev" title="Redis-07-阻塞">
+                Redis-07-阻塞 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mylogo.jpg"
+                alt="yz1509" />
+            
+              <p class="site-author-name" itemprop="name">yz1509</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">23</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">42</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/yz1509" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:gf940312@mail.ustc.edu.cn" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#配置"><span class="nav-number">1.</span> <span class="nav-text">配置</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#建立复制"><span class="nav-number">1.1.</span> <span class="nav-text">建立复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#断开复制"><span class="nav-number">1.2.</span> <span class="nav-text">断开复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安全性"><span class="nav-number">1.3.</span> <span class="nav-text">安全性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#只读"><span class="nav-number">1.4.</span> <span class="nav-text">只读</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#传输延迟"><span class="nav-number">1.5.</span> <span class="nav-text">传输延迟</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#拓扑结构"><span class="nav-number">2.</span> <span class="nav-text">拓扑结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原理"><span class="nav-number">3.</span> <span class="nav-text">原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#复制过程"><span class="nav-number">3.1.</span> <span class="nav-text">复制过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据同步"><span class="nav-number">3.2.</span> <span class="nav-text">数据同步</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#全量复制"><span class="nav-number">3.3.</span> <span class="nav-text">全量复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#部分复制"><span class="nav-number">3.4.</span> <span class="nav-text">部分复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#心跳检测"><span class="nav-number">3.5.</span> <span class="nav-text">心跳检测</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#异步复制"><span class="nav-number">3.6.</span> <span class="nav-text">异步复制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#开发与运维中的问题"><span class="nav-number">4.</span> <span class="nav-text">开发与运维中的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#读写分离"><span class="nav-number">4.1.</span> <span class="nav-text">读写分离</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#主从配置不一致"><span class="nav-number">4.2.</span> <span class="nav-text">主从配置不一致</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#规避全量复制"><span class="nav-number">4.3.</span> <span class="nav-text">规避全量复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#规避复制风暴"><span class="nav-number">4.4.</span> <span class="nav-text">规避复制风暴</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yz1509</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                //var articleUrl = decodeURIComponent(data.url);
+                var articleUrl = decodeURIComponent(data.url).substring(1);//截取第一位/斜杠
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -355,7 +355,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/691428e6/">
+    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/d3488cd7/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="yz1509">
@@ -374,8 +374,8 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/posts/691428e6/" itemprop="url">
-                  gflags
+                <a class="post-title-link" href="/posts/d3488cd7/" itemprop="url">
+                  Redis-12-开发运维的陷阱
                 </a>
               
             
@@ -401,24 +401,12 @@
                 
               
 
-              <time title="创建时间：2019-07-23 23:55:45" itemprop="dateCreated datePublished" datetime="2019-07-23T23:55:45+08:00">2019-07-23</time>
+              <time title="创建时间：2019-07-26 00:37:57 / 修改时间：01:00:32" itemprop="dateCreated datePublished" datetime="2019-07-26T00:37:57+08:00">2019-07-26</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-24 00:02:22" itemprop="dateModified" datetime="2019-07-24T00:02:22+08:00">2019-07-24</time>
               
             
           </span>
@@ -471,12 +459,22 @@
       
         
           
-          IntroductionCommandline flags are flags that users specify on the command line when they run an executable.
-eg: In the command fgrep -l -f /var/tmp/fo
+          Linux 配置优化
+vm.overcommit_memory
+swappiness
+THP(Transparent Huge Pages)
+OOM killer
+NTP(Network Time Protocol)
+ulimit
+TCP backlog
+
+安全的 redis
+Redis 密码机制
+
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/posts/691428e6/#more" rel="contents">
+            <a class="btn" href="/posts/d3488cd7/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -532,7 +530,7 @@ eg: In the command fgrep -l -f /var/tmp/fo
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/afaab92b/">
+    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/3d2c9df2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="yz1509">
@@ -551,8 +549,8 @@ eg: In the command fgrep -l -f /var/tmp/fo
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/posts/afaab92b/" itemprop="url">
-                  后台开发面经
+                <a class="post-title-link" href="/posts/3d2c9df2/" itemprop="url">
+                  Redis-11-缓存设计
                 </a>
               
             
@@ -578,24 +576,12 @@ eg: In the command fgrep -l -f /var/tmp/fo
                 
               
 
-              <time title="创建时间：2018-08-28 11:01:15" itemprop="dateCreated datePublished" datetime="2018-08-28T11:01:15+08:00">2018-08-28</time>
+              <time title="创建时间：2019-07-26 00:37:24 / 修改时间：01:00:32" itemprop="dateCreated datePublished" datetime="2019-07-26T00:37:24+08:00">2019-07-26</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-23 23:45:59" itemprop="dateModified" datetime="2019-07-23T23:45:59+08:00">2019-07-23</time>
               
             
           </span>
@@ -612,7 +598,7 @@ eg: In the command fgrep -l -f /var/tmp/fo
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/秋招/" itemprop="url" rel="index"><span itemprop="name">秋招</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后端技术栈/" itemprop="url" rel="index"><span itemprop="name">后端技术栈</span></a></span>
 
                 
                 
@@ -648,12 +634,30 @@ eg: In the command fgrep -l -f /var/tmp/fo
       
         
           
-          C++virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？基类希望其派生类覆盖的函数，通常将其定义为虚函数，通过指针或引用调用虚函数时，会在运行时解析该调用，在这种情况下对象的动态类型有可能与静态类型不同。这便是 OOP 的核心思想：多态性。
-构造函数不能为虚函数，而析构函数可以且
+          缓存的收益和成本收益：
+
+加速读写
+降低后端负载
+
+成本：
+
+数据不一致性
+代码维护成本：加入缓存后，需要同时处理缓存层和存储层的逻辑，增大了开发者维护代码的成本
+运维成本
+
+使用场景：
+
+开销大的复杂计算
+加速请求响应
+
+缓存更新策略
+LRU/LFU/FIFO 算法剔除
+
+使用场景：通常用于缓存使
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/posts/afaab92b/#more" rel="contents">
+            <a class="btn" href="/posts/3d2c9df2/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -709,7 +713,7 @@ eg: In the command fgrep -l -f /var/tmp/fo
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/7543f9ab/">
+    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/1572a53d/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="yz1509">
@@ -728,8 +732,8 @@ eg: In the command fgrep -l -f /var/tmp/fo
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/posts/7543f9ab/" itemprop="url">
-                  运维开发工程师面经
+                <a class="post-title-link" href="/posts/1572a53d/" itemprop="url">
+                  Redis-10-集群
                 </a>
               
             
@@ -755,24 +759,12 @@ eg: In the command fgrep -l -f /var/tmp/fo
                 
               
 
-              <time title="创建时间：2018-08-18 12:34:54" itemprop="dateCreated datePublished" datetime="2018-08-18T12:34:54+08:00">2018-08-18</time>
+              <time title="创建时间：2019-07-26 00:37:14 / 修改时间：01:00:32" itemprop="dateCreated datePublished" datetime="2019-07-26T00:37:14+08:00">2019-07-26</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-23 23:46:31" itemprop="dateModified" datetime="2019-07-23T23:46:31+08:00">2019-07-23</time>
               
             
           </span>
@@ -789,7 +781,7 @@ eg: In the command fgrep -l -f /var/tmp/fo
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/秋招/" itemprop="url" rel="index"><span itemprop="name">秋招</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后端技术栈/" itemprop="url" rel="index"><span itemprop="name">后端技术栈</span></a></span>
 
                 
                 
@@ -825,15 +817,29 @@ eg: In the command fgrep -l -f /var/tmp/fo
       
         
           
-          整理自牛客网傻妞妞-MM的面经。
-Linux 系统
-基本命令（系统性能信息的各种查看命令、可能会继续向下延伸：比如实时 CPU 负载的获取、网卡流量的抓包获取等，建议有多详细整理多详细。防火墙，文件查看，各种常用命令，请参考鸟哥基础等等。）；
-开机启动过程，run level 各个级别的意思；
-文件
+          数据分布数据分布理论常见的分区规则有哈希分区和顺序分区
+
+
+
+分区方式
+特点
+代表产品
+
+
+
+
+哈希分区
+离散度好；数据分布业务无关；无法顺序访问
+Redis Cluster; Cassandra; Dynamo
+
+
+顺序分区
+离散度易倾斜；数据分布业务相关；可顺序访问
+Bigtable; HBas
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/posts/7543f9ab/#more" rel="contents">
+            <a class="btn" href="/posts/1572a53d/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -889,7 +895,7 @@ Linux 系统
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/64d148d3/">
+    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/4f9fe246/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="yz1509">
@@ -908,8 +914,8 @@ Linux 系统
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/posts/64d148d3/" itemprop="url">
-                  认识STL
+                <a class="post-title-link" href="/posts/4f9fe246/" itemprop="url">
+                  Redis-09-哨兵
                 </a>
               
             
@@ -935,24 +941,12 @@ Linux 系统
                 
               
 
-              <time title="创建时间：2018-07-31 10:48:06" itemprop="dateCreated datePublished" datetime="2018-07-31T10:48:06+08:00">2018-07-31</time>
+              <time title="创建时间：2019-07-26 00:37:05 / 修改时间：01:00:32" itemprop="dateCreated datePublished" datetime="2019-07-26T00:37:05+08:00">2019-07-26</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-23 23:46:16" itemprop="dateModified" datetime="2019-07-23T23:46:16+08:00">2019-07-23</time>
               
             
           </span>
@@ -969,7 +963,7 @@ Linux 系统
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/秋招/" itemprop="url" rel="index"><span itemprop="name">秋招</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后端技术栈/" itemprop="url" rel="index"><span itemprop="name">后端技术栈</span></a></span>
 
                 
                 
@@ -1005,15 +999,34 @@ Linux 系统
       
         
           
-          整理自Mr希灵的博文、面经以及《C++ Primer, 5E》等。
-标准库类型 string标准库类型 string 表示可变长的字符序列。
-定义和初始化 string 对象
-初始化 string 对象的方式
-123456789101112131415string s1;              
+          基本概念Redis Sentinel 相关名词解释
+
+
+
+名词
+逻辑结构
+物理结构
+
+
+
+
+主节点(master)
+Redis 主服务/数据库
+一个独立的 Redis 进程
+
+
+从节点(slave)
+Redis 从服务/数据库
+一个独立的 Redis 进程
+
+
+Redis 数据节点
+主节点和从节点
+
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/posts/64d148d3/#more" rel="contents">
+            <a class="btn" href="/posts/4f9fe246/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1069,7 +1082,7 @@ Linux 系统
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/db684f2c/">
+    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/bb9ea4f2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="yz1509">
@@ -1088,8 +1101,8 @@ Linux 系统
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/posts/db684f2c/" itemprop="url">
-                  C++面试知识点
+                <a class="post-title-link" href="/posts/bb9ea4f2/" itemprop="url">
+                  Redis-08-理解内存
                 </a>
               
             
@@ -1115,24 +1128,12 @@ Linux 系统
                 
               
 
-              <time title="创建时间：2018-07-28 10:52:52" itemprop="dateCreated datePublished" datetime="2018-07-28T10:52:52+08:00">2018-07-28</time>
+              <time title="创建时间：2019-07-26 00:36:51 / 修改时间：01:00:32" itemprop="dateCreated datePublished" datetime="2019-07-26T00:36:51+08:00">2019-07-26</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-23 23:45:12" itemprop="dateModified" datetime="2019-07-23T23:45:12+08:00">2019-07-23</time>
               
             
           </span>
@@ -1149,7 +1150,7 @@ Linux 系统
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/秋招/" itemprop="url" rel="index"><span itemprop="name">秋招</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后端技术栈/" itemprop="url" rel="index"><span itemprop="name">后端技术栈</span></a></span>
 
                 
                 
@@ -1185,14 +1186,15 @@ Linux 系统
       
         
           
-          整理自Mr希灵的博文、面经以及《C++ Primer, 5E》等。
-C++ 基础知识点有符号类型和无符号类型
-当我们赋给无符号类型一个超出它表示范围的值时，结果是初始值对无符号类型表示数值总数取模之后的余数。
-当我们赋给带符号类型一个超出它表示范围的值时，结果是未定义的；此时，程序可能继续工作、可能
+          内存消耗内存消耗可以分为进程自身消耗和子进程消耗。
+内存使用统计可通过执行 info memory 命令获取内存相关指标，各项指标详细解释如下：
+
+used_memory：Redis 分配器分配的内存总量，也就是内部存储的所有数据内存占有量
+used_memory_human：以可读的格式返回 us
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/posts/db684f2c/#more" rel="contents">
+            <a class="btn" href="/posts/bb9ea4f2/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1248,7 +1250,7 @@ C++ 基础知识点有符号类型和无符号类型
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/ee040603/">
+    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/45ffe189/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="yz1509">
@@ -1267,8 +1269,8 @@ C++ 基础知识点有符号类型和无符号类型
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/posts/ee040603/" itemprop="url">
-                  图
+                <a class="post-title-link" href="/posts/45ffe189/" itemprop="url">
+                  Redis-07-阻塞
                 </a>
               
             
@@ -1294,24 +1296,12 @@ C++ 基础知识点有符号类型和无符号类型
                 
               
 
-              <time title="创建时间：2018-07-26 13:17:37" itemprop="dateCreated datePublished" datetime="2018-07-26T13:17:37+08:00">2018-07-26</time>
+              <time title="创建时间：2019-07-26 00:36:40 / 修改时间：01:00:32" itemprop="dateCreated datePublished" datetime="2019-07-26T00:36:40+08:00">2019-07-26</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-07-27 22:20:16" itemprop="dateModified" datetime="2018-07-27T22:20:16+08:00">2018-07-27</time>
               
             
           </span>
@@ -1328,7 +1318,7 @@ C++ 基础知识点有符号类型和无符号类型
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/DataStructure-Algorithm/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后端技术栈/" itemprop="url" rel="index"><span itemprop="name">后端技术栈</span></a></span>
 
                 
                 
@@ -1364,16 +1354,19 @@ C++ 基础知识点有符号类型和无符号类型
       
         
           
-          什么是图定义 一个图 $G = (V, E)$ 由顶点（或结点）的非空集 $V$ 和边的集合 $E$ 构成，每条边有一个或两个顶点与它相连，这样的顶点称为边的端点。边连接它的端点。
-图的表示
-邻接链表：稀疏图
-邻接矩阵：稠密图，或者需要快速判断任意两个结点之间是否有边的情况
+          内在原因
+API 或数据结构使用不合理
+对于高并发的场景我们应该尽量避免在大对象上执行算法复杂度超过 O(n) 的命令
 
-广度优先搜索12345
+发现慢查询：执行 slowlog get {n}命令可以获取最近的 n 条慢查询命令
+发现大对象：redis-cli -h {ip} -p {port} --bigkeys
+
+
+
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/posts/ee040603/#more" rel="contents">
+            <a class="btn" href="/posts/45ffe189/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1429,7 +1422,7 @@ C++ 基础知识点有符号类型和无符号类型
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/afec8fb8/">
+    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/3ef5e487/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="yz1509">
@@ -1448,8 +1441,8 @@ C++ 基础知识点有符号类型和无符号类型
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/posts/afec8fb8/" itemprop="url">
-                  吐血bug合集（持续更新）
+                <a class="post-title-link" href="/posts/3ef5e487/" itemprop="url">
+                  Redis-06-复制
                 </a>
               
             
@@ -1475,24 +1468,12 @@ C++ 基础知识点有符号类型和无符号类型
                 
               
 
-              <time title="创建时间：2018-07-25 20:23:21" itemprop="dateCreated datePublished" datetime="2018-07-25T20:23:21+08:00">2018-07-25</time>
+              <time title="创建时间：2019-07-26 00:36:27 / 修改时间：01:00:32" itemprop="dateCreated datePublished" datetime="2019-07-26T00:36:27+08:00">2019-07-26</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-08-06 16:49:30" itemprop="dateModified" datetime="2018-08-06T16:49:30+08:00">2018-08-06</time>
               
             
           </span>
@@ -1509,7 +1490,7 @@ C++ 基础知识点有符号类型和无符号类型
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/其他/" itemprop="url" rel="index"><span itemprop="name">其他</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后端技术栈/" itemprop="url" rel="index"><span itemprop="name">后端技术栈</span></a></span>
 
                 
                 
@@ -1545,15 +1526,14 @@ C++ 基础知识点有符号类型和无符号类型
       
         
           
-          
-图片后缀名的大小写有区别，比如 ![avatar](sample.png) 本地可以正常加载 sample.PNG，但是上传后静态网页加载失败 = =
-使用表格时，一定要前后都有空行，不然显示出 bug.
+          配置建立复制复制的数据流是单向的，只能从主节点复制到从节点。配置复制的方式有以下三种：
 
-
-          
+在配置文件中加入 slaveof {masterHost} {masterPort} 随 Redis 启动生效
+在 redis-server 启动命令后加入 --slaveof {masterHost} {ma
+          ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/posts/afec8fb8/#more" rel="contents">
+            <a class="btn" href="/posts/3ef5e487/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1609,7 +1589,7 @@ C++ 基础知识点有符号类型和无符号类型
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/7b216a3b/">
+    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/35524ba0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="yz1509">
@@ -1628,8 +1608,8 @@ C++ 基础知识点有符号类型和无符号类型
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/posts/7b216a3b/" itemprop="url">
-                  树
+                <a class="post-title-link" href="/posts/35524ba0/" itemprop="url">
+                  Redis-05-持久化
                 </a>
               
             
@@ -1655,24 +1635,12 @@ C++ 基础知识点有符号类型和无符号类型
                 
               
 
-              <time title="创建时间：2018-07-25 15:06:19" itemprop="dateCreated datePublished" datetime="2018-07-25T15:06:19+08:00">2018-07-25</time>
+              <time title="创建时间：2019-07-26 00:36:17 / 修改时间：01:00:32" itemprop="dateCreated datePublished" datetime="2019-07-26T00:36:17+08:00">2019-07-26</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-07-26 14:12:43" itemprop="dateModified" datetime="2018-07-26T14:12:43+08:00">2018-07-26</time>
               
             
           </span>
@@ -1689,7 +1657,7 @@ C++ 基础知识点有符号类型和无符号类型
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/DataStructure-Algorithm/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后端技术栈/" itemprop="url" rel="index"><span itemprop="name">后端技术栈</span></a></span>
 
                 
                 
@@ -1725,17 +1693,14 @@ C++ 基础知识点有符号类型和无符号类型
       
         
           
-          什么是树定义 1 树是没有简单回路的连通无向图。
-定义 2 有根树是指定一个顶点作为根并且每条边的方向都离开根的树。
-二叉树
-如果 $x.p = NIL$，则 $x$ 是根结点
-属性 $T.root$ 指向整棵树 $T$ 的根结点，如果 $T.root = NIL$，则该数为空
+          RDBRDB 持久化是把当前进程数据生成快照保存到硬盘的过程，触发 RDB 持久化过程分为手动触发和自动触发。
+触发机制手动触发分别对应 save 和 bgsave 命令
 
-分支无限制的有根树
+save 命令：阻塞当前 Redis 服务器，直到 RDB 过程完成为止，对于内存比较大的实例会造成长时间阻塞，线上环境不建议
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/posts/7b216a3b/#more" rel="contents">
+            <a class="btn" href="/posts/35524ba0/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1791,7 +1756,7 @@ C++ 基础知识点有符号类型和无符号类型
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/9235f089/">
+    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/85b8009b/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="yz1509">
@@ -1810,8 +1775,8 @@ C++ 基础知识点有符号类型和无符号类型
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/posts/9235f089/" itemprop="url">
-                  LeetCode 204. Count Primes
+                <a class="post-title-link" href="/posts/85b8009b/" itemprop="url">
+                  Redis-04-客户端
                 </a>
               
             
@@ -1837,24 +1802,12 @@ C++ 基础知识点有符号类型和无符号类型
                 
               
 
-              <time title="创建时间：2018-07-20 17:52:43" itemprop="dateCreated datePublished" datetime="2018-07-20T17:52:43+08:00">2018-07-20</time>
+              <time title="创建时间：2019-07-26 00:36:05 / 修改时间：01:00:32" itemprop="dateCreated datePublished" datetime="2019-07-26T00:36:05+08:00">2019-07-26</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-07-23 23:45:42" itemprop="dateModified" datetime="2019-07-23T23:45:42+08:00">2019-07-23</time>
               
             
           </span>
@@ -1871,7 +1824,7 @@ C++ 基础知识点有符号类型和无符号类型
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/秋招/" itemprop="url" rel="index"><span itemprop="name">秋招</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后端技术栈/" itemprop="url" rel="index"><span itemprop="name">后端技术栈</span></a></span>
 
                 
                 
@@ -1907,12 +1860,17 @@ C++ 基础知识点有符号类型和无符号类型
       
         
           
-          Description题目链接Count the number of prime numbers less than a non-negative number  n.
-Example:123Input: 10Output: 4Explanation: There are 4 prime numbe
+          客户端通信协议
+客户端与服务端之间的通信协议是在 TCP 协议之上构建的
+Redis 制定了 RESP(REdis Serialization Protocol，Redis 序列化协议) 实现客户端与服务端的正常交互
+
+
+发送命令格式
+123456*&lt;参数数量&gt;CRLF$&lt;参数 1
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/posts/9235f089/#more" rel="contents">
+            <a class="btn" href="/posts/85b8009b/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1968,7 +1926,7 @@ Example:123Input: 10Output: 4Explanation: There are 4 prime numbe
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/735e5788/">
+    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/e7c5f62e/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="yz1509">
@@ -1987,8 +1945,8 @@ Example:123Input: 10Output: 4Explanation: There are 4 prime numbe
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/posts/735e5788/" itemprop="url">
-                  排序算法
+                <a class="post-title-link" href="/posts/e7c5f62e/" itemprop="url">
+                  Redis-03-独立功能
                 </a>
               
             
@@ -2014,24 +1972,12 @@ Example:123Input: 10Output: 4Explanation: There are 4 prime numbe
                 
               
 
-              <time title="创建时间：2018-07-19 10:07:14" itemprop="dateCreated datePublished" datetime="2018-07-19T10:07:14+08:00">2018-07-19</time>
+              <time title="创建时间：2019-07-26 00:35:42 / 修改时间：01:00:32" itemprop="dateCreated datePublished" datetime="2019-07-26T00:35:42+08:00">2019-07-26</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2018-07-25 18:50:32" itemprop="dateModified" datetime="2018-07-25T18:50:32+08:00">2018-07-25</time>
               
             
           </span>
@@ -2048,7 +1994,7 @@ Example:123Input: 10Output: 4Explanation: There are 4 prime numbe
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/DataStructure-Algorithm/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/后端技术栈/" itemprop="url" rel="index"><span itemprop="name">后端技术栈</span></a></span>
 
                 
                 
@@ -2084,15 +2030,14 @@ Example:123Input: 10Output: 4Explanation: There are 4 prime numbe
       
         
           
-          前言排序算法可以分为内部排序和外部排序，内部排序是数据记录在内存中进行排序，而外部排序是因排序的数据很大，一次不能容纳全部的排序记录，在排序过程中需要访问外存。
-常见的八大排序算法，他们之间关系如下：
-它们的性能比较：
-下面，利用Python分别将他们进行实现。
-直接插入排序算法思想直接插入排序是一
+          慢查询分析慢查询日志：系统在命令执行前后计算每条命令的执行时间，当超过预设阀值，就将这条命令的相关信息（例如：发生时间，耗时，命令的详细信息）记录下来。
+慢查询的两个配置参数
+预设阈值：slowlog-log-slower-than
+slowlog-log-slower-than = 0：记录所有命
           ...
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/posts/735e5788/#more" rel="contents">
+            <a class="btn" href="/posts/e7c5f62e/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -2137,7 +2082,7 @@ Example:123Input: 10Output: 4Explanation: There are 4 prime numbe
 
   
   <nav class="pagination">
-    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2184,7 +2129,7 @@ Example:123Input: 10Output: 4Explanation: There are 4 prime numbe
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">12</span>
+                    <span class="site-state-item-count">23</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2300,7 +2245,9 @@ Example:123Input: 10Output: 4Explanation: There are 4 prime numbe
                     
                       
                     
-                    <span class="site-state-item-count">41</span>
+                      
+                    
+                    <span class="site-state-item-count">42</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
