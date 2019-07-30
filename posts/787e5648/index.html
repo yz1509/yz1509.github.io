@@ -125,18 +125,18 @@
 
 
 
-  <meta name="description" content="缓存的收益和成本收益：  加速读写 降低后端负载  成本：  数据不一致性 代码维护成本：加入缓存后，需要同时处理缓存层和存储层的逻辑，增大了开发者维护代码的成本 运维成本  使用场景：  开销大的复杂计算 加速请求响应  缓存更新策略 LRU/LFU/FIFO 算法剔除  使用场景：通常用于缓存使用量超过了预设最大值的时候 一致性：要清理哪些数据是由具体算法决定，开发人员只能决定使用哪种算法，所">
-<meta name="keywords" content="Redis">
+  <meta name="description" content="协议层类关系图协议层相关的类主要实现与数据传输格式封装的协议相关的内容。可以发现，所有的协议类都直接或间接继承 TProtocol 类，协议层类关系图主要分为三部分来看：  抽象基类 Tprotocol，它是所有协议类的基类，有很大一部分类直接从它继承实现它定义的接口函数（纯虚函数） TProtocol 的默认实现 TProtocolDefaults 类和虚拟协议类 TVirtualProtoco">
+<meta name="keywords" content="thrift">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Redis-11-缓存设计">
-<meta property="og:url" content="https://yz1509.github.io/posts/3d2c9df2/index.html">
+<meta property="og:title" content="Thrift-Protocol概述">
+<meta property="og:url" content="https://yz1509.github.io/posts/787e5648/index.html">
 <meta property="og:site_name" content="兔子和阿铁">
-<meta property="og:description" content="缓存的收益和成本收益：  加速读写 降低后端负载  成本：  数据不一致性 代码维护成本：加入缓存后，需要同时处理缓存层和存储层的逻辑，增大了开发者维护代码的成本 运维成本  使用场景：  开销大的复杂计算 加速请求响应  缓存更新策略 LRU/LFU/FIFO 算法剔除  使用场景：通常用于缓存使用量超过了预设最大值的时候 一致性：要清理哪些数据是由具体算法决定，开发人员只能决定使用哪种算法，所">
+<meta property="og:description" content="协议层类关系图协议层相关的类主要实现与数据传输格式封装的协议相关的内容。可以发现，所有的协议类都直接或间接继承 TProtocol 类，协议层类关系图主要分为三部分来看：  抽象基类 Tprotocol，它是所有协议类的基类，有很大一部分类直接从它继承实现它定义的接口函数（纯虚函数） TProtocol 的默认实现 TProtocolDefaults 类和虚拟协议类 TVirtualProtoco">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-07-25T17:00:32.370Z">
+<meta property="og:updated_time" content="2019-07-30T15:00:07.166Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Redis-11-缓存设计">
-<meta name="twitter:description" content="缓存的收益和成本收益：  加速读写 降低后端负载  成本：  数据不一致性 代码维护成本：加入缓存后，需要同时处理缓存层和存储层的逻辑，增大了开发者维护代码的成本 运维成本  使用场景：  开销大的复杂计算 加速请求响应  缓存更新策略 LRU/LFU/FIFO 算法剔除  使用场景：通常用于缓存使用量超过了预设最大值的时候 一致性：要清理哪些数据是由具体算法决定，开发人员只能决定使用哪种算法，所">
+<meta name="twitter:title" content="Thrift-Protocol概述">
+<meta name="twitter:description" content="协议层类关系图协议层相关的类主要实现与数据传输格式封装的协议相关的内容。可以发现，所有的协议类都直接或间接继承 TProtocol 类，协议层类关系图主要分为三部分来看：  抽象基类 Tprotocol，它是所有协议类的基类，有很大一部分类直接从它继承实现它定义的接口函数（纯虚函数） TProtocol 的默认实现 TProtocolDefaults 类和虚拟协议类 TVirtualProtoco">
 
 
 
@@ -145,7 +145,7 @@
 
 
 
-  <link rel="canonical" href="https://yz1509.github.io/posts/3d2c9df2/"/>
+  <link rel="canonical" href="https://yz1509.github.io/posts/787e5648/"/>
 
 
 
@@ -155,7 +155,7 @@
   };
 </script>
 
-  <title>Redis-11-缓存设计 | 兔子和阿铁</title>
+  <title>Thrift-Protocol概述 | 兔子和阿铁</title>
   
 
 
@@ -359,7 +359,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/3d2c9df2/">
+    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/787e5648/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="yz1509">
@@ -376,7 +376,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">Redis-11-缓存设计
+          <h1 class="post-title" itemprop="name headline">Thrift-Protocol概述
               
             
           </h1>
@@ -401,7 +401,7 @@
                 
               
 
-              <time title="创建时间：2019-07-26 00:37:24 / 修改时间：01:00:32" itemprop="dateCreated datePublished" datetime="2019-07-26T00:37:24+08:00">2019-07-26</time>
+              <time title="创建时间：2019-07-30 22:57:40 / 修改时间：23:00:07" itemprop="dateCreated datePublished" datetime="2019-07-30T22:57:40+08:00">2019-07-30</time>
             
 
             
@@ -457,173 +457,36 @@
       
 
       
-        <h1 id="缓存的收益和成本"><a href="#缓存的收益和成本" class="headerlink" title="缓存的收益和成本"></a>缓存的收益和成本</h1><p>收益：</p>
+        <h1 id="协议层类关系图"><a href="#协议层类关系图" class="headerlink" title="协议层类关系图"></a>协议层类关系图</h1><p>协议层相关的类主要实现与数据传输格式封装的协议相关的内容。可以发现，所有的协议类都直接或间接继承 TProtocol 类，协议层类关系图主要分为三部分来看：</p>
 <ul>
-<li>加速读写</li>
-<li>降低后端负载</li>
+<li>抽象基类 Tprotocol，它是所有协议类的基类，有很大一部分类直接从它继承实现它定义的接口函数（纯虚函数）</li>
+<li>TProtocol 的默认实现 TProtocolDefaults 类和虚拟协议类 TVirtualProtocol 及其子类</li>
+<li>各种协议类的对象生成工厂类，负责某一种具体协议类对象的生产</li>
 </ul>
-<p>成本：</p>
-<ul>
-<li>数据不一致性</li>
-<li>代码维护成本：加入缓存后，需要同时处理缓存层和存储层的逻辑，增大了开发者维护代码的成本</li>
-<li>运维成本</li>
-</ul>
-<p>使用场景：</p>
-<ul>
-<li>开销大的复杂计算</li>
-<li>加速请求响应</li>
-</ul>
-<h1 id="缓存更新策略"><a href="#缓存更新策略" class="headerlink" title="缓存更新策略"></a>缓存更新策略</h1><ol>
-<li><p>LRU/LFU/FIFO 算法剔除</p>
-<ul>
-<li>使用场景：通常用于缓存使用量超过了预设最大值的时候</li>
-<li>一致性：要清理哪些数据是由具体算法决定，开发人员只能决定使用哪种算法，所以数据的一致性是最差的。</li>
-<li>维护成本：算法不需要开发人员自己来实现，通常只需要配置最大 maxmemory 和对应的策略即可</li>
-</ul>
-</li>
-<li><p>超时剔除</p>
-<ul>
-<li>使用场景：通过给缓存数据设置过期时间，让其在过期时间后自动删除</li>
-<li>一致性：一段时间窗口内（取决于过期时间长短）存在一致性问题，即缓存数据和真实数据源的数据不一致</li>
-<li>维护成本：只需设置 expire 过期时间即可</li>
-</ul>
-</li>
-<li><p>主动更新</p>
-<ul>
-<li>使用场景：应用方对于数据的一致性要求高，需要在真实数据更新后，立即更新缓存数据</li>
-<li>一致性：一致性最高，但如果主动更新发生了问题，那么这条数据很可能很长时间不会更新，所以建议结合超时剔除一起使用效果会更好</li>
-<li>维护成本：维护成本会比较高，开发者需要自己来完成更新，并保证更新操作的正确性</li>
-</ul>
-</li>
-<li><p>实践建议</p>
-<ul>
-<li>低一致性业务建议配置最大内存和淘汰策略的方式使用</li>
-<li>高一致性业务可以结合使用超时剔除和主动更新，这样即使主动更新出了问题，也能保证数据过期时间后删除脏数据</li>
-</ul>
-</li>
+<h1 id="Tprotocol"><a href="#Tprotocol" class="headerlink" title="Tprotocol"></a>Tprotocol</h1><p>源码路径：<code>thrift/lib/cpp/src/thrift/protocol/TProtocol.h</code></p>
+<p>抽象类 TProtocol 对于每一种数据类型都提供了读写的开始和结束的方法，这里的读写方法应该是针对网络 I/O 读写，不过真正实现网络读写的是 TTransport 相关类，此处的读写方法主要针对数据的处理（如数据格式调整）。除了有针对具体的数据类型的读写方法，消息也可以通过网络传递。所以也定义了消息的读写方法。此外，还定义了一些公用的功能，例如跳过某一个结构不读，大小端数据格式调整、主机字节序和网络字节序的相互转换等。</p>
+<h2 id="支持的数据结构"><a href="#支持的数据结构" class="headerlink" title="支持的数据结构"></a>支持的数据结构</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// thrift 协议支持的数据类型</span></span><br><span class="line"><span class="keyword">enum</span> TType &#123;</span><br><span class="line">  T_STOP       = <span class="number">0</span>,</span><br><span class="line">  T_VOID       = <span class="number">1</span>,</span><br><span class="line">  T_BOOL       = <span class="number">2</span>,</span><br><span class="line">  T_BYTE       = <span class="number">3</span>,</span><br><span class="line">  T_I08        = <span class="number">3</span>,</span><br><span class="line">  T_I16        = <span class="number">6</span>,</span><br><span class="line">  T_I32        = <span class="number">8</span>,</span><br><span class="line">  T_U64        = <span class="number">9</span>,</span><br><span class="line">  T_I64        = <span class="number">10</span>,</span><br><span class="line">  T_DOUBLE     = <span class="number">4</span>,</span><br><span class="line">  T_STRING     = <span class="number">11</span>,</span><br><span class="line">  T_UTF7       = <span class="number">11</span>,</span><br><span class="line">  T_STRUCT     = <span class="number">12</span>,</span><br><span class="line">  T_MAP        = <span class="number">13</span>,</span><br><span class="line">  T_SET        = <span class="number">14</span>,</span><br><span class="line">  T_LIST       = <span class="number">15</span>,</span><br><span class="line">  T_UTF8       = <span class="number">16</span>,</span><br><span class="line">  T_UTF16      = <span class="number">17</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// thrift 支持的消息类型</span></span><br><span class="line"><span class="keyword">enum</span> TMessageType &#123;</span><br><span class="line">  T_CALL       = <span class="number">1</span>,</span><br><span class="line">  T_REPLY      = <span class="number">2</span>,</span><br><span class="line">  T_EXCEPTION  = <span class="number">3</span>,</span><br><span class="line">  T_ONEWAY     = <span class="number">4</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="写函数"><a href="#写函数" class="headerlink" title="写函数"></a>写函数</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 纯虚函数</span></span><br><span class="line"><span class="function"><span class="keyword">virtual</span> unit32_t <span class="title">write</span><span class="params">(*)</span><span class="title">Begin_virt</span><span class="params">(<span class="keyword">const</span> parameters)</span> </span>= <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="keyword">virtual</span> unit32_t <span class="title">write</span><span class="params">(*)</span><span class="title">End_virt</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="keyword">virtual</span> unit32_t <span class="title">writeFiledStop_virt</span><span class="params">()</span> </span>= <span class="number">0</span>; <span class="comment">// 只有 Filed 有 stop</span></span><br><span class="line"><span class="function"><span class="keyword">virtual</span> unit32_t <span class="title">write</span><span class="params">(TtypeName)</span>_<span class="title">virt</span><span class="params">(<span class="keyword">const</span> parameter)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用相应纯虚函数的函数</span></span><br><span class="line"><span class="keyword">unit32_t</span> functionName(&lt;<span class="keyword">const</span> parameters&gt;)&#123;</span><br><span class="line">    T_VIRTUAL_CALL();       <span class="comment">// 调用打印日志函数</span></span><br><span class="line">    <span class="keyword">return</span> functionName_virt(&lt;<span class="keyword">const</span> parameters);  <span class="comment">// 调用纯虚函数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="读函数"><a href="#读函数" class="headerlink" title="读函数"></a>读函数</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 纯虚函数</span></span><br><span class="line"><span class="function"><span class="keyword">virtual</span> unit32_t <span class="title">read</span><span class="params">(*)</span><span class="title">Begin_virt</span><span class="params">(parameters)</span> </span>= <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="keyword">virtual</span> unit32_t <span class="title">read</span><span class="params">(*)</span><span class="title">End_virt</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line"><span class="function"><span class="keyword">virtual</span> unit32_t <span class="title">read</span><span class="params">(TtypeName)</span>_<span class="title">virt</span><span class="params">(parameter)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 另一个 readBool() 函数，</span></span><br><span class="line"><span class="comment">// std::vector is specialized for bool, and its elements are individual bits</span></span><br><span class="line"><span class="comment">// rather than bools.   We need to define a different version of readBool()</span></span><br><span class="line"><span class="comment">// to work with std::vector&lt;bool&gt;.</span></span><br><span class="line"><span class="function"><span class="keyword">virtual</span> uint32_t <span class="title">readBool_virt</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">vector</span>&lt;<span class="keyword">bool</span>&gt;::reference value)</span> </span>= <span class="number">0</span>; </span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用相应纯虚函数的函数</span></span><br><span class="line"><span class="keyword">unit32_t</span> functionName(&lt;parameters&gt;)&#123;</span><br><span class="line">    T_VIRTUAL_CALL();       <span class="comment">// 调用打印日志函数</span></span><br><span class="line">    <span class="keyword">return</span> functionName_virt(&lt;parameters);  <span class="comment">// 调用纯虚函数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">  TProtocol(<span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;TTransport&gt; ptrans)</span><br><span class="line">    : ptrans_(ptrans), input_recursion_depth_(<span class="number">0</span>), output_recursion_depth_(<span class="number">0</span>), recursion_limit_(DEFAULT_RECURSION_LIMIT)</span><br><span class="line">  &#123;&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="其他函数"><a href="#其他函数" class="headerlink" title="其他函数"></a>其他函数</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 跳过任意数据类型的函数</span></span><br><span class="line"><span class="keyword">uint32_t</span> skip(TType type) &#123;</span><br><span class="line">    T_VIRTUAL_CALL();</span><br><span class="line">    <span class="keyword">return</span> skip_virt(type);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">virtual</span> uint32_t <span class="title">skip_virt</span><span class="params">(TType type)</span></span>&#123;</span><br><span class="line">    <span class="comment">// 调用此命名空间下全局函数实现</span></span><br><span class="line">    <span class="comment">// 在该头文件的最后定义模板函数 skip 以适用于不同的 Protocol 类</span></span><br><span class="line">    <span class="keyword">return</span> ::apache::thrift::protocol::skip(*<span class="keyword">this</span>, type);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">inline</span> <span class="built_in">std</span>::<span class="built_in">shared_ptr</span>&lt;TTransport&gt; getTransport() &#123; <span class="keyword">return</span> ptrans_; &#125;</span><br></pre></td></tr></table></figure>
+<p>此外还有一些与输入，输出递归深度有关的函数在上面并未列出。</p>
+<h1 id="TProtocolDefaults"><a href="#TProtocolDefaults" class="headerlink" title="TProtocolDefaults"></a>TProtocolDefaults</h1><p>源码路径：<code>thrift/lib/cpp/src/thrift/protocol/TVirtualProtocol.h</code></p>
+<h2 id="继承关系"><a href="#继承关系" class="headerlink" title="继承关系"></a>继承关系</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TProtocolDefaults</span> :</span> <span class="keyword">public</span> TProtocol &#123;&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="主要操作"><a href="#主要操作" class="headerlink" title="主要操作"></a>主要操作</h2><ol>
+<li>重写了父类非虚拟的读写函数，这些函数都会抛出一个 <code>TProtocolException::NOT_IMPLEMENTED</code> 异常</li>
+<li>重写了父类的 <code>skip</code> 函数，直接调用父类中的 <code>skip</code> 模板函数</li>
+<li>构造函数直接调用父类的构造函数</li>
 </ol>
-<h1 id="穿透优化"><a href="#穿透优化" class="headerlink" title="穿透优化"></a>穿透优化</h1><p><strong>缓存穿透</strong>是指查询一个根本不存在的数据，缓存层和存储层都不会命中。整个过程可分为如下三步：</p>
-<ol>
-<li>缓存层不命中</li>
-<li>存储层不命中，不将空结果写回缓存</li>
-<li>返回空结果</li>
+<h1 id="TVirtualProtocol"><a href="#TVirtualProtocol" class="headerlink" title="TVirtualProtocol"></a>TVirtualProtocol</h1><p>源码路径：<code>thrift/lib/cpp/src/thrift/protocol/TVirtualProtocol.h</code></p>
+<h2 id="继承关系-1"><a href="#继承关系-1" class="headerlink" title="继承关系"></a>继承关系</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="class"><span class="keyword">class</span> <span class="title">Protocol_</span>, <span class="title">class</span> <span class="title">Super_</span> = <span class="title">TProtocolDefaults</span>&gt;</span></span><br><span class="line"><span class="class"><span class="title">class</span> <span class="title">TVirtualProtocol</span> :</span> <span class="keyword">public</span> Super_ &#123;&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="读写函数"><a href="#读写函数" class="headerlink" title="读写函数"></a>读写函数</h2><p>TVirtualProtocol 类中的读写函数会重写父类中的读写纯虚函数，其都是通过 <code>this</code> 指针调用模板参数 <code>class Protocol_</code> 中相应的实现方法来实现自己的读写函数，例如：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">uint32_t</span> writeMessageBegin_virt(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; name,</span><br><span class="line">                                <span class="keyword">const</span> TMessageType messageType,</span><br><span class="line">                                <span class="keyword">const</span> <span class="keyword">int32_t</span> seqid) override &#123; <span class="comment">// override 关键字</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">static_cast</span>&lt;Protocol_*&gt;(<span class="keyword">this</span>)-&gt;writeMessageBegin(name, messageType, seqid);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="其他操作"><a href="#其他操作" class="headerlink" title="其他操作"></a>其他操作</h2><ol>
+<li>提供了 <code>skip</code> 函数和针对 <code>std::vector&lt;boo&gt;</code> 的 <code>readBool</code> 函数的默认实现</li>
+<li>构造函数直接调用父类的构造函数</li>
 </ol>
-<p>缓存穿透将导致不存在的数据每次请求都要到存储层去查询，失去了缓存保护后端存储的意义。</p>
-<p>解决办法：</p>
-<ol>
-<li><p>缓存空对象</p>
-<p>缓存空对象会有两个问题：</p>
-<ul>
-<li>空值做了缓存，意味着缓存层中存了更多的键，需要更多的内存空间（如果是攻击，问题更严重），比较有效的方法是针对这类数据设置一个较短的过期时间，让其自动剔除</li>
-<li>缓存层和存储层的数据会有一段时间窗口的不一致，可能会对业务有一定影响</li>
-</ul>
-</li>
-<li><p>布隆过滤器拦截</p>
-<p>在访问缓存层和存储层之前，将存在的 key 用<a href="https://en.wikipedia.org/wiki/Bloom_filter" target="_blank" rel="noopener">布隆过滤器</a>提前保存起来，做第一层拦截。</p>
-<p>这种方法适用于数据命中不高、数据相对固定、实时性低（通常是数据集较大）的应用场景，代码维护较为复杂，但是缓存空间占用少。</p>
-</li>
-</ol>
-<h1 id="无底洞优化"><a href="#无底洞优化" class="headerlink" title="无底洞优化"></a>无底洞优化</h1><p>无底洞问题：分布式缓存中，有更多的机器不保证有更高的性能。</p>
-<p>无底洞问题分析：</p>
-<ul>
-<li>客户端一次批量操作会涉及多次网络操作，也就意味着批量操作会随着节点的增多，耗时会不断增大</li>
-<li>网络连接数变多，对节点的性能也有一定影响</li>
-</ul>
-<p>批量操作优化：</p>
-<ol>
-<li><p>串行命令</p>
-<p>逐次执行 n 个命令(如 get)</p>
-<ul>
-<li>操作时间 = n 次网络时间 + n 次命令时间</li>
-<li>优点<ul>
-<li>编程简单</li>
-<li>如果少量 keys，性能可以满足要求</li>
-</ul>
-</li>
-<li>缺点：大量 keys 请求延迟严重</li>
-</ul>
-</li>
-<li><p>串行 IO</p>
-<p>将属于同一个节点的 key 进行归档，得到每个节点的 key 子列表，之后对每个节点执行 mget 或者 Pipeline 操作</p>
-<ul>
-<li>操作时间 = node 次网络时间 + n 次命令时间</li>
-<li>优点<ul>
-<li>编程简单</li>
-<li>少量节点，性能满足要求</li>
-</ul>
-</li>
-<li>缺点：大量 node 延迟严重</li>
-</ul>
-</li>
-<li><p>并行 IO</p>
-<p>串行 IO 中的最后一步改为多线程执行</p>
-<ul>
-<li>操作时间 = max_slow(node 网络时间) + n 次命令时间</li>
-<li>优点：利用并行特性，延迟取决于最慢的节点</li>
-<li>缺点<ul>
-<li>编程复杂</li>
-<li>多线程，问题定位可能较难</li>
-</ul>
-</li>
-</ul>
-</li>
-<li><p>hash-tag 实现</p>
-<p>将多个 key 强制分配到一个节点上</p>
-<ul>
-<li>操作时间 = 1 次网络时间 + n 次命令时间</li>
-<li>优点：性能最高</li>
-<li>缺点<ul>
-<li>业务维护成本较高</li>
-<li>容易出现数据倾斜</li>
-</ul>
-</li>
-</ul>
-</li>
-</ol>
-<h1 id="雪崩优化"><a href="#雪崩优化" class="headerlink" title="雪崩优化"></a>雪崩优化</h1><p>缓存雪崩：由于缓存层承载着大量请求，有效地保护了存储层，但是如果缓存层由于某些原因不能提供服务，于是所有的请求都会达到存储层，存储层的调用量会暴增，造成存储层也会级联宕机的情况。</p>
-<p>解决方法：</p>
-<ul>
-<li>保证缓存层服务高可用性</li>
-<li>依赖隔离组件为后端限流并降级</li>
-<li>提前测试，在项目上线前，演练缓存层宕掉后，应用以及后端的负载情况以及可能出现的问题，在此基础上做一些预案设定</li>
-</ul>
-<h1 id="热点-key-重建优化"><a href="#热点-key-重建优化" class="headerlink" title="热点 key 重建优化"></a>热点 key 重建优化</h1><p>开发人员使用“缓存+过期时间”的策略既可以加速数据读写，又保证数据的定期更新，这种模式基本能够满足绝大部分需求。但是以下两个问题如果同时出现，可能就会对应用造成致命的危害：</p>
-<ul>
-<li>当前 key 是一个热点 key（例如一个热门的娱乐新闻），并发量非常大</li>
-<li>重建缓存不能在短时间完成</li>
-</ul>
-<ol>
-<li><p>互斥锁(mutex key)</p>
-<p>此方法只允许一个线程重建缓存，其他线程等待重建缓存的线程执行完，重新从缓存获取数据即可。</p>
-<p>优点</p>
-<ul>
-<li>思路简单</li>
-<li>保证一致性</li>
-</ul>
-<p>缺点</p>
-<ul>
-<li>代码复杂度增大</li>
-<li>存在死锁的风险</li>
-<li>存在线程池阻塞的风险</li>
-</ul>
-</li>
-<li><p>永远不过期</p>
-<p>“永远不过期” 包含两层意思：</p>
-<ul>
-<li>从缓存层面来看，确实没有设置过期时间，所以不会出现热点 key 过期后产生的问题，也就是“物理”不过期</li>
-<li>从功能层面来看，为每个 value 设置一个逻辑过期时间，当发现超过逻辑过期时间后，会使用单独的线程去构建缓存</li>
-</ul>
-<p>优点</p>
-<ul>
-<li>基本杜绝热点 key 问题</li>
-</ul>
-<p>缺点</p>
-<ul>
-<li>不保证一致性</li>
-<li>逻辑过期时间增加代码维护成本和内存成本</li>
-</ul>
-</li>
-</ol>
+<h1 id="为何要有-TProtocolDefaults-和-TVirtualProtocol-？"><a href="#为何要有-TProtocolDefaults-和-TVirtualProtocol-？" class="headerlink" title="为何要有 TProtocolDefaults 和 TVirtualProtocol ？"></a>为何要有 TProtocolDefaults 和 TVirtualProtocol ？</h1><p>下面来分析如果不从定义的默认实现类继承，直接从抽象类继承怎样会产生无限递归调用。现在我们假设直接从抽象类继承，那么如果一个指向子类对象的父类（TProtocol）调用 <code>writeMessageBegin</code> 方法，因为这个方法不是虚拟函数（不会动态绑定）所以就会调用父类的 <code>writeMessageBegin</code> 方法，然后父类会直接调用它的纯虚函数 <code>writeMessageBegin_virt</code>，这个函数就会动态绑定，就会执行子类的实现，在这里就是通过虚协议类 TVirtualProtocol 实现的，而这个函数又会调用之类的 <code>writeMessageBegin</code> 方法，如果子类没有实现这个方法，那么就又回到父类的这个方法了,从而产生无限递归调用。那么如果默认是从默认实现类 TProtocolDefaults 继承，那么就会执行它的 <code>writeMessageBegin</code> 方法，从而抛出一个异常，就不会产生无限递归调用。</p>
 
       
     </div>
@@ -644,7 +507,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Redis/" rel="tag"><i class="fa fa-tag"></i> Redis</a>
+            <a href="/tags/thrift/" rel="tag"><i class="fa fa-tag"></i> thrift</a>
           
         </div>
       
@@ -657,8 +520,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/posts/1572a53d/" rel="next" title="Redis-10-集群">
-                <i class="fa fa-chevron-left"></i> Redis-10-集群
+              <a href="/posts/f531f65/" rel="next" title="Thrift-Transport概述">
+                <i class="fa fa-chevron-left"></i> Thrift-Transport概述
               </a>
             
           </div>
@@ -666,10 +529,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/posts/d3488cd7/" rel="prev" title="Redis-12-开发运维的陷阱">
-                Redis-12-开发运维的陷阱 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -924,7 +783,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#缓存的收益和成本"><span class="nav-number">1.</span> <span class="nav-text">缓存的收益和成本</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#缓存更新策略"><span class="nav-number">2.</span> <span class="nav-text">缓存更新策略</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#穿透优化"><span class="nav-number">3.</span> <span class="nav-text">穿透优化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#无底洞优化"><span class="nav-number">4.</span> <span class="nav-text">无底洞优化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#雪崩优化"><span class="nav-number">5.</span> <span class="nav-text">雪崩优化</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#热点-key-重建优化"><span class="nav-number">6.</span> <span class="nav-text">热点 key 重建优化</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#协议层类关系图"><span class="nav-number">1.</span> <span class="nav-text">协议层类关系图</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Tprotocol"><span class="nav-number">2.</span> <span class="nav-text">Tprotocol</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#支持的数据结构"><span class="nav-number">2.1.</span> <span class="nav-text">支持的数据结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写函数"><span class="nav-number">2.2.</span> <span class="nav-text">写函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#读函数"><span class="nav-number">2.3.</span> <span class="nav-text">读函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构造函数"><span class="nav-number">2.4.</span> <span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他函数"><span class="nav-number">2.5.</span> <span class="nav-text">其他函数</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TProtocolDefaults"><span class="nav-number">3.</span> <span class="nav-text">TProtocolDefaults</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系"><span class="nav-number">3.1.</span> <span class="nav-text">继承关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#主要操作"><span class="nav-number">3.2.</span> <span class="nav-text">主要操作</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#TVirtualProtocol"><span class="nav-number">4.</span> <span class="nav-text">TVirtualProtocol</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#继承关系-1"><span class="nav-number">4.1.</span> <span class="nav-text">继承关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#读写函数"><span class="nav-number">4.2.</span> <span class="nav-text">读写函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他操作"><span class="nav-number">4.3.</span> <span class="nav-text">其他操作</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为何要有-TProtocolDefaults-和-TVirtualProtocol-？"><span class="nav-number">5.</span> <span class="nav-text">为何要有 TProtocolDefaults 和 TVirtualProtocol ？</span></a></li></ol></div>
             
 
           </div>
