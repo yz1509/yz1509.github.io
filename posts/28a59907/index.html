@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+<script>
+    (function(){
+        if(''){
+            if (prompt('请输入文章密码') !== ''){
+                alert('密码错误！');
+                history.back();
+            }
+        }
+    })();
+</script>
+
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.3.0" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch.jpg?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32x32.ico?v=6.3.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16x16.ico?v=6.3.0">
+
+
+  <link rel="mask-icon" href="/images/mylogo.jpg?v=6.3.0" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.3.0',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="源码文件 /src/adlist.h &amp;amp; /src/adlist.c adlist 数据结构adlist 其实是一个双向链表，我们首先介绍其链表节点、链表迭代器和链表的数据结构。 链表节点12345typedef struct listNode &amp;#123;    struct listNode *prev;  // 指向前一节点    struct listNode *next;  //">
+<meta name="keywords" content="Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis 源码之 adlist">
+<meta property="og:url" content="https://yz1509.github.io/posts/28a59907/index.html">
+<meta property="og:site_name" content="兔子和阿铁">
+<meta property="og:description" content="源码文件 /src/adlist.h &amp;amp; /src/adlist.c adlist 数据结构adlist 其实是一个双向链表，我们首先介绍其链表节点、链表迭代器和链表的数据结构。 链表节点12345typedef struct listNode &amp;#123;    struct listNode *prev;  // 指向前一节点    struct listNode *next;  //">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-10-12T12:10:16.665Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis 源码之 adlist">
+<meta name="twitter:description" content="源码文件 /src/adlist.h &amp;amp; /src/adlist.c adlist 数据结构adlist 其实是一个双向链表，我们首先介绍其链表节点、链表迭代器和链表的数据结构。 链表节点12345typedef struct listNode &amp;#123;    struct listNode *prev;  // 指向前一节点    struct listNode *next;  //">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="兔子和阿铁" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://yz1509.github.io/posts/28a59907/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Redis 源码之 adlist | 兔子和阿铁</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">兔子和阿铁</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">旅の途中</p>
+      
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+    <a href="/about/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-user"></i> <br />关于</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+    <a href="/categories/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-th"></i> <br />分类</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档</a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/28a59907/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="yz1509">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/mylogo.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="兔子和阿铁">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Redis 源码之 adlist
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-10-12 20:08:45 / 修改时间：20:10:16" itemprop="dateCreated datePublished" datetime="2019-10-12T20:08:45+08:00">2019-10-12</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/数据库/" itemprop="url" rel="index"><span itemprop="name">数据库</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>源码文件 <code>/src/adlist.h</code> &amp; <code>/src/adlist.c</code></p>
+<h1 id="adlist-数据结构"><a href="#adlist-数据结构" class="headerlink" title="adlist 数据结构"></a>adlist 数据结构</h1><p>adlist 其实是一个双向链表，我们首先介绍其链表节点、链表迭代器和链表的数据结构。</p>
+<h2 id="链表节点"><a href="#链表节点" class="headerlink" title="链表节点"></a>链表节点</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> &#123;</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> *<span class="title">prev</span>;</span>  <span class="comment">// 指向前一节点</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">listNode</span> *<span class="title">next</span>;</span>  <span class="comment">// 指向后一节点</span></span><br><span class="line">    <span class="keyword">void</span> *value;            <span class="comment">// 指向当前节点的值</span></span><br><span class="line">&#125; listNode;</span><br></pre></td></tr></table></figure>
+<h2 id="链表迭代器"><a href="#链表迭代器" class="headerlink" title="链表迭代器"></a>链表迭代器</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">listIter</span> &#123;</span></span><br><span class="line">    listNode *next;     <span class="comment">// 迭代器当前所指节点，为什么不叫 now ？       </span></span><br><span class="line">    <span class="keyword">int</span> direction;      <span class="comment">// 迭代访问的方向    </span></span><br><span class="line">&#125; listIter;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Directions for iterators */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AL_START_HEAD 0     <span class="comment">// 从首到尾</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> AL_START_TAIL 1     <span class="comment">// 从尾到首</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="链表"><a href="#链表" class="headerlink" title="链表"></a>链表</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="class"><span class="keyword">struct</span> <span class="title">list</span> &#123;</span></span><br><span class="line">    listNode *head;     <span class="comment">// 首节点</span></span><br><span class="line">    listNode *tail;     <span class="comment">// 尾节点</span></span><br><span class="line">    <span class="keyword">void</span> *(*dup)(<span class="keyword">void</span> *ptr);    <span class="comment">// 用户可自定义的节点值复制函数</span></span><br><span class="line">    <span class="keyword">void</span> (*<span class="built_in">free</span>)(<span class="keyword">void</span> *ptr);    <span class="comment">// 用户可自定义的节点值释放函数</span></span><br><span class="line">    <span class="keyword">int</span> (*match)(<span class="keyword">void</span> *ptr, <span class="keyword">void</span> *key); <span class="comment">// 用户可自定义的节点值匹配函数</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> len;  <span class="comment">// 记录链表长度</span></span><br><span class="line">&#125; <span class="built_in">list</span>;</span><br></pre></td></tr></table></figure>
+<h1 id="辅助函数"><a href="#辅助函数" class="headerlink" title="辅助函数"></a>辅助函数</h1><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Functions implemented as macros */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> listLength(l) ((l)-&gt;len)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> listFirst(l) ((l)-&gt;head)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> listLast(l) ((l)-&gt;tail)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> listPrevNode(n) ((n)-&gt;prev)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> listNextNode(n) ((n)-&gt;next)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> listNodeValue(n) ((n)-&gt;value)</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> listSetDupMethod(l,m) ((l)-&gt;dup = (m))</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> listSetFreeMethod(l,m) ((l)-&gt;free = (m))</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> listSetMatchMethod(l,m) ((l)-&gt;match = (m))</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> listGetDupMethod(l) ((l)-&gt;dup)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> listGetFree(l) ((l)-&gt;free)</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> listGetMatchMethod(l) ((l)-&gt;match)</span></span><br></pre></td></tr></table></figure>
+<h1 id="adlist-基本操作"><a href="#adlist-基本操作" class="headerlink" title="adlist 基本操作"></a>adlist 基本操作</h1><h2 id="构造函数"><a href="#构造函数" class="headerlink" title="构造函数"></a>构造函数</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">list</span> *<span class="title">listCreate</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">list</span> *<span class="title">list</span>;</span>  <span class="comment">// 指向一个链表的指针</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((<span class="built_in">list</span> = zmalloc(<span class="keyword">sizeof</span>(*<span class="built_in">list</span>))) == <span class="literal">NULL</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    <span class="built_in">list</span>-&gt;head = <span class="built_in">list</span>-&gt;tail = <span class="literal">NULL</span>; <span class="comment">// 首尾节点默认为 NULL</span></span><br><span class="line">    <span class="built_in">list</span>-&gt;len = <span class="number">0</span>;</span><br><span class="line">    <span class="built_in">list</span>-&gt;dup = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="built_in">list</span>-&gt;<span class="built_in">free</span> = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="built_in">list</span>-&gt;match = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">list</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>返回值：</p>
+<ul>
+<li>分配内存执行失败时，返回 <code>NULL</code></li>
+<li>执行成功时返回指向已构造的空链表的指针。</li>
+</ul>
+<h2 id="析构函数"><a href="#析构函数" class="headerlink" title="析构函数"></a>析构函数</h2><ol>
+<li><code>lsitEpmty</code> —— 不健全的析构函数</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">listEmpty</span><span class="params">(<span class="built_in">list</span> *<span class="built_in">list</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">long</span> len;</span><br><span class="line">    listNode *current, *next;</span><br><span class="line"></span><br><span class="line">    current = <span class="built_in">list</span>-&gt;head;</span><br><span class="line">    len = <span class="built_in">list</span>-&gt;len;</span><br><span class="line">    <span class="keyword">while</span>(len--) &#123;</span><br><span class="line">        next = current-&gt;next;   <span class="comment">// 保存下一节点的指针</span></span><br><span class="line">        <span class="comment">// 如果 list 中的 free 函数已设置，调用其，释放节点值</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">list</span>-&gt;<span class="built_in">free</span>) <span class="built_in">list</span>-&gt;<span class="built_in">free</span>(current-&gt;value);</span><br><span class="line">        <span class="comment">// 释放当前节点的指针</span></span><br><span class="line">        zfree(current);</span><br><span class="line">        current = next;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">list</span>-&gt;head = <span class="built_in">list</span>-&gt;tail = <span class="literal">NULL</span>; <span class="comment">// 将首尾节点置为 NULL</span></span><br><span class="line">    <span class="built_in">list</span>-&gt;len = <span class="number">0</span>;  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以发现，<code>listEmpty</code> 函数释放了链表中的每个节点，但是并未释放指向该链表的指针本身。</p>
+<ol>
+<li><code>listRelease</code> —— 析构函数完全体</li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">listRelease</span><span class="params">(<span class="built_in">list</span> *<span class="built_in">list</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    listEmpty(<span class="built_in">list</span>);</span><br><span class="line">    zfree(<span class="built_in">list</span>);    <span class="comment">// 释放指向该链表的指针</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="添加"><a href="#添加" class="headerlink" title="添加"></a>添加</h2><ol>
+<li><code>listAddNodeHead</code></li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">list</span> *<span class="title">listAddNodeHead</span><span class="params">(<span class="built_in">list</span> *<span class="built_in">list</span>, <span class="keyword">void</span> *value)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    listNode *node;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((node = zmalloc(<span class="keyword">sizeof</span>(*node))) == <span class="literal">NULL</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    node-&gt;value = value;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">list</span>-&gt;len == <span class="number">0</span>) &#123;   </span><br><span class="line">        <span class="built_in">list</span>-&gt;head = <span class="built_in">list</span>-&gt;tail = node;</span><br><span class="line">        node-&gt;prev = node-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        node-&gt;prev = <span class="literal">NULL</span>;  <span class="comment">// 首节点的 prev 指针指向 NULL</span></span><br><span class="line">        node-&gt;next = <span class="built_in">list</span>-&gt;head;</span><br><span class="line">        <span class="built_in">list</span>-&gt;head-&gt;prev = node;</span><br><span class="line">        <span class="built_in">list</span>-&gt;head = node;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">list</span>-&gt;len++;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">list</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看出，该函数的作用是，根据给定的值指针 <code>value</code>，构造一个新的 <code>listnode</code>，并将该节点插入到给定链表 <code>list</code> 的首部，其返回值为：</p>
+<ul>
+<li>为新增节点申请内存失败时，返回 <code>NULL</code>，不改变原链表</li>
+<li>申请内存成功时，返回修改好的链表指针 <code>list</code></li>
+</ul>
+<ol>
+<li><code>listAddNodeTail</code></li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">list</span> *<span class="title">listAddNodeTail</span><span class="params">(<span class="built_in">list</span> *<span class="built_in">list</span>, <span class="keyword">void</span> *value)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    listNode *node;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((node = zmalloc(<span class="keyword">sizeof</span>(*node))) == <span class="literal">NULL</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    node-&gt;value = value;</span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">list</span>-&gt;len == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="built_in">list</span>-&gt;head = <span class="built_in">list</span>-&gt;tail = node;</span><br><span class="line">        node-&gt;prev = node-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        node-&gt;prev = <span class="built_in">list</span>-&gt;tail;</span><br><span class="line">        node-&gt;next = <span class="literal">NULL</span>;  <span class="comment">// 尾节点的 next 指针指向 NULL</span></span><br><span class="line">        <span class="built_in">list</span>-&gt;tail-&gt;next = node;</span><br><span class="line">        <span class="built_in">list</span>-&gt;tail = node;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">list</span>-&gt;len++;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">list</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该函数的作用是：根据给定的值指针 <code>value</code>，构造一个新的 <code>listnode</code>，并将该节点插入到给定链表 <code>list</code> 的尾部，其返回值为：</p>
+<ul>
+<li>为新增节点申请内存失败时，返回 <code>NULL</code>，不改变原链表</li>
+<li>申请内存成功时，返回修改好的链表指针 <code>list</code></li>
+</ul>
+<ol>
+<li><code>listInsertNode</code></li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">list</span> *<span class="title">listInsertNode</span><span class="params">(<span class="built_in">list</span> *<span class="built_in">list</span>, listNode *old_node, <span class="keyword">void</span> *value, <span class="keyword">int</span> after)</span> </span>&#123;</span><br><span class="line">    listNode *node;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((node = zmalloc(<span class="keyword">sizeof</span>(*node))) == <span class="literal">NULL</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    node-&gt;value = value;</span><br><span class="line">    <span class="keyword">if</span> (after) &#123;    <span class="comment">// atfer 非 0，新节点插入在指定节点之后</span></span><br><span class="line">        node-&gt;prev = old_node;  </span><br><span class="line">        node-&gt;next = old_node-&gt;next;</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">list</span>-&gt;tail == old_node) &#123; <span class="comment">// 指定节点为尾节点     </span></span><br><span class="line">            <span class="built_in">list</span>-&gt;tail = node;        <span class="comment">// 更新链表的尾节点指针为新插入节点</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;        <span class="comment">// after 为 0，新节点插入在指定节点之前</span></span><br><span class="line">        node-&gt;next = old_node;</span><br><span class="line">        node-&gt;prev = old_node-&gt;prev;</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">list</span>-&gt;head == old_node) &#123;  <span class="comment">// 指定节点为首节点</span></span><br><span class="line">            <span class="built_in">list</span>-&gt;head = node;         <span class="comment">// 更新链表的首节点指针为新插入节点</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (node-&gt;prev != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        node-&gt;prev-&gt;next = node;    <span class="comment">// 更新插入节点的前一节点的 next 指针</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (node-&gt;next != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        node-&gt;next-&gt;prev = node;    <span class="comment">// 更新插入节点的后一节点的 prev 指针</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">list</span>-&gt;len++;</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">list</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该函数的作用是：根据给定的值指针 <code>value</code>，构造一个新的 <code>listnode</code>，随后将该节点插入到链表的指定位置：</p>
+<ul>
+<li>$after \ne 0$，插入到 <code>old_node</code> 之后</li>
+<li>$after = 0$，插入到 <code>old_node</code> 之前</li>
+</ul>
+<p>函数的返回值为：</p>
+<ul>
+<li>为新增节点申请内存失败时，返回 <code>NULL</code>，不改变原链表</li>
+<li>申请内存成功时，返回修改好的链表指针 <code>list</code></li>
+</ul>
+<p><em>Tips:</em> 插入节点时，可以先更新插入节点的指针，然后再更新插入节点相邻节点的指针。</p>
+<h2 id="删除"><a href="#删除" class="headerlink" title="删除"></a>删除</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">listDelNode</span><span class="params">(<span class="built_in">list</span> *<span class="built_in">list</span>, listNode *node)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (node-&gt;prev)</span><br><span class="line">        node-&gt;prev-&gt;next = node-&gt;next;  </span><br><span class="line">    <span class="keyword">else</span>    </span><br><span class="line">        <span class="built_in">list</span>-&gt;head = node-&gt;next;    <span class="comment">// 删除节点为首节点，更新链表首节点指针</span></span><br><span class="line">    <span class="keyword">if</span> (node-&gt;next)</span><br><span class="line">        node-&gt;next-&gt;prev = node-&gt;prev;</span><br><span class="line">    <span class="keyword">else</span>    </span><br><span class="line">        <span class="built_in">list</span>-&gt;tail = node-&gt;prev;    <span class="comment">// 删除节点为尾节点，更新链表尾节点指针</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">list</span>-&gt;<span class="built_in">free</span>) <span class="built_in">list</span>-&gt;<span class="built_in">free</span>(node-&gt;value);</span><br><span class="line">    zfree(node);    <span class="comment">// 释放该节点所占内存空间</span></span><br><span class="line">    <span class="built_in">list</span>-&gt;len--;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该函数的作用是：删除给定节点，并释放其所占内存空间。</p>
+<h2 id="迭代器相关"><a href="#迭代器相关" class="headerlink" title="迭代器相关"></a>迭代器相关</h2><ol>
+<li><code>listGetIterator</code></li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">listIter *<span class="title">listGetIterator</span><span class="params">(<span class="built_in">list</span> *<span class="built_in">list</span>, <span class="keyword">int</span> direction)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    listIter *iter;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((iter = zmalloc(<span class="keyword">sizeof</span>(*iter))) == <span class="literal">NULL</span>) <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    <span class="keyword">if</span> (direction == AL_START_HEAD) </span><br><span class="line">        iter-&gt;next = <span class="built_in">list</span>-&gt;head;    <span class="comment">// 从首到尾      </span></span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        iter-&gt;next = <span class="built_in">list</span>-&gt;tail;    <span class="comment">// 从尾到首</span></span><br><span class="line">    iter-&gt;direction = direction;    <span class="comment">// 存储遍历方向</span></span><br><span class="line">    <span class="keyword">return</span> iter;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>函数的返回值：</p>
+<ul>
+<li>申请内存失败时，返回 <code>NULL</code></li>
+<li>申请内存成功时，根据方向参数初始化迭代器，并返回其指针 <code>iter</code><ul>
+<li><code>direction == AL_START_HEAD</code> 时，返回正序迭代器</li>
+<li><code>direction == AL_START_TAIL</code> 时，返回逆序迭代器</li>
+</ul>
+</li>
+</ul>
+<ol>
+<li><code>listReleaseIterator</code></li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">listReleaseIterator</span><span class="params">(listIter *iter)</span> </span>&#123;</span><br><span class="line">    zfree(iter);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该函数的作用是：释放迭代器所占内存。</p>
+<ol>
+<li><code>listRewind</code></li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">listRewind</span><span class="params">(<span class="built_in">list</span> *<span class="built_in">list</span>, listIter *li)</span> </span>&#123;</span><br><span class="line">    li-&gt;next = <span class="built_in">list</span>-&gt;head;</span><br><span class="line">    li-&gt;direction = AL_START_HEAD;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该函数的作用是：将给定迭代器重置为正序迭代器。</p>
+<ol>
+<li><code>listRewindTail</code></li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">listRewindTail</span><span class="params">(<span class="built_in">list</span> *<span class="built_in">list</span>, listIter *li)</span> </span>&#123;</span><br><span class="line">    li-&gt;next = <span class="built_in">list</span>-&gt;tail;</span><br><span class="line">    li-&gt;direction = AL_START_TAIL;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该函数的作用是：将给定迭代器重置为逆序迭代器。</p>
+<ol>
+<li><code>listNext</code></li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">listNode *<span class="title">listNext</span><span class="params">(listIter *iter)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    listNode *current = iter-&gt;next; <span class="comment">// 迭代器当前所指节点</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (current != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (iter-&gt;direction == AL_START_HEAD)</span><br><span class="line">            iter-&gt;next = current-&gt;next;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            iter-&gt;next = current-&gt;prev;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> current;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该函数的作用是：如果迭代器当前所指节点非空，则根据方向参数更新迭代器的 <code>next</code> 指针，最后返回迭代器当前所指节点。</p>
+<h2 id="复制"><a href="#复制" class="headerlink" title="复制"></a>复制</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="built_in">list</span> *<span class="title">listDup</span><span class="params">(<span class="built_in">list</span> *orig)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">list</span> *copy;</span><br><span class="line">    listIter iter;</span><br><span class="line">    listNode *node;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> ((copy = listCreate()) == <span class="literal">NULL</span>)  <span class="comment">// 构造一个空链表</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    copy-&gt;dup = orig-&gt;dup;      <span class="comment">// 复制自定义值复制函数</span></span><br><span class="line">    copy-&gt;<span class="built_in">free</span> = orig-&gt;<span class="built_in">free</span>;    <span class="comment">// 复制自定义值释放函数</span></span><br><span class="line">    copy-&gt;match = orig-&gt;match;  <span class="comment">// 复制自定义值匹配函数</span></span><br><span class="line">    listRewind(orig, &amp;iter);    <span class="comment">// iter 重置为正序迭代器</span></span><br><span class="line">    <span class="keyword">while</span>((node = listNext(&amp;iter)) != <span class="literal">NULL</span>) &#123;   <span class="comment">// 遍历原链表</span></span><br><span class="line">        <span class="keyword">void</span> *value;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (copy-&gt;dup) &#123;    <span class="comment">// 值复制函数已给定</span></span><br><span class="line">            value = copy-&gt;dup(node-&gt;value);</span><br><span class="line">            <span class="keyword">if</span> (value == <span class="literal">NULL</span>) &#123;    <span class="comment">// 值复制失败</span></span><br><span class="line">                listRelease(copy);  <span class="comment">// 释放复制链表</span></span><br><span class="line">                <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span>      <span class="comment">// 未给定值复制函数</span></span><br><span class="line">            value = node-&gt;value;</span><br><span class="line">        <span class="keyword">if</span> (listAddNodeTail(copy, value) == <span class="literal">NULL</span>) &#123; <span class="comment">// 添加新节点到尾部</span></span><br><span class="line">            listRelease(copy);  <span class="comment">// 添加节点失败，释放链表</span></span><br><span class="line">            <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> copy;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该函数的作用为：完全复制给定的链表 <code>orig</code>，函数的返回值为：</p>
+<ul>
+<li>执行失败时，返回 <code>NULL</code></li>
+<li>执行成功时，返回复制链表指针 <code>copy</code></li>
+</ul>
+<p><strong>注意</strong>：不论该函数是否执行成功，原链表都不会被修改。</p>
+<h2 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h2><ol>
+<li><code>listSearchKey</code></li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">listNode *<span class="title">listSearchKey</span><span class="params">(<span class="built_in">list</span> *<span class="built_in">list</span>, <span class="keyword">void</span> *key)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    listIter iter;</span><br><span class="line">    listNode *node;</span><br><span class="line"></span><br><span class="line">    listRewind(<span class="built_in">list</span>, &amp;iter);    <span class="comment">// iter 重置为正序迭代器</span></span><br><span class="line">    <span class="keyword">while</span>((node = listNext(&amp;iter)) != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="built_in">list</span>-&gt;match) &#123;  <span class="comment">// 值匹配函数已指定</span></span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">list</span>-&gt;match(node-&gt;value, key)) &#123;</span><br><span class="line">                <span class="keyword">return</span> node;  <span class="comment">// 返回第一个匹配成功的节点</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;    <span class="comment">// 未指定值匹配函数</span></span><br><span class="line">            <span class="keyword">if</span> (key == node-&gt;value) &#123;</span><br><span class="line">                <span class="keyword">return</span> node;  <span class="comment">// 返回第一个匹配成功的节点</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">NULL</span>;    <span class="comment">// 未找到，返回 NUll</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该函数的作用是：根据给定的值指针，寻找值相等的链表节点，该函数的返回值为：</p>
+<ul>
+<li>成功找到时，返回第一个值相等的链表节点指针（正序）</li>
+<li>未找到时，返回 <code>NULL</code></li>
+</ul>
+<ol>
+<li><code>listIndex</code></li>
+</ol>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">listNode *<span class="title">listIndex</span><span class="params">(<span class="built_in">list</span> *<span class="built_in">list</span>, <span class="keyword">long</span> index)</span> </span>&#123;</span><br><span class="line">    listNode *n;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (index &lt; <span class="number">0</span>) &#123;    <span class="comment">// 支持负数索引</span></span><br><span class="line">        index = (-index)<span class="number">-1</span>;</span><br><span class="line">        n = <span class="built_in">list</span>-&gt;tail;</span><br><span class="line">        <span class="keyword">while</span>(index-- &amp;&amp; n) n = n-&gt;prev;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        n = <span class="built_in">list</span>-&gt;head;</span><br><span class="line">        <span class="keyword">while</span>(index-- &amp;&amp; n) n = n-&gt;next;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> n;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该函数的作用是：根据给定的索引值，返回相应的链表节点</p>
+<ul>
+<li>从 0 开始计算索引</li>
+<li>支持负数索引</li>
+<li>当索引值 <code>index</code> $\notin[-len, len - 1]$ 时，返回 <code>NULL</code></li>
+</ul>
+<h2 id="旋转"><a href="#旋转" class="headerlink" title="旋转"></a>旋转</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">listRotate</span><span class="params">(<span class="built_in">list</span> *<span class="built_in">list</span>)</span> </span>&#123;</span><br><span class="line">    listNode *tail = <span class="built_in">list</span>-&gt;tail;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (listLength(<span class="built_in">list</span>) &lt;= <span class="number">1</span>) <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Detach current tail */</span></span><br><span class="line">    <span class="built_in">list</span>-&gt;tail = tail-&gt;prev; </span><br><span class="line">    <span class="built_in">list</span>-&gt;tail-&gt;next = <span class="literal">NULL</span>;</span><br><span class="line">    <span class="comment">/* Move it as head */</span></span><br><span class="line">    <span class="built_in">list</span>-&gt;head-&gt;prev = tail;</span><br><span class="line">    tail-&gt;prev = <span class="literal">NULL</span>;</span><br><span class="line">    tail-&gt;next = <span class="built_in">list</span>-&gt;head;</span><br><span class="line">    <span class="built_in">list</span>-&gt;head = tail;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该函数的作用是：删除链表原尾节点，将原尾节点插入到首部，作为新的首节点。</p>
+<h2 id="拼接"><a href="#拼接" class="headerlink" title="拼接"></a>拼接</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">listJoin</span><span class="params">(<span class="built_in">list</span> *l, <span class="built_in">list</span> *o)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (o-&gt;head)    <span class="comment">// 链表 o 不为空</span></span><br><span class="line">        o-&gt;head-&gt;prev = l-&gt;tail;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (l-&gt;tail)    <span class="comment">// 链表 l 不为空</span></span><br><span class="line">        l-&gt;tail-&gt;next = o-&gt;head;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        l-&gt;head = o-&gt;head;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (o-&gt;tail) l-&gt;tail = o-&gt;tail;</span><br><span class="line">    l-&gt;len += o-&gt;len;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Setup other as an empty list. */</span></span><br><span class="line">    o-&gt;head = o-&gt;tail = <span class="literal">NULL</span>;</span><br><span class="line">    o-&gt;len = <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该函数的作用是：将链表 <code>o</code> 拼接到链表 <code>l</code> 之后，随后将链表 <code>o</code> 置为空链表，并未释放链表指针。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Redis/" rel="tag"><i class="fa fa-tag"></i> Redis</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/posts/ab216dfd/" rel="next" title="Redis 源码之 zmalloc">
+                <i class="fa fa-chevron-left"></i> Redis 源码之 zmalloc
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/posts/18e84d53/" rel="prev" title="Redis 源码之 sds">
+                Redis 源码之 sds <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/mylogo.jpg"
+                alt="yz1509" />
+            
+              <p class="site-author-name" itemprop="name">yz1509</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">6</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">43</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/yz1509" target="_blank" title="GitHub"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="mailto:gf940312@mail.ustc.edu.cn" target="_blank" title="E-Mail"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#adlist-数据结构"><span class="nav-number">1.</span> <span class="nav-text">adlist 数据结构</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#链表节点"><span class="nav-number">1.1.</span> <span class="nav-text">链表节点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#链表迭代器"><span class="nav-number">1.2.</span> <span class="nav-text">链表迭代器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#链表"><span class="nav-number">1.3.</span> <span class="nav-text">链表</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#辅助函数"><span class="nav-number">2.</span> <span class="nav-text">辅助函数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#adlist-基本操作"><span class="nav-number">3.</span> <span class="nav-text">adlist 基本操作</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#构造函数"><span class="nav-number">3.1.</span> <span class="nav-text">构造函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#析构函数"><span class="nav-number">3.2.</span> <span class="nav-text">析构函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加"><span class="nav-number">3.3.</span> <span class="nav-text">添加</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除"><span class="nav-number">3.4.</span> <span class="nav-text">删除</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#迭代器相关"><span class="nav-number">3.5.</span> <span class="nav-text">迭代器相关</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#复制"><span class="nav-number">3.6.</span> <span class="nav-text">复制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#查找"><span class="nav-number">3.7.</span> <span class="nav-text">查找</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#旋转"><span class="nav-number">3.8.</span> <span class="nav-text">旋转</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#拼接"><span class="nav-number">3.9.</span> <span class="nav-text">拼接</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">yz1509</span>
+
+  
+
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.3.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=6.3.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=6.3.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.3.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.3.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.3.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                //var articleUrl = decodeURIComponent(data.url);
+                var articleUrl = decodeURIComponent(data.url).substring(1);//截取第一位/斜杠
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+        processEscapes: true,
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      },
+      TeX: {equationNumbers: { autoNumber: "AMS" }}
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+      var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+<script type="text/javascript" src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+    
+  
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
