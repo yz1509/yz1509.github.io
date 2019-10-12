@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://yz1509.github.io/"/>
-  <updated>2019-10-12T12:25:08.861Z</updated>
+  <updated>2019-10-12T13:29:44.294Z</updated>
   <id>https://yz1509.github.io/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Consistent Hashing</title>
+    <link href="https://yz1509.github.io//posts/affa099c/"/>
+    <id>https://yz1509.github.io//posts/affa099c/</id>
+    <published>2019-10-12T13:26:09.000Z</published>
+    <updated>2019-10-12T13:29:44.294Z</updated>
+    
+    <content type="html"><![CDATA[<p><a href="http://david.choffnes.com/classes/cs4700sp14/papers/akamai.pdf" target="_blank" rel="noopener">论文地址</a></p><p>TODO</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;&lt;a href=&quot;http://david.choffnes.com/classes/cs4700sp14/papers/akamai.pdf&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;论文地址&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;TODO&lt;/p&gt;
+
+      
+    
+    </summary>
+    
+      <category term="现在英语怎么样？过托福了吗？可以来看论文吗？" scheme="https://yz1509.github.io/categories/%E7%8E%B0%E5%9C%A8%E8%8B%B1%E8%AF%AD%E6%80%8E%E4%B9%88%E6%A0%B7%EF%BC%9F%E8%BF%87%E6%89%98%E7%A6%8F%E4%BA%86%E5%90%97%EF%BC%9F%E5%8F%AF%E4%BB%A5%E6%9D%A5%E7%9C%8B%E8%AE%BA%E6%96%87%E5%90%97%EF%BC%9F/"/>
+    
+    
+      <category term="Consistent Hashing" scheme="https://yz1509.github.io/tags/Consistent-Hashing/"/>
+    
+  </entry>
   
   <entry>
     <title>Redis 源码之 sds</title>

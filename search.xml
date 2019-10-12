@@ -3,6 +3,27 @@
   
     
     <entry>
+      <title>Consistent Hashing</title>
+      <link href="//posts/affa099c/"/>
+      <url>//posts/affa099c/</url>
+      <content type="html"><![CDATA[<p><a href="http://david.choffnes.com/classes/cs4700sp14/papers/akamai.pdf" target="_blank" rel="noopener">论文地址</a></p><p>TODO</p>]]></content>
+      
+      <categories>
+          
+          <category> 现在英语怎么样？过托福了吗？可以来看论文吗？ </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Consistent Hashing </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
       <title>Redis 源码之 sds</title>
       <link href="//posts/18e84d53/"/>
       <url>//posts/18e84d53/</url>
