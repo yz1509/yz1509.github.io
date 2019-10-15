@@ -3,10 +3,10 @@
   
     
     <entry>
-      <title>Consistent Hashing</title>
-      <link href="//posts/affa099c/"/>
-      <url>//posts/affa099c/</url>
-      <content type="html"><![CDATA[<p><a href="http://david.choffnes.com/classes/cs4700sp14/papers/akamai.pdf" target="_blank" rel="noopener">论文地址</a></p><h1 id="Whydunit"><a href="#Whydunit" class="headerlink" title="Whydunit"></a>Whydunit</h1><p>研究背景与意义</p><h1 id="Whodunit"><a href="#Whodunit" class="headerlink" title="Whodunit"></a>Whodunit</h1><p>前人怎么做的</p><p>本文怎么做的</p><h1 id="Howdunit"><a href="#Howdunit" class="headerlink" title="Howdunit"></a>Howdunit</h1><p>算法细节</p>]]></content>
+      <title>Chord</title>
+      <link href="//posts/33be3840/"/>
+      <url>//posts/33be3840/</url>
+      <content type="html"><![CDATA[<p><a href="http://www.falleneth.com/cmuj/papers/chord.pdf" target="_blank" rel="noopener">论文地址</a></p><h1 id="Whydunit"><a href="#Whydunit" class="headerlink" title="Whydunit"></a>Whydunit</h1><h1 id="Whodunit"><a href="#Whodunit" class="headerlink" title="Whodunit"></a>Whodunit</h1><h1 id="Howdunit"><a href="#Howdunit" class="headerlink" title="Howdunit"></a>Howdunit</h1>]]></content>
       
       <categories>
           
@@ -17,7 +17,28 @@
       
         <tags>
             
-            <tag> Consistent Hashing </tag>
+            <tag> 分布式 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
+      <title>Consistent Hashing</title>
+      <link href="//posts/affa099c/"/>
+      <url>//posts/affa099c/</url>
+      <content type="html"><![CDATA[<p><a href="http://david.choffnes.com/classes/cs4700sp14/papers/akamai.pdf" target="_blank" rel="noopener">论文地址</a></p><h1 id="Whydunit"><a href="#Whydunit" class="headerlink" title="Whydunit"></a>Whydunit</h1><p>当大量的客户端同时对单个服务器发起请求时，可能会使该服务器(Hot spots) “swamped” （无法使用）。除此之外，还可能会阻塞该服务附近的网络通信。所以我们需要一个负载均衡算法来有效地避免 Hot spots 的出现。</p><h1 id="Whodunit"><a href="#Whodunit" class="headerlink" title="Whodunit"></a>Whodunit</h1><h2 id="Proxy-cache"><a href="#Proxy-cache" class="headerlink" title="Proxy cache"></a>Proxy cache</h2><p>使用 proxy 缓存经常被请求的数据，多个客户端共享一个 proxy cache。</p><ol><li>所有用户的请求都发往 proxy</li><li>未命中时，proxy 会把该请求转发至 home server。</li></ol><p><strong>缺点</strong>：proxy 本身可能会 swamped</p><h2 id="A-group-of-caches-functions-as-one"><a href="#A-group-of-caches-functions-as-one" class="headerlink" title="A group of caches functions as one"></a>A group of caches functions as one</h2><ol><li>用户的请求发往任意一个 cache </li><li>未命中时，使用 IP Multicast 将该请求转发至所有其他的 cache</li><li>未命中时，将该请求转发至 heme server</li></ol><p><strong>缺点</strong>：cache 之间的通信消息数量不可控</p><h2 id="Harvest-Cache"><a href="#Harvest-Cache" class="headerlink" title="Harvest Cache"></a>Harvest Cache</h2><p>使用树型结构的 cache，root 为 home server</p><ol><li>用户的请求发往邻近的叶节点</li><li>未命中时，将该请求转发至兄弟节点(siblings)</li><li>未命中时，将该请求转发至父节点(parent)</li></ol><p><strong>优点</strong>：保证了请求只会来自于子节点或兄弟节点</p><p><strong>缺点</strong>：当所有不同请求同时到来时，至少会有一个请求会到达 root，因此这只是一个缩放的结构，root 无法避免 swamped 的命运</p><h2 id="Using-randomization-and-hashing"><a href="#Using-randomization-and-hashing" class="headerlink" title="Using randomization and hashing"></a>Using randomization and hashing</h2><p><a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.38.877&amp;rep=rep1&amp;type=pdf" target="_blank" rel="noopener">Plaxton and Rajaraman</a></p><p>下次一定看！</p><h2 id="Random-cache-trees"><a href="#Random-cache-trees" class="headerlink" title="Random cache trees"></a>Random cache trees</h2><p>下次一定看！</p><h2 id="Consistent-hashing"><a href="#Consistent-hashing" class="headerlink" title="Consistent hashing"></a>Consistent hashing</h2><p>传统 hashing 的局限：</p><ul><li>假定节点数是固定的</li><li>每个节点需要知道全局信息，使用消息进行同步时，由于延时的存在，节点所保存的全局信息正确性无法保证</li></ul><p>Consistent hashing 如何解决这两个问题，将于下文详述。</p><h1 id="Howdunit"><a href="#Howdunit" class="headerlink" title="Howdunit"></a>Howdunit</h1>]]></content>
+      
+      <categories>
+          
+          <category> 现在英语怎么样 过托福没 可以看论文吗 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 一致性哈希 </tag>
             
         </tags>
       
@@ -185,11 +206,11 @@
       
         <tags>
             
+            <tag> C++ </tag>
+            
             <tag> 后台开发 </tag>
             
             <tag> 面经 </tag>
-            
-            <tag> C++ </tag>
             
             <tag> 计算机网络 </tag>
             
