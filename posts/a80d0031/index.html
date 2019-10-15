@@ -125,13 +125,13 @@
 
 
 
-  <meta name="description" content="定义Dynamic Programming (also known as dynamic optimization) is a method for solving a complex problem by breaking it down into a collection of simpler subproblems.  本质:是对问题状态的定义和状态转移方程的定义。  解题思路将原问题分解为">
+  <meta name="description" content="定义 Dynamic Programming (also known as dynamic optimization) is a method for solving a complex problem by breaking it down into a collection of simpler subproblems. &amp;gt;本质:是对问题状态的定义和状态转移方程的定义。 解题思路">
 <meta name="keywords" content="动态规划">
 <meta property="og:type" content="article">
 <meta property="og:title" content="动态规划">
 <meta property="og:url" content="https://yz1509.github.io/posts/a80d0031/index.html">
 <meta property="og:site_name" content="兔子和阿铁">
-<meta property="og:description" content="定义Dynamic Programming (also known as dynamic optimization) is a method for solving a complex problem by breaking it down into a collection of simpler subproblems.  本质:是对问题状态的定义和状态转移方程的定义。  解题思路将原问题分解为">
+<meta property="og:description" content="定义 Dynamic Programming (also known as dynamic optimization) is a method for solving a complex problem by breaking it down into a collection of simpler subproblems. &amp;gt;本质:是对问题状态的定义和状态转移方程的定义。 解题思路">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://yz1509.github.io/posts/a80d0031/DP0201.jpg">
 <meta property="og:image" content="https://yz1509.github.io/posts/a80d0031/DP0701.png">
@@ -139,7 +139,7 @@
 <meta property="og:updated_time" content="2018-07-25T06:55:16.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="动态规划">
-<meta name="twitter:description" content="定义Dynamic Programming (also known as dynamic optimization) is a method for solving a complex problem by breaking it down into a collection of simpler subproblems.  本质:是对问题状态的定义和状态转移方程的定义。  解题思路将原问题分解为">
+<meta name="twitter:description" content="定义 Dynamic Programming (also known as dynamic optimization) is a method for solving a complex problem by breaking it down into a collection of simpler subproblems. &amp;gt;本质:是对问题状态的定义和状态转移方程的定义。 解题思路">
 <meta name="twitter:image" content="https://yz1509.github.io/posts/a80d0031/DP0201.jpg">
 
 
@@ -473,45 +473,49 @@
       
 
       
-        <h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><p>Dynamic Programming (also known as dynamic optimization) is a method for solving a complex problem by breaking it down into a collection of simpler subproblems.</p>
-<blockquote>
-<p>本质:是对问题状态的定义和状态转移方程的定义。</p>
-</blockquote>
-<h1 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h1><h2 id="将原问题分解为子问题"><a href="#将原问题分解为子问题" class="headerlink" title="将原问题分解为子问题"></a>将原问题分解为子问题</h2><ul>
+        <h1 id="定义">定义</h1>
+<p>Dynamic Programming (also known as dynamic optimization) is a method for solving a complex problem by breaking it down into a collection of simpler subproblems. &gt;本质:是对问题状态的定义和状态转移方程的定义。</p>
+<h1 id="解题思路">解题思路</h1>
+<h2 id="将原问题分解为子问题">将原问题分解为子问题</h2>
+<ul>
 <li>把原问题分解为若干个子问题，子问题和原问题形式相同或类似，只不过规模变小了。子问题都解决，原问题即解决( 比如，数字三角形POJ1163）。</li>
 <li>子问题的解一旦求出就会被保存，所以每个子问题只需求解一次。</li>
 </ul>
-<h2 id="确定状态"><a href="#确定状态" class="headerlink" title="确定状态"></a>确定状态</h2><p>在用动态规划解题时，我们往往将和子问题相关的各个变量的一组取值，称之为一个“状态”。一个“状态”对应于一个或多个子问题，所谓某个“状态”下的“值”，就是这个“状态”所对应的子问题的解。</p>
-<p>所有“状态”的集合，构成问题的“状态空间”。“状态空间”的大小，与用动态规划解决问题的时间复杂度直接相关。在数字三角形的例子里，一共有$\frac{N\times(N + 1)}{2}​$个数字，所以这个问题的状态空间里一共就有$\frac{N\times(N + 1)}{2}​$个状态。</p>
+<h2 id="确定状态">确定状态</h2>
+<p>在用动态规划解题时，我们往往将和子问题相关的各个变量的一组取值，称之为一个“状态”。一个“状态”对应于一个或多个子问题，所谓某个“状态”下的“值”，就是这个“状态”所对应的子问题的解。</p>
+<p>所有“状态”的集合，构成问题的“状态空间”。“状态空间”的大小，与用动态规划解决问题的时间复杂度直接相关。在数字三角形的例子里，一共有<span class="math inline">\(\frac{N\times(N + 1)}{2}​\)</span>个数字，所以这个问题的状态空间里一共就有<span class="math inline">\(\frac{N\times(N + 1)}{2}​\)</span>个状态。</p>
 <p>整个问题的时间复杂度是状态数目乘以计算每个状态所需时间。在数字三角形里每个“状态”只需要经过一次，且在每个状态上作计算所花的时间都是和N无关的常数。</p>
-<p>用动态规划解题，经常碰到的情况是，K个整型变量构成一个状态（如数字三角形中的行号和列号这两个变量构成“状态”）。如果这K个整型变量的取值范围分别是$N_1, N_2, ……, N_k$，那么，我们就可以用一个K维的数组$array[N_1][N_2]……[N_k]$来存储各个状态的“值”。这个“值”未必就是一个整数或浮点数，可能是需要一个结构才能表示的，那么array就可以是一个结构数组。一个“状态”下的“值”通常会是一个或多个子问题的解。</p>
-<h2 id="确定一些初始状态（边界状态）的值"><a href="#确定一些初始状态（边界状态）的值" class="headerlink" title="确定一些初始状态（边界状态）的值"></a>确定一些初始状态（边界状态）的值</h2><p>以“数字三角形”为例，初始状态就是底边数字，值就是底边数字值。</p>
-<h2 id="确定状态转移方程"><a href="#确定状态转移方程" class="headerlink" title="确定状态转移方程"></a>确定状态转移方程</h2><p>定义出什么是“状态”，以及在该 “状态”下的“值”后，就要找出不同的状态之间如何迁移——即如何从一个或多个“值”已知的 “状态”，求出另一个“状态”的“值”(“人人为我”递推型)。状态的迁移可以用递推公式表示，此递推公式也可被称作“状态转移方程”。<br>数字三角形的状态转移方程:<br><img src="/posts/a80d0031/DP0201.jpg" alt="动态规划"></p>
-<h1 id="条件"><a href="#条件" class="headerlink" title="条件"></a>条件</h1><p>在对状态和状态转移方程的定义过程中，需满足“最优子结构”，并且无后效性：</p>
+<p>用动态规划解题，经常碰到的情况是，K个整型变量构成一个状态（如数字三角形中的行号和列号这两个变量构成“状态”）。如果这K个整型变量的取值范围分别是<span class="math inline">\(N_1, N_2, ……, N_k\)</span>，那么，我们就可以用一个K维的数组<span class="math inline">\(array[N_1][N_2]……[N_k]\)</span>来存储各个状态的“值”。这个“值”未必就是一个整数或浮点数，可能是需要一个结构才能表示的，那么array就可以是一个结构数组。一个“状态”下的“值”通常会是一个或多个子问题的解。</p>
+<h2 id="确定一些初始状态边界状态的值">确定一些初始状态（边界状态）的值</h2>
+<p>以“数字三角形”为例，初始状态就是底边数字，值就是底边数字值。</p>
+<h2 id="确定状态转移方程">确定状态转移方程</h2>
+<p>定义出什么是“状态”，以及在该 “状态”下的“值”后，就要找出不同的状态之间如何迁移——即如何从一个或多个“值”已知的 “状态”，求出另一个“状态”的“值”(“人人为我”递推型)。状态的迁移可以用递推公式表示，此递推公式也可被称作“状态转移方程”。 数字三角形的状态转移方程: <img src="/posts/a80d0031/DP0201.jpg" alt="动态规划"></p>
+<h1 id="条件">条件</h1>
+<p>在对状态和状态转移方程的定义过程中，需满足“最优子结构”，并且无后效性： * 最优子结构性质：如果问题的最优解所包含的子问题的解也是最优的，我们就称该问题具有最优子结构性质。 * 无后效性：当前的若干状态值一旦确定，则此后过程的演变就只和这若干个状态的值有关，和之前是采取哪种手段或经过哪条路径演变到当前的这若干个状态，没有关系。</p>
+<h1 id="和其他方法的异同">和其他方法的异同</h1>
 <ul>
-<li>最优子结构性质：如果问题的最优解所包含的子问题的解也是最优的，我们就称该问题具有最优子结构性质。</li>
-<li>无后效性：当前的若干状态值一旦确定，则此后过程的演变就只和这若干个状态的值有关，和之前是采取哪种手段或经过哪条路径演变到当前的这若干个状态，没有关系。</li>
-</ul>
-<h1 id="和其他方法的异同"><a href="#和其他方法的异同" class="headerlink" title="和其他方法的异同"></a>和其他方法的异同</h1><ul>
 <li>递推：每个阶段只有一个状态</li>
 <li>贪心：每个阶段的最优状态都是由上一个阶段的最优状态得到</li>
 <li>搜索：每个阶段的最优状态是由之前<strong>所有</strong>阶段的状态的组合得到</li>
 <li>动态规划：每个阶段的最优状态可以从之前某个阶段的某个或某些状态直接得到而不管之前这个状态是如何得到的。</li>
 </ul>
-<h1 id="技巧"><a href="#技巧" class="headerlink" title="技巧"></a>技巧</h1><ul>
+<h1 id="技巧">技巧</h1>
+<ul>
 <li>递归到动态规划的一般转化方法：递归函数有n个参数，就定义一个n维的数组，数组的下标是递归函数参数的取值范围，数组元素的值是递归函数的返回值，这样就可以从边界值开始，逐步填充数组，相当于计算递归函数值的逆过程。</li>
 <li>“缓存”，“重叠子问题”，“记忆化”，这三个名词，都是在阐述递推式求解的技巧。以Fibonacci数列为例，计算第100项的时候，需要计算第99项和98项；在计算第101项的时候，需要第100项和第99项，这时候你还需要重新计算第99项吗？不需要，你只需要在第一次计算的时候把它记下来就可以了。上述的需要再次计算的“第99项”，就叫“重叠子问题”。如果没有计算过，就按照递推式计算，如果计算过，直接使用，就像“缓存”一样，这种方法，叫做“记忆化”，这是递推式求解的技巧。这种技巧，通俗的说叫“花费空间来节省时间”。</li>
 </ul>
-<h1 id="动态规划的三种形式"><a href="#动态规划的三种形式" class="headerlink" title="动态规划的三种形式"></a>动态规划的三种形式</h1><ul>
-<li>记忆递归型<ul>
+<h1 id="动态规划的三种形式">动态规划的三种形式</h1>
+<ul>
+<li>记忆递归型
+<ul>
 <li>优点：只经过有用的状态，没有浪费。递推型会查看一些没用的状态，有浪费!</li>
-<li>缺点：可能会因递归层数太深导致爆栈，函数调用带来额外时间开销。无法使用滚动数     组节省空间。总体来说，比递推型慢。</li>
-</ul>
-</li>
+<li>缺点：可能会因递归层数太深导致爆栈，函数调用带来额外时间开销。无法使用滚动数 组节省空间。总体来说，比递推型慢。</li>
+</ul></li>
 <li>“我为人人”递推型：没有什么明显的优势，有时比较符合思考的习惯。个别特殊题目中会比“人人为我”型节省空间。<img src="/posts/a80d0031/DP0701.png" width="550" height="350" alt="我为人人" align="center"></li>
-<li>“人人为我”递推型：在选取最优备选状态的值$F_m, F_n, …, F_y$时，有可能有好的算法或数据结构可以用来显著降低时间复杂度。<img src="/posts/a80d0031/DP0702.png" width="500" height="300" alt="人人为我" align="center"></li>
+<li>“人人为我”递推型：在选取最优备选状态的值<span class="math inline">\(F_m, F_n, …, F_y\)</span>时，有可能有好的算法或数据结构可以用来显著降低时间复杂度。<img src="/posts/a80d0031/DP0702.png" width="500" height="300" alt="人人为我" align="center"></li>
 </ul>
-<h1 id="例题"><a href="#例题" class="headerlink" title="例题"></a>例题</h1><ul>
+<h1 id="例题">例题</h1>
+<ul>
 <li>POJ 1163 数字三角形</li>
 <li>POJ 2757 最长上升子序列</li>
 <li>POJ 1458 最长公共子序列</li>
@@ -828,7 +832,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#定义"><span class="nav-number">1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解题思路"><span class="nav-number">2.</span> <span class="nav-text">解题思路</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#将原问题分解为子问题"><span class="nav-number">2.1.</span> <span class="nav-text">将原问题分解为子问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#确定状态"><span class="nav-number">2.2.</span> <span class="nav-text">确定状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#确定一些初始状态（边界状态）的值"><span class="nav-number">2.3.</span> <span class="nav-text">确定一些初始状态（边界状态）的值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#确定状态转移方程"><span class="nav-number">2.4.</span> <span class="nav-text">确定状态转移方程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#条件"><span class="nav-number">3.</span> <span class="nav-text">条件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#和其他方法的异同"><span class="nav-number">4.</span> <span class="nav-text">和其他方法的异同</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#技巧"><span class="nav-number">5.</span> <span class="nav-text">技巧</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#动态规划的三种形式"><span class="nav-number">6.</span> <span class="nav-text">动态规划的三种形式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#例题"><span class="nav-number">7.</span> <span class="nav-text">例题</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#定义"><span class="nav-number">1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解题思路"><span class="nav-number">2.</span> <span class="nav-text">解题思路</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#将原问题分解为子问题"><span class="nav-number">2.1.</span> <span class="nav-text">将原问题分解为子问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#确定状态"><span class="nav-number">2.2.</span> <span class="nav-text">确定状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#确定一些初始状态边界状态的值"><span class="nav-number">2.3.</span> <span class="nav-text">确定一些初始状态（边界状态）的值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#确定状态转移方程"><span class="nav-number">2.4.</span> <span class="nav-text">确定状态转移方程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#条件"><span class="nav-number">3.</span> <span class="nav-text">条件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#和其他方法的异同"><span class="nav-number">4.</span> <span class="nav-text">和其他方法的异同</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#技巧"><span class="nav-number">5.</span> <span class="nav-text">技巧</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#动态规划的三种形式"><span class="nav-number">6.</span> <span class="nav-text">动态规划的三种形式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#例题"><span class="nav-number">7.</span> <span class="nav-text">例题</span></a></li></ol></div>
             
 
           </div>

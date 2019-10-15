@@ -125,18 +125,18 @@
 
 
 
-  <meta name="description" content="论文地址 Whydunit当大量的客户端同时对单个服务器发起请求时，可能会使该服务器(Hot spots) “swamped” （无法使用）。除此之外，还可能会阻塞该服务附近的网络通信。所以我们需要一个负载均衡算法来有效地避免 Hot spots 的出现。 WhodunitProxy cache使用 proxy 缓存经常被请求的数据，多个客户端共享一个 proxy cache。  所有用户的请求都">
+  <meta name="description" content="论文地址 Whydunit 当大量的客户端同时对单个服务器发起请求时，可能会使该服务器(Hot spots) &quot;swamped&quot; （无法使用）。除此之外，还可能会阻塞该服务附近的网络通信。所以我们需要一个负载均衡算法来有效地避免 Hot spots 的出现。 Whodunit Proxy cache 使用 proxy 缓存经常被请求的数据，多个客户端共享一个 proxy cache。">
 <meta name="keywords" content="一致性哈希">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Consistent Hashing">
 <meta property="og:url" content="https://yz1509.github.io/posts/affa099c/index.html">
 <meta property="og:site_name" content="兔子和阿铁">
-<meta property="og:description" content="论文地址 Whydunit当大量的客户端同时对单个服务器发起请求时，可能会使该服务器(Hot spots) “swamped” （无法使用）。除此之外，还可能会阻塞该服务附近的网络通信。所以我们需要一个负载均衡算法来有效地避免 Hot spots 的出现。 WhodunitProxy cache使用 proxy 缓存经常被请求的数据，多个客户端共享一个 proxy cache。  所有用户的请求都">
+<meta property="og:description" content="论文地址 Whydunit 当大量的客户端同时对单个服务器发起请求时，可能会使该服务器(Hot spots) &quot;swamped&quot; （无法使用）。除此之外，还可能会阻塞该服务附近的网络通信。所以我们需要一个负载均衡算法来有效地避免 Hot spots 的出现。 Whodunit Proxy cache 使用 proxy 缓存经常被请求的数据，多个客户端共享一个 proxy cache。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-15T11:46:07.891Z">
+<meta property="og:updated_time" content="2019-10-15T11:53:21.230Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Consistent Hashing">
-<meta name="twitter:description" content="论文地址 Whydunit当大量的客户端同时对单个服务器发起请求时，可能会使该服务器(Hot spots) “swamped” （无法使用）。除此之外，还可能会阻塞该服务附近的网络通信。所以我们需要一个负载均衡算法来有效地避免 Hot spots 的出现。 WhodunitProxy cache使用 proxy 缓存经常被请求的数据，多个客户端共享一个 proxy cache。  所有用户的请求都">
+<meta name="twitter:description" content="论文地址 Whydunit 当大量的客户端同时对单个服务器发起请求时，可能会使该服务器(Hot spots) &quot;swamped&quot; （无法使用）。除此之外，还可能会阻塞该服务附近的网络通信。所以我们需要一个负载均衡算法来有效地避免 Hot spots 的出现。 Whodunit Proxy cache 使用 proxy 缓存经常被请求的数据，多个客户端共享一个 proxy cache。">
 
 
 
@@ -418,7 +418,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-10-15 19:46:07" itemprop="dateModified" datetime="2019-10-15T19:46:07+08:00">2019-10-15</time>
+                <time title="修改时间：2019-10-15 19:53:21" itemprop="dateModified" datetime="2019-10-15T19:53:21+08:00">2019-10-15</time>
               
             
           </span>
@@ -470,83 +470,87 @@
 
       
         <p><a href="http://david.choffnes.com/classes/cs4700sp14/papers/akamai.pdf" target="_blank" rel="noopener">论文地址</a></p>
-<h1 id="Whydunit"><a href="#Whydunit" class="headerlink" title="Whydunit"></a>Whydunit</h1><p>当大量的客户端同时对单个服务器发起请求时，可能会使该服务器(Hot spots) “swamped” （无法使用）。除此之外，还可能会阻塞该服务附近的网络通信。所以我们需要一个负载均衡算法来有效地避免 Hot spots 的出现。</p>
-<h1 id="Whodunit"><a href="#Whodunit" class="headerlink" title="Whodunit"></a>Whodunit</h1><h2 id="Proxy-cache"><a href="#Proxy-cache" class="headerlink" title="Proxy cache"></a>Proxy cache</h2><p>使用 proxy 缓存经常被请求的数据，多个客户端共享一个 proxy cache。</p>
-<ol>
+<h1 id="whydunit">Whydunit</h1>
+<p>当大量的客户端同时对单个服务器发起请求时，可能会使该服务器(Hot spots) "swamped" （无法使用）。除此之外，还可能会阻塞该服务附近的网络通信。所以我们需要一个负载均衡算法来有效地避免 Hot spots 的出现。</p>
+<h1 id="whodunit">Whodunit</h1>
+<h2 id="proxy-cache">Proxy cache</h2>
+<p>使用 proxy 缓存经常被请求的数据，多个客户端共享一个 proxy cache。</p>
+<ol type="1">
 <li>所有用户的请求都发往 proxy</li>
 <li>未命中时，proxy 会把该请求转发至 home server。</li>
 </ol>
 <p><strong>缺点</strong>：proxy 本身可能会 swamped</p>
-<h2 id="A-group-of-caches-functions-as-one"><a href="#A-group-of-caches-functions-as-one" class="headerlink" title="A group of caches functions as one"></a>A group of caches functions as one</h2><ol>
-<li>用户的请求发往任意一个 cache </li>
+<h2 id="a-group-of-caches-functions-as-one">A group of caches functions as one</h2>
+<ol type="1">
+<li>用户的请求发往任意一个 cache</li>
 <li>未命中时，使用 IP Multicast 将该请求转发至所有其他的 cache</li>
 <li>未命中时，将该请求转发至 heme server</li>
 </ol>
 <p><strong>缺点</strong>：cache 之间的通信消息数量不可控</p>
-<h2 id="Harvest-Cache"><a href="#Harvest-Cache" class="headerlink" title="Harvest Cache"></a>Harvest Cache</h2><p>使用树型结构的 cache，root 为 home server</p>
-<ol>
+<h2 id="harvest-cache">Harvest Cache</h2>
+<p>使用树型结构的 cache，root 为 home server</p>
+<ol type="1">
 <li>用户的请求发往邻近的叶节点</li>
 <li>未命中时，将该请求转发至兄弟节点(siblings)</li>
 <li>未命中时，将该请求转发至父节点(parent)</li>
 </ol>
 <p><strong>优点</strong>：保证了请求只会来自于子节点或兄弟节点</p>
 <p><strong>缺点</strong>：当所有不同请求同时到来时，至少会有一个请求会到达 root，因此这只是一个缩放的结构，root 无法避免 swamped 的命运</p>
-<h2 id="Using-randomization-and-hashing"><a href="#Using-randomization-and-hashing" class="headerlink" title="Using randomization and hashing"></a>Using randomization and hashing</h2><p><a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.38.877&amp;rep=rep1&amp;type=pdf" target="_blank" rel="noopener">Plaxton and Rajaraman</a></p>
+<h2 id="using-randomization-and-hashing">Using randomization and hashing</h2>
+<p><a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.38.877&amp;rep=rep1&amp;type=pdf" target="_blank" rel="noopener">Plaxton and Rajaraman</a></p>
 <p>新增一组 virtual cache 集合层，通过 random hash function 在现有的 Caches 和 virtual cache 集合之间建立映射，用户的请求发往任一 virtual cache 集合。如果 virtual cache 集合的负载超过阈值，则创建一个更大的 virtual cache 集合。</p>
 <p><strong>优点</strong>：请求响应快，因为每个 cache 的负载都在可控范围；负载均衡。</p>
 <p><strong>缺点</strong>：由于用户的请求发往任一 virtual cache 集合，故小规模的 virtual cache 集合可能会 swamped。</p>
-<h2 id="Random-cache-trees"><a href="#Random-cache-trees" class="headerlink" title="Random cache trees"></a>Random cache trees</h2><p>下次一定看！</p>
-<h2 id="Consistent-hashing"><a href="#Consistent-hashing" class="headerlink" title="Consistent hashing"></a>Consistent hashing</h2><p>传统 hashing 的局限：</p>
-<ul>
-<li>假定节点数是固定的</li>
-<li>每个节点需要知道全局信息，使用消息进行同步时，由于延时的存在，节点所保存的全局信息正确性无法保证</li>
-</ul>
+<h2 id="random-cache-trees">Random cache trees</h2>
+<p>下次一定看！</p>
+<h2 id="consistent-hashing">Consistent hashing</h2>
+<p>传统 hashing 的局限： * 假定节点数是固定的 * 每个节点需要知道全局信息，使用消息进行同步时，由于延时的存在，节点所保存的全局信息正确性无法保证</p>
 <p>Consistent hashing 如何解决这两个问题，将于下文详述。</p>
-<h1 id="Howdunit"><a href="#Howdunit" class="headerlink" title="Howdunit"></a>Howdunit</h1><h2 id="符号说明"><a href="#符号说明" class="headerlink" title="符号说明"></a>符号说明</h2><ul>
-<li>$\mathcal{I}$: set of items，数据</li>
-<li>$i$: is an item</li>
-<li>$\mathcal{B}$: set of buckets，类似于 proxy chche</li>
-<li>$b$: is a bucket</li>
-<li><em>view</em>: any subset of the buckets $\mathcal{B}$，模拟节点的增加与删除</li>
-<li><em>ranged hash function</em> $f$: $2^{\mathcal{B}} \times \mathcal{I} \rightarrowtail \mathcal{B}$<ul>
-<li>$f(\mathcal{V}, i)$ or $f_{\mathcal{V}}(i)$ is the bucket to which item $i$ is assigned in view $\mathcal{V}$</li>
-<li>Require: $f_{\mathcal{V}}(\mathcal{I}) \subseteq \mathcal{V}$ for every view $\mathcal{V}$</li>
-</ul>
-</li>
-<li><em>ranged hash family</em> $\mathcal{F}$: is a family of ranged hash functions</li>
+<h1 id="howdunit">Howdunit</h1>
+<h2 id="符号说明">符号说明</h2>
+<ul>
+<li><span class="math inline">\(\mathcal{I}\)</span>: set of items，数据</li>
+<li><span class="math inline">\(i\)</span>: is an item</li>
+<li><span class="math inline">\(\mathcal{B}\)</span>: set of buckets，类似于 proxy chche</li>
+<li><span class="math inline">\(b\)</span>: is a bucket</li>
+<li><em>view</em>: any subset of the buckets <span class="math inline">\(\mathcal{B}\)</span>，模拟节点的增加与删除</li>
+<li><em>ranged hash function</em> <span class="math inline">\(f\)</span>: <span class="math inline">\(2^{\mathcal{B}} \times \mathcal{I} \rightarrowtail \mathcal{B}\)</span>
+<ul>
+<li><span class="math inline">\(f(\mathcal{V}, i)\)</span> or <span class="math inline">\(f_{\mathcal{V}}(i)\)</span> is the bucket to which item <span class="math inline">\(i\)</span> is assigned in view <span class="math inline">\(\mathcal{V}\)</span></li>
+<li>Require: <span class="math inline">\(f_{\mathcal{V}}(\mathcal{I}) \subseteq \mathcal{V}\)</span> for every view <span class="math inline">\(\mathcal{V}\)</span></li>
+</ul></li>
+<li><em>ranged hash family</em> <span class="math inline">\(\mathcal{F}\)</span>: is a family of ranged hash functions</li>
 <li><em>random ranged hash function</em>: is a function drawn at random from a particular ranged hash family</li>
 </ul>
-<h2 id="一致性哈希函数应满足的性质介绍"><a href="#一致性哈希函数应满足的性质介绍" class="headerlink" title="一致性哈希函数应满足的性质介绍"></a>一致性哈希函数应满足的性质介绍</h2><ol>
+<h2 id="一致性哈希函数应满足的性质介绍">一致性哈希函数应满足的性质介绍</h2>
+<ol type="1">
 <li><p>Balance</p>
-<p>A ranged hash family is <em>balanced</em> if, given a particular view $\mathcal{V}$, a set of items,and a randomly chosen function selected from the hash family, with high probability the fraction of items mapped to each bucket is $O(1/|V|)$.</p>
-</li>
+<p>A ranged hash family is <em>balanced</em> if, given a particular view <span class="math inline">\(\mathcal{V}\)</span>, a set of items,and a randomly chosen function selected from the hash family, with high probability the fraction of items mapped to each bucket is <span class="math inline">\(O(1/|V|)\)</span>.</p></li>
 <li><p>Monotonicity</p>
 <ul>
-<li>A ranged hash function $f$ is <em>monotone</em> if for all views $\mathcal{V}_1\subseteq\mathcal{V}<em>2\subseteq\mathcal{B}, f</em>{\mathcal{V}_2}(i) \in \mathcal{V}<em>1$ implies $f</em>{\mathcal{V}<em>1}(i) = f</em>{\mathcal{V}_2}(i)$. </li>
+<li>A ranged hash function <span class="math inline">\(f\)</span> is <em>monotone</em> if for all views <span class="math inline">\(\mathcal{V}_1 \subseteq \mathcal{V}_2 \subseteq \mathcal{B}, f_{\mathcal{V}_2}(i) \in \mathcal{V}_1\)</span> implies <span class="math inline">\(f_{\mathcal{V}_1}(i) = f_{\mathcal{V}_2}(i)\)</span>.</li>
 <li>A ranged hash family is <em>monotone</em> if every ranged hash function in it is.</li>
 </ul>
-<p>单调性保证了：如果新增了一个节点，只会有将之前的数据迁移到新节点的操作，而不会有旧节点之间互相迁移的操作。</p>
-</li>
+<p>单调性保证了：如果新增了一个节点，只会有将之前的数据迁移到新节点的操作，而不会有旧节点之间互相迁移的操作。</p></li>
 <li><p>Spread</p>
-<p>Let $\mathcal{V}<em>1\dots\mathcal{V}</em>{|V|}$ be a set of views, altogether containing $C$ distinct buckets and each individually containing at least $C/t$ buckets. </p>
+<p>Let <span class="math inline">\(\mathcal{V}_1 \dots \mathcal{V}_{|V|}\)</span> be a set of views, altogether containing <span class="math inline">\(C\)</span> distinct buckets and each individually containing at least <span class="math inline">\(C/t\)</span> buckets.</p>
 <ul>
-<li>For a ranged hash function and a particular item $i$, the <em>spread</em> $\sigma(i)$ = $|{f_{\mathcal{V}<em>j}(i)}^{|V|}</em>{j=1}|$. </li>
-<li>The <em>spread</em> of a hash function $\sigma(f)$ is the maximum spread of an item.</li>
-<li>The <em>spread</em> of a hash family is $\sigma$ if with high probability, the spread of a random hash function from the family is $\sigma$.</li>
+<li>For a ranged hash function and a particular item <span class="math inline">\(i\)</span>, the <em>spread</em> <span class="math inline">\(\sigma(i)\)</span> = <span class="math inline">\(|\{f_{\mathcal{V}_j}(i)\}^{|V|}_{j=1}|\)</span>.</li>
+<li>The <em>spread</em> of a hash function <span class="math inline">\(\sigma(f)\)</span> is the maximum spread of an item.</li>
+<li>The <em>spread</em> of a hash family is <span class="math inline">\(\sigma\)</span> if with high probability, the spread of a random hash function from the family is <span class="math inline">\(\sigma\)</span>.</li>
 </ul>
-<p>Spread 大致意思是指，一个 item 在不同的 view 下会被分配到的 bucket 所组成集合的大小，其越小说明在节点数量发生变化时，需要做的数据迁移操作越少。</p>
-</li>
+<p>Spread 大致意思是指，一个 item 在不同的 view 下会被分配到的 bucket 所组成集合的大小，其越小说明在节点数量发生变化时，需要做的数据迁移操作越少。</p></li>
 <li><p>Load</p>
-<p>Define a set of $|V|$ views as before.</p>
+<p>Define a set of <span class="math inline">\(|V|\)</span> views as before.</p>
 <ul>
-<li>For a ranged hash function $f$ and bucket $b$, the <em>load</em> $\lambda(b) = |\cup_{\mathcal{V}}f^{-1}<em>{\mathcal{V}}(b)|$. (Note that $f^{-1}</em>{\mathcal{V}}(b)$) is the set of items assigned to bucket $b$ in view $\mathcal{V}$)</li>
-<li>The <em>load</em> of a hash function $\lambda(f)$ is the maximum load of a bucket.</li>
-<li>The <em>load</em> of a hash family is $\lambda$ if with high probability, a randomly chosen hash function has load $\lambda$.</li>
+<li>For a ranged hash function <span class="math inline">\(f\)</span> and bucket <span class="math inline">\(b\)</span>, the <em>load</em> <span class="math inline">\(\lambda(b) = |\cup_{\mathcal{V}}f^{-1}_{\mathcal{V}}(b)|\)</span>. (Note that <span class="math inline">\(f^{-1}_{\mathcal{V}}(b)\)</span>) is the set of items assigned to bucket <span class="math inline">\(b\)</span> in view <span class="math inline">\(\mathcal{V}\)</span>)</li>
+<li>The <em>load</em> of a hash function <span class="math inline">\(\lambda(f)\)</span> is the maximum load of a bucket.</li>
+<li>The <em>load</em> of a hash family is <span class="math inline">\(\lambda\)</span> if with high probability, a randomly chosen hash function has load <span class="math inline">\(\lambda\)</span>.</li>
 </ul>
-<p>Load 大致意思是指， 一个 bucket 在不同的 view 下所包含的 items 集合的并集的大小，其具有上界保证了在不同的节点总数情况下，不会出现单个节点需要储存过多的数据的现象。</p>
-</li>
+<p>Load 大致意思是指， 一个 bucket 在不同的 view 下所包含的 items 集合的并集的大小，其具有上界保证了在不同的节点总数情况下，不会出现单个节点需要储存过多的数据的现象。</p></li>
 </ol>
-<h2 id="构造一致性哈希函数"><a href="#构造一致性哈希函数" class="headerlink" title="构造一致性哈希函数"></a>构造一致性哈希函数</h2>
+<h2 id="构造一致性哈希函数">构造一致性哈希函数</h2>
+
       
     </div>
 
@@ -856,7 +860,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Whydunit"><span class="nav-number">1.</span> <span class="nav-text">Whydunit</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Whodunit"><span class="nav-number">2.</span> <span class="nav-text">Whodunit</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Proxy-cache"><span class="nav-number">2.1.</span> <span class="nav-text">Proxy cache</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#A-group-of-caches-functions-as-one"><span class="nav-number">2.2.</span> <span class="nav-text">A group of caches functions as one</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Harvest-Cache"><span class="nav-number">2.3.</span> <span class="nav-text">Harvest Cache</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Using-randomization-and-hashing"><span class="nav-number">2.4.</span> <span class="nav-text">Using randomization and hashing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Random-cache-trees"><span class="nav-number">2.5.</span> <span class="nav-text">Random cache trees</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Consistent-hashing"><span class="nav-number">2.6.</span> <span class="nav-text">Consistent hashing</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Howdunit"><span class="nav-number">3.</span> <span class="nav-text">Howdunit</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#符号说明"><span class="nav-number">3.1.</span> <span class="nav-text">符号说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一致性哈希函数应满足的性质介绍"><span class="nav-number">3.2.</span> <span class="nav-text">一致性哈希函数应满足的性质介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构造一致性哈希函数"><span class="nav-number">3.3.</span> <span class="nav-text">构造一致性哈希函数</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#whydunit"><span class="nav-number">1.</span> <span class="nav-text">Whydunit</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#whodunit"><span class="nav-number">2.</span> <span class="nav-text">Whodunit</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#proxy-cache"><span class="nav-number">2.1.</span> <span class="nav-text">Proxy cache</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#a-group-of-caches-functions-as-one"><span class="nav-number">2.2.</span> <span class="nav-text">A group of caches functions as one</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#harvest-cache"><span class="nav-number">2.3.</span> <span class="nav-text">Harvest Cache</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#using-randomization-and-hashing"><span class="nav-number">2.4.</span> <span class="nav-text">Using randomization and hashing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#random-cache-trees"><span class="nav-number">2.5.</span> <span class="nav-text">Random cache trees</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#consistent-hashing"><span class="nav-number">2.6.</span> <span class="nav-text">Consistent hashing</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#howdunit"><span class="nav-number">3.</span> <span class="nav-text">Howdunit</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#符号说明"><span class="nav-number">3.1.</span> <span class="nav-text">符号说明</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一致性哈希函数应满足的性质介绍"><span class="nav-number">3.2.</span> <span class="nav-text">一致性哈希函数应满足的性质介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#构造一致性哈希函数"><span class="nav-number">3.3.</span> <span class="nav-text">构造一致性哈希函数</span></a></li></ol></li></ol></div>
             
 
           </div>

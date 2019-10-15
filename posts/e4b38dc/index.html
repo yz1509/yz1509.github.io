@@ -125,18 +125,18 @@
 
 
 
-  <meta name="description" content="手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？ 使用 echo $PATH 命令检查环境变量，如新版本软件安装路径不在环境变量中，添加。如新版本软件安装路径已在环境变量中，转 2. 添加环境变量：编辑 /etc/profile or /ect/environment or ~/.bashrc    因为 bash 路径是有缓存的，只要运行过">
+  <meta name="description" content="手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？  使用 echo $PATH 命令检查环境变量，如新版本软件安装路径不在环境变量中，添加。如新版本软件安装路径已在环境变量中，转 2.  添加环境变量：编辑 /etc/profile or /ect/environment or ~/.bashrc  因为 bash 路径是有缓存的">
 <meta name="keywords" content="linux">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux相关小问题">
 <meta property="og:url" content="https://yz1509.github.io/posts/e4b38dc/index.html">
 <meta property="og:site_name" content="兔子和阿铁">
-<meta property="og:description" content="手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？ 使用 echo $PATH 命令检查环境变量，如新版本软件安装路径不在环境变量中，添加。如新版本软件安装路径已在环境变量中，转 2. 添加环境变量：编辑 /etc/profile or /ect/environment or ~/.bashrc    因为 bash 路径是有缓存的，只要运行过">
+<meta property="og:description" content="手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？  使用 echo $PATH 命令检查环境变量，如新版本软件安装路径不在环境变量中，添加。如新版本软件安装路径已在环境变量中，转 2.  添加环境变量：编辑 /etc/profile or /ect/environment or ~/.bashrc  因为 bash 路径是有缓存的">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:updated_time" content="2019-10-12T12:11:03.544Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux相关小问题">
-<meta name="twitter:description" content="手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？ 使用 echo $PATH 命令检查环境变量，如新版本软件安装路径不在环境变量中，添加。如新版本软件安装路径已在环境变量中，转 2. 添加环境变量：编辑 /etc/profile or /ect/environment or ~/.bashrc    因为 bash 路径是有缓存的，只要运行过">
+<meta name="twitter:description" content="手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？  使用 echo $PATH 命令检查环境变量，如新版本软件安装路径不在环境变量中，添加。如新版本软件安装路径已在环境变量中，转 2.  添加环境变量：编辑 /etc/profile or /ect/environment or ~/.bashrc  因为 bash 路径是有缓存的">
 
 
 
@@ -457,26 +457,28 @@
       
 
       
-        <h1 id="手动卸载旧版本软件，安装完新版本之后，提示-No-such-file-or-directory-怎么办？"><a href="#手动卸载旧版本软件，安装完新版本之后，提示-No-such-file-or-directory-怎么办？" class="headerlink" title="手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？"></a>手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？</h1><ol>
-<li>使用 <code>echo $PATH</code> 命令检查环境变量，如新版本软件安装路径不在环境变量中，添加。如新版本软件安装路径已在环境变量中，转 2.<ul>
-<li>添加环境变量：编辑 <code>/etc/profile</code> or <code>/ect/environment</code> or <code>~/.bashrc</code> </li>
-</ul>
-</li>
-<li>因为 bash 路径是有缓存的，只要运行过的命令，bash 就会保存到一张 hash 表中，下次直接从 hash 表中找地址，故需要我们手动删除缓存<ul>
+        <h1 id="手动卸载旧版本软件安装完新版本之后提示-no-such-file-or-directory-怎么办">手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？</h1>
+<ol type="1">
+<li>使用 <code>echo $PATH</code> 命令检查环境变量，如新版本软件安装路径不在环境变量中，添加。如新版本软件安装路径已在环境变量中，转 2.
+<ul>
+<li>添加环境变量：编辑 <code>/etc/profile</code> or <code>/ect/environment</code> or <code>~/.bashrc</code></li>
+</ul></li>
+<li>因为 bash 路径是有缓存的，只要运行过的命令，bash 就会保存到一张 hash 表中，下次直接从 hash 表中找地址，故需要我们手动删除缓存
+<ul>
 <li>运行 <code>hash</code> 命令，查看缓存的 hash 表</li>
 <li>运行 <code>hash -d &lt;softname&gt;</code> 删除掉 <code>&lt;softname&gt;</code> 的缓存</li>
-</ul>
-</li>
+</ul></li>
 </ol>
-<h1 id="gcc-g-版本切换"><a href="#gcc-g-版本切换" class="headerlink" title="gcc/g++ 版本切换"></a>gcc/g++ 版本切换</h1><ol>
+<h1 id="gccg-版本切换">gcc/g++ 版本切换</h1>
+<ol type="1">
 <li>查看所安装的各个版本</li>
 </ol>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ls /usr/bin/gcc*</span><br><span class="line">ls /usr/bin/g++*</span><br></pre></td></tr></table></figure>
-<ol>
+<ol start="2" type="1">
 <li>设置候选优先级</li>
 </ol>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 以 gcc-5 和 gcc-7 为例，最后的数字是优先级，数字越大，优先级越高</span></span><br><span class="line">update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 100</span><br><span class="line">update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 80</span><br><span class="line"></span><br><span class="line"><span class="comment"># 以 g++-5 和 g++-7 为例，最后的数字是优先级，数字越大，优先级越高</span></span><br><span class="line">update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 100</span><br><span class="line">update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 80</span><br></pre></td></tr></table></figure>
-<ol>
+<ol start="3" type="1">
 <li>切换版本</li>
 </ol>
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">update-alternatives --config gcc</span><br><span class="line"></span><br><span class="line">update-alternatives --config g++</span><br></pre></td></tr></table></figure>
@@ -791,7 +793,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#手动卸载旧版本软件，安装完新版本之后，提示-No-such-file-or-directory-怎么办？"><span class="nav-number">1.</span> <span class="nav-text">手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#gcc-g-版本切换"><span class="nav-number">2.</span> <span class="nav-text">gcc/g++ 版本切换</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#手动卸载旧版本软件安装完新版本之后提示-no-such-file-or-directory-怎么办"><span class="nav-number">1.</span> <span class="nav-text">手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#gccg-版本切换"><span class="nav-number">2.</span> <span class="nav-text">gcc/g++ 版本切换</span></a></li></ol></div>
             
 
           </div>

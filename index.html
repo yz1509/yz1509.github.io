@@ -401,7 +401,7 @@
                 
               
 
-              <time title="创建时间：2019-10-15 14:45:23 / 修改时间：18:25:19" itemprop="dateCreated datePublished" datetime="2019-10-15T14:45:23+08:00">2019-10-15</time>
+              <time title="创建时间：2019-10-15 14:45:23 / 修改时间：20:00:13" itemprop="dateCreated datePublished" datetime="2019-10-15T14:45:23+08:00">2019-10-15</time>
             
 
             
@@ -460,7 +460,11 @@
         
           
           论文地址
-WhydunitWhodunitHowdunit
+Whydunit
+\(x^2_1 = x^1_2\)
+Whodunit
+Howdunit
+
           
           <!--noindex-->
           <div class="post-button text-center">
@@ -583,7 +587,7 @@ WhydunitWhodunitHowdunit
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-10-15 19:46:07" itemprop="dateModified" datetime="2019-10-15T19:46:07+08:00">2019-10-15</time>
+                <time title="修改时间：2019-10-15 19:53:21" itemprop="dateModified" datetime="2019-10-15T19:53:21+08:00">2019-10-15</time>
               
             
           </span>
@@ -637,8 +641,10 @@ WhydunitWhodunitHowdunit
         
           
           论文地址
-Whydunit当大量的客户端同时对单个服务器发起请求时，可能会使该服务器(Hot spots) “swamped” （无法使用）。除此之外，还可能会阻塞该服务附近的网络通信。所以我们需要一个负载均衡算法来有效地避免 Hot spots 的出现。
-WhodunitProxy cache使用
+Whydunit
+当大量的客户端同时对单个服务器发起请求时，可能会使该服务器(Hot spots) "swamped" （无法使用）。除此之外，还可能会阻塞该服务附近的网络通信。所以我们需要一个负载均衡算法来有效地避免 Hot spots 的出现。
+Whodunit
+Proxy c
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -803,7 +809,8 @@ WhodunitProxy cache使用
         
           
           源码文件 /src/sds.h &amp; sdsalloc.h &amp; /src/sds.c
-sds 数据结构123456789101112131415161718192021222324252627282930313233typedef char *sds;  // ------------
+sds 数据结构
+123456789101112131415161718192021222324252627282930313233typedef char *sds;  // ---------
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -968,8 +975,10 @@ sds 数据结构123456789101112131415161718192021222324252627282930313233typedef
         
           
           源码文件 /src/adlist.h &amp; /src/adlist.c
-adlist 数据结构adlist 其实是一个双向链表，我们首先介绍其链表节点、链表迭代器和链表的数据结构。
-链表节点12345typedef struct listNode &#123;    struct listNo
+adlist 数据结构
+adlist 其实是一个双向链表，我们首先介绍其链表节点、链表迭代器和链表的数据结构。
+链表节点
+12345typedef struct listNode &#123;    struct 
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1134,7 +1143,9 @@ adlist 数据结构adlist 其实是一个双向链表，我们首先介绍其链
         
           
           源码文件 /src/zmalloc.h &amp; /src/zmalloc.c
-分配内存zmalloc12345678910111213141516171819void *zmalloc(size_t size) &#123;    // 调用 malloc 分配内存    void *ptr =
+分配内存
+zmalloc
+12345678910111213141516171819void *zmalloc(size_t size) &#123;    // 调用 malloc 分配内存    void *
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1299,8 +1310,10 @@ adlist 数据结构adlist 其实是一个双向链表，我们首先介绍其链
         
           
           手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？
+
 使用 echo $PATH 命令检查环境变量，如新版本软件安装路径不在环境变量中，添加。如新版本软件安装路径已在环境变量中，转 2.
-添加环境变量：编辑 /etc/profile or /ect
+
+添加环境变量：编辑 /etc/profile o
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1476,10 +1489,11 @@ adlist 数据结构adlist 其实是一个双向链表，我们首先介绍其链
       
         
           
-          协议层类关系图协议层相关的类主要实现与数据传输格式封装的协议相关的内容。可以发现，所有的协议类都直接或间接继承 TProtocol 类，协议层类关系图主要分为三部分来看：
+          协议层类关系图
+协议层相关的类主要实现与数据传输格式封装的协议相关的内容。可以发现，所有的协议类都直接或间接继承 TProtocol 类，协议层类关系图主要分为三部分来看：
 
 抽象基类 Tprotocol，它是所有协议类的基类，有很大一部分类直接从它继承实现它定义的接口函数（纯虚函数）
-TProtoc
+TP
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1655,11 +1669,8 @@ TProtoc
       
         
           
-          传输层类关系图传输层类关系图主要分为三部分来看：
-
-抽象基类 TTransport，它是所有传输类的基类，有很大一部分类直接从它继承实现它定义的接口函数（纯虚函数）
-TTransport 的默认实现 TTransportDefaults 类和虚拟传输类 TvirtualTransport 及其子类
-
+          传输层类关系图
+传输层类关系图主要分为三部分来看： * 抽象基类 TTransport，它是所有传输类的基类，有很大一部分类直接从它继承实现它定义的接口函数（纯虚函数） * TTransport 的默认实现 TTransportDefaults 类和虚拟传输类 TvirtualTransport 
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1836,7 +1847,8 @@ TTransport 的默认实现 TTransportDefaults 类和虚拟传输类 TvirtualTran
         
           
           Thrift 是一个基于静态代码生成的跨语言的RPC协议栈实现，它可以生成包括 C++, Java, Python, Ruby, PHP 等主流语言的代码，这些代码实现了 RPC 的协议层和传输层功能，从而让用户可以集中精力于服务的调用和实现。
-软件栈Thrift 对软件栈的定义非常的清晰, 使得各
+软件栈
+Thrift 对软件栈的定义非常的清晰, 
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -2012,8 +2024,10 @@ TTransport 的默认实现 TTransportDefaults 类和虚拟传输类 TvirtualTran
       
         
           
-          C++virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？基类希望其派生类覆盖的函数，通常将其定义为虚函数，通过指针或引用调用虚函数时，会在运行时解析该调用，在这种情况下对象的动态类型有可能与静态类型不同。这便是 OOP 的核心思想：多态性。
-构造函数不能为虚函数，而析构函数可以且
+          C++
+virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？
+基类希望其派生类覆盖的函数，通常将其定义为虚函数，通过指针或引用调用虚函数时，会在运行时解析该调用，在这种情况下对象的动态类型有可能与静态类型不同。这便是 OOP 的核心思想：多态性。
+构造函数不能为虚函数，而析构
           ...
           <!--noindex-->
           <div class="post-button text-center">
