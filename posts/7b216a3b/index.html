@@ -50,13 +50,13 @@
   };
 </script>
 
-  <meta name="description" content="什么是树 定义 1 树是没有简单回路的连通无向图。 定义 2 有根树是指定一个顶点作为根并且每条边的方向都离开根的树。  二叉树  如果 \(x.p = NIL\)，则 \(x\) 是根结点 属性 \(T.root\) 指向整棵树 \(T\) 的根结点，如果 \(T.root = NIL\)，则该数为空   分支无限制的有根树  \(x.left-child\) 指向结点 \(">
+  <meta name="description" content="主要介绍二叉树和红黑树。">
 <meta name="keywords" content="二叉搜索树,红黑树">
 <meta property="og:type" content="article">
 <meta property="og:title" content="树">
 <meta property="og:url" content="https://yz1509.github.io/posts/7b216a3b/index.html">
-<meta property="og:site_name" content="兔子和阿铁">
-<meta property="og:description" content="什么是树 定义 1 树是没有简单回路的连通无向图。 定义 2 有根树是指定一个顶点作为根并且每条边的方向都离开根的树。  二叉树  如果 \(x.p = NIL\)，则 \(x\) 是根结点 属性 \(T.root\) 指向整棵树 \(T\) 的根结点，如果 \(T.root = NIL\)，则该数为空   分支无限制的有根树  \(x.left-child\) 指向结点 \(">
+<meta property="og:site_name" content="SOS 団">
+<meta property="og:description" content="主要介绍二叉树和红黑树。">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://yz1509.github.io/posts/7b216a3b/tree001.png">
 <meta property="og:image" content="https://yz1509.github.io/posts/7b216a3b/tree002.png">
@@ -70,10 +70,10 @@
 <meta property="og:image" content="https://yz1509.github.io/posts/7b216a3b/tree010_v2.png">
 <meta property="og:image" content="https://yz1509.github.io/posts/7b216a3b/tree011.png">
 <meta property="og:image" content="https://yz1509.github.io/posts/7b216a3b/tree012.png">
-<meta property="og:updated_time" content="2018-07-26T06:12:44.000Z">
+<meta property="og:updated_time" content="2019-10-30T09:57:26.657Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="树">
-<meta name="twitter:description" content="什么是树 定义 1 树是没有简单回路的连通无向图。 定义 2 有根树是指定一个顶点作为根并且每条边的方向都离开根的树。  二叉树  如果 \(x.p = NIL\)，则 \(x\) 是根结点 属性 \(T.root\) 指向整棵树 \(T\) 的根结点，如果 \(T.root = NIL\)，则该数为空   分支无限制的有根树  \(x.left-child\) 指向结点 \(">
+<meta name="twitter:description" content="主要介绍二叉树和红黑树。">
 <meta name="twitter:image" content="https://yz1509.github.io/posts/7b216a3b/tree001.png">
 
 <link rel="canonical" href="https://yz1509.github.io/posts/7b216a3b/">
@@ -90,7 +90,7 @@
   };
 </script>
 
-  <title>树 | 兔子和阿铁</title>
+  <title>树 | SOS 団</title>
   
 
 
@@ -134,11 +134,11 @@
     <div>
       <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
-        <span class="site-title">兔子和阿铁</span>
+        <span class="site-title">SOS 団</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
-        <p class="site-subtitle">旅の途中</p>
+        <p class="site-subtitle">世界を大いに盛り上げるための涼宮ハルヒの団</p>
   </div>
 
   <div class="site-nav-toggle">
@@ -208,13 +208,13 @@
     <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/7b216a3b/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="yz1509">
+      <meta itemprop="image" content="/images/apple-touch.jpg">
+      <meta itemprop="name" content="涼宮ハルヒ">
       <meta itemprop="description" content="">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="兔子和阿铁">
+      <meta itemprop="name" content="SOS 団">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -235,7 +235,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2018-07-26 14:12:44" itemprop="dateModified" datetime="2018-07-26T14:12:44+08:00">2018-07-26</time>
+                <time title="修改时间：2019-10-30 17:57:26" itemprop="dateModified" datetime="2019-10-30T17:57:26+08:00">2019-10-30</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -260,7 +260,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="什么是树">什么是树</h1>
+        <p>主要介绍二叉树和红黑树。</p>
+<a id="more"></a>
+<h1 id="什么是树">什么是树</h1>
 <p><strong>定义 1</strong> 树是没有简单回路的连通无向图。</p>
 <p><strong>定义 2</strong> 有根树是指定一个顶点作为根并且每条边的方向都离开根的树。 <img src="/posts/7b216a3b/tree001.png" alt="树"></p>
 <h2 id="二叉树">二叉树</h2>
@@ -396,9 +398,9 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <img class="site-author-image" itemprop="image" alt="yz1509"
-    src="/images/avatar.gif">
-  <p class="site-author-name" itemprop="name">yz1509</p>
+  <img class="site-author-image" itemprop="image" alt="涼宮ハルヒ"
+    src="/images/apple-touch.jpg">
+  <p class="site-author-name" itemprop="name">涼宮ハルヒ</p>
   <div class="site-description" itemprop="description"></div>
 </div>
 <div class="site-state-wrap motion-element">
@@ -456,7 +458,7 @@
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">yz1509</span>
+  <span class="author" itemprop="copyrightHolder">涼宮ハルヒ</span>
 </div>
 
         
@@ -505,6 +507,58 @@
 
 
   
+
+  
+      
+<script type="text/x-mathjax-config">
+    MathJax.Ajax.config.path['mhchem'] = '//cdn.jsdelivr.net/npm/mathjax-mhchem@3';
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        extensions: ['[mhchem]/mhchem.js'],
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
 
   
 

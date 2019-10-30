@@ -50,18 +50,18 @@
   };
 </script>
 
-  <meta name="description" content="手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？  使用 echo $PATH 命令检查环境变量，如新版本软件安装路径不在环境变量中，添加。如新版本软件安装路径已在环境变量中，转 2.  添加环境变量：编辑 /etc/profile or /ect/environment or ~/.bashrc  因为 bash 路径是有缓存的">
+  <meta name="description" content="这个人明明遇到过很多问题，却总是忘了记录。">
 <meta name="keywords" content="linux">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux相关小问题">
 <meta property="og:url" content="https://yz1509.github.io/posts/e4b38dc/index.html">
-<meta property="og:site_name" content="兔子和阿铁">
-<meta property="og:description" content="手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？  使用 echo $PATH 命令检查环境变量，如新版本软件安装路径不在环境变量中，添加。如新版本软件安装路径已在环境变量中，转 2.  添加环境变量：编辑 /etc/profile or /ect/environment or ~/.bashrc  因为 bash 路径是有缓存的">
+<meta property="og:site_name" content="SOS 団">
+<meta property="og:description" content="这个人明明遇到过很多问题，却总是忘了记录。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-12T12:11:03.544Z">
+<meta property="og:updated_time" content="2019-10-30T10:04:00.783Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux相关小问题">
-<meta name="twitter:description" content="手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？  使用 echo $PATH 命令检查环境变量，如新版本软件安装路径不在环境变量中，添加。如新版本软件安装路径已在环境变量中，转 2.  添加环境变量：编辑 /etc/profile or /ect/environment or ~/.bashrc  因为 bash 路径是有缓存的">
+<meta name="twitter:description" content="这个人明明遇到过很多问题，却总是忘了记录。">
 
 <link rel="canonical" href="https://yz1509.github.io/posts/e4b38dc/">
 
@@ -77,7 +77,7 @@
   };
 </script>
 
-  <title>Linux相关小问题 | 兔子和阿铁</title>
+  <title>Linux相关小问题 | SOS 団</title>
   
 
 
@@ -121,11 +121,11 @@
     <div>
       <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
-        <span class="site-title">兔子和阿铁</span>
+        <span class="site-title">SOS 団</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
-        <p class="site-subtitle">旅の途中</p>
+        <p class="site-subtitle">世界を大いに盛り上げるための涼宮ハルヒの団</p>
   </div>
 
   <div class="site-nav-toggle">
@@ -195,13 +195,13 @@
     <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/e4b38dc/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="yz1509">
+      <meta itemprop="image" content="/images/apple-touch.jpg">
+      <meta itemprop="name" content="涼宮ハルヒ">
       <meta itemprop="description" content="">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="兔子和阿铁">
+      <meta itemprop="name" content="SOS 団">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -214,10 +214,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2019-10-12 20:00:38 / 修改时间：20:11:03" itemprop="dateCreated datePublished" datetime="2019-10-12T20:00:38+08:00">2019-10-12</time>
+              <time title="创建时间：2019-10-12 20:00:38" itemprop="dateCreated datePublished" datetime="2019-10-12T20:00:38+08:00">2019-10-12</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-10-30 18:04:00" itemprop="dateModified" datetime="2019-10-30T18:04:00+08:00">2019-10-30</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -241,7 +247,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1 id="手动卸载旧版本软件安装完新版本之后提示-no-such-file-or-directory-怎么办">手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？</h1>
+        <p>这个人明明遇到过很多问题，却总是忘了记录。</p>
+<a id="more"></a>
+<h1 id="手动卸载旧版本软件安装完新版本之后提示-no-such-file-or-directory-怎么办">手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？</h1>
 <ol type="1">
 <li>使用 <code>echo $PATH</code> 命令检查环境变量，如新版本软件安装路径不在环境变量中，添加。如新版本软件安装路径已在环境变量中，转 2.
 <ul>
@@ -338,9 +346,9 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <img class="site-author-image" itemprop="image" alt="yz1509"
-    src="/images/avatar.gif">
-  <p class="site-author-name" itemprop="name">yz1509</p>
+  <img class="site-author-image" itemprop="image" alt="涼宮ハルヒ"
+    src="/images/apple-touch.jpg">
+  <p class="site-author-name" itemprop="name">涼宮ハルヒ</p>
   <div class="site-description" itemprop="description"></div>
 </div>
 <div class="site-state-wrap motion-element">
@@ -398,7 +406,7 @@
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">yz1509</span>
+  <span class="author" itemprop="copyrightHolder">涼宮ハルヒ</span>
 </div>
 
         
@@ -447,6 +455,58 @@
 
 
   
+
+  
+      
+<script type="text/x-mathjax-config">
+    MathJax.Ajax.config.path['mhchem'] = '//cdn.jsdelivr.net/npm/mathjax-mhchem@3';
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        extensions: ['[mhchem]/mhchem.js'],
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
 
   
 

@@ -50,18 +50,18 @@
   };
 </script>
 
-  <meta name="description" content="源码文件 /src/sds.h &amp;amp; sdsalloc.h &amp;amp; /src/sds.c sds 数据结构 123456789101112131415161718192021222324252627282930313233typedef char *sds;  // --------------------- sds 的头部结构 ---------------------------">
+  <meta name="description" content="Redis 简单字符串的源码读后感 (超500字)。">
 <meta name="keywords" content="Redis">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Redis 源码之 sds">
 <meta property="og:url" content="https://yz1509.github.io/posts/18e84d53/index.html">
-<meta property="og:site_name" content="兔子和阿铁">
-<meta property="og:description" content="源码文件 /src/sds.h &amp;amp; sdsalloc.h &amp;amp; /src/sds.c sds 数据结构 123456789101112131415161718192021222324252627282930313233typedef char *sds;  // --------------------- sds 的头部结构 ---------------------------">
+<meta property="og:site_name" content="SOS 団">
+<meta property="og:description" content="Redis 简单字符串的源码读后感 (超500字)。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-12T12:25:08.861Z">
+<meta property="og:updated_time" content="2019-10-30T09:50:07.468Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Redis 源码之 sds">
-<meta name="twitter:description" content="源码文件 /src/sds.h &amp;amp; sdsalloc.h &amp;amp; /src/sds.c sds 数据结构 123456789101112131415161718192021222324252627282930313233typedef char *sds;  // --------------------- sds 的头部结构 ---------------------------">
+<meta name="twitter:description" content="Redis 简单字符串的源码读后感 (超500字)。">
 
 <link rel="canonical" href="https://yz1509.github.io/posts/18e84d53/">
 
@@ -77,7 +77,7 @@
   };
 </script>
 
-  <title>Redis 源码之 sds | 兔子和阿铁</title>
+  <title>Redis 源码之 sds | SOS 団</title>
   
 
 
@@ -121,11 +121,11 @@
     <div>
       <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
-        <span class="site-title">兔子和阿铁</span>
+        <span class="site-title">SOS 団</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
-        <p class="site-subtitle">旅の途中</p>
+        <p class="site-subtitle">世界を大いに盛り上げるための涼宮ハルヒの団</p>
   </div>
 
   <div class="site-nav-toggle">
@@ -195,13 +195,13 @@
     <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/18e84d53/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="yz1509">
+      <meta itemprop="image" content="/images/apple-touch.jpg">
+      <meta itemprop="name" content="涼宮ハルヒ">
       <meta itemprop="description" content="">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="兔子和阿铁">
+      <meta itemprop="name" content="SOS 団">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
@@ -214,10 +214,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2019-10-12 20:10:31 / 修改时间：20:25:08" itemprop="dateCreated datePublished" datetime="2019-10-12T20:10:31+08:00">2019-10-12</time>
+              <time title="创建时间：2019-10-12 20:10:31" itemprop="dateCreated datePublished" datetime="2019-10-12T20:10:31+08:00">2019-10-12</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2019-10-30 17:50:07" itemprop="dateModified" datetime="2019-10-30T17:50:07+08:00">2019-10-30</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -241,7 +247,9 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>源码文件 <code>/src/sds.h</code> &amp; <code>sdsalloc.h</code> &amp; <code>/src/sds.c</code></p>
+        <p>Redis 简单字符串的源码读后感 (超500字)。</p>
+<a id="more"></a>
+<p>源码文件 <code>/src/sds.h</code> &amp; <code>sdsalloc.h</code> &amp; <code>/src/sds.c</code></p>
 <h1 id="sds-数据结构">sds 数据结构</h1>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> <span class="keyword">char</span> *sds;  </span><br><span class="line"></span><br><span class="line"><span class="comment">// --------------------- sds 的头部结构 -------------------------------</span></span><br><span class="line"><span class="comment">/* Note: sdshdr5 is never used, we just access the flags byte directly.</span></span><br><span class="line"><span class="comment"> * However is here to document the layout of type 5 SDS strings. */</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">attribute__</span> ((__<span class="title">packed__</span>)) <span class="title">sdshdr5</span> &#123;</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, and 5 msb of string length */</span></span><br><span class="line">    <span class="keyword">char</span> buf[];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">attribute__</span> ((__<span class="title">packed__</span>)) <span class="title">sdshdr8</span> &#123;</span></span><br><span class="line">    <span class="keyword">uint8_t</span> len; <span class="comment">/* used */</span></span><br><span class="line">    <span class="keyword">uint8_t</span> alloc; <span class="comment">/* excluding the header and null terminator */</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, 5 unused bits */</span></span><br><span class="line">    <span class="keyword">char</span> buf[];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">attribute__</span> ((__<span class="title">packed__</span>)) <span class="title">sdshdr16</span> &#123;</span></span><br><span class="line">    <span class="keyword">uint16_t</span> len; <span class="comment">/* used */</span></span><br><span class="line">    <span class="keyword">uint16_t</span> alloc; <span class="comment">/* excluding the header and null terminator */</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, 5 unused bits */</span></span><br><span class="line">    <span class="keyword">char</span> buf[];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">attribute__</span> ((__<span class="title">packed__</span>)) <span class="title">sdshdr32</span> &#123;</span></span><br><span class="line">    <span class="keyword">uint32_t</span> len; <span class="comment">/* used */</span></span><br><span class="line">    <span class="keyword">uint32_t</span> alloc; <span class="comment">/* excluding the header and null terminator */</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, 5 unused bits */</span></span><br><span class="line">    <span class="keyword">char</span> buf[];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="class"><span class="keyword">struct</span> __<span class="title">attribute__</span> ((__<span class="title">packed__</span>)) <span class="title">sdshdr64</span> &#123;</span></span><br><span class="line">    <span class="keyword">uint64_t</span> len; <span class="comment">/* used */</span></span><br><span class="line">    <span class="keyword">uint64_t</span> alloc; <span class="comment">/* excluding the header and null terminator */</span></span><br><span class="line">    <span class="keyword">unsigned</span> <span class="keyword">char</span> flags; <span class="comment">/* 3 lsb of type, 5 unused bits */</span></span><br><span class="line">    <span class="keyword">char</span> buf[];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
 <p>可以看出来，sds 本质还是 C 风格字符串，但是由于不需用 <code>\0</code> 作为结尾标志，所以 sds 是二进制安全的，但是为了兼容 C 风格字符串， sds 也以终止字符 <code>\0</code> 结尾，所以 sds 可以直接重用一部分 C 字符串函数库里面的函数。关于 sds 的头部结构，作者定义了四种不同类型的 sdshdr 供程序使用，区别只是存储 <code>len</code> 和 <code>alloc</code> 使用的整型长度不同，目的应该是为了节省内存。</p>
@@ -507,9 +515,9 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <img class="site-author-image" itemprop="image" alt="yz1509"
-    src="/images/avatar.gif">
-  <p class="site-author-name" itemprop="name">yz1509</p>
+  <img class="site-author-image" itemprop="image" alt="涼宮ハルヒ"
+    src="/images/apple-touch.jpg">
+  <p class="site-author-name" itemprop="name">涼宮ハルヒ</p>
   <div class="site-description" itemprop="description"></div>
 </div>
 <div class="site-state-wrap motion-element">
@@ -567,7 +575,7 @@
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">yz1509</span>
+  <span class="author" itemprop="copyrightHolder">涼宮ハルヒ</span>
 </div>
 
         
@@ -616,6 +624,58 @@
 
 
   
+
+  
+      
+<script type="text/x-mathjax-config">
+    MathJax.Ajax.config.path['mhchem'] = '//cdn.jsdelivr.net/npm/mathjax-mhchem@3';
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        extensions: ['[mhchem]/mhchem.js'],
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
 
   
 
