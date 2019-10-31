@@ -66,7 +66,7 @@
 <meta property="og:image" content="https://yz1509.github.io/posts/afaab92b/e92d0ebc-7d46-413b-aec1-34a39602f787.png">
 <meta property="og:image" content="https://yz1509.github.io/posts/afaab92b/f87afe72-c2df-4c12-ac03-9b8d581a8af8.jpg">
 <meta property="og:image" content="https://yz1509.github.io/posts/afaab92b/1350996969_2313.jpg">
-<meta property="og:updated_time" content="2019-10-30T09:55:15.256Z">
+<meta property="og:updated_time" content="2019-10-31T02:11:40.893Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="后台开发面经">
 <meta name="twitter:description" content="后台开发岗面试可能会遇到遇到的问答记录（正确性无保证，仅供参考）。">
@@ -231,7 +231,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-10-30 17:55:15" itemprop="dateModified" datetime="2019-10-30T17:55:15+08:00">2019-10-30</time>
+                <time title="修改时间：2019-10-31 10:11:40" itemprop="dateModified" datetime="2019-10-31T10:11:40+08:00">2019-10-31</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -265,122 +265,115 @@
       
         <p>后台开发岗面试可能会遇到遇到的问答记录（正确性无保证，仅供参考）。</p>
 <a id="more"></a>
-<h1 id="c">C++</h1>
-<h2 id="virtual-关键字的作用构造和析构函数能不能定义虚函数为什么">virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？</h2>
-<p>基类希望其派生类覆盖的函数，通常将其定义为虚函数，通过指针或引用调用虚函数时，会在运行时解析该调用，在这种情况下对象的动态类型有可能与静态类型不同。这便是 OOP 的核心思想：多态性。</p>
-<p>构造函数不能为虚函数，而析构函数可以且常常是虚函数。</p>
-<p>首先，虚函数的实现原理是：在定义具有虚函数的类或者继承类的继承的时候，会相应建立一个虚函数表 vtable，即每个类都对应一个虚函数表，而在定义类的对象的时候，每个对象都会有一个指向相应类的虚表指针 vptr，vptr 指向虚表的入口地址，在调用相应的虚函数的时候，根据该入口地址寻找对应的函数。</p>
-<p>对于构造函数，其作用是在对象实例化的时候自动调用，对该对象进行初始化操作。前述中提到，虚函数是通过 vptr 来调用的，而调用构造函数的时候实例化并未完成，也就是说此时并不存在vptr，因而，无法使用 vptr 来调用构造函数。</p>
-<p>另一方面，虚函数的调用是虚调用，通过在运行时查询虚函数表得到具体函数入口地址，相当于只需要有部分信息就可以调用该函数。然而定义具体类的对象的时候，需要明确指定对象类型，而且在定义子类对象的时候首先调用的是父类的构造函数然后才是调用子类构造函数，如果使用了虚函数，那么仅仅是调用子类构造函数并不能完成对象的初始化。</p>
-<p>而对于析构函数，则需要定义为虚析构函数，防止内存泄露的发生。在继承的时候， 我们通常通过基类的指针来销毁对象，如果析构函数不为虚的话，就不能正确识别对象类型，从而不能正确销毁对象。</p>
-<h2 id="static-关键字修饰类的成员作用和其他成员函数的区别">static 关键字修饰类的成员作用，和其他成员函数的区别？</h2>
-<p>当使用 static 修饰成员变量和成员函数时，表示该变量或函数属于一个类，而不是该类的某个实例化对象。</p>
-<h2 id="c-调用-c-的关键字-extern-的作用">C++ 调用 C 的关键字 extern 的作用？</h2>
-<p>extern可以置于变量或者函数前，以标示变量或者函数的定义在别的文件中，提示编译器遇到此变量和函数时在其他模块中寻找其定义。此外extern也可用来进行链接指定。也就是说extern有两个作用， * 第一，当它与 "C" 一起连用时，如: <code>extern "C" void fun(int a, int b);</code> 则告诉编译器在编译 fun 这个函数名时按着 C 的规则去翻译相应的函数名而不是 C++ 的，C++ 的规则在翻译这个函数名时会把 fun 这个名字变得面目全非，可能是 <code>fun@aBc_int_int#%$</code> 也可能是别的，这要看编译器的"脾气"了(不同的编译器采用的方法不一样)，为什么这么做呢，因为 C++ 支持函数的重载。 * 第二，当 extern 不与 "C" 在一起修饰变量或函数时，如在头文件中: <code>extern int g_Int;</code> 它的作用就是声明函数或全局变量的作用范围的关键字，其声明的函数和变量可以在本模块活其他模块中使用，记住它是一个声明不是定义！也就是说 B 模块(编译单元)要是引用模块(编译单元) A 中定义的全局变量或函数时，它只要包含 A 模块的头文件即可。在编译阶段，模块 B 虽然找不到该函数或变量，但它不会报错，它会在连接时从模块 A 生成的目标代码中找到此函数。</p>
-<h2 id="map-和-unodered_map-的区别底层的实现">map 和 unodered_map 的区别，底层的实现</h2>
-<ul>
-<li>map：自动排序，底层数据结构为红黑树。</li>
-<li>unoredered_map：乱序，底层数据结构为哈希表（开链法解决哈希冲突）。
-<ul>
-<li>用一个 vector 来作为一个指针数组来存储节点的指针，_size 来保存当前哈希表中的有效元素个数。</li>
-<li>由于是 K/V 结构，所以选择一个 pair 的结构来存储 K/V。</li>
-<li>vector 中的每一个元素都指向一个链表，所有节点中需要一个 next 域的指针来指向下一个节点（采用单链表表结构）。</li>
-<li>采用模板来实现哈希表可以存储任意数据类型的目的。</li>
-<li>使用了仿函数技术。</li>
-</ul></li>
-</ul>
-<h2 id="哈希冲突如何解决">哈希冲突如何解决</h2>
-<ul>
-<li>开放定址法
-<ul>
-<li>线性探测再散列</li>
-<li>二次探测再散列</li>
-<li>伪随机探测再散列：增量序列伪随机</li>
-</ul></li>
-<li>再哈希法：同时构造多个不同的哈希函数</li>
-<li>开链（哈希桶）</li>
-<li>建立公共溢出区：将哈希表分为基本表和溢出表两部分，凡是和基本表发生冲突的元素，一律填入溢出表。</li>
-</ul>
-<h2 id="c-的重载">C++ 的重载</h2>
-<ul>
-<li>函数名字相同但形参列表不同，称之为函数重载(overloaded)</li>
-<li>main 函数不能重载</li>
-<li>顶层 const 的形参和另一个没有顶层 const 不能区分，底层 const 则相反</li>
-</ul>
-<h2 id="c-程序的编译过程">C 程序的编译过程</h2>
-<figure>
-<img src="/posts/afaab92b/GCC_CompilationProcess.png" alt=""><figcaption>编译过程</figcaption>
-</figure>
-<ol type="1">
-<li>预处理(Preprocessing)：预处理用于将所有的 #include 头文件以及宏定义替换成其真正的内容，预处理之后得到的仍然是文本文件，但文件体积会大很多。</li>
-<li>编译(Compilation)：这里的编译不是指程序从源文件到二进制程序的全部过程，而是指将经过预处理之后的程序转换成特定汇编代码 (assembly code) 的过程。</li>
-<li>汇编(Assemble)：将上一步的汇编代码转换成机器码(machine code)，这一步产生的文件叫做目标文件，是二进制格式。</li>
-<li>链接(Linking)：符号解析和重定位，将程序每一个全局变量和全局函数的引用和符号表里的一个符号对应起来，重定位确定每一个模板模块的全局变量和函数在可执行文件内存空间的位置，将多个目标文以及所需的库文件 (.so等) 链接成最终的可执行文件 (executable file)。</li>
-</ol>
-<h2 id="c-程序的内存空间">C 程序的内存空间</h2>
-<p>在多任务操作系统中，每个进程都运行在一个属于自己的虚拟内存中，而虚拟内存被分为许多页，并映射到物理内存中，被加载到物理内存中的文件才能够被执行。这里我们主要关注程序被装载后的内存布局，其可执行文件包含了代码段，数据段，BSS段，堆，栈等部分，其分布如下图所示。</p>
-<figure>
-<img src="/posts/afaab92b/001.png" alt=""><figcaption>内存分布</figcaption>
-</figure>
-<ul>
-<li>代码段(.text)：用来存放可执行文件的机器指令。存放在只读区域，以防止被修改。</li>
-<li>只读数据段(.rodata)：用来存放常量存放在只读区域，如字符串常量、全局 const 变量等。</li>
-<li>可读写数据段(.data)：用来存放可执行文件中已初始化全局变量，即静态分配的变量和全局变量。</li>
-<li>BSS 段(.bss)：未初始化的全局变量和局部静态变量一般放在 .bss 的段里，以节省内存空间。</li>
-<li>堆：用来容纳应用程序动态分配的内存区域。当程序使用 malloc 或 new 分配内存时，得到的内存来自堆。堆通常位于栈的下方。</li>
-<li>栈：用于维护函数调用的上下文。栈通常分配在用户空间的最高地址处分配。</li>
-<li>动态链接库映射区：如果程序调用了动态链接库，则会有这一部分。该区域是用于映射装载的动态链接库。</li>
-<li>保留区：内存中受到保护而禁止访问的内存区域。</li>
-</ul>
-<h2 id="mallocfree-与-newdelete-的区别">malloc/free 与 new/delete 的区别</h2>
-<ul>
-<li>malloc 与 free 是 C/C++ 语言的标准库函数，new/delete 是 C++ 的运算符。它们都可用于申请和释放动态内存。</li>
-<li>对于非内部数据类型的对象而言，用 malloc/free 无法满足动态对象的要求。对象在创建的同时要自动执行构造函数，对象在消亡之前要自动执行析构函数。由于 malloc/free 是库函数而不是运算符，不在编译器控制权限之内，不能够把执行构造函数和析构函数的任务强加于 malloc/free，因此C++ 语言需要一个能完成动态内存分配和初始化工作的运算符 new，和一个能完成清理与释放内存工作的运算符 delete。</li>
-<li>new 可以认为是 malloc 加构造函数的执行。new 出来的指针是直接带类型信息的。而 malloc 返回的都是 void* 指针。new/delete 在实现上其实调用了 malloc/free 函数。</li>
-<li>new 建立的是一个对象；malloc 分配的是一块内存。</li>
-</ul>
-<h2 id="析构函数的作用">析构函数的作用</h2>
-<p>释放对象使用的资源，并销毁非 static 成员。</p>
-<h2 id="堆和栈的区别">堆和栈的区别</h2>
-<ol type="1">
-<li>申请管理方式
-<ul>
-<li>栈：由编译器自动管理，无需我们手工控制。</li>
-<li>堆：堆的申请和释放工作由程序员控制，容易产生内存泄漏。</li>
-</ul></li>
-<li>申请后系统的响应
-<ul>
-<li>栈：只要栈的剩余空间大于所申请空间，系统将为程序提供内存，否则将报异常提示栈溢出。</li>
-<li>堆：首先应该知道操作系统有一个记录空闲内存地址的链表，当系统收到程序的申请时，会遍历该链表，寻找第一个空间大于所申请空间的堆结点，然后将该结点从空闲结点链表中删除，并将该结点的空间分配给程序，另外，对于大多数系统，会在这块内存空间中的首地址处记录本次分配的大小，这样，代码中的 delete 语句才能正确的释放本内存空间。另外，由于找到的堆结点的大小不一定正好等于申请的大小，系统会自动的将多余的那部分重新放入空闲链表中。</li>
-</ul></li>
-<li>申请大小的限制
-<ul>
-<li>栈：在 Windows 下，栈是向低地址扩展的数据结构，是一块连续的内存的区域。这句话的意思是栈顶的地址和栈的最大容量是系统预先规定好的，在 Windows 下，栈的大小是 1 M（可修改），如果申请的空间超过栈的剩余空间时，将提示 overflow。因此，能从栈获得的空间较小。</li>
-<li>堆：堆是向高地址扩展的数据结构，是不连续的内存区域。这是由于系统是用链表来存储的空闲内存地址的，自然是不连续的，而链表的遍历方向是由低地址向高地址。堆的大小受限于计算机系统中有效的虚拟内存。由此可见，堆获得的空间比较灵活，也比较大。</li>
-</ul></li>
-<li>申请效率的比较
-<ul>
-<li>栈由系统自动分配，速度较快。但程序员是无法控制的。</li>
-<li>堆是由 new 分配的内存，一般速度比较慢，而且容易产生内存碎片，不过用起来最方便。另外，在 Windows 下，最好的方式是用 VirtualAlloc 分配内存，它不是在堆，也不是在栈而是直接在进程的地址空间中保留一块内存，虽然用起来最不方便。但是速度快，也最灵活。</li>
-</ul></li>
-<li>堆与栈中的存储内容
-<ul>
-<li>栈：在函数调用时，第一个进栈的是主函数中后的下一条指令（函数调用语句的下一条可执行语句）的地址，然后是函数的各个参数，在大多数的 C 编译器中，参数是由右往左入栈的，然后是函数中的局部变量。注意静态变量是不入栈的。当本次函数调用结束后，局部变量先出栈，然后是参数，最后栈顶指针指向最开始存的地址，也就是主函数中的下一条指令，程序由该点继续运行。</li>
-<li>堆：一般是在堆的头部用一个字节存放堆的大小。堆中的具体内容由程序员安排。</li>
-</ul></li>
-</ol>
-<p><strong>总结</strong>：堆和栈相比，由于大量 new/delete 的使用，容易造成大量的内存碎片；并且可能引发用户态和核心态的切换，内存的申请，代价变得更加昂贵。所以栈在程序中是应用最广泛的，就算是函数的调用也利用栈去完成，函数调用过程中的参数，返回地址，ebp 和局部变量都采用栈的方式存放。所以，推荐大家尽量用栈，而不是用堆。虽然栈有如此众多的好处，但是向堆申请内存更加灵活，有时候分配大量的内存空间，还是用堆好一些。</p>
-<h2 id="重载-new-运算符什么时候需要重载">重载 new 运算符：什么时候需要重载</h2>
-<ul>
-<li>为了检测运用上的错误</li>
-<li>为了收集动态分配内存的使用统计信息</li>
-<li>为了增加分配和归还的速度</li>
-<li>为了降低缺省内存管理器带来的空间额外开销</li>
-<li>为了弥补缺省分配器中的非最佳齐位</li>
-<li>为了将相关对象成簇集中</li>
-<li>为了获得非传统的行为</li>
-</ul>
-<hr>
+<table style="width:32%;">
+<colgroup>
+<col style="width: 31%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;"># C++</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">## virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">基类希望其派生类覆盖的函数，通常将其定义为虚函数，通过指针或引用调用虚函数时，会在运行时解析该调用，在这种情况下对象的动态类型有可能与静态类型不同。这便是 OOP 的核心思想：多态性。</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">构造函数不能为虚函数，而析构函数可以且常常是虚函数。</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">首先，虚函数的实现原理是：在定义具有虚函数的类或者继承类的继承的时候，会相应建立一个虚函数表 vtable，即每个类都对应一个虚函数表，而在定义类的对象的时候，每个对象都会有一个指向相应类的虚表指针 vptr，vptr 指向虚表的入口地址，在调用相应的虚函数的时候，根据该入口地址寻找对应的函数。</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">对于构造函数，其作用是在对象实例化的时候自动调用，对该对象进行初始化操作。前述中提到，虚函数是通过 vptr 来调用的，而调用构造函数的时候实例化并未完成，也就是说此时并不存在vptr，因而，无法使用 vptr 来调用构造函数。</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">另一方面，虚函数的调用是虚调用，通过在运行时查询虚函数表得到具体函数入口地址，相当于只需要有部分信息就可以调用该函数。然而定义具体类的对象的时候，需要明确指定对象类型，而且在定义子类对象的时候首先调用的是父类的构造函数然后才是调用子类构造函数，如果使用了虚函数，那么仅仅是调用子类构造函数并不能完成对象的初始化。</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">而对于析构函数，则需要定义为虚析构函数，防止内存泄露的发生。在继承的时候， 我们通常通过基类的指针来销毁对象，如果析构函数不为虚的话，就不能正确识别对象类型，从而不能正确销毁对象。</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">## static 关键字修饰类的成员作用，和其他成员函数的区别？</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">当使用 static 修饰成员变量和成员函数时，表示该变量或函数属于一个类，而不是该类的某个实例化对象。</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">## C++ 调用 C 的关键字 extern 的作用？</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">extern可以置于变量或者函数前，以标示变量或者函数的定义在别的文件中，提示编译器遇到此变量和函数时在其他模块中寻找其定义。此外extern也可用来进行链接指定。也就是说extern有两个作用， * 第一，当它与 "C" 一起连用时，如: <code>extern "C" void fun(int a, int b);</code> 则告诉编译器在编译 fun 这个函数名时按着 C 的规则去翻译相应的函数名而不是 C++ 的，C++ 的规则在翻译这个函数名时会把 fun 这个名字变得面目全非，可能是 <code>fun@aBc_int_int#%$</code> 也可能是别的，这要看编译器的"脾气"了(不同的编译器采用的方法不一样)，为什么这么做呢，因为 C++ 支持函数的重载。 * 第二，当 extern 不与 "C" 在一起修饰变量或函数时，如在头文件中: <code>extern int g_Int;</code> 它的作用就是声明函数或全局变量的作用范围的关键字，其声明的函数和变量可以在本模块活其他模块中使用，记住它是一个声明不是定义！也就是说 B 模块(编译单元)要是引用模块(编译单元) A 中定义的全局变量或函数时，它只要包含 A 模块的头文件即可。在编译阶段，模块 B 虽然找不到该函数或变量，但它不会报错，它会在连接时从模块 A 生成的目标代码中找到此函数。</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">## map 和 unodered_map 的区别，底层的实现</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">- map：自动排序，底层数据结构为红黑树。 - unoredered_map：乱序，底层数据结构为哈希表（开链法解决哈希冲突）。 * 用一个 vector 来作为一个指针数组来存储节点的指针，_size 来保存当前哈希表中的有效元素个数。 * 由于是 K/V 结构，所以选择一个 pair 的结构来存储 K/V。 * vector 中的每一个元素都指向一个链表，所有节点中需要一个 next 域的指针来指向下一个节点（采用单链表表结构）。 * 采用模板来实现哈希表可以存储任意数据类型的目的。 * 使用了仿函数技术。</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">## 哈希冲突如何解决</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">- 开放定址法 * 线性探测再散列 * 二次探测再散列 * 伪随机探测再散列：增量序列伪随机 - 再哈希法：同时构造多个不同的哈希函数 - 开链（哈希桶） - 建立公共溢出区：将哈希表分为基本表和溢出表两部分，凡是和基本表发生冲突的元素，一律填入溢出表。</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">## C++ 的重载</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">- 函数名字相同但形参列表不同，称之为函数重载(overloaded) - main 函数不能重载 - 顶层 const 的形参和另一个没有顶层 const 不能区分，底层 const 则相反</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">## C 程序的编译过程</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><img src="/posts/afaab92b/GCC_CompilationProcess.png" alt="编译过程"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1. 预处理(Preprocessing)：预处理用于将所有的 #include 头文件以及宏定义替换成其真正的内容，预处理之后得到的仍然是文本文件，但文件体积会大很多。 2. 编译(Compilation)：这里的编译不是指程序从源文件到二进制程序的全部过程，而是指将经过预处理之后的程序转换成特定汇编代码 (assembly code) 的过程。 3. 汇编(Assemble)：将上一步的汇编代码转换成机器码(machine code)，这一步产生的文件叫做目标文件，是二进制格式。 4. 链接(Linking)：符号解析和重定位，将程序每一个全局变量和全局函数的引用和符号表里的一个符号对应起来，重定位确定每一个模板模块的全局变量和函数在可执行文件内存空间的位置，将多个目标文以及所需的库文件 (.so等) 链接成最终的可执行文件 (executable file)。</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">## C 程序的内存空间</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">在多任务操作系统中，每个进程都运行在一个属于自己的虚拟内存中，而虚拟内存被分为许多页，并映射到物理内存中，被加载到物理内存中的文件才能够被执行。这里我们主要关注程序被装载后的内存布局，其可执行文件包含了代码段，数据段，BSS段，堆，栈等部分，其分布如下图所示。</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><img src="/posts/afaab92b/001.png" alt="内存分布"></td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">* 代码段(.text)：用来存放可执行文件的机器指令。存放在只读区域，以防止被修改。 * 只读数据段(.rodata)：用来存放常量存放在只读区域，如字符串常量、全局 const 变量等。 * 可读写数据段(.data)：用来存放可执行文件中已初始化全局变量，即静态分配的变量和全局变量。 * BSS 段(.bss)：未初始化的全局变量和局部静态变量一般放在 .bss 的段里，以节省内存空间。 * 堆：用来容纳应用程序动态分配的内存区域。当程序使用 malloc 或 new 分配内存时，得到的内存来自堆。堆通常位于栈的下方。 * 栈：用于维护函数调用的上下文。栈通常分配在用户空间的最高地址处分配。 * 动态链接库映射区：如果程序调用了动态链接库，则会有这一部分。该区域是用于映射装载的动态链接库。 * 保留区：内存中受到保护而禁止访问的内存区域。</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">## malloc/free 与 new/delete 的区别</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">* malloc 与 free 是 C/C++ 语言的标准库函数，new/delete 是 C++ 的运算符。它们都可用于申请和释放动态内存。 * 对于非内部数据类型的对象而言，用 malloc/free 无法满足动态对象的要求。对象在创建的同时要自动执行构造函数，对象在消亡之前要自动执行析构函数。由于 malloc/free 是库函数而不是运算符，不在编译器控制权限之内，不能够把执行构造函数和析构函数的任务强加于 malloc/free，因此C++ 语言需要一个能完成动态内存分配和初始化工作的运算符 new，和一个能完成清理与释放内存工作的运算符 delete。 * new 可以认为是 malloc 加构造函数的执行。new 出来的指针是直接带类型信息的。而 malloc 返回的都是 void* 指针。new/delete 在实现上其实调用了 malloc/free 函数。 * new 建立的是一个对象；malloc 分配的是一块内存。</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">## 析构函数的作用</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">释放对象使用的资源，并销毁非 static 成员。</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">## 堆和栈的区别</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">1. 申请管理方式 * 栈：由编译器自动管理，无需我们手工控制。 * 堆：堆的申请和释放工作由程序员控制，容易产生内存泄漏。 2. 申请后系统的响应 * 栈：只要栈的剩余空间大于所申请空间，系统将为程序提供内存，否则将报异常提示栈溢出。 * 堆：首先应该知道操作系统有一个记录空闲内存地址的链表，当系统收到程序的申请时，会遍历该链表，寻找第一个空间大于所申请空间的堆结点，然后将该结点从空闲结点链表中删除，并将该结点的空间分配给程序，另外，对于大多数系统，会在这块内存空间中的首地址处记录本次分配的大小，这样，代码中的 delete 语句才能正确的释放本内存空间。另外，由于找到的堆结点的大小不一定正好等于申请的大小，系统会自动的将多余的那部分重新放入空闲链表中。 3. 申请大小的限制 * 栈：在 Windows 下，栈是向低地址扩展的数据结构，是一块连续的内存的区域。这句话的意思是栈顶的地址和栈的最大容量是系统预先规定好的，在 Windows 下，栈的大小是 1 M（可修改），如果申请的空间超过栈的剩余空间时，将提示 overflow。因此，能从栈获得的空间较小。 * 堆：堆是向高地址扩展的数据结构，是不连续的内存区域。这是由于系统是用链表来存储的空闲内存地址的，自然是不连续的，而链表的遍历方向是由低地址向高地址。堆的大小受限于计算机系统中有效的虚拟内存。由此可见，堆获得的空间比较灵活，也比较大。 4. 申请效率的比较 * 栈由系统自动分配，速度较快。但程序员是无法控制的。 * 堆是由 new 分配的内存，一般速度比较慢，而且容易产生内存碎片，不过用起来最方便。另外，在 Windows 下，最好的方式是用 VirtualAlloc 分配内存，它不是在堆，也不是在栈而是直接在进程的地址空间中保留一块内存，虽然用起来最不方便。但是速度快，也最灵活。 5. 堆与栈中的存储内容 * 栈：在函数调用时，第一个进栈的是主函数中后的下一条指令（函数调用语句的下一条可执行语句）的地址，然后是函数的各个参数，在大多数的 C 编译器中，参数是由右往左入栈的，然后是函数中的局部变量。注意静态变量是不入栈的。当本次函数调用结束后，局部变量先出栈，然后是参数，最后栈顶指针指向最开始存的地址，也就是主函数中的下一条指令，程序由该点继续运行。 * 堆：一般是在堆的头部用一个字节存放堆的大小。堆中的具体内容由程序员安排。</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><strong>总结</strong>：堆和栈相比，由于大量 new/delete 的使用，容易造成大量的内存碎片；并且可能引发用户态和核心态的切换，内存的申请，代价变得更加昂贵。所以栈在程序中是应用最广泛的，就算是函数的调用也利用栈去完成，函数调用过程中的参数，返回地址，ebp 和局部变量都采用栈的方式存放。所以，推荐大家尽量用栈，而不是用堆。虽然栈有如此众多的好处，但是向堆申请内存更加灵活，有时候分配大量的内存空间，还是用堆好一些。</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">## 重载 new 运算符：什么时候需要重载</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">- 为了检测运用上的错误 - 为了收集动态分配内存的使用统计信息 - 为了增加分配和归还的速度 - 为了降低缺省内存管理器带来的空间额外开销 - 为了弥补缺省分配器中的非最佳齐位 - 为了将相关对象成簇集中 - 为了获得非传统的行为</td>
+</tr>
+</tbody>
+</table>
 <ul>
 <li>lambda 的实质（编译器层面）</li>
 </ul>
@@ -813,7 +806,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#c"><span class="nav-number">1.</span> <span class="nav-text">C++</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#virtual-关键字的作用构造和析构函数能不能定义虚函数为什么"><span class="nav-number">1.1.</span> <span class="nav-text">virtual 关键字的作用、构造和析构函数能不能定义虚函数？为什么？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#static-关键字修饰类的成员作用和其他成员函数的区别"><span class="nav-number">1.2.</span> <span class="nav-text">static 关键字修饰类的成员作用，和其他成员函数的区别？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c-调用-c-的关键字-extern-的作用"><span class="nav-number">1.3.</span> <span class="nav-text">C++ 调用 C 的关键字 extern 的作用？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#map-和-unodered_map-的区别底层的实现"><span class="nav-number">1.4.</span> <span class="nav-text">map 和 unodered_map 的区别，底层的实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#哈希冲突如何解决"><span class="nav-number">1.5.</span> <span class="nav-text">哈希冲突如何解决</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c-的重载"><span class="nav-number">1.6.</span> <span class="nav-text">C++ 的重载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c-程序的编译过程"><span class="nav-number">1.7.</span> <span class="nav-text">C 程序的编译过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#c-程序的内存空间"><span class="nav-number">1.8.</span> <span class="nav-text">C 程序的内存空间</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mallocfree-与-newdelete-的区别"><span class="nav-number">1.9.</span> <span class="nav-text">malloc/free 与 new/delete 的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#析构函数的作用"><span class="nav-number">1.10.</span> <span class="nav-text">析构函数的作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#堆和栈的区别"><span class="nav-number">1.11.</span> <span class="nav-text">堆和栈的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重载-new-运算符什么时候需要重载"><span class="nav-number">1.12.</span> <span class="nav-text">重载 new 运算符：什么时候需要重载</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#操作系统"><span class="nav-number">2.</span> <span class="nav-text">操作系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#大端小端的区别应用以及如何判断大端小端"><span class="nav-number">2.1.</span> <span class="nav-text">大端小端的区别、应用以及如何判断大端小端？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程和进程的区别"><span class="nav-number">2.2.</span> <span class="nav-text">线程和进程的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个进程有-10-个线程如果-down-掉一个线程会不会对其他的有影响"><span class="nav-number">2.3.</span> <span class="nav-text">一个进程有 10 个线程，如果 down 掉一个线程会不会对其他的有影响？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么情况下会发生死锁解决策略有哪些"><span class="nav-number">2.4.</span> <span class="nav-text">什么情况下会发生死锁，解决策略有哪些？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户态和内核态"><span class="nav-number">2.5.</span> <span class="nav-text">用户态和内核态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行一个系统调用时os-发生的过程越详细越好"><span class="nav-number">2.6.</span> <span class="nav-text">执行一个系统调用时，OS 发生的过程，越详细越好</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行一个-io-调用读写文件到把数据写进磁盘发生的所有过程越详细越好"><span class="nav-number">2.7.</span> <span class="nav-text">执行一个 IO 调用读/写文件，到把数据写进磁盘发生的所有过程，越详细越好</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#计算机网络"><span class="nav-number">3.</span> <span class="nav-text">计算机网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#网络的-4-层结构tcp协议属于哪一层"><span class="nav-number">3.1.</span> <span class="nav-text">网络的 4 层结构？TCP协议属于哪一层？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tcp-和-udp-的区别"><span class="nav-number">3.2.</span> <span class="nav-text">TCP 和 UDP 的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tcp-和-udp-的优缺点"><span class="nav-number">3.3.</span> <span class="nav-text">TCP 和 UDP 的优缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#udp-如何实现可靠性传输"><span class="nav-number">3.4.</span> <span class="nav-text">UDP 如何实现可靠性传输</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tcp-首部格式"><span class="nav-number">3.5.</span> <span class="nav-text">TCP 首部格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tcp-三次握手四次挥手的过程最后等待关闭连接要多长时间"><span class="nav-number">3.6.</span> <span class="nav-text">TCP 三次握手，四次挥手的过程？最后等待关闭连接要多长时间？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tcp-有哪些状态closed-状态出现在什么时候"><span class="nav-number">3.7.</span> <span class="nav-text">TCP 有哪些状态，CLOSED 状态出现在什么时候？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tcp-用了哪些措施保证其可靠性"><span class="nav-number">3.8.</span> <span class="nav-text">TCP 用了哪些措施保证其可靠性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#http-100-206-304-是什么-304-中-xxxxx-的-header-有什么作用"><span class="nav-number">3.9.</span> <span class="nav-text">http 100 206 304 是什么？ 304 中 xxxxx 的 header 有什么作用？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#http2.0了解吗做了什么优化处理"><span class="nav-number">3.10.</span> <span class="nav-text">HTTP/2.0了解吗？做了什么优化处理？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sack-和-mss-这两个东西了解过吗"><span class="nav-number">3.11.</span> <span class="nav-text">SACK 和 MSS 这两个东西了解过吗？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#算法题"><span class="nav-number">4.</span> <span class="nav-text">算法题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库"><span class="nav-number">5.</span> <span class="nav-text">数据库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#linux"><span class="nav-number">6.</span> <span class="nav-text">Linux</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#操作系统"><span class="nav-number">1.</span> <span class="nav-text">操作系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#大端小端的区别应用以及如何判断大端小端"><span class="nav-number">1.1.</span> <span class="nav-text">大端小端的区别、应用以及如何判断大端小端？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程和进程的区别"><span class="nav-number">1.2.</span> <span class="nav-text">线程和进程的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#一个进程有-10-个线程如果-down-掉一个线程会不会对其他的有影响"><span class="nav-number">1.3.</span> <span class="nav-text">一个进程有 10 个线程，如果 down 掉一个线程会不会对其他的有影响？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#什么情况下会发生死锁解决策略有哪些"><span class="nav-number">1.4.</span> <span class="nav-text">什么情况下会发生死锁，解决策略有哪些？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户态和内核态"><span class="nav-number">1.5.</span> <span class="nav-text">用户态和内核态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行一个系统调用时os-发生的过程越详细越好"><span class="nav-number">1.6.</span> <span class="nav-text">执行一个系统调用时，OS 发生的过程，越详细越好</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#执行一个-io-调用读写文件到把数据写进磁盘发生的所有过程越详细越好"><span class="nav-number">1.7.</span> <span class="nav-text">执行一个 IO 调用读/写文件，到把数据写进磁盘发生的所有过程，越详细越好</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#计算机网络"><span class="nav-number">2.</span> <span class="nav-text">计算机网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#网络的-4-层结构tcp协议属于哪一层"><span class="nav-number">2.1.</span> <span class="nav-text">网络的 4 层结构？TCP协议属于哪一层？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tcp-和-udp-的区别"><span class="nav-number">2.2.</span> <span class="nav-text">TCP 和 UDP 的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tcp-和-udp-的优缺点"><span class="nav-number">2.3.</span> <span class="nav-text">TCP 和 UDP 的优缺点</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#udp-如何实现可靠性传输"><span class="nav-number">2.4.</span> <span class="nav-text">UDP 如何实现可靠性传输</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tcp-首部格式"><span class="nav-number">2.5.</span> <span class="nav-text">TCP 首部格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tcp-三次握手四次挥手的过程最后等待关闭连接要多长时间"><span class="nav-number">2.6.</span> <span class="nav-text">TCP 三次握手，四次挥手的过程？最后等待关闭连接要多长时间？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tcp-有哪些状态closed-状态出现在什么时候"><span class="nav-number">2.7.</span> <span class="nav-text">TCP 有哪些状态，CLOSED 状态出现在什么时候？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tcp-用了哪些措施保证其可靠性"><span class="nav-number">2.8.</span> <span class="nav-text">TCP 用了哪些措施保证其可靠性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#http-100-206-304-是什么-304-中-xxxxx-的-header-有什么作用"><span class="nav-number">2.9.</span> <span class="nav-text">http 100 206 304 是什么？ 304 中 xxxxx 的 header 有什么作用？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#http2.0了解吗做了什么优化处理"><span class="nav-number">2.10.</span> <span class="nav-text">HTTP/2.0了解吗？做了什么优化处理？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sack-和-mss-这两个东西了解过吗"><span class="nav-number">2.11.</span> <span class="nav-text">SACK 和 MSS 这两个东西了解过吗？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#算法题"><span class="nav-number">3.</span> <span class="nav-text">算法题</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库"><span class="nav-number">4.</span> <span class="nav-text">数据库</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#linux"><span class="nav-number">5.</span> <span class="nav-text">Linux</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
