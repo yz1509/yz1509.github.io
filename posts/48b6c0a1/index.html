@@ -54,14 +54,14 @@
   <meta name="description" content="《C++ Concurrentcy in Action 2nd》 第四章阅读笔记。">
 <meta name="keywords" content="C++,多线程,并发">
 <meta property="og:type" content="article">
-<meta property="og:title" content="CCIA-同步">
+<meta property="og:title" content="CCIA-线程间同步">
 <meta property="og:url" content="https://yz1509.github.io/posts/48b6c0a1/index.html">
 <meta property="og:site_name" content="HTT">
 <meta property="og:description" content="《C++ Concurrentcy in Action 2nd》 第四章阅读笔记。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-12-11T11:57:05.154Z">
+<meta property="og:updated_time" content="2019-12-11T14:03:38.271Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="CCIA-同步">
+<meta name="twitter:title" content="CCIA-线程间同步">
 <meta name="twitter:description" content="《C++ Concurrentcy in Action 2nd》 第四章阅读笔记。">
 
 <link rel="canonical" href="https://yz1509.github.io/posts/48b6c0a1/">
@@ -78,7 +78,7 @@
   };
 </script>
 
-  <title>CCIA-同步 | HTT</title>
+  <title>CCIA-线程间同步 | HTT</title>
   
 
 
@@ -206,7 +206,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          CCIA-同步
+          CCIA-线程间同步
         </h1>
 
         <div class="post-meta">
@@ -217,7 +217,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2019-12-11 19:45:55 / 修改时间：19:57:05" itemprop="dateCreated datePublished" datetime="2019-12-11T19:45:55+08:00">2019-12-11</time>
+              <time title="创建时间：2019-12-11 19:45:55 / 修改时间：22:03:38" itemprop="dateCreated datePublished" datetime="2019-12-11T19:45:55+08:00">2019-12-11</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -252,6 +252,18 @@
         <p>《C++ Concurrentcy in Action 2nd》 第四章阅读笔记。</p>
 <a id="more"></a>
 <hr>
+<p>在多线程编程中，不仅需要知道处理数据的一致性问题，还需要熟悉线程之间的同步机制。</p>
+<h1 id="等待某个事件条件">等待某个事件/条件</h1>
+<p>当一个线程需要等待其他线程完成某些任务时，可以使用 C++ 提供的条件变量 (condition variable)。</p>
+<h2 id="使用条件变量">使用条件变量</h2>
+<p>C++ 在 <code>condition_variable</code> 库中实现了两种条件变量：</p>
+<ul>
+<li><code>std::condition_variable</code>： 仅限于和 <code>std::mutex</code> 一起使用，性能比 <code>std::condition_variable_any</code> 好</li>
+<li><code>std::condition_variable_any</code>：可以和与 <code>std::mutex</code> 类似的对象一起使用</li>
+</ul>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Listing 4.1 Waiting for data to process with std::condition_variable</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">std</span>::mutex mut;</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">queue</span>&lt;data_chunk&gt; data_queue;  <span class="comment">// phase 1</span></span><br><span class="line"><span class="built_in">std</span>::condition_variable data_cond;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">data_preparation_thread</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">while</span> (more_data_to_prepare())</span><br><span class="line">  &#123;</span><br><span class="line">    data_chunk <span class="keyword">const</span> data = prepare_data();</span><br><span class="line">    <span class="built_in">std</span>::lock_guard&lt;<span class="built_in">std</span>::mutex&gt; lk(mut);</span><br><span class="line">    data_queue.push(data);  <span class="comment">// phase 2</span></span><br><span class="line">    data_cond.notify_one(); <span class="comment">// phase 3</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">data_processing_thread</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">while</span> (<span class="literal">true</span>)</span><br><span class="line">  &#123;</span><br><span class="line">    <span class="built_in">std</span>::unique_lock&lt;<span class="built_in">std</span>::mutex&gt; lk(mut); <span class="comment">// phase 4</span></span><br><span class="line">    data_cond.wait(lk, []&#123;<span class="keyword">return</span> !data_queue.empty();&#125;);  <span class="comment">// phase 5</span></span><br><span class="line">    data_chunk data = data_queue.front();</span><br><span class="line">    data_queue.pop();</span><br><span class="line">    lk.unlock();  <span class="comment">// phase 6</span></span><br><span class="line">    process(data);</span><br><span class="line">    <span class="keyword">if</span> (is_last_chunk(data))  <span class="keyword">break</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们首先关注 <code>data_preparation_thread()</code>，如果 <code>data</code> 准备完成，则会对 <code>mut</code> 上锁，然后 <code>data</code> 压入队列 (phase 2)，随后调用条件变量实例 <code>data_cond</code> 的成员函数 <code>notify_one()</code> 通知等待该条件变量的线程，这里我们使用了 <code>std::lock_guard</code>，保证在通知等待线程后便释放互斥锁，可以避免在等待线程被唤醒后还需等待互斥锁的性能损失。</p>
+<p>而在 <code>data_processing_thread()</code> 中，</p>
 
     </div>
 
@@ -316,6 +328,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#等待某个事件条件"><span class="nav-number">1.</span> <span class="nav-text">等待某个事件/条件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#使用条件变量"><span class="nav-number">1.1.</span> <span class="nav-text">使用条件变量</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
