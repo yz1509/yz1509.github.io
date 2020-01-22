@@ -59,14 +59,13 @@
 <meta property="og:site_name" content="HTT">
 <meta property="og:description" content="动态规划算法学习笔记。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://yz1509.github.io/posts/a80d0031/DP0201.jpg">
 <meta property="og:image" content="https://yz1509.github.io/posts/a80d0031/DP0701.png">
 <meta property="og:image" content="https://yz1509.github.io/posts/a80d0031/DP0702.png">
-<meta property="og:updated_time" content="2019-10-31T02:11:29.020Z">
+<meta property="og:updated_time" content="2020-01-22T03:46:58.016Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="动态规划">
 <meta name="twitter:description" content="动态规划算法学习笔记。">
-<meta name="twitter:image" content="https://yz1509.github.io/posts/a80d0031/DP0201.jpg">
+<meta name="twitter:image" content="https://yz1509.github.io/posts/a80d0031/DP0701.png">
 
 <link rel="canonical" href="https://yz1509.github.io/posts/a80d0031/">
 
@@ -227,7 +226,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-10-31 10:11:29" itemprop="dateModified" datetime="2019-10-31T10:11:29+08:00">2019-10-31</time>
+                <time title="修改时间：2020-01-22 11:46:58" itemprop="dateModified" datetime="2020-01-22T11:46:58+08:00">2020-01-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -263,24 +262,30 @@
 <a id="more"></a>
 <hr>
 <h1 id="定义">定义</h1>
-<p>Dynamic Programming (also known as dynamic optimization) is a method for solving a complex problem by breaking it down into a collection of simpler subproblems. &gt;本质:是对问题状态的定义和状态转移方程的定义。</p>
+<p><a href="https://en.wikipedia.org/wiki/Dynamic_programming" target="_blank" rel="noopener">Dynamic Programming</a> (also known as dynamic optimization) is a method for solving a complex problem by breaking it down into a collection of simpler subproblems. &gt;本质:是对问题状态的定义和状态转移方程的定义。</p>
 <h1 id="解题思路">解题思路</h1>
 <h2 id="将原问题分解为子问题">将原问题分解为子问题</h2>
 <ul>
-<li>把原问题分解为若干个子问题，子问题和原问题形式相同或类似，只不过规模变小了。子问题都解决，原问题即解决( 比如，数字三角形POJ1163）。</li>
+<li>把原问题分解为若干个子问题，子问题和原问题形式相同或类似，只不过规模变小了。子问题都解决，原问题即解决。比如，<a href="http://bailian.openjudge.cn/practice/1163" target="_blank" rel="noopener">POJ 1163:数字三角形</a>。</li>
 <li>子问题的解一旦求出就会被保存，所以每个子问题只需求解一次。</li>
 </ul>
 <h2 id="确定状态">确定状态</h2>
-<p>在用动态规划解题时，我们往往将和子问题相关的各个变量的一组取值，称之为一个“状态”。一个“状态”对应于一个或多个子问题，所谓某个“状态”下的“值”，就是这个“状态”所对应的子问题的解。</p>
-<p>所有“状态”的集合，构成问题的“状态空间”。“状态空间”的大小，与用动态规划解决问题的时间复杂度直接相关。在数字三角形的例子里，一共有<span class="math inline">\(\frac{N\times(N + 1)}{2}​\)</span>个数字，所以这个问题的状态空间里一共就有<span class="math inline">\(\frac{N\times(N + 1)}{2}​\)</span>个状态。</p>
-<p>整个问题的时间复杂度是状态数目乘以计算每个状态所需时间。在数字三角形里每个“状态”只需要经过一次，且在每个状态上作计算所花的时间都是和N无关的常数。</p>
-<p>用动态规划解题，经常碰到的情况是，K个整型变量构成一个状态（如数字三角形中的行号和列号这两个变量构成“状态”）。如果这K个整型变量的取值范围分别是<span class="math inline">\(N_1, N_2, ……, N_k\)</span>，那么，我们就可以用一个K维的数组<span class="math inline">\(array[N_1][N_2]……[N_k]\)</span>来存储各个状态的“值”。这个“值”未必就是一个整数或浮点数，可能是需要一个结构才能表示的，那么array就可以是一个结构数组。一个“状态”下的“值”通常会是一个或多个子问题的解。</p>
-<h2 id="确定一些初始状态边界状态的值">确定一些初始状态（边界状态）的值</h2>
-<p>以“数字三角形”为例，初始状态就是底边数字，值就是底边数字值。</p>
+<p>在用动态规划解题时，我们往往将和子问题相关的各个变量的一组取值，称之为一个<code>状态</code>。一个<code>状态</code>对应于一个或多个子问题，所谓某个<code>状态</code>下的值，就是这个<code>状态</code>所对应的子问题的解。</p>
+<p>所有<code>状态</code>的集合，构成问题的<code>状态空间</code>。<code>状态空间</code>的大小，与用动态规划解决问题的时间复杂度直接相关。在数字三角形的例子里，一共有 <span class="math inline">\(\frac{N\times(N + 1)}{2}​\)</span> 个数字，所以这个问题的状态空间里一共就有 <span class="math inline">\(\frac{N\times(N + 1)}{2}​\)</span> 个状态。</p>
+<p>整个问题的时间复杂度是状态数目乘以计算每个状态所需时间。在数字三角形里每个<code>状态</code>只需要经过一次，且在每个状态上作计算所花的时间都是和 <span class="math inline">\(N\)</span> 无关的常数。</p>
+<p>用动态规划解题，经常碰到的情况是，<span class="math inline">\(K\)</span> 个整型变量构成一个状态 (如数字三角形中的行号和列号这两个变量构成<code>状态</code>)。如果这 <span class="math inline">\(K\)</span> 个整型变量的取值范围分别是 <span class="math inline">\(N_1, N_2, ……, N_k\)</span>，那么，我们就可以用一个 <span class="math inline">\(K\)</span> 维的数组 <span class="math inline">\(array[N_1][N_2] \dots [N_k]\)</span>来存储各个状态的值。这个值未必就是一个整数或浮点数，可能是需要一个结构才能表示的，那么 <code>array</code> 就可以是一个结构数组。一个<code>状态</code>下的值通常会是一个或多个子问题的解。</p>
+<h2 id="确定一些初始状态边界状态的值">确定一些初始状态(边界状态)的值</h2>
+<p>以数字三角形为例，初始状态就是底边数字，值就是底边数字值。</p>
 <h2 id="确定状态转移方程">确定状态转移方程</h2>
-<p>定义出什么是“状态”，以及在该 “状态”下的“值”后，就要找出不同的状态之间如何迁移——即如何从一个或多个“值”已知的 “状态”，求出另一个“状态”的“值”(“人人为我”递推型)。状态的迁移可以用递推公式表示，此递推公式也可被称作“状态转移方程”。 数字三角形的状态转移方程: <img src="/posts/a80d0031/DP0201.jpg" alt="动态规划"></p>
+<p>定义出什么是<code>状态</code>，以及在该<code>状态</code>下的值后，就要找出不同的状态之间如何迁移——即如何从一个或多个值已知的<code>状态</code>，求出另一个<code>状态</code>的值 (<strong>人人为我</strong>递推型)。状态的迁移可以用递推公式表示，此递推公式也可被称作<strong>状态转移方程</strong>。</p>
+<p>数字三角形的状态转移方程:</p>
+<p><span class="math inline">\(MaxSum[r][j] = \begin{cases}D[r][j], &amp;r = N \cr Max(MaxSum[r+1][j], MaxSum[r+1][j+1]) + D[r][j], &amp;otherwise \end{cases}\)</span></p>
 <h1 id="条件">条件</h1>
-<p>在对状态和状态转移方程的定义过程中，需满足“最优子结构”，并且无后效性： * 最优子结构性质：如果问题的最优解所包含的子问题的解也是最优的，我们就称该问题具有最优子结构性质。 * 无后效性：当前的若干状态值一旦确定，则此后过程的演变就只和这若干个状态的值有关，和之前是采取哪种手段或经过哪条路径演变到当前的这若干个状态，没有关系。</p>
+<p>在对状态和状态转移方程的定义过程中，需满足<strong>最优子结构</strong>，并且<strong>无后效性</strong>：</p>
+<ul>
+<li>最优子结构性质：如果问题的最优解所包含的子问题的解也是最优的，我们就称该问题具有最优子结构性质。</li>
+<li>无后效性：当前的若干状态值一旦确定，则此后过程的演变就只和这若干个状态的值有关，和之前是采取哪种手段或经过哪条路径演变到当前的这若干个状态，没有关系。</li>
+</ul>
 <h1 id="和其他方法的异同">和其他方法的异同</h1>
 <ul>
 <li>递推：每个阶段只有一个状态</li>
@@ -290,30 +295,30 @@
 </ul>
 <h1 id="技巧">技巧</h1>
 <ul>
-<li>递归到动态规划的一般转化方法：递归函数有n个参数，就定义一个n维的数组，数组的下标是递归函数参数的取值范围，数组元素的值是递归函数的返回值，这样就可以从边界值开始，逐步填充数组，相当于计算递归函数值的逆过程。</li>
-<li>“缓存”，“重叠子问题”，“记忆化”，这三个名词，都是在阐述递推式求解的技巧。以Fibonacci数列为例，计算第100项的时候，需要计算第99项和98项；在计算第101项的时候，需要第100项和第99项，这时候你还需要重新计算第99项吗？不需要，你只需要在第一次计算的时候把它记下来就可以了。上述的需要再次计算的“第99项”，就叫“重叠子问题”。如果没有计算过，就按照递推式计算，如果计算过，直接使用，就像“缓存”一样，这种方法，叫做“记忆化”，这是递推式求解的技巧。这种技巧，通俗的说叫“花费空间来节省时间”。</li>
+<li>递归到动态规划的一般转化方法：递归函数有 <span class="math inline">\(n\)</span> 个参数，就定义一个 <span class="math inline">\(n\)</span> 维的数组，数组的下标是递归函数参数的取值范围，数组元素的值是递归函数的返回值，这样就可以从边界值开始，逐步填充数组，相当于计算递归函数值的逆过程。</li>
+<li><code>缓存</code>，<code>重叠子问题</code>，<code>记忆化</code>，这三个名词，都是在阐述递推式求解的技巧。以 <a href="https://en.wikipedia.org/wiki/Fibonacci_number" target="_blank" rel="noopener">Fibonacci 数列</a> 为例，计算第 100 项的时候，需要计算第 99 项和 98 项；在计算第 101 项的时候，需要第 100 项和第 99 项，这时候你还需要重新计算第 99 项吗？不需要，你只需要在第一次计算的时候把它记下来就可以了。上述的需要再次计算的第 99 项，就叫<code>重叠子问题</code>。如果没有计算过，就按照递推式计算，如果计算过，直接使用，就像<code>缓存</code>一样，这种方法，叫做<code>记忆化</code>，这是递推式求解的技巧。这种技巧，其实就是<strong>花费空间来节省时间</strong>。</li>
 </ul>
 <h1 id="动态规划的三种形式">动态规划的三种形式</h1>
 <ul>
-<li>记忆递归型
+<li><p>记忆递归型</p>
 <ul>
 <li>优点：只经过有用的状态，没有浪费。递推型会查看一些没用的状态，有浪费!</li>
 <li>缺点：可能会因递归层数太深导致爆栈，函数调用带来额外时间开销。无法使用滚动数 组节省空间。总体来说，比递推型慢。</li>
 </ul></li>
-<li>“我为人人”递推型：没有什么明显的优势，有时比较符合思考的习惯。个别特殊题目中会比“人人为我”型节省空间。<img src="/posts/a80d0031/DP0701.png" width="550" height="350" alt="我为人人" align="center"></li>
-<li>“人人为我”递推型：在选取最优备选状态的值<span class="math inline">\(F_m, F_n, …, F_y\)</span>时，有可能有好的算法或数据结构可以用来显著降低时间复杂度。<img src="/posts/a80d0031/DP0702.png" width="500" height="300" alt="人人为我" align="center"></li>
+<li><p><code>我为人人</code>递推型：没有什么明显的优势，有时比较符合思考的习惯。个别特殊题目中会比<code>人人为我</code>型节省空间。 <img src="/posts/a80d0031/DP0701.png" width="570" height="250" alt="我为人人" align="center"></p></li>
+<li><p><code>人人为我</code>递推型：在选取最优备选状态的值 <span class="math inline">\(F_m, F_n, …, F_y\)</span> 时，有可能有好的算法或数据结构可以用来显著降低时间复杂度。 <img src="/posts/a80d0031/DP0702.png" width="500" height="250" alt="人人为我" align="center"></p></li>
 </ul>
-<h1 id="例题">例题</h1>
+<h1 id="练习">练习</h1>
 <ul>
-<li>POJ 1163 数字三角形</li>
-<li>POJ 2757 最长上升子序列</li>
-<li>POJ 1458 最长公共子序列</li>
-<li>POJ 2755 神奇的口袋</li>
-<li>POJ 3624 0-1背包问题</li>
-<li>POJ 1088 滑雪</li>
-<li>POJ 1390 方盒游戏</li>
-<li>POJ 2373 灌溉草场</li>
-<li>最佳加法表达式：有一个由1..9组成的数字串.问如果将m个加号插入到这个数字串中,在各种可能形成的表达式中，值最小的那个表达式的值是多少</li>
+<li><a href="http://bailian.openjudge.cn/practice/1163" target="_blank" rel="noopener">POJ 1163: 数字三角形</a></li>
+<li><a href="http://bailian.openjudge.cn/practice/2757" target="_blank" rel="noopener">POJ 2757: 最长上升子序列</a></li>
+<li><a href="http://bailian.openjudge.cn/practice/1458" target="_blank" rel="noopener">POJ 1458: 最长公共子序列</a></li>
+<li><a href="http://bailian.openjudge.cn/practice/2755" target="_blank" rel="noopener">POJ 2755: 神奇的口袋</a></li>
+<li><a href="http://poj.org/problem?id=3624" target="_blank" rel="noopener">POJ 3624: 0-1背包问题</a></li>
+<li><a href="http://bailian.openjudge.cn/practice/1088" target="_blank" rel="noopener">POJ 1088: 滑雪</a></li>
+<li><a href="http://bailian.openjudge.cn/practice/1390" target="_blank" rel="noopener">POJ 1390: 方盒游戏</a></li>
+<li><a href="http://bailian.openjudge.cn/practice/2373" target="_blank" rel="noopener">POJ 2373: 灌溉草场</a></li>
+<li>最佳加法表达式：有一个由 <span class="math inline">\(1 \dots 9\)</span> 组成的数字串.问如果将 <span class="math inline">\(m\)</span> 个加号插入到这个数字串中,在各种可能形成的表达式中，值最小的那个表达式的值是多少？</li>
 </ul>
 
     </div>
@@ -377,7 +382,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#定义"><span class="nav-number">1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解题思路"><span class="nav-number">2.</span> <span class="nav-text">解题思路</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#将原问题分解为子问题"><span class="nav-number">2.1.</span> <span class="nav-text">将原问题分解为子问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#确定状态"><span class="nav-number">2.2.</span> <span class="nav-text">确定状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#确定一些初始状态边界状态的值"><span class="nav-number">2.3.</span> <span class="nav-text">确定一些初始状态（边界状态）的值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#确定状态转移方程"><span class="nav-number">2.4.</span> <span class="nav-text">确定状态转移方程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#条件"><span class="nav-number">3.</span> <span class="nav-text">条件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#和其他方法的异同"><span class="nav-number">4.</span> <span class="nav-text">和其他方法的异同</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#技巧"><span class="nav-number">5.</span> <span class="nav-text">技巧</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#动态规划的三种形式"><span class="nav-number">6.</span> <span class="nav-text">动态规划的三种形式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#例题"><span class="nav-number">7.</span> <span class="nav-text">例题</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#定义"><span class="nav-number">1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#解题思路"><span class="nav-number">2.</span> <span class="nav-text">解题思路</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#将原问题分解为子问题"><span class="nav-number">2.1.</span> <span class="nav-text">将原问题分解为子问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#确定状态"><span class="nav-number">2.2.</span> <span class="nav-text">确定状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#确定一些初始状态边界状态的值"><span class="nav-number">2.3.</span> <span class="nav-text">确定一些初始状态(边界状态)的值</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#确定状态转移方程"><span class="nav-number">2.4.</span> <span class="nav-text">确定状态转移方程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#条件"><span class="nav-number">3.</span> <span class="nav-text">条件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#和其他方法的异同"><span class="nav-number">4.</span> <span class="nav-text">和其他方法的异同</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#技巧"><span class="nav-number">5.</span> <span class="nav-text">技巧</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#动态规划的三种形式"><span class="nav-number">6.</span> <span class="nav-text">动态规划的三种形式</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#练习"><span class="nav-number">7.</span> <span class="nav-text">练习</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -400,13 +405,13 @@
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">52</span>
+        <span class="site-state-item-count">53</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>

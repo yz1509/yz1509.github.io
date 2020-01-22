@@ -59,7 +59,7 @@
 <meta property="og:site_name" content="HTT">
 <meta property="og:description" content="分治算法学习笔记。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-31T02:11:27.658Z">
+<meta property="og:updated_time" content="2020-01-22T04:05:19.232Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="分治算法">
 <meta name="twitter:description" content="分治算法学习笔记。">
@@ -223,7 +223,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-10-31 10:11:27" itemprop="dateModified" datetime="2019-10-31T10:11:27+08:00">2019-10-31</time>
+                <time title="修改时间：2020-01-22 12:05:19" itemprop="dateModified" datetime="2020-01-22T12:05:19+08:00">2020-01-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -259,19 +259,29 @@
 <a id="more"></a>
 <hr>
 <h1 id="分治的基本概念">分治的基本概念</h1>
-<p>把一个任务，分成形式和原任务相同，但规模更小的几个部分任务（通常是两个部分），分别完成，或只需要选一部分完成。然后再处理完成后的这一个或几个部分的结果，实现整个任务的完成。</p>
+<p>把一个任务，分成形式和原任务相同，但规模更小的几个部分任务 (通常是两个部分)，分别完成，或只需要选一部分完成。然后再处理完成后的这一个或几个部分的结果，实现整个任务的完成。</p>
 <h1 id="分治的典型应用">分治的典型应用</h1>
 <h2 id="二分查找">二分查找</h2>
-<p>二分查找函数中，为了防止 <span class="math inline">\(L + R\)</span> 过大益处，<span class="math inline">\(mid = L + (R - L)/2\)</span>.</p>
+<p>二分查找函数中，为了防止 <span class="math inline">\(L + R\)</span> 过大溢出，建议使用 <span class="math inline">\(mid = L + (R - L)/2\)</span>.</p>
 <h3 id="例题">例题</h3>
 <ul>
-<li>输入n ( n&lt;= 100,000)个整数，找出其中的两个数，它们之和等于整数m(假定肯定有解)。题中所有整数都能用 int 表示。</li>
-<li>POJ 2456: Aggressive cows</li>
+<li>输入 <span class="math inline">\(n(n \leq 100,000)\)</span> 个整数，找出其中的两个数，它们之和等于整数 <span class="math inline">\(m\)</span> (假定肯定有解)。题中所有整数都能用 <code>int</code> 表示。</li>
+<li><a href="http://bailian.openjudge.cn/practice/2456" target="_blank" rel="noopener">POJ 2456: Aggressive cows</a></li>
 </ul>
 <h2 id="归并排序">归并排序</h2>
-<p>数组排序任务可以如下完成： * 把前一半排序 * 把后一半排序 * 将两半归并到一个新的有序数组，然后再拷贝回原数组，排序完成。</p>
+<p>数组排序任务可以如下完成：</p>
+<ul>
+<li>把前一半排序</li>
+<li>把后一半排序</li>
+<li>将两半归并到一个新的有序数组，然后再拷贝回原数组，排序完成。</li>
+</ul>
 <h2 id="快速排序">快速排序</h2>
-<p>数组排序任务可以如下完成： * 设 <span class="math inline">\(k = a[0]\)</span>，将 <span class="math inline">\(k\)</span> 挪到适当位置，使得比 <span class="math inline">\(k\)</span> 小的元素都在 <span class="math inline">\(k\)</span> 左边,比 <span class="math inline">\(k\)</span> 大的元素都在 <span class="math inline">\(k\)</span> 右边，和 <span class="math inline">\(k\)</span> 相等的，不关心在 <span class="math inline">\(k\)</span> 左右出现均可 （<span class="math inline">\(O(n)\)</span>时间完成） * 把 <span class="math inline">\(k\)</span> 左边的部分快速排序 * 把 <span class="math inline">\(k\)</span> 右边的部分快速排序</p>
+<p>数组排序任务可以如下完成：</p>
+<ul>
+<li>设 <span class="math inline">\(k = a[0]\)</span>，将 <span class="math inline">\(k\)</span> 挪到适当位置，使得比 <span class="math inline">\(k\)</span> 小的元素都在 <span class="math inline">\(k\)</span> 左边,比 <span class="math inline">\(k\)</span> 大的元素都在 <span class="math inline">\(k\)</span> 右边，和 <span class="math inline">\(k\)</span> 相等的，不关心在 <span class="math inline">\(k\)</span> 左右出现均可 (<span class="math inline">\(O(n)\)</span> 时间完成)</li>
+<li>把 <span class="math inline">\(k\)</span> 左边的部分快速排序</li>
+<li>把 <span class="math inline">\(k\)</span> 右边的部分快速排序</li>
+</ul>
 <h1 id="例题-1">例题</h1>
 <ul>
 <li>输出前 <span class="math inline">\(m\)</span> 大的数
@@ -373,13 +383,13 @@
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">52</span>
+        <span class="site-state-item-count">53</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
