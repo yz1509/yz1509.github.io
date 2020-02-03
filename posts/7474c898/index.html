@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 3.7.0">
+<meta name="generator" content="Hexo 4.2.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
@@ -52,17 +52,19 @@
 </script>
 
   <meta name="description" content="分治算法学习笔记。">
-<meta name="keywords" content="二分查找,归并排序,快排">
 <meta property="og:type" content="article">
 <meta property="og:title" content="分治算法">
 <meta property="og:url" content="https://yz1509.github.io/posts/7474c898/index.html">
 <meta property="og:site_name" content="HTT">
 <meta property="og:description" content="分治算法学习笔记。">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-31T02:11:27.658Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-07-18T13:59:06.000Z">
+<meta property="article:modified_time" content="2020-02-03T09:26:40.227Z">
+<meta property="article:author" content="KyoAni">
+<meta property="article:tag" content="二分查找">
+<meta property="article:tag" content="归并排序">
+<meta property="article:tag" content="快排">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="分治算法">
-<meta name="twitter:description" content="分治算法学习笔记。">
 
 <link rel="canonical" href="https://yz1509.github.io/posts/7474c898/">
 
@@ -223,7 +225,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-10-31 10:11:27" itemprop="dateModified" datetime="2019-10-31T10:11:27+08:00">2019-10-31</time>
+                <time title="修改时间：2020-02-03 17:26:40" itemprop="dateModified" datetime="2020-02-03T17:26:40+08:00">2020-02-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -259,19 +261,29 @@
 <a id="more"></a>
 <hr>
 <h1 id="分治的基本概念">分治的基本概念</h1>
-<p>把一个任务，分成形式和原任务相同，但规模更小的几个部分任务（通常是两个部分），分别完成，或只需要选一部分完成。然后再处理完成后的这一个或几个部分的结果，实现整个任务的完成。</p>
+<p>把一个任务，分成形式和原任务相同，但规模更小的几个部分任务 (通常是两个部分)，分别完成，或只需要选一部分完成。然后再处理完成后的这一个或几个部分的结果，实现整个任务的完成。</p>
 <h1 id="分治的典型应用">分治的典型应用</h1>
 <h2 id="二分查找">二分查找</h2>
-<p>二分查找函数中，为了防止 <span class="math inline">\(L + R\)</span> 过大益处，<span class="math inline">\(mid = L + (R - L)/2\)</span>.</p>
+<p>二分查找函数中，为了防止 <span class="math inline">\(L + R\)</span> 过大溢出，建议使用 <span class="math inline">\(mid = L + (R - L)/2\)</span>.</p>
 <h3 id="例题">例题</h3>
 <ul>
-<li>输入n ( n&lt;= 100,000)个整数，找出其中的两个数，它们之和等于整数m(假定肯定有解)。题中所有整数都能用 int 表示。</li>
-<li>POJ 2456: Aggressive cows</li>
+<li>输入 <span class="math inline">\(n(n \leq 100,000)\)</span> 个整数，找出其中的两个数，它们之和等于整数 <span class="math inline">\(m\)</span> (假定肯定有解)。题中所有整数都能用 <code>int</code> 表示。</li>
+<li><a href="http://bailian.openjudge.cn/practice/2456" target="_blank" rel="noopener">POJ 2456: Aggressive cows</a></li>
 </ul>
 <h2 id="归并排序">归并排序</h2>
-<p>数组排序任务可以如下完成： * 把前一半排序 * 把后一半排序 * 将两半归并到一个新的有序数组，然后再拷贝回原数组，排序完成。</p>
+<p>数组排序任务可以如下完成：</p>
+<ul>
+<li>把前一半排序</li>
+<li>把后一半排序</li>
+<li>将两半归并到一个新的有序数组，然后再拷贝回原数组，排序完成。</li>
+</ul>
 <h2 id="快速排序">快速排序</h2>
-<p>数组排序任务可以如下完成： * 设 <span class="math inline">\(k = a[0]\)</span>，将 <span class="math inline">\(k\)</span> 挪到适当位置，使得比 <span class="math inline">\(k\)</span> 小的元素都在 <span class="math inline">\(k\)</span> 左边,比 <span class="math inline">\(k\)</span> 大的元素都在 <span class="math inline">\(k\)</span> 右边，和 <span class="math inline">\(k\)</span> 相等的，不关心在 <span class="math inline">\(k\)</span> 左右出现均可 （<span class="math inline">\(O(n)\)</span>时间完成） * 把 <span class="math inline">\(k\)</span> 左边的部分快速排序 * 把 <span class="math inline">\(k\)</span> 右边的部分快速排序</p>
+<p>数组排序任务可以如下完成：</p>
+<ul>
+<li>设 <span class="math inline">\(k = a[0]\)</span>，将 <span class="math inline">\(k\)</span> 挪到适当位置，使得比 <span class="math inline">\(k\)</span> 小的元素都在 <span class="math inline">\(k\)</span> 左边,比 <span class="math inline">\(k\)</span> 大的元素都在 <span class="math inline">\(k\)</span> 右边，和 <span class="math inline">\(k\)</span> 相等的，不关心在 <span class="math inline">\(k\)</span> 左右出现均可 (<span class="math inline">\(O(n)\)</span> 时间完成)</li>
+<li>把 <span class="math inline">\(k\)</span> 左边的部分快速排序</li>
+<li>把 <span class="math inline">\(k\)</span> 右边的部分快速排序</li>
+</ul>
 <h1 id="例题-1">例题</h1>
 <ul>
 <li>输出前 <span class="math inline">\(m\)</span> 大的数
@@ -292,9 +304,9 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/二分查找/" rel="tag"># 二分查找</a>
-              <a href="/tags/归并排序/" rel="tag"># 归并排序</a>
-              <a href="/tags/快排/" rel="tag"># 快排</a>
+              <a href="/tags/%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE/" rel="tag"># 二分查找</a>
+              <a href="/tags/%E5%BD%92%E5%B9%B6%E6%8E%92%E5%BA%8F/" rel="tag"># 归并排序</a>
+              <a href="/tags/%E5%BF%AB%E6%8E%92/" rel="tag"># 快排</a>
           </div>
 
         
@@ -366,7 +378,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-count">28</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -379,17 +391,17 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">52</span>
+        <span class="site-state-item-count">53</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
 </div>
   <div class="links-of-author motion-element">
       <span class="links-of-author-item">
-        <a href="https://github.com/yz1509" title="GitHub &rarr; https://github.com/yz1509" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+        <a href="https://github.com/yz1509" title="GitHub &amp;rarr; https:&#x2F;&#x2F;github.com&#x2F;yz1509" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
       </span>
       <span class="links-of-author-item">
-        <a href="mailto:pro-765@qq.com" title="E-Mail &rarr; mailto:pro-765@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+        <a href="mailto:pro-765@qq.com" title="E-Mail &amp;rarr; mailto:pro-765@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
       </span>
   </div>
 
@@ -461,9 +473,17 @@
   <script src="/lib/anime.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
-<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
 <script src="/js/schemes/muse.js"></script>
+
+
 <script src="/js/next-boot.js"></script>
+
 
 
 

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 3.7.0">
+<meta name="generator" content="Hexo 4.2.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
@@ -52,17 +52,17 @@
 </script>
 
   <meta name="description" content="Redis 内存分配及释放相关源码阅读笔记。">
-<meta name="keywords" content="Redis">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Redis 源码之 zmalloc">
 <meta property="og:url" content="https://yz1509.github.io/posts/ab216dfd/index.html">
 <meta property="og:site_name" content="HTT">
 <meta property="og:description" content="Redis 内存分配及释放相关源码阅读笔记。">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-31T02:13:15.498Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-10-12T12:07:44.000Z">
+<meta property="article:modified_time" content="2020-02-03T09:26:40.225Z">
+<meta property="article:author" content="KyoAni">
+<meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Redis 源码之 zmalloc">
-<meta name="twitter:description" content="Redis 内存分配及释放相关源码阅读笔记。">
 
 <link rel="canonical" href="https://yz1509.github.io/posts/ab216dfd/">
 
@@ -223,7 +223,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-10-31 10:13:15" itemprop="dateModified" datetime="2019-10-31T10:13:15+08:00">2019-10-31</time>
+                <time title="修改时间：2020-02-03 17:26:40" itemprop="dateModified" datetime="2020-02-03T17:26:40+08:00">2020-02-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -231,7 +231,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数据库/" itemprop="url" rel="index">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index">
                     <span itemprop="name">数据库</span>
                   </a>
                 </span>
@@ -266,7 +266,7 @@
 <li><p>zmalloc_size</p>
 <p>使用 <code>tcmalloc 1.6+</code> 或 <code>jemalloc 2.1+</code> 或 <code>malloc</code>，则 <code>HAVE_MALLOC_SIZE</code> 为 1 。至于不同内存分配函数的区别，可以参考<a href="https://cyningsun.github.io/07-07-2018/memory-allocator-contrasts.html" target="_blank" rel="noopener">这篇博客</a>。</p>
 <p>自身定义的 <code>zmalloc_size</code> 函数如下：</p>
-<p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Provide zmalloc_size() for systems where this function is not provided by</span></span><br><span class="line"><span class="comment">* malloc itself, given that in that case we store a header with this</span></span><br><span class="line"><span class="comment">* information as the first bytes of every allocation. */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> HAVE_MALLOC_SIZE</span></span><br><span class="line"><span class="keyword">size_t</span> zmalloc_size(<span class="keyword">void</span> *ptr) &#123;</span><br><span class="line">    <span class="keyword">void</span> *realptr = (<span class="keyword">char</span>*)ptr-PREFIX_SIZE;</span><br><span class="line">    <span class="keyword">size_t</span> size = *((<span class="keyword">size_t</span>*)realptr);</span><br><span class="line">    <span class="comment">/* Assume at least that all the allocations are padded at sizeof(long) by</span></span><br><span class="line"><span class="comment">    * the underlying allocator. */</span></span><br><span class="line">    <span class="keyword">if</span> (size&amp;(<span class="keyword">sizeof</span>(<span class="keyword">long</span>)<span class="number">-1</span>)) size += <span class="keyword">sizeof</span>(<span class="keyword">long</span>)-(size&amp;(<span class="keyword">sizeof</span>(<span class="keyword">long</span>)<span class="number">-1</span>));</span><br><span class="line">    <span class="keyword">return</span> size+PREFIX_SIZE;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">size_t</span> zmalloc_usable(<span class="keyword">void</span> *ptr) &#123;</span><br><span class="line">    <span class="keyword">return</span> zmalloc_size(ptr)-PREFIX_SIZE;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure></p></li>
+<p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Provide zmalloc_size() for systems where this function is not provided by</span></span><br><span class="line"><span class="comment">* malloc itself, given that in that case we store a header with this</span></span><br><span class="line"><span class="comment">* information as the first bytes of every allocation. */</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> HAVE_MALLOC_SIZE</span></span><br><span class="line"><span class="function"><span class="keyword">size_t</span> <span class="title">zmalloc_size</span><span class="params">(<span class="keyword">void</span> *ptr)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">void</span> *realptr = (<span class="keyword">char</span>*)ptr-PREFIX_SIZE;</span><br><span class="line">    <span class="keyword">size_t</span> size = *((<span class="keyword">size_t</span>*)realptr);</span><br><span class="line">    <span class="comment">/* Assume at least that all the allocations are padded at sizeof(long) by</span></span><br><span class="line"><span class="comment">    * the underlying allocator. */</span></span><br><span class="line">    <span class="keyword">if</span> (size&amp;(<span class="keyword">sizeof</span>(<span class="keyword">long</span>)<span class="number">-1</span>)) size += <span class="keyword">sizeof</span>(<span class="keyword">long</span>)-(size&amp;(<span class="keyword">sizeof</span>(<span class="keyword">long</span>)<span class="number">-1</span>));</span><br><span class="line">    <span class="keyword">return</span> size+PREFIX_SIZE;</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">size_t</span> <span class="title">zmalloc_usable</span><span class="params">(<span class="keyword">void</span> *ptr)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> zmalloc_size(ptr)-PREFIX_SIZE;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure></p></li>
 <li><p>update_zmalloc_stat_alloc</p>
 <p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> update_zmalloc_stat_alloc(__n) do &#123; \</span></span><br><span class="line">    <span class="keyword">size_t</span> _n = (__n); \    </span><br><span class="line">    <span class="keyword">if</span> (_n&amp;(<span class="keyword">sizeof</span>(<span class="keyword">long</span>)<span class="number">-1</span>)) _n += <span class="keyword">sizeof</span>(<span class="keyword">long</span>)-(_n&amp;(<span class="keyword">sizeof</span>(<span class="keyword">long</span>)<span class="number">-1</span>)); \</span><br><span class="line">    <span class="comment">// atomicIncr(var,count) </span></span><br><span class="line">    atomicIncr(used_memory,__n); \</span><br><span class="line">&#125; <span class="keyword">while</span>(<span class="number">0</span>)</span><br></pre></td></tr></table></figure></p>
 <p>根据 <a href="https://github.com/antirez/redis/pull/4770" target="_blank" rel="noopener">redis #4770</a>，第 2、3 两行可以删除，由于并未计算内存补齐的原因，全局变量 <code>used_memory</code> 一般小于实际分配内存大小。</p>
@@ -319,9 +319,9 @@
 <h2 id="复制字符串">复制字符串</h2>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">char</span> *<span class="title">zstrdup</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *s)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">size_t</span> l = <span class="built_in">strlen</span>(s)+<span class="number">1</span>; <span class="comment">// '\0' 结尾</span></span><br><span class="line">    <span class="keyword">char</span> *p = zmalloc(l);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 调用字符串复制函数 void* memcpy(void *dest, const void *src, size_t count);</span></span><br><span class="line">    <span class="built_in">memcpy</span>(p,s,l);</span><br><span class="line">    <span class="keyword">return</span> p;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="获取-used_memory">获取 <code>used_memory</code></h2>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">size_t</span> zmalloc_used_memory(<span class="keyword">void</span>) &#123;</span><br><span class="line">    <span class="keyword">size_t</span> um;</span><br><span class="line">    <span class="comment">// atomicGet(var,dstvar)</span></span><br><span class="line">    atomicGet(used_memory,um);</span><br><span class="line">    <span class="keyword">return</span> um;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">size_t</span> <span class="title">zmalloc_used_memory</span><span class="params">(<span class="keyword">void</span>)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">size_t</span> um;</span><br><span class="line">    <span class="comment">// atomicGet(var,dstvar)</span></span><br><span class="line">    atomicGet(used_memory,um);</span><br><span class="line">    <span class="keyword">return</span> um;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="设置异常处理函数">设置异常处理函数</h2>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 默认异常处理函数如下</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">zmalloc_default_oom</span><span class="params">(<span class="keyword">size_t</span> size)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"zmalloc: Out of memory trying to allocate %zu bytes\n"</span>,</span><br><span class="line">        size);</span><br><span class="line">    fflush(<span class="built_in">stderr</span>);</span><br><span class="line">    <span class="built_in">abort</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="title">void</span> <span class="params">(*zmalloc_oom_handler)</span><span class="params">(<span class="keyword">size_t</span>)</span> </span>= zmalloc_default_oom;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置异常处理函数</span></span><br><span class="line">void zmalloc_set_oom_handler(void (*oom_handler)(size_t)) &#123;</span><br><span class="line">    zmalloc_oom_handler = oom_handler;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 默认异常处理函数如下</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">zmalloc_default_oom</span><span class="params">(<span class="keyword">size_t</span> size)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"zmalloc: Out of memory trying to allocate %zu bytes\n"</span>,</span><br><span class="line">        size);</span><br><span class="line">    fflush(<span class="built_in">stderr</span>);</span><br><span class="line">    <span class="built_in">abort</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="title">void</span> <span class="params">(*zmalloc_oom_handler)</span><span class="params">(<span class="keyword">size_t</span>)</span> </span>= zmalloc_default_oom;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 设置异常处理函数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">zmalloc_set_oom_handler</span><span class="params">(<span class="keyword">void</span> (*oom_handler)(<span class="keyword">size_t</span>))</span> </span>&#123;</span><br><span class="line">    zmalloc_oom_handler = oom_handler;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
     </div>
 
@@ -403,7 +403,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-count">28</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -416,17 +416,17 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">52</span>
+        <span class="site-state-item-count">53</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
 </div>
   <div class="links-of-author motion-element">
       <span class="links-of-author-item">
-        <a href="https://github.com/yz1509" title="GitHub &rarr; https://github.com/yz1509" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+        <a href="https://github.com/yz1509" title="GitHub &amp;rarr; https:&#x2F;&#x2F;github.com&#x2F;yz1509" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
       </span>
       <span class="links-of-author-item">
-        <a href="mailto:pro-765@qq.com" title="E-Mail &rarr; mailto:pro-765@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+        <a href="mailto:pro-765@qq.com" title="E-Mail &amp;rarr; mailto:pro-765@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
       </span>
   </div>
 
@@ -498,9 +498,17 @@
   <script src="/lib/anime.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
-<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
 <script src="/js/schemes/muse.js"></script>
+
+
 <script src="/js/next-boot.js"></script>
+
 
 
 

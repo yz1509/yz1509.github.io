@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 3.7.0">
+<meta name="generator" content="Hexo 4.2.0">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
@@ -52,17 +52,17 @@
 </script>
 
   <meta name="description" content="主要介绍 Redis Streams 数据结构及部分操作，并不涉及源码部分。">
-<meta name="keywords" content="Redis">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Redis Streams">
 <meta property="og:url" content="https://yz1509.github.io/posts/76da14fe/index.html">
 <meta property="og:site_name" content="HTT">
 <meta property="og:description" content="主要介绍 Redis Streams 数据结构及部分操作，并不涉及源码部分。">
-<meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-30T10:10:21.763Z">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-10-16T09:50:09.000Z">
+<meta property="article:modified_time" content="2020-02-03T09:26:40.223Z">
+<meta property="article:author" content="KyoAni">
+<meta property="article:tag" content="Redis">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Redis Streams">
-<meta name="twitter:description" content="主要介绍 Redis Streams 数据结构及部分操作，并不涉及源码部分。">
 
 <link rel="canonical" href="https://yz1509.github.io/posts/76da14fe/">
 
@@ -223,7 +223,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-10-30 18:10:21" itemprop="dateModified" datetime="2019-10-30T18:10:21+08:00">2019-10-30</time>
+                <time title="修改时间：2020-02-03 17:26:40" itemprop="dateModified" datetime="2020-02-03T17:26:40+08:00">2020-02-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -231,7 +231,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数据库/" itemprop="url" rel="index">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" itemprop="url" rel="index">
                     <span itemprop="name">数据库</span>
                   </a>
                 </span>
@@ -460,7 +460,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是-redis-streams"><span class="nav-number">1.</span> <span class="nav-text">什么是 Redis Streams</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#redis-streams-结构"><span class="nav-number">2.</span> <span class="nav-text">Redis Streams 结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#redis-streams-api"><span class="nav-number">3.</span> <span class="nav-text">Redis Streams API</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#xadd"><span class="nav-number">3.1.</span> <span class="nav-text">XADD</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xrange-xrevrange"><span class="nav-number">3.2.</span> <span class="nav-text">XRANGE / XREVRANGE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xread-blocking-for-new-data"><span class="nav-number">3.3.</span> <span class="nav-text">XREAD: blocking for new data</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xlen"><span class="nav-number">3.4.</span> <span class="nav-text">XLEN</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#consumer-groups"><span class="nav-number">4.</span> <span class="nav-text">Consumer groups</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#xgroup"><span class="nav-number">4.1.</span> <span class="nav-text">XGROUP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xreadgroup"><span class="nav-number">4.2.</span> <span class="nav-text">XREADGROUP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xack"><span class="nav-number">4.3.</span> <span class="nav-text">XACK</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xpending"><span class="nav-number">4.4.</span> <span class="nav-text">XPENDING</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xclaim"><span class="nav-number">4.5.</span> <span class="nav-text">XCLAIM</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#什么是-redis-streams"><span class="nav-number">1.</span> <span class="nav-text">什么是 Redis Streams</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#redis-streams-结构"><span class="nav-number">2.</span> <span class="nav-text">Redis Streams 结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#redis-streams-api"><span class="nav-number">3.</span> <span class="nav-text">Redis Streams API</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#xadd"><span class="nav-number">3.1.</span> <span class="nav-text">XADD</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xrange-xrevrange"><span class="nav-number">3.2.</span> <span class="nav-text">XRANGE &#x2F; XREVRANGE</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xread-blocking-for-new-data"><span class="nav-number">3.3.</span> <span class="nav-text">XREAD: blocking for new data</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xlen"><span class="nav-number">3.4.</span> <span class="nav-text">XLEN</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#consumer-groups"><span class="nav-number">4.</span> <span class="nav-text">Consumer groups</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#xgroup"><span class="nav-number">4.1.</span> <span class="nav-text">XGROUP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xreadgroup"><span class="nav-number">4.2.</span> <span class="nav-text">XREADGROUP</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xack"><span class="nav-number">4.3.</span> <span class="nav-text">XACK</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xpending"><span class="nav-number">4.4.</span> <span class="nav-text">XPENDING</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#xclaim"><span class="nav-number">4.5.</span> <span class="nav-text">XCLAIM</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -476,7 +476,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">27</span>
+          <span class="site-state-item-count">28</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -489,17 +489,17 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">52</span>
+        <span class="site-state-item-count">53</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
 </div>
   <div class="links-of-author motion-element">
       <span class="links-of-author-item">
-        <a href="https://github.com/yz1509" title="GitHub &rarr; https://github.com/yz1509" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+        <a href="https://github.com/yz1509" title="GitHub &amp;rarr; https:&#x2F;&#x2F;github.com&#x2F;yz1509" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
       </span>
       <span class="links-of-author-item">
-        <a href="mailto:pro-765@qq.com" title="E-Mail &rarr; mailto:pro-765@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+        <a href="mailto:pro-765@qq.com" title="E-Mail &amp;rarr; mailto:pro-765@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
       </span>
   </div>
 
@@ -571,9 +571,17 @@
   <script src="/lib/anime.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
-<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
 <script src="/js/schemes/muse.js"></script>
+
+
 <script src="/js/next-boot.js"></script>
+
 
 
 
