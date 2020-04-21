@@ -59,7 +59,7 @@
 <meta property="og:site_name" content="HTT">
 <meta property="og:description" content="CRDT 学习笔记。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-04-21T11:08:36.298Z">
+<meta property="og:updated_time" content="2020-04-21T11:20:24.260Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CRDT-notes">
 <meta name="twitter:description" content="CRDT 学习笔记。">
@@ -217,7 +217,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-04-21 11:02:30 / 修改时间：19:08:36" itemprop="dateCreated datePublished" datetime="2020-04-21T11:02:30+08:00">2020-04-21</time>
+              <time title="创建时间：2020-04-21 11:02:30 / 修改时间：19:20:24" itemprop="dateCreated datePublished" datetime="2020-04-21T11:02:30+08:00">2020-04-21</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -266,14 +266,23 @@
 </ul>
 <p><strong>Type of order</strong></p>
 <ul>
-<li>An order is <strong>total</strong> if for any <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> in the set, either <span class="math inline">\(a \le b\)</span> or <span class="math inline">\(b \le a\)</span>. &gt; 例如集合是自然数，二元关系为小于等于</li>
-<li>A <a href="https://en.wikipedia.org/wiki/Partially_ordered_set#Formal_definition" target="_blank" rel="noopener">partial order</a> is weaker than a total. It does not require that every pair <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> in a set can be compared. &gt; 例如集合是地理位置，二元关系取"位于"</li>
+<li><p>An order is <strong>total</strong> if for any <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> in the set, either <span class="math inline">\(a \le b\)</span> or <span class="math inline">\(b \le a\)</span>.</p>
+<blockquote>
+<p>例如集合是自然数，二元关系为小于等于</p>
+</blockquote></li>
+<li><p>A <a href="https://en.wikipedia.org/wiki/Partially_ordered_set#Formal_definition" target="_blank" rel="noopener">partial order</a> is weaker than a total. It does not require that every pair <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> in a set can be compared.</p>
+<blockquote>
+<p>例如集合是地理位置，二元关系取"位于"</p>
+</blockquote></li>
 </ul>
 <h3 id="join">Join</h3>
 <p><strong>Upper bound</strong></p>
 <p>For a set <span class="math inline">\(\mathcal{S}\)</span>, an order <span class="math inline">\(&lt;\mathcal{S},\le&gt;\)</span>, and <span class="math inline">\(\mathcal{A} \subseteq \mathcal{S}\)</span> is an aibitrary subset, then an element <span class="math inline">\(u \in \mathcal{S}\)</span> is said to be an <strong>upper bound</strong> of <span class="math inline">\(\mathcal{A}\)</span> if <span class="math inline">\(a \le u, \forall a \in \mathcal{A}\)</span>.</p>
 <p><strong>Definition</strong></p>
-<p>For a set <span class="math inline">\(\mathcal{S}\)</span>, an order <span class="math inline">\(&lt;\mathcal{S},\le&gt;\)</span>, and two elements <span class="math inline">\(a,b \in \mathcal{S}\)</span>, then <strong>join</strong> of <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> (written <span class="math inline">\(a \vee b\)</span>) is a least upper bound of <span class="math inline">\(\{a, b\}\)</span> according to our order <span class="math inline">\(&lt;\mathcal{S},\le&gt;\)</span>. &gt;In total order, a join of two elelments is always equals to one of those two elements. However, if we're talking about partial orders, this is not guaranteed.</p>
+<p>For a set <span class="math inline">\(\mathcal{S}\)</span>, an order <span class="math inline">\(&lt;\mathcal{S},\le&gt;\)</span>, and two elements <span class="math inline">\(a,b \in \mathcal{S}\)</span>, then <strong>join</strong> of <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> (written <span class="math inline">\(a \vee b\)</span>) is a least upper bound of <span class="math inline">\(\{a, b\}\)</span> according to our order <span class="math inline">\(&lt;\mathcal{S},\le&gt;\)</span>.</p>
+<blockquote>
+<p>In total order, a join of two elelments is always equals to one of those two elements. However, if we're talking about partial orders, this is not guaranteed.</p>
+</blockquote>
 <p><strong>Properties</strong></p>
 <ol type="1">
 <li>Commutativity: <span class="math inline">\(a \vee b = b \vee a\)</span></li>
@@ -281,7 +290,10 @@
 <li>Idempotence: <span class="math inline">\(a \vee a = a\)</span></li>
 </ol>
 <p><strong>Join-semilattice</strong></p>
-<p>A <a href="https://en.wikipedia.org/wiki/Semilattice" target="_blank" rel="noopener">join-semilattice</a> is a order <span class="math inline">\(&lt;\mathcal{S},\le&gt;\)</span> that has a join(a least upper bound) for any nonempty finite subset. &gt; Dually, a meet-semilattice (or lower semilattice) is a ordered set which has a meet (or greatest lower bound) for any nonempty finite subset.</p>
+<p>A <a href="https://en.wikipedia.org/wiki/Semilattice" target="_blank" rel="noopener">join-semilattice</a> is a order <span class="math inline">\(&lt;\mathcal{S},\le&gt;\)</span> that has a join(a least upper bound) for any nonempty finite subset.</p>
+<blockquote>
+<p>Dually, a meet-semilattice (or lower semilattice) is a ordered set which has a meet (or greatest lower bound) for any nonempty finite subset.</p>
+</blockquote>
 <h2 id="a-crdt-primer-part-ii-convergent-crdts"><a href="http://jtfmumm.com/blog/2015/11/24/crdt-primer-2-convergent-crdts/" target="_blank" rel="noopener">A CRDT Primer Part II: Convergent CRDTs</a></h2>
 
     </div>
