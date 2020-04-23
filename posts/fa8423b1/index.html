@@ -51,20 +51,20 @@
   };
 </script>
 
-  <meta name="description" content="还没开始看。">
-<meta name="keywords" content="分布式">
+  <meta name="description" content="Conflict free replicated data types 阅读笔记。">
+<meta name="keywords" content="CRDT,Strong Eventual Consistency">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Chord">
-<meta property="og:url" content="https://yz1509.github.io/posts/33be3840/index.html">
+<meta property="og:title" content="Conflict free replicated data types">
+<meta property="og:url" content="https://yz1509.github.io/posts/fa8423b1/index.html">
 <meta property="og:site_name" content="HTT">
-<meta property="og:description" content="还没开始看。">
+<meta property="og:description" content="Conflict free replicated data types 阅读笔记。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-31T02:12:30.980Z">
+<meta property="og:updated_time" content="2020-04-23T12:22:00.339Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Chord">
-<meta name="twitter:description" content="还没开始看。">
+<meta name="twitter:title" content="Conflict free replicated data types">
+<meta name="twitter:description" content="Conflict free replicated data types 阅读笔记。">
 
-<link rel="canonical" href="https://yz1509.github.io/posts/33be3840/">
+<link rel="canonical" href="https://yz1509.github.io/posts/fa8423b1/">
 
 
 <script id="page-configurations">
@@ -78,7 +78,7 @@
   };
 </script>
 
-  <title>Chord | HTT</title>
+  <title>Conflict free replicated data types | HTT</title>
   
 
 
@@ -193,7 +193,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/33be3840/">
+    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/fa8423b1/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/k-on.jpg">
@@ -206,7 +206,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Chord
+          Conflict free replicated data types
         </h1>
 
         <div class="post-meta">
@@ -216,14 +216,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2019-10-15 14:45:23" itemprop="dateCreated datePublished" datetime="2019-10-15T14:45:23+08:00">2019-10-15</time>
+              <time title="创建时间：2020-04-22 18:09:55" itemprop="dateCreated datePublished" datetime="2020-04-22T18:09:55+08:00">2020-04-22</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-10-31 10:12:30" itemprop="dateModified" datetime="2019-10-31T10:12:30+08:00">2019-10-31</time>
+                <time title="修改时间：2020-04-23 20:22:00" itemprop="dateModified" datetime="2020-04-23T20:22:00+08:00">2020-04-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -255,13 +255,30 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>还没开始看。</p>
+        <p>Conflict free replicated data types 阅读笔记。</p>
 <a id="more"></a>
 <hr>
-<p><a href="http://www.falleneth.com/cmuj/papers/chord.pdf" target="_blank" rel="noopener">论文地址</a></p>
-<h1 id="whydunit">Whydunit</h1>
-<h1 id="whodunit">Whodunit</h1>
-<h1 id="howdunit">Howdunit</h1>
+<p><a href="https://hal.inria.fr/inria-00609399v2/document" target="_blank" rel="noopener">论文地址</a></p>
+<h2 id="最终一致性">最终一致性</h2>
+<h3 id="eventual-consistency"><a href="https://en.wikipedia.org/wiki/Eventual_consistency" target="_blank" rel="noopener">Eventual Consistency</a></h3>
+<p>一个分布式系统是最终一致的，需满足以下条件：</p>
+<ul>
+<li><strong>Eventual delivery</strong>: 在健康节点上执行的更新操作最终会被传递至所有健康节点，也就是说 <span class="math inline">\(f \in c_i \Rightarrow \lozenge f \in c_j, \forall i, j \in [0, \dots, n]\)</span>，其中 <span class="math inline">\(c_i\)</span> 是节点 <span class="math inline">\(i\)</span> 的 causal history</li>
+<li><strong>Convergence</strong>: 执行相同操作集合的健康节点<strong>最终</strong>会收敛至相同的状态，也就是说 <span class="math inline">\(\square c_i = c_j \Rightarrow \lozenge \square s_i \equiv s_j, \forall i, j \in [0, \dots, n]\)</span></li>
+<li><strong>Termination</strong>: 所有操作会终止</li>
+</ul>
+<p>在上述说明中，<span class="math inline">\(\lozenge\)</span> 表示可能性，<span class="math inline">\(\square\)</span> 表示必然性，详见 <a href="https://en.wikipedia.org/wiki/Modal_logic" target="_blank" rel="noopener">Modal logic</a> 和 <a href="https://en.wikipedia.org/wiki/S5_(modal_logic)" target="_blank" rel="noopener">S5 modal logic</a>。至于 causal history，可以简单理解为操作的集合。</p>
+<h3 id="strong-eventual-consistency">Strong Eventual Consistency</h3>
+<p>一个分布式系统是强最终一致的，需在满足最终一致的条件下，额外满足以下约束：</p>
+<ul>
+<li><strong>Strong Convergence</strong>: 执行相同操作集合的健康节点具有相同的状态，也就是说 <span class="math inline">\(c_i = c_j \Rightarrow s_i \equiv s_j, \forall i, j \in [0, \dots, n]\)</span></li>
+</ul>
+<h2 id="state-based-convergent-replicated-data-type-cvrdt">State-based Convergent Replicated Data Type (CvRDT)</h2>
+<h3 id="符号说明">符号说明</h3>
+<h3 id="相关定义">相关定义</h3>
+<h2 id="op-based-commutative-replicated-data-type-cmrdt">Op-based Commutative Replicated Data Type (CmRDT)</h2>
+<h3 id="符号说明-1">符号说明</h3>
+<h3 id="相关定义-1">相关定义</h3>
 
     </div>
 
@@ -271,24 +288,22 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/分布式/" rel="tag"># 分布式</a>
+              <a href="/tags/CRDT/" rel="tag"># CRDT</a>
+              <a href="/tags/Strong-Eventual-Consistency/" rel="tag"># Strong Eventual Consistency</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
-                <a href="/posts/affa099c/" rel="next" title="Consistent Hashing">
-                  <i class="fa fa-chevron-left"></i> Consistent Hashing
+                <a href="/posts/cce5fbef/" rel="next" title="CRDT-notes">
+                  <i class="fa fa-chevron-left"></i> CRDT-notes
                 </a>
             </div>
 
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-                <a href="/posts/76da14fe/" rel="prev" title="Redis Streams">
-                  Redis Streams <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
       </footer>
@@ -327,7 +342,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#whydunit"><span class="nav-number">1.</span> <span class="nav-text">Whydunit</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#whodunit"><span class="nav-number">2.</span> <span class="nav-text">Whodunit</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#howdunit"><span class="nav-number">3.</span> <span class="nav-text">Howdunit</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#最终一致性"><span class="nav-number">1.</span> <span class="nav-text">最终一致性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#eventual-consistency"><span class="nav-number">1.1.</span> <span class="nav-text">Eventual Consistency</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#strong-eventual-consistency"><span class="nav-number">1.2.</span> <span class="nav-text">Strong Eventual Consistency</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#state-based-convergent-replicated-data-type-cvrdt"><span class="nav-number">2.</span> <span class="nav-text">State-based Convergent Replicated Data Type (CvRDT)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#符号说明"><span class="nav-number">2.1.</span> <span class="nav-text">符号说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#相关定义"><span class="nav-number">2.2.</span> <span class="nav-text">相关定义</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#op-based-commutative-replicated-data-type-cmrdt"><span class="nav-number">3.</span> <span class="nav-text">Op-based Commutative Replicated Data Type (CmRDT)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#符号说明-1"><span class="nav-number">3.1.</span> <span class="nav-text">符号说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#相关定义-1"><span class="nav-number">3.2.</span> <span class="nav-text">相关定义</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
