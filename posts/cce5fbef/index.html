@@ -59,7 +59,7 @@
 <meta property="og:site_name" content="HTT">
 <meta property="og:description" content="CRDT 学习笔记。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-04-23T11:47:27.139Z">
+<meta property="og:updated_time" content="2020-04-24T09:26:46.484Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="CRDT-notes">
 <meta name="twitter:description" content="CRDT 学习笔记。">
@@ -223,7 +223,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-04-23 19:47:27" itemprop="dateModified" datetime="2020-04-23T19:47:27+08:00">2020-04-23</time>
+                <time title="修改时间：2020-04-24 17:26:46" itemprop="dateModified" datetime="2020-04-24T17:26:46+08:00">2020-04-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -283,9 +283,9 @@
 </ul>
 <h4 id="join">Join</h4>
 <p><strong>Upper bound</strong></p>
-<p>For a set <span class="math inline">\(\mathcal{S}\)</span>, an order <span class="math inline">\(&lt;\mathcal{S},\le&gt;\)</span>, and <span class="math inline">\(\mathcal{A} \subseteq \mathcal{S}\)</span> is an aibitrary subset, then an element <span class="math inline">\(u \in \mathcal{S}\)</span> is said to be an <strong>upper bound</strong> of <span class="math inline">\(\mathcal{A}\)</span> if <span class="math inline">\(a \le u, \forall a \in \mathcal{A}\)</span>.</p>
+<p>For a set <span class="math inline">\(\mathcal{S}\)</span>, an order <span class="math inline">\((\mathcal{S},\le)\)</span>, and <span class="math inline">\(\mathcal{A} \subseteq \mathcal{S}\)</span> is an aibitrary subset, then an element <span class="math inline">\(u \in \mathcal{S}\)</span> is said to be an <strong>upper bound</strong> of <span class="math inline">\(\mathcal{A}\)</span> if <span class="math inline">\(a \le u, \forall a \in \mathcal{A}\)</span>.</p>
 <p><strong>Definition</strong></p>
-<p>For a set <span class="math inline">\(\mathcal{S}\)</span>, an order <span class="math inline">\(&lt;\mathcal{S},\le&gt;\)</span>, and two elements <span class="math inline">\(a,b \in \mathcal{S}\)</span>, then <strong>join</strong> of <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> (written <span class="math inline">\(a \vee b\)</span>) is a least upper bound of <span class="math inline">\(\{a, b\}\)</span> according to our order <span class="math inline">\(&lt;\mathcal{S},\le&gt;\)</span>.</p>
+<p>For a set <span class="math inline">\(\mathcal{S}\)</span>, an order <span class="math inline">\((\mathcal{S},\le)\)</span>, and two elements <span class="math inline">\(a,b \in \mathcal{S}\)</span>, then <strong>join</strong> of <span class="math inline">\(a\)</span> and <span class="math inline">\(b\)</span> (written <span class="math inline">\(a \vee b\)</span>) is a least upper bound of <span class="math inline">\(\{a, b\}\)</span> according to our order <span class="math inline">\((\mathcal{S},\le)\)</span>.</p>
 <blockquote>
 <p>In total order, a join of two elelments is always equals to one of those two elements. However, if we're talking about partial orders, this is not guaranteed.</p>
 </blockquote>
@@ -296,7 +296,7 @@
 <li>Idempotence: <span class="math inline">\(a \vee a = a\)</span></li>
 </ol>
 <p><strong>Join-semilattice</strong></p>
-<p>A <a href="https://en.wikipedia.org/wiki/Semilattice" target="_blank" rel="noopener">join-semilattice</a> is a order <span class="math inline">\(&lt;\mathcal{S},\le&gt;\)</span> that has a join(a least upper bound) for any nonempty finite subset.</p>
+<p>A <a href="https://en.wikipedia.org/wiki/Semilattice" target="_blank" rel="noopener">join-semilattice</a> is a order set <span class="math inline">\((\mathcal{S},\le)\)</span> that has a join(a least upper bound) for any nonempty finite subset.</p>
 <blockquote>
 <p>Dually, a meet-semilattice (or lower semilattice) is a ordered set which has a meet (or greatest lower bound) for any nonempty finite subset.</p>
 </blockquote>
@@ -307,6 +307,8 @@
 </ul>
 <h2 id="论文">论文</h2>
 <h3 id="conflict-free-replicated-data-types"><a href="https://hal.inria.fr/inria-00609399v2/document" target="_blank" rel="noopener">Conflict-free Replicated Data Types</a></h3>
+<p>在这篇文章中，作者主要提出了两种本质上等价的 CRDT：CvRDT 和 CmRDT。详细内容<a href="http://k-on.me/posts/fa8423b1/#more" target="_blank" rel="noopener">请点击</a>。</p>
+<h3 id="a-comprehensive-study-of-convergent-and-commutative-replicated-data-types"><a href="https://hal.inria.fr/inria-00555588/document" target="_blank" rel="noopener">A comprehensive study of Convergent and Commutative Replicated Data Types</a></h3>
 
     </div>
 
@@ -374,7 +376,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景知识"><span class="nav-number">1.</span> <span class="nav-text">背景知识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-crdt-primer-part-i-defanging-order-theory"><span class="nav-number">1.1.</span> <span class="nav-text">A CRDT Primer Part I: Defanging Order Theory</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#order"><span class="nav-number">1.1.1.</span> <span class="nav-text">Order</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#join"><span class="nav-number">1.1.2.</span> <span class="nav-text">Join</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#扩展阅读"><span class="nav-number">1.2.</span> <span class="nav-text">扩展阅读</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文"><span class="nav-number">2.</span> <span class="nav-text">论文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#conflict-free-replicated-data-types"><span class="nav-number">2.1.</span> <span class="nav-text">Conflict-free Replicated Data Types</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景知识"><span class="nav-number">1.</span> <span class="nav-text">背景知识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-crdt-primer-part-i-defanging-order-theory"><span class="nav-number">1.1.</span> <span class="nav-text">A CRDT Primer Part I: Defanging Order Theory</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#order"><span class="nav-number">1.1.1.</span> <span class="nav-text">Order</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#join"><span class="nav-number">1.1.2.</span> <span class="nav-text">Join</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#扩展阅读"><span class="nav-number">1.2.</span> <span class="nav-text">扩展阅读</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#论文"><span class="nav-number">2.</span> <span class="nav-text">论文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#conflict-free-replicated-data-types"><span class="nav-number">2.1.</span> <span class="nav-text">Conflict-free Replicated Data Types</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#a-comprehensive-study-of-convergent-and-commutative-replicated-data-types"><span class="nav-number">2.2.</span> <span class="nav-text">A comprehensive study of Convergent and Commutative Replicated Data Types</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
