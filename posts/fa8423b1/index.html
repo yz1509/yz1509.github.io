@@ -59,7 +59,7 @@
 <meta property="og:site_name" content="HTT">
 <meta property="og:description" content="Conflict free replicated data types 阅读笔记。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-04-24T10:15:10.571Z">
+<meta property="og:updated_time" content="2020-04-26T08:11:04.557Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Conflict free replicated data types">
 <meta name="twitter:description" content="Conflict free replicated data types 阅读笔记。">
@@ -223,7 +223,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-04-24 18:15:10" itemprop="dateModified" datetime="2020-04-24T18:15:10+08:00">2020-04-24</time>
+                <time title="修改时间：2020-04-26 16:11:04" itemprop="dateModified" datetime="2020-04-26T16:11:04+08:00">2020-04-26</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -362,6 +362,7 @@ c_i^{k-1} \cup \{u_i^k(a)\} &amp; f = u_i^k(a)
 <blockquote>
 <p>CmRDT 使用 <span class="math inline">\((\mathcal{S}, s^0, q, t, u, \mathcal{P})\)</span> 表示。</p>
 </blockquote>
+<p>要么可比，不可比较的就可交换，这么强的 assumption...适用情况有限。</p>
 <h2 id="一些结论">一些结论</h2>
 <ul>
 <li>CvRDTs and CmRDTs are equivalent</li>
@@ -411,7 +412,15 @@ c_i^{k-1} \cup \{u_i^k(a)\} &amp; f = u_i^k(a)
 <p>可以发现上述定义的是一个只增计数器，如果想可增可减的话，可以使用两个只增计数器构成。另外，关于 <em>vector clock</em> 的内容可以查看 <a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.63.4399&amp;rep=rep1&amp;type=pdf" target="_blank" rel="noopener">Virtual Time and Global States of Distributed Systems</a></p>
 <h3 id="set">Set</h3>
 <p>一个 add-only 的集合可以构造为 <span class="math inline">\((\mathcal{S}, \subseteq, \emptyset, value, add(e), \cup)\)</span>，其中 <span class="math inline">\(s \cdot add(e) = s \cup \{e\}\)</span>，很明显这也是一个 CRDT。</p>
-<p>在 <a href="https://hal.inria.fr/inria-00555588/document" target="_blank" rel="noopener">A comprehensive study of Convergent and Commutative Replicated Data Types</a> 中作者定义了一个 <span class="math inline">\(U-Set\)</span>，支持 add 和 remove，现在就去看！</p>
+<p>在 <a href="https://hal.inria.fr/inria-00555588/document" target="_blank" rel="noopener">A comprehensive study of Convergent and Commutative Replicated Data Types</a> 中作者定义了可增可减的两种 Set，但是也有较强的 assumption...</p>
+<ul>
+<li>2P-Set：维护两个集合：add-only 和 remove-only。只能适用于集合中的元素只会被 add/remove 一次的情况</li>
+<li>U-Set: 维护一个支持 add/remove 的集合。需要满足两个条件:
+<ul>
+<li>remove 过的元素不会再 add</li>
+<li>add 操作确保在 remove 前</li>
+</ul></li>
+</ul>
 
     </div>
 
@@ -437,9 +446,6 @@ c_i^{k-1} \cup \{u_i^k(a)\} &amp; f = u_i^k(a)
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-                <a href="/posts/f1fa2ea9/" rel="prev" title="A comprehensive study of Convergent and Commutative Replicated Data Types">
-                  A comprehensive study of Convergent and Commutative Replicated Data Types <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
       </footer>
@@ -494,7 +500,7 @@ c_i^{k-1} \cup \{u_i^k(a)\} &amp; f = u_i^k(a)
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">31</span>
+          <span class="site-state-item-count">30</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
