@@ -51,20 +51,20 @@
   };
 </script>
 
-  <meta name="description" content="还没开始看。">
-<meta name="keywords" content="分布式">
+  <meta name="description" content="Redis 全球多活调研笔记。">
+<meta name="keywords" content="分布式,一致性,CRDT,Redis">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Chord">
-<meta property="og:url" content="https://yz1509.github.io/posts/33be3840/index.html">
+<meta property="og:title" content="CRDTs in Redis">
+<meta property="og:url" content="https://yz1509.github.io/posts/8e7f36d6/index.html">
 <meta property="og:site_name" content="HTT">
-<meta property="og:description" content="还没开始看。">
+<meta property="og:description" content="Redis 全球多活调研笔记。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-31T02:12:30.980Z">
+<meta property="og:updated_time" content="2020-06-17T09:48:14.826Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Chord">
-<meta name="twitter:description" content="还没开始看。">
+<meta name="twitter:title" content="CRDTs in Redis">
+<meta name="twitter:description" content="Redis 全球多活调研笔记。">
 
-<link rel="canonical" href="https://yz1509.github.io/posts/33be3840/">
+<link rel="canonical" href="https://yz1509.github.io/posts/8e7f36d6/">
 
 
 <script id="page-configurations">
@@ -78,7 +78,7 @@
   };
 </script>
 
-  <title>Chord | HTT</title>
+  <title>CRDTs in Redis | HTT</title>
   
 
 
@@ -193,7 +193,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/33be3840/">
+    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/8e7f36d6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/k-on.jpg">
@@ -206,7 +206,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Chord
+          CRDTs in Redis
         </h1>
 
         <div class="post-meta">
@@ -215,24 +215,18 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2019-10-15 14:45:23" itemprop="dateCreated datePublished" datetime="2019-10-15T14:45:23+08:00">2019-10-15</time>
+              <time title="创建时间：2020-06-17 11:15:10 / 修改时间：17:48:14" itemprop="dateCreated datePublished" datetime="2020-06-17T11:15:10+08:00">2020-06-17</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-10-31 10:12:30" itemprop="dateModified" datetime="2019-10-31T10:12:30+08:00">2019-10-31</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/现在英语怎么样-过托福没-可以看论文吗/" itemprop="url" rel="index">
-                    <span itemprop="name">现在英语怎么样 过托福没 可以看论文吗</span>
+                  <a href="/categories/DataStructure-Algorithm/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
                   </a>
                 </span>
             </span>
@@ -255,13 +249,131 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>还没开始看。</p>
+        <p>Redis 全球多活调研笔记。</p>
 <a id="more"></a>
 <hr>
-<p><a href="http://www.falleneth.com/cmuj/papers/chord.pdf" target="_blank" rel="noopener">论文地址</a></p>
-<h1 id="whydunit">Whydunit</h1>
-<h1 id="whodunit">Whodunit</h1>
-<h1 id="howdunit">Howdunit</h1>
+<h2 id="crdt-简单介绍">CRDT 简单介绍</h2>
+<p>在 <a href="https://hal.inria.fr/inria-00609399v2/document" target="_blank" rel="noopener">Conflict-free Replicated Data Types</a> 一文中，作者依据传递消息内容的区别，提出了两种 CRDT：</p>
+<ul>
+<li>CvRDT(State-based Convergent Replicated Data Type): 基于<strong>状态</strong>的<strong>聚合</strong>复制数据类型
+<ul>
+<li>状态更改操作为 Merge，要求 Merge 满足交换律，结合律，幂等</li>
+<li>状态满足单调性</li>
+<li>优点：对通信协议要求不高，最终可达即可</li>
+<li>缺点：消息传递的内容是状态，消息体大</li>
+</ul></li>
+<li>CmRDT(Op-based Commutative Replicated Data Type)：基于<strong>操作</strong>的<strong>交换</strong>复制数据类型
+<ul>
+<li>Update 操作要么可确定明确的因果顺序，要么满足可交换</li>
+<li>优点：消息传递的内容是操作，消息体小</li>
+<li>缺点：对通信协议要求高，需要保证因果顺序</li>
+</ul></li>
+</ul>
+<h2 id="redislabs-crdb-相关">RedisLabs CRDB 相关</h2>
+<p><strong>参考资料</strong></p>
+<ul>
+<li><a href="https://redislabs.com/redis-enterprise/technology/active-active-geo-distribution/" target="_blank" rel="noopener">Active-Active Geo-Distribution (CRDT-Based)</a></li>
+<li><a href="https://www.slideshare.net/RedisLabs/redisconf18-crdts-and-redis-from-sequential-to-concurrent-executions" target="_blank" rel="noopener">RedisConf18 - CRDTs and Redis - From sequential to concurrent executions</a></li>
+<li><a href="https://docs.redislabs.com/latest/rs/developing/crdbs/" target="_blank" rel="noopener">Developing Applications with Geo-Distributed CRDBs on Redis Enterprise Software (RS)</a></li>
+</ul>
+<p><strong>目前 CRDB 支持的数据类型</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Data Type</th>
+<th style="text-align: left;">Support Level</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Float Counters</td>
+<td style="text-align: left;">Supported</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Geospatial</td>
+<td style="text-align: left;">Supported</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Hashes</td>
+<td style="text-align: left;">Supported; Hash fields are treated as strings or counters</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Integer Counters</td>
+<td style="text-align: left;">Supported</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Lists</td>
+<td style="text-align: left;">Supported</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sets</td>
+<td style="text-align: left;">Supported</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Strings</td>
+<td style="text-align: left;">Supported</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Sorted Sets</td>
+<td style="text-align: left;">Supported</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">HyperLogLog</td>
+<td style="text-align: left;">Supported</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Streams</td>
+<td style="text-align: left;">Supported</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Bitsets</td>
+<td style="text-align: left;">Not currently supported</td>
+</tr>
+</tbody>
+</table>
+<p>目前可查询到有关 CRDB 实现的情报如下所述。</p>
+<h3 id="string">String</h3>
+<p>在 CRDB 中，String 分为 Counter 和 Pure String 两种类型，这两种类型之间<strong>不可动态转换</strong>。下表给出了其各自支持的操作，可以看到 Counter 和 Pure String 都不支持位操作。</p>
+<table>
+<colgroup>
+<col style="width: 44%">
+<col style="width: 55%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Support Methods</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Counter</td>
+<td style="text-align: left;">INCR, DECR, INCRBY, DECRBY, GET</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Pure String</td>
+<td style="text-align: left;">APPEND, GET, GETRANGE, GETSET, MGET, MSET, MSETNX, PSETEX, SET, SETEX, SETNX, SETRANGE, STRLEN</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Counter：参考 <a href="https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type#PN-Counter_(Positive-Negative_Counter)" target="_blank" rel="noopener">PN-Counter</a> 实现</li>
+<li>Pure String：采用 wall-clock timestamp 和 Last Write Wins (LWW)</li>
+</ul>
+<h3 id="set">Set</h3>
+<p>参考 <a href="https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type#OR-Set_(Observed-Remove_Set)" target="_blank" rel="noopener">OR-Set</a> 实现</p>
+<h3 id="hash">Hash</h3>
+<ul>
+<li>在 Key 维度参考 <a href="https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type#OR-Set_(Observed-Remove_Set)" target="_blank" rel="noopener">OR-Set</a> 实现</li>
+<li>在 Field 维度实现同 String 类型，分为 Counter 和 Pure String</li>
+</ul>
+<h3 id="sorted-set">Sorted Set</h3>
+<ul>
+<li>在 Key 维度参考 <a href="https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type#OR-Set_(Observed-Remove_Set)" target="_blank" rel="noopener">OR-Set</a> 实现</li>
+<li>在 Member 参考 <a href="https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type#PN-Counter_(Positive-Negative_Counter)" target="_blank" rel="noopener">PN-Counter</a> 实现</li>
+</ul>
+<h3 id="list">List</h3>
+<p>尚未发现确切的情报，可能有参考 <a href="https://dl.acm.org/doi/pdf/10.1145/2933057.2933090" target="_blank" rel="noopener">Specification and Complexity of Collaborative Text Editing</a>。</p>
 
     </div>
 
@@ -272,23 +384,23 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/分布式/" rel="tag"># 分布式</a>
+              <a href="/tags/一致性/" rel="tag"># 一致性</a>
+              <a href="/tags/CRDT/" rel="tag"># CRDT</a>
+              <a href="/tags/Redis/" rel="tag"># Redis</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
-                <a href="/posts/affa099c/" rel="next" title="Consistent Hashing">
-                  <i class="fa fa-chevron-left"></i> Consistent Hashing
+                <a href="/posts/fa8423b1/" rel="next" title="Conflict free replicated data types">
+                  <i class="fa fa-chevron-left"></i> Conflict free replicated data types
                 </a>
             </div>
 
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-                <a href="/posts/76da14fe/" rel="prev" title="Redis Streams">
-                  Redis Streams <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
       </footer>
@@ -327,7 +439,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#whydunit"><span class="nav-number">1.</span> <span class="nav-text">Whydunit</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#whodunit"><span class="nav-number">2.</span> <span class="nav-text">Whodunit</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#howdunit"><span class="nav-number">3.</span> <span class="nav-text">Howdunit</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#crdt-简单介绍"><span class="nav-number">1.</span> <span class="nav-text">CRDT 简单介绍</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#redislabs-crdb-相关"><span class="nav-number">2.</span> <span class="nav-text">RedisLabs CRDB 相关</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#string"><span class="nav-number">2.1.</span> <span class="nav-text">String</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#set"><span class="nav-number">2.2.</span> <span class="nav-text">Set</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#hash"><span class="nav-number">2.3.</span> <span class="nav-text">Hash</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#sorted-set"><span class="nav-number">2.4.</span> <span class="nav-text">Sorted Set</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#list"><span class="nav-number">2.5.</span> <span class="nav-text">List</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
