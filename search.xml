@@ -3,6 +3,29 @@
   
     
     <entry>
+      <title>Specification and Complexity of Collaborative Text Editing</title>
+      <link href="//posts/a8337500/"/>
+      <url>//posts/a8337500/</url>
+      <content type="html"><![CDATA[<link rel="stylesheet" class="aplayer-secondary-style-marker" href="\assets\css\APlayer.min.css"><script src="\assets\js\APlayer.min.js" class="aplayer-secondary-script-marker"></script><script class="meting-secondary-script-marker" src="\assets\js\Meting.min.js"></script><p>Specification and Complexity of Collaborative Text Editing 阅读笔记。</p><a id="more"></a><hr><p><a href="https://dl.acm.org/doi/pdf/10.1145/2933057.2933090" target="_blank" rel="noopener">论文地址</a></p>]]></content>
+      
+      <categories>
+          
+          <category> 现在英语怎么样 过托福没 可以看论文吗 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 最终一致性 </tag>
+            
+            <tag> 协同编辑 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    <entry>
       <title>CRDTs in Redis</title>
       <link href="//posts/8e7f36d6/"/>
       <url>//posts/8e7f36d6/</url>
@@ -17,9 +40,7 @@
       
         <tags>
             
-            <tag> 分布式 </tag>
-            
-            <tag> 一致性 </tag>
+            <tag> 最终一致性 </tag>
             
             <tag> CRDT </tag>
             
@@ -44,9 +65,9 @@
       
         <tags>
             
-            <tag> CRDT </tag>
+            <tag> 最终一致性 </tag>
             
-            <tag> Strong Eventual Consistency </tag>
+            <tag> CRDT </tag>
             
         </tags>
       
@@ -67,9 +88,7 @@
       
         <tags>
             
-            <tag> 分布式 </tag>
-            
-            <tag> 一致性 </tag>
+            <tag> 最终一致性 </tag>
             
             <tag> CRDT </tag>
             
