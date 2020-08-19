@@ -51,20 +51,20 @@
   };
 </script>
 
-  <meta name="description" content="还没开始看。">
-<meta name="keywords" content="分布式">
+  <meta name="description" content="分布式系统相关资源汇总及简要笔记。">
+<meta name="keywords" content="分布式,一致性">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Chord">
-<meta property="og:url" content="https://yz1509.github.io/posts/33be3840/index.html">
+<meta property="og:title" content="分布式系统相关笔记">
+<meta property="og:url" content="https://yz1509.github.io/posts/ad92b110/index.html">
 <meta property="og:site_name" content="HTT">
-<meta property="og:description" content="还没开始看。">
+<meta property="og:description" content="分布式系统相关资源汇总及简要笔记。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-10-31T02:12:30.980Z">
+<meta property="og:updated_time" content="2020-08-19T03:58:49.461Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Chord">
-<meta name="twitter:description" content="还没开始看。">
+<meta name="twitter:title" content="分布式系统相关笔记">
+<meta name="twitter:description" content="分布式系统相关资源汇总及简要笔记。">
 
-<link rel="canonical" href="https://yz1509.github.io/posts/33be3840/">
+<link rel="canonical" href="https://yz1509.github.io/posts/ad92b110/">
 
 
 <script id="page-configurations">
@@ -78,7 +78,7 @@
   };
 </script>
 
-  <title>Chord | HTT</title>
+  <title>分布式系统相关笔记 | HTT</title>
   
 
 
@@ -193,7 +193,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/33be3840/">
+    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/ad92b110/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/k-on.jpg">
@@ -206,7 +206,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Chord
+          分布式系统相关笔记
         </h1>
 
         <div class="post-meta">
@@ -216,14 +216,14 @@
               </span>
               <span class="post-meta-item-text">发表于</span>
 
-              <time title="创建时间：2019-10-15 14:45:23" itemprop="dateCreated datePublished" datetime="2019-10-15T14:45:23+08:00">2019-10-15</time>
+              <time title="创建时间：2020-08-17 20:08:58" itemprop="dateCreated datePublished" datetime="2020-08-17T20:08:58+08:00">2020-08-17</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2019-10-31 10:12:30" itemprop="dateModified" datetime="2019-10-31T10:12:30+08:00">2019-10-31</time>
+                <time title="修改时间：2020-08-19 11:58:49" itemprop="dateModified" datetime="2020-08-19T11:58:49+08:00">2020-08-19</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -231,8 +231,8 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/现在英语怎么样-过托福没-可以看论文吗/" itemprop="url" rel="index">
-                    <span itemprop="name">现在英语怎么样 过托福没 可以看论文吗</span>
+                  <a href="/categories/分布式系统/" itemprop="url" rel="index">
+                    <span itemprop="name">分布式系统</span>
                   </a>
                 </span>
             </span>
@@ -255,13 +255,86 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>还没开始看。</p>
+        <p>分布式系统相关资源汇总及简要笔记。</p>
 <a id="more"></a>
 <hr>
-<p><a href="http://www.falleneth.com/cmuj/papers/chord.pdf" target="_blank" rel="noopener">论文地址</a></p>
-<h1 id="whydunit">Whydunit</h1>
-<h1 id="whodunit">Whodunit</h1>
-<h1 id="howdunit">Howdunit</h1>
+<h2 id="基础概念">基础概念</h2>
+<h3 id="一致性相关">一致性相关</h3>
+<h4 id="strong-consistency-models">Strong consistency models</h4>
+<p><a href="https://zhuanlan.zhihu.com/p/48782892" target="_blank" rel="noopener">中文版</a> <a href="https://aphyr.com/posts/313-strong-consistency-models" target="_blank" rel="noopener">英文版</a></p>
+<p><strong>正确性 (Correctness)</strong></p>
+<ul>
+<li>我们说一个<code>系统</code>是由<code>状态</code>和一些导致状态转移的<code>操作</code>组成的</li>
+<li>系统的<code>正确性</code>：给定一些涉及状态与操作的<code>规则</code>，随着操作的演进，系统将一直遵循这些规则。我们把这样的规则成为<code>一致性模型</code></li>
+<li>更加正式地说，一致性模型是所有被允许的操作记录的集合。如果任意可能执行的操作都在这个被允许的操作集合内，那么系统就满足一致性模型</li>
+</ul>
+<p><strong>光锥 (Light cones)</strong></p>
+<ul>
+<li>读写不是一个瞬时的过程，而是一个类似 光传播(调用) -&gt; 反射面(执行) -&gt; 反向传播(完成) 的过程</li>
+<li>因此，调用的先后顺序并不等于操作真实执行的先后顺序</li>
+</ul>
+<p><strong>线性一致性 (Linearizability)</strong></p>
+<p>每个操作会在它调用和完成之间的某个时间点原子地生效.</p>
+<ul>
+<li>对于观察者来说，所有的读和写都在一个单调递增的时间线上串行地向前推进</li>
+<li>所有的读总能返回最近写操作的值</li>
+</ul>
+<p><strong>顺序一致性 (Sequential consistency)</strong></p>
+<p>如果我们允许进程在时间维度发生偏移，从而它们的操作可能会在调用之前或是完成之后生效，但仍然保证一个约束 —— 任意进程中的操作必须按照进程中定义的顺序 (即编程的定义的逻辑顺序) 发生。这样我们就得到了一个稍弱的一致性模型：顺序一致性。</p>
+<ul>
+<li>不要求操作按照真实的时间顺序发生 (可能读到过期数据)</li>
+<li>不同进程间的操作执行先后顺序没有强制要求，但必须是原子的</li>
+<li>单个进程内的操作顺序必须和编码时的顺序一致</li>
+</ul>
+<p><strong>因果一致性 (Casual consistency)</strong></p>
+<p>不对一个进程中的每个操作都施加顺序约束。只有因果相关的操作必须按顺序发生。</p>
+<p><strong>串行一致性 (Serializable consistency)</strong></p>
+<p>串行一致性是事务的隔离属性，每个事务可以读写多个对象 (行，文档，记录)。它确保事务的行为，与它们按照某种顺序依次执行的结果相同 (每个事务在下一个事务开始之前运行完成)。这种执行顺序可以与事务实际执行的顺序不同，和调用时间与完成时间无关。</p>
+<ul>
+<li>串行一致性是对多操作，多对象的保证，对总体的操作顺序无要求</li>
+<li>线性一致性是对单操作，单对象的保证，所有操作遵循真实时间序</li>
+</ul>
+<h3 id="cap-定理相关">CAP 定理相关</h3>
+<p><a href="https://en.wikipedia.org/wiki/CAP_theorem" target="_blank" rel="noopener">CAP 定理</a>指出对于一个分布式计算系统来说，不可能同时满足以下三点：</p>
+<ul>
+<li>一致性 (Consistency): Every read receives the most recent write or an error</li>
+<li>可用性 (Availability): Every request receives a (non-error) response, without the guarantee that it contains the most recent write</li>
+<li>分区容错性 (Partition tolerance): The system continues to operate despite an arbitrary number of messages being dropped (or delayed) by the network between nodes</li>
+</ul>
+<h4 id="cap-twelve-years-later-how-the-rules-have-changed">CAP Twelve Years Later: How the "Rules" Have Changed</h4>
+<p><a href="https://www.infoq.cn/article/cap-twelve-years-later-how-the-rules-have-changed/" target="_blank" rel="noopener">中文版</a> <a href="https://www.infoq.com/articles/cap-twelve-years-later-how-the-rules-have-changed/" target="_blank" rel="noopener">英文版</a></p>
+<ul>
+<li>三选二具有误导性</li>
+<li>ACID、BASE、CAP 的关系
+<ul>
+<li><code>BASE</code>: Basically Available, Soft state, Eventually consistent</li>
+</ul></li>
+<li>CAP 与延迟的联系</li>
+<li>管理分区
+<ol type="1">
+<li>检测分区开始</li>
+<li>明确进入分区模式，两种可行的策略
+<ul>
+<li>限制部分触犯不变性约束的操作，因此会削弱可用性</li>
+<li>额外记录一些有利于分区恢复的操作信息，如版本向量等</li>
+</ul></li>
+<li>分区恢复，修复分区期间造成的错误</li>
+</ol></li>
+</ul>
+<h4 id="please-stop-calling-databases-cp-or-ap">Please stop calling databases CP or AP</h4>
+<p><a href="https://zhuanlan.zhihu.com/p/55053121" target="_blank" rel="noopener">中文版</a> <a href="http://martin.kleppmann.com/2015/05/11/please-stop-calling-databases-cp-or-ap.html" target="_blank" rel="noopener">英文版</a></p>
+<ul>
+<li>CAP 定义非常狭隘
+<ul>
+<li>一致性在 CAP 中其实是指线性一致性 (linearizability)</li>
+<li>可用性要求<strong>任何</strong>非故障节点都能够处理请求</li>
+<li>分区容错性基本上意味着你的通信建立在可能会延迟或丢包的异步通信网络上. 互联网和我们的数据中心都有这个属性, 所以在这个问题上其实没有任何选择.</li>
+<li>CAP 系统模型是一个单一读写寄存器 (single, read-write register)，没有涉及多个对象的事务</li>
+<li>CAP 定理只考虑了网络分区 (network partition) 这一故障场景</li>
+<li>CAP 定理没考虑到延迟 (latency)</li>
+</ul></li>
+<li>多数系统既不线性可用 (linearizable) 也不 CAP 可用 (CAP-available)</li>
+</ul>
 
     </div>
 
@@ -272,23 +345,21 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/分布式/" rel="tag"># 分布式</a>
+              <a href="/tags/一致性/" rel="tag"># 一致性</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-next post-nav-item">
-                <a href="/posts/affa099c/" rel="next" title="Consistent Hashing">
-                  <i class="fa fa-chevron-left"></i> Consistent Hashing
+                <a href="/posts/a8337500/" rel="next" title="Specification and Complexity of Collaborative Text Editing">
+                  <i class="fa fa-chevron-left"></i> Specification and Complexity of Collaborative Text Editing
                 </a>
             </div>
 
             <span class="post-nav-divider"></span>
 
             <div class="post-nav-prev post-nav-item">
-                <a href="/posts/76da14fe/" rel="prev" title="Redis Streams">
-                  Redis Streams <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
       </footer>
@@ -327,7 +398,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#whydunit"><span class="nav-number">1.</span> <span class="nav-text">Whydunit</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#whodunit"><span class="nav-number">2.</span> <span class="nav-text">Whodunit</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#howdunit"><span class="nav-number">3.</span> <span class="nav-text">Howdunit</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基础概念"><span class="nav-number">1.</span> <span class="nav-text">基础概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#一致性相关"><span class="nav-number">1.1.</span> <span class="nav-text">一致性相关</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#strong-consistency-models"><span class="nav-number">1.1.1.</span> <span class="nav-text">Strong consistency models</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cap-定理相关"><span class="nav-number">1.2.</span> <span class="nav-text">CAP 定理相关</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#cap-twelve-years-later-how-the-rules-have-changed"><span class="nav-number">1.2.1.</span> <span class="nav-text">CAP Twelve Years Later: How the &quot;Rules&quot; Have Changed</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#please-stop-calling-databases-cp-or-ap"><span class="nav-number">1.2.2.</span> <span class="nav-text">Please stop calling databases CP or AP</span></a></li></ol></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -464,56 +535,6 @@
   
 
   
-      
-<script type="text/x-mathjax-config">
-    MathJax.Ajax.config.path['mhchem'] = '//cdn.jsdelivr.net/npm/mathjax-mhchem@3';
-
-  MathJax.Hub.Config({
-    tex2jax: {
-      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
-      processEscapes: true,
-      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
-    },
-    TeX: {
-        extensions: ['[mhchem]/mhchem.js'],
-      equationNumbers: {
-        autoNumber: 'AMS'
-      }
-    }
-  });
-
-  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
-    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
-      if (data.display) {
-        var next = data.script.nextSibling;
-        while (next && next.nodeName.toLowerCase() === '#text') {
-          next = next.nextSibling;
-        }
-        if (next && next.nodeName.toLowerCase() === 'br') {
-          next.parentNode.removeChild(next);
-        }
-      }
-    });
-  });
-
-  MathJax.Hub.Queue(function() {
-    var all = MathJax.Hub.getAllJax(), i;
-    for (i = 0; i < all.length; i += 1) {
-      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
-      if (element.nodeName.toLowerCase() == 'li') {
-        element = element.parentNode;
-      }
-      element.classList.add('has-jax');
-    }
-  });
-</script>
-<script>
-  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
-    MathJax.Hub.Typeset();
-  }, window.MathJax);
-</script>
-
-    
 
   
 
