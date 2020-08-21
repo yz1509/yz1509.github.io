@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.7.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="mask-icon" href="/images/safari-pinned-tab.svg" color="#222">
+  <meta name="msapplication-config" content="/images/browserconfig.xml">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '7.4.2',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: 'search.xml',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="Redis Modules 相关笔记。">
+<meta name="keywords" content="Redis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis Modules notes">
+<meta property="og:url" content="https://yz1509.github.io/posts/a216612a/index.html">
+<meta property="og:site_name" content="HTT">
+<meta property="og:description" content="Redis Modules 相关笔记。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2020-08-21T11:41:45.561Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Redis Modules notes">
+<meta name="twitter:description" content="Redis Modules 相关笔记。">
+
+<link rel="canonical" href="https://yz1509.github.io/posts/a216612a/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>Redis Modules notes | HTT</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">HTT</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">ふわふわ時間</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-fw fa-user"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://yz1509.github.io/posts/a216612a/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/k-on.jpg">
+      <meta itemprop="name" content="KyoAni">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HTT">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Redis Modules notes
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-08-19 16:52:01" itemprop="dateCreated datePublished" datetime="2020-08-19T16:52:01+08:00">2020-08-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-08-21 19:41:45" itemprop="dateModified" datetime="2020-08-21T19:41:45+08:00">2020-08-21</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数据库/" itemprop="url" rel="index">
+                    <span itemprop="name">数据库</span>
+                  </a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>Redis Modules 相关笔记。</p>
+<a id="more"></a>
+<hr>
+<h2 id="introduction-to-redis-modules">Introduction to Redis modules</h2>
+<p><a href="https://redis.io/topics/modules-intro" target="_blank" rel="noopener">原文地址</a></p>
+<h3 id="加载卸载和查看-modules">加载、卸载和查看 Modules</h3>
+<p><strong>加载</strong></p>
+<p>Modules 有两种加载方式：</p>
+<ul>
+<li>在 <code>redis.conf</code> 中设置：<code>loadmodule /path/to/mymodule.so</code></li>
+<li>通过 redis command 实时加载：<code>MODULE LOAD /path/to/mymodule.so</code></li>
+</ul>
+<p>也可在加载模块时传递参数，如: <code>loadmodule(MODULE LOAD) /path/to/mymodule.so 765 PRO FIGHT</code></p>
+<p><strong>卸载</strong></p>
+<p>卸载 Modules：<code>MODULE UNLOAD mymodule</code>，如果需要在卸载模块之前进行内存清理之类的操作，可以通过实现 <code>RedisModule_OnUnload</code> 函数来完成，此函数接口为：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">RedisModule_OnUnload</span><span class="params">(RedisModuleCtx *ctx)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>也可以通过在 <code>RedisModule_OnUnload</code> 中直接返回 <code>REDISMODULE_ERR</code> 禁止模块被卸载。</p>
+<p><strong>查看</strong></p>
+<p>列出已加载的 Modules: <code>MODULE LIST</code></p>
+<h3 id="模块示例">模块示例</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"redismodule.h"</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">/* The function that implements the command must have the following prototype:</span></span><br><span class="line"><span class="comment"> * int mycommand(RedisModuleCtx *ctx, RedisModuleString **argv, int argc) */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">HelloworldRand_RedisCommand</span><span class="params">(RedisModuleCtx *ctx, RedisModuleString **argv, <span class="keyword">int</span> argc)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    RedisModule_ReplyWithLongLong(ctx, rand());</span><br><span class="line">    <span class="keyword">return</span> REDISMODULE_OK;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">RedisModule_OnLoad</span><span class="params">(RedisModuleCtx *ctx, RedisModuleString **argv, <span class="keyword">int</span> argc)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">/* It should be the first function called by the module OnLoad function.</span></span><br><span class="line"><span class="comment">     * Init function prototype:</span></span><br><span class="line"><span class="comment">     * @return int</span></span><br><span class="line"><span class="comment">     * @param1: RedisModuleCtx *ctx</span></span><br><span class="line"><span class="comment">     * @param2: const char *modeulename</span></span><br><span class="line"><span class="comment">     * @param3: int module_version (reported by MODULE LIST)</span></span><br><span class="line"><span class="comment">     * @param4: int api_version</span></span><br><span class="line"><span class="comment">     * */</span></span><br><span class="line">    <span class="keyword">if</span> (RedisModule_Init(ctx, <span class="string">"helloworld"</span>, <span class="number">1</span>, REDISMODULE_APIVER_1) == REDISMODULE_ERR)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> REDISMODULE_ERR;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* It used in order to register commands into the Redis core.</span></span><br><span class="line"><span class="comment">     * CreateCommand function prototype:</span></span><br><span class="line"><span class="comment">     * @return int</span></span><br><span class="line"><span class="comment">     * @param1: RedisModuleCtx *ctx</span></span><br><span class="line"><span class="comment">     * @param2: const char *name</span></span><br><span class="line"><span class="comment">     * @param3: RedisModuleCmdFunc cmdfunc</span></span><br><span class="line"><span class="comment">     * @param4: const char *strflags</span></span><br><span class="line"><span class="comment">     * @param5: int firstkey</span></span><br><span class="line"><span class="comment">     * @param6: int lastkey</span></span><br><span class="line"><span class="comment">     * @param7: int keystep</span></span><br><span class="line"><span class="comment">     * */</span></span><br><span class="line">    <span class="keyword">if</span> (RedisModule_CreateCommand(ctx, <span class="string">"helloworld.rand"</span>, HelloworldRand_RedisCommand,</span><br><span class="line">                                  <span class="string">"fast random"</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>) == REDISMODULE_ERR)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">return</span> REDISMODULE_ERR;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> REDISMODULE_OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="redismodulestring">RedisModuleString</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// accesss a string</span></span><br><span class="line"><span class="function"><span class="keyword">const</span> <span class="keyword">char</span> *<span class="title">RedisModule_StringPtrLen</span><span class="params">(RedisModuleString *<span class="built_in">string</span>, <span class="keyword">size_t</span> *len)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// create new string</span></span><br><span class="line"><span class="function">RedisModuleString *<span class="title">RedisModule_CreateString</span><span class="params">(RedisModuleCtx *ctx, <span class="keyword">const</span> <span class="keyword">char</span> *ptr, <span class="keyword">size_t</span> len)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// create string from number</span></span><br><span class="line">RedisModuleString *mystr = RedisModule_CreateStringFromLongLong(ctx, <span class="number">10</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// parse string as number</span></span><br><span class="line"><span class="keyword">long</span> <span class="keyword">long</span> myval;</span><br><span class="line"><span class="keyword">if</span> (RedisModule_StringToLongLong(ctx, argv[<span class="number">1</span>], &amp;myval) == REDISMODULE_OK)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">/*Do something with myval*/</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// free a string which created by RedisModule_CreateString</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">RedisModule_FreeString</span><span class="params">(RedisModuleString *str)</span></span>;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果不想手动 free 的话，可以开启自动内存管理</li>
+<li>通过 <code>argv</code> 数组传递的参数不要 free</li>
+</ul>
+<h3 id="返回响应">返回响应</h3>
+<p>在模块中实现的命令可以通过 <code>RedisModule_ReplyWith&lt;something&gt;</code> 接口返回响应至客户端。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Return an error */</span></span><br><span class="line">RedisModule_ReplyWithError(RedisModuleCtx *ctx, <span class="keyword">const</span> <span class="keyword">char</span> *err);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Relpy with a long long */</span></span><br><span class="line">RedisModule_ReplyWithLongLong(RedisModuleCtx *ctx, <span class="keyword">long</span> <span class="keyword">long</span> res);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Reply with a simple string, that can't contain binary values or newlines */</span></span><br><span class="line">RedisModule_ReplyWithSimpleString(RedisModuleCtx *ctx, <span class="keyword">const</span> <span class="keyword">char</span> *res);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Reply with bulk strings that are binary safe */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">RedisModule_ReplyWithStringBuffer</span><span class="params">(RedisModuleCtx *ctx, <span class="keyword">const</span> <span class="keyword">char</span> *buf, <span class="keyword">size_t</span> len)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">RedisModule_ReplyWithString</span><span class="params">(RedisModuleCtx *ctx, RedisModuleString *str)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Reply with an array, you just need to use a function to</span></span><br><span class="line"><span class="comment"> * emit the array length, followed by as many calls to the</span></span><br><span class="line"><span class="comment"> * above functions as the number of elements of array are.</span></span><br><span class="line"><span class="comment"> * */</span></span><br><span class="line">RedisModule_ReplyWithArray(ctx, <span class="number">2</span>);</span><br><span class="line">RedisModule_ReplyWithStringBuffer(ctx, <span class="string">"age"</span>, <span class="number">3</span>);</span><br><span class="line">RedisModule_ReplyWithLongLong(ctx, <span class="number">22</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Returning arrays with dynamic length,</span></span><br><span class="line"><span class="comment"> * It is possible to have multiple nested arrays with postponed reply.</span></span><br><span class="line"><span class="comment"> * Each call to ReplySetArrayLength() will set the length of the latest</span></span><br><span class="line"><span class="comment"> * corresponding call to to ReplyWithArray()</span></span><br><span class="line"><span class="comment"> * */</span></span><br><span class="line">RedisModule_ReplyWithArray(ctx, REDISMODULE_POSTPONED_ARRAY_LEN);</span><br><span class="line">... generate <span class="number">100</span> elements ...</span><br><span class="line">RedisModule_ReplyWithArray(ctx, REDISMODULE_POSTPONED_ARRAY_LEN);</span><br><span class="line">... generate <span class="number">10</span> elements ...</span><br><span class="line">RedisModule_ReplySetArrayLength(ctx, <span class="number">10</span>);</span><br><span class="line">RedisModuel_ReplySetArrayLength(ctx, <span class="number">100</span>);</span><br></pre></td></tr></table></figure>
+<h3 id="请求有效性检测">请求有效性检测</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Check the number of arguments */</span></span><br><span class="line"><span class="keyword">if</span> (argc != <span class="number">2</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">return</span> RedisModule_WrongArity(ctx);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Check the type of key */</span></span><br><span class="line">RedisModuleKey *key = RedisModule_OpenKey(ctx, argv[<span class="number">1</span>],</span><br><span class="line">    REDISMODULE_READ|REDISMODULE_WRITE);</span><br><span class="line"><span class="keyword">int</span> key_type = RedisModule_KeyType(key);</span><br><span class="line"><span class="keyword">if</span> (key_type != REDISMODULE_KEYTYPE_STRING &amp;&amp; key_type != REDISMODULE_KEYTYPE_EMPTY)</span><br><span class="line">&#123;</span><br><span class="line">    RedisModule_CloseKey(key);</span><br><span class="line">    <span class="keyword">return</span> RedisModule_ReplyWithError(ctx, REDISMODULE_ERRORMSG_WRONGTYPE);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="low-level-access-to-keys">Low level access to keys</h3>
+<p>访问 Redis 数据库有两种 APIs:</p>
+<ul>
+<li>low level APIs: 可直接操作 Redis 数据结构，速度快</li>
+<li>high level APIs：使用 <code>RedisModule_Call()</code> 函数 call Redis commands</li>
+</ul>
+<p>在请求有效性检测中，我们已经看过了 low level 操作的简单示例，这些 APIs 为了保证运行速度，并未做很多 run-time checks，因此需要遵守下述规则：</p>
+<ul>
+<li>同时 Open 相同的 key，并且其中有写操作的话，会产生未定义行为或 crashes</li>
+<li>当一个 key 被 Open 时，应该只使用 low level APIs 访问，不可同时和 <code>RedisModule_Call()</code> 混用</li>
+</ul>
+<p><strong>Open a key for access</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">RedisModuleKey *key;</span><br><span class="line"><span class="comment">/* Prototype: void* RedisModule_OpenKey(RedisModuleCtx *ctx,</span></span><br><span class="line"><span class="comment"> *                                      RedisModuleString *keyname, int mode);</span></span><br><span class="line"><span class="comment"> * */</span></span><br><span class="line">RedisModule_OpenKey(ctx, argv[<span class="number">1</span>], REDISMODULE_READ;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>mode</code> 可以是 <code>REDISMODULE_READ</code> 或 <code>REDISMODULE_WRITE</code></li>
+<li>打开一个不存在的 key 时
+<ul>
+<li><p><code>REDISMODULE_WRITE</code>：创造新 key，例如：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">RedisModuleKey *key;</span><br><span class="line">key = RedisModule_OpenKey(ctx, argv[<span class="number">1</span>], REDISMODULE_WRITE);</span><br><span class="line"><span class="keyword">if</span> (RedisModule_KeyType(key) == REDISMODULE_KEYTYPE_EMPTY)</span><br><span class="line">&#123;</span><br><span class="line">    RedisModule_StringSet(key, argv[<span class="number">2</span>]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p><code>REDISMODULE_READ</code>: 返回 <code>NULL</code></p></li>
+</ul></li>
+</ul>
+<p><strong>Getting the key type</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> key_type = RedisModule_KeyType(key);</span><br></pre></td></tr></table></figure>
+<p>返回值种类：</p>
+<ul>
+<li><code>REDISMODULE_KEYTYPE_EMPTY</code></li>
+<li><code>REDISMODULE_KEYTYPE_STRING</code></li>
+<li><code>REDISMODULE_KEYTYPE_LIST</code></li>
+<li><code>REDISMODULE_KEYTYPE_HASH</code></li>
+<li><code>REDISMODULE_KEYTYPE_SET</code></li>
+<li><code>REDISMODULE_KEYTYPE_ZSET</code></li>
+</ul>
+<p><strong>Managing key expires(TTLs)</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Query the current expire of an open key</span></span><br><span class="line"><span class="comment"> * Return the time to live of the key in milliseconds, or REDISMODULE_NO_EXPIRE</span></span><br><span class="line"><span class="comment"> * as a special value to signal the key has no associated or does not exist at all</span></span><br><span class="line"><span class="comment"> * */</span></span><br><span class="line"><span class="keyword">mstime_t</span> RedisModule_GetExpire(RedisModuleKey *key);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Change the expire of a key</span></span><br><span class="line"><span class="comment"> * When called on a non existing key, REDISMODULE_ERR is returned.</span></span><br><span class="line"><span class="comment"> * */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">RedisModule_SetExpire</span><span class="params">(RedisModuleKey *key, <span class="keyword">mstime_t</span> expire)</span></span>;</span><br></pre></td></tr></table></figure>
+<p><strong>Deleting keys</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* return REDISMODULE_ERR if the key is not open for writing */</span></span><br><span class="line">RedisModule_DeleteKey(key);</span><br></pre></td></tr></table></figure>
+<p><strong>Close a key</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RedisModule_CloseKey(key);</span><br></pre></td></tr></table></figure>
+<p>当自动内存管理功能开启时，也可以不用 close keys。</p>
+<p><strong>Obtaining the length of values</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// return the length of values associated to an open key</span></span><br><span class="line"><span class="keyword">size_t</span> len = RedisModule_ValueLength(key);</span><br></pre></td></tr></table></figure>
+<ul>
+<li><code>string</code>: 返回的是字符串长度</li>
+<li><code>list</code>, <code>set</code>, <code>zset</code> 和 <code>hash</code>：返回的是元素个数</li>
+<li>key 不存在时返回 0</li>
+</ul>
+<p><strong>String type API</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Setting a new string value, this function works exactly like SET cmd */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">RedisModule_StringSet</span><span class="params">(RedisModuleKey *key, RedisModuleString *str)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>通过 DMA(direct memory access) 访问字符串类型效率更高，DMA 方位期间该 key 不可有其他操作，否则 DMA 指针非法。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">size_t</span> len, j;</span><br><span class="line"><span class="keyword">char</span> *myptr = RedisModule_StringDMA(key, &amp;len, REDISMODULE_WRITE);</span><br><span class="line"><span class="keyword">for</span> (j = <span class="number">0</span>; j &lt; len; j++)</span><br><span class="line">&#123;</span><br><span class="line">    myptr[j] = <span class="string">'A'</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可通过以下接口改变字符串长度：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">RedisModule_StringTruncate(mykey, <span class="number">1024</span>);</span><br></pre></td></tr></table></figure>
+<ul>
+<li>如果该 key 操作之前不存在，则会创造新 key</li>
+<li>字符串长度扩展时，会填充 zero bytes</li>
+</ul>
+<p><strong>List type API</strong></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* push */</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">RedisModule_ListPush</span><span class="params">(RedisModuleKey *key, <span class="keyword">int</span> where, RedisModuleString *ele)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* pop</span></span><br><span class="line"><span class="comment"> * elements returned by pop should be released with RedisModule_FreeString()</span></span><br><span class="line"><span class="comment"> * */</span></span><br><span class="line"><span class="function">RedisModuleString *<span class="title">RedisModule_ListPop</span><span class="params">(RedisModuleKey *key, <span class="keyword">int</span> where)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* tail and head */</span></span><br><span class="line">REDISMODULE_LIST_HEAD</span><br><span class="line">REDISMODULE_LIST_TAIL</span><br></pre></td></tr></table></figure>
+<p><strong>Set type API</strong></p>
+<p>TODO</p>
+<p><strong>Sorted set type API</strong></p>
+<p>TODO</p>
+<p><strong>Hash type API</strong></p>
+<p>TODO</p>
+<p><strong>Iterating aggregated values</strong></p>
+<p>TODO</p>
+<h3 id="high-level-access-to-keys----calling-redis-commands">High level access to keys -- Calling Redis commands</h3>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">RedisModuleCallReply *reply;</span><br><span class="line"><span class="comment">/* @return: RedisModuleCallReply on sucess, NUll on error</span></span><br><span class="line"><span class="comment"> * @param1: context</span></span><br><span class="line"><span class="comment"> * @param2: a null terminated C string with the command name</span></span><br><span class="line"><span class="comment"> * @param3: the format specifier where each character corresponds to</span></span><br><span class="line"><span class="comment"> *          the type of the arguments that will follow  */</span></span><br><span class="line">reply = RedisModule_Call(ctx, <span class="string">"INCRBY"</span>, <span class="string">"sc"</span>, argv[<span class="number">1</span>], <span class="string">"10"</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Accesss a RedisModuleCallReply object */</span></span><br><span class="line"><span class="keyword">if</span> (RedisModule_CallReplyType(reply) == REDISMODULE_REPLY_INTEGER)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">long</span> <span class="keyword">long</span> myval = RedisModule_CallReplyInteger(reply);</span><br><span class="line">    <span class="comment">/* Do something with myval */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>格式说明符</strong></p>
+<ul>
+<li><code>c</code> -- Null terminated C string pointer</li>
+<li><code>b</code> -- C buffer, two arguments needed: C string pointer and <code>size_t</code> length</li>
+<li><code>s</code> -- RedisModuleString as received in <code>argv</code> or by other Redis module APIs returning a RedisModuleString object</li>
+<li><code>l</code> -- Long long integer</li>
+<li><code>v</code> -- Array of RedisModuleString objects</li>
+<li><code>!</code> -- This modifier just tells the function to replicate the command to replicas and AOF. it is ignored from the point of view of arguments parsing</li>
+<li><code>A</code> -- This modifier, when <code>!</code> is given, tells to suppress AOF propagation: the command will propagated only to replicas</li>
+<li><code>R</code> -- This modifier, when <code>!</code> is given, tells to suppress replicas propagation: the command will be propagated only to the AOF if enabled</li>
+</ul>
+<p><strong>RedisModuleCallReply</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Reply type</th>
+<th style="text-align: left;">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">REDISMODULE_REPLY_STRING</td>
+<td style="text-align: left;">Bulk string or status replies</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">REDISMODULE_REPLY_ERROR</td>
+<td style="text-align: left;">Errors</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">REDISMODULE_REPLY_INTEGER</td>
+<td style="text-align: left;">Signed 64-bit integers</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">REDISMODULE_REPLY_ARRAY</td>
+<td style="text-align: left;">Array of replies</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">REDISMODULE_REPLY_NULL</td>
+<td style="text-align: left;">NULL reply</td>
+</tr>
+</tbody>
+</table>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* Strings, errors and arrays hava an associated length.</span></span><br><span class="line"><span class="comment"> * To obtain the reply length: */</span></span><br><span class="line"><span class="keyword">size_t</span> reply_len = RedisModule_CallReplyLength(reply);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Accesss strings or errors */</span></span><br><span class="line"><span class="keyword">size_t</span> len;</span><br><span class="line"><span class="keyword">char</span> *ptr = RedisModule_CallReplyStringPtr(reply, &amp;len);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Accesss sub elements of array */</span></span><br><span class="line">RedisModuleCallReply *sub_reply;</span><br><span class="line">sub_reply = RedisModule_CallReplyArrayElement(reply, idx);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Obtain the value of an integer reply */</span></span><br><span class="line"><span class="keyword">long</span> <span class="keyword">long</span> reply_integer_val = RedisModule_CallReplyInteger(reply);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* RedisModuleCallReply are not the same as RedisModuleString type</span></span><br><span class="line"><span class="comment"> * create a new string object from a call reply of type string, error or integer</span></span><br><span class="line"><span class="comment"> * */</span></span><br><span class="line">RedisModuleString *mystr = RedisModule_CreateStringFromCallReply(reply);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Free a reply object</span></span><br><span class="line"><span class="comment"> * For arrays, you need to free only the top level reply, not the nested replies.</span></span><br><span class="line"><span class="comment"> * */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">RedisModule_FreeCallReply</span><span class="params">(RedisModuleCallReply *reply)</span></span>;</span><br></pre></td></tr></table></figure>
+<h3 id="replicating-commands">Replicating commands</h3>
+<p>当使用 high level APIs 访问 key，通过加 <code>!</code> 格式说明符，命令自动被复制，如：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">reply = RedisModule_Call(ctx, <span class="string">"INCRBY"</span>, <span class="string">"!sc"</span>, argv[<span class="number">1</span>], <span class="string">"10"</span>);</span><br></pre></td></tr></table></figure>
+<p>当使用 low level APIs 时，可通过以下俩个接口复制命令：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* When you use the follow API, you should not use any other replication</span></span><br><span class="line"><span class="comment"> * function since they are not guaranteed to mix well. */</span></span><br><span class="line">RedisModule_ReplicateVerbatim(ctx);</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Exactly tell Redis what commands to replicate as the effect of the command</span></span><br><span class="line"><span class="comment"> * execution. It's possible to call RedisModule_Replicate multiple times,</span></span><br><span class="line"><span class="comment"> * and each will emit a command. All the sequence emitted is wrapped between</span></span><br><span class="line"><span class="comment"> * a MULTI/EXEC transaction, so that the AOF and replication effects are</span></span><br><span class="line"><span class="comment"> * the same as executing a single command.</span></span><br><span class="line"><span class="comment"> * */</span></span><br><span class="line">RedisModule_Replicate(ctx, <span class="string">"INCRBY"</span>, <span class="string">"cl"</span>, <span class="string">"foo"</span>, my_increment);</span><br></pre></td></tr></table></figure>
+<h3 id="automatic-memory-management">Automatic memory management</h3>
+<p>启用自动内存管理，只需在命令实现函数的开头加上 <code>RedisModule_AutoMemory(ctx);</code> 即可，虽然会有些性能损耗，但是你可以不再需要手动 <code>close open keys</code>, <code>free replies</code> 和 <code>free RedisModuleString objects</code>。</p>
+<h3 id="allocating-memory-into-modules">Allocating memory into modules</h3>
+<p>虽然在模块中可以调用 <code>malloc()</code> 和 <code>free()</code> 函数，但是通过 <code>malloc()</code> 分配的内存并不会被计算到 <code>used_memory</code> 信息中去，也不会收到 <code>maxmemory</code> 限制，所以应首先考虑使用 Redis Modules 提供的 APIs。而且，使用 APIs 分配内存实现的自定义数据结构也可以被 RDB 加载函数正确地反序列化。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">RedisModule_Alloc</span><span class="params">(<span class="keyword">size_t</span> bytes)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span>* <span class="title">RedisModule_Realloc</span><span class="params">(<span class="keyword">void</span> *ptr, <span class="keyword">size_t</span> bytes)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">RedisModule_Free</span><span class="params">(<span class="keyword">void</span> *ptr)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">RedisModule_Calloc</span><span class="params">(<span class="keyword">size_t</span> nmemb, <span class="keyword">size_t</span> size)</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">char</span> *<span class="title">RedisModule_Strdup</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *str)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/* Pool allocator</span></span><br><span class="line"><span class="comment"> * the memory allocated is automatically released when the command returns. */</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> *<span class="title">RedisModule_PoolAlloc</span><span class="params">(RedisModuleCtx *ctx, <span class="keyword">size_t</span> bytes)</span></span>;</span><br></pre></td></tr></table></figure>
+<h2 id="implementing-native-data-types">Implementing native data types</h2>
+<p><a href="https://redis.io/topics/modules-native-types" target="_blank" rel="noopener">原文地址</a></p>
+<h3 id="registering-a-new-data-types">Registering a new data types</h3>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Redis/" rel="tag"># Redis</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+                <a href="/posts/ad92b110/" rel="next" title="分布式系统相关笔记">
+                  <i class="fa fa-chevron-left"></i> 分布式系统相关笔记
+                </a>
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+            </div>
+          </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#introduction-to-redis-modules"><span class="nav-number">1.</span> <span class="nav-text">Introduction to Redis modules</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#加载卸载和查看-modules"><span class="nav-number">1.1.</span> <span class="nav-text">加载、卸载和查看 Modules</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模块示例"><span class="nav-number">1.2.</span> <span class="nav-text">模块示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#redismodulestring"><span class="nav-number">1.3.</span> <span class="nav-text">RedisModuleString</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#返回响应"><span class="nav-number">1.4.</span> <span class="nav-text">返回响应</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#请求有效性检测"><span class="nav-number">1.5.</span> <span class="nav-text">请求有效性检测</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#low-level-access-to-keys"><span class="nav-number">1.6.</span> <span class="nav-text">Low level access to keys</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#high-level-access-to-keys----calling-redis-commands"><span class="nav-number">1.7.</span> <span class="nav-text">High level access to keys -- Calling Redis commands</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#replicating-commands"><span class="nav-number">1.8.</span> <span class="nav-text">Replicating commands</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#automatic-memory-management"><span class="nav-number">1.9.</span> <span class="nav-text">Automatic memory management</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#allocating-memory-into-modules"><span class="nav-number">1.10.</span> <span class="nav-text">Allocating memory into modules</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#implementing-native-data-types"><span class="nav-number">2.</span> <span class="nav-text">Implementing native data types</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#registering-a-new-data-types"><span class="nav-number">2.1.</span> <span class="nav-text">Registering a new data types</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <img class="site-author-image" itemprop="image" alt="KyoAni"
+    src="/images/k-on.jpg">
+  <p class="site-author-name" itemprop="name">KyoAni</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">57</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/yz1509" title="GitHub &rarr; https://github.com/yz1509" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:pro-765@qq.com" title="E-Mail &rarr; mailto:pro-765@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">KyoAni</span>
+</div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+<script src="/js/schemes/muse.js"></script>
+<script src="/js/next-boot.js"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+<script type="text/x-mathjax-config">
+    MathJax.Ajax.config.path['mhchem'] = '//cdn.jsdelivr.net/npm/mathjax-mhchem@3';
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$', '$'], ['\\(', '\\)'] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+        extensions: ['[mhchem]/mhchem.js'],
+      equationNumbers: {
+        autoNumber: 'AMS'
+      }
+    }
+  });
+
+  MathJax.Hub.Register.StartupHook('TeX Jax Ready', function() {
+    MathJax.InputJax.TeX.prefilterHooks.Add(function(data) {
+      if (data.display) {
+        var next = data.script.nextSibling;
+        while (next && next.nodeName.toLowerCase() === '#text') {
+          next = next.nextSibling;
+        }
+        if (next && next.nodeName.toLowerCase() === 'br') {
+          next.parentNode.removeChild(next);
+        }
+      }
+    });
+  });
+
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for (i = 0; i < all.length; i += 1) {
+      element = document.getElementById(all[i].inputID + '-Frame').parentNode;
+      if (element.nodeName.toLowerCase() == 'li') {
+        element = element.parentNode;
+      }
+      element.classList.add('has-jax');
+    }
+  });
+</script>
+<script>
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/mathjax@2/MathJax.js?config=TeX-AMS-MML_HTMLorMML', () => {
+    MathJax.Hub.Typeset();
+  }, window.MathJax);
+</script>
+
+    
+
+  
+
+</body>
+</html>
