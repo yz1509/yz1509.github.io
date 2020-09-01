@@ -59,7 +59,7 @@
 <meta property="og:site_name" content="HTT">
 <meta property="og:description" content="NVM 相关笔记。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-08-27T03:04:25.128Z">
+<meta property="og:updated_time" content="2020-09-01T12:54:54.507Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="NVM-notes">
 <meta name="twitter:description" content="NVM 相关笔记。">
@@ -223,7 +223,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-08-27 11:04:25" itemprop="dateModified" datetime="2020-08-27T11:04:25+08:00">2020-08-27</time>
+                <time title="修改时间：2020-09-01 20:54:54" itemprop="dateModified" datetime="2020-09-01T20:54:54+08:00">2020-09-01</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -258,6 +258,26 @@
         <p>NVM 相关笔记。</p>
 <a id="more"></a>
 <hr>
+<h2 id="intel-optane-dc-persistent-memory-overview">Intel Optane DC Persistent Memory Overview</h2>
+<p><a href="https://software.intel.com/content/www/us/en/develop/videos/overview-of-the-new-intel-optane-dc-memory.html" target="_blank" rel="noopener">原文地址</a></p>
+<p>Intel Optane DC Persistent Memory has two main properties:</p>
+<ul>
+<li>It is <strong>persistent</strong>. Data is maintained even when the system power is off.</li>
+<li>This memory is <strong>byte-addressable</strong>. Like in regular DRAM, programs can access data structures in place at cache line granularity, avoiding the need to access data in large blocks as it currently happens in traditional I/O.</li>
+</ul>
+<p>Persistent memory available modes:</p>
+<ul>
+<li><p>Memory Mode</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">stateDiagram</span><br><span class="line">    CPU --&gt; DRAM</span><br><span class="line">    DRAM --&gt; CPU</span><br><span class="line"></span><br><span class="line">    DRAM --&gt; PMEM</span><br><span class="line">    PMEM --&gt; DRAM</span><br></pre></td></tr></table></figure>
+<ul>
+<li>DRAM is used as a cache, and cannot be explicitly managed by operating system</li>
+<li>Use when applications need more memory, but expanding the system's memory with only DRAM becomes very expensive or impossible</li>
+<li>Advantage for applications is that no code modifications are necessary</li>
+</ul></li>
+<li><p>Application Direct (App-Direct) Mode</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"> </span><br></pre></td></tr></table></figure></li>
+<li><p>Mixed Mode (combination of the two)</p></li>
+</ul>
 
     </div>
 
@@ -323,6 +343,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#intel-optane-dc-persistent-memory-overview"><span class="nav-number">1.</span> <span class="nav-text">Intel Optane DC Persistent Memory Overview</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
