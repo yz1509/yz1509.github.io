@@ -268,14 +268,19 @@
 <p>Persistent memory available modes:</p>
 <ul>
 <li><p>Memory Mode</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">stateDiagram</span><br><span class="line">    CPU --&gt; DRAM</span><br><span class="line">    DRAM --&gt; CPU</span><br><span class="line"></span><br><span class="line">    DRAM --&gt; PMEM</span><br><span class="line">    PMEM --&gt; DRAM</span><br></pre></td></tr></table></figure>
+<pre class="mermaid">  stateDiagram
+    CPU --> DRAM
+    DRAM --> CPU
+
+    DRAM --> PMEM
+    PMEM --> DRAM</pre>
 <ul>
 <li>DRAM is used as a cache, and cannot be explicitly managed by operating system</li>
 <li>Use when applications need more memory, but expanding the system's memory with only DRAM becomes very expensive or impossible</li>
 <li>Advantage for applications is that no code modifications are necessary</li>
 </ul></li>
 <li><p>Application Direct (App-Direct) Mode</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"> </span><br></pre></td></tr></table></figure></li>
+<pre class="mermaid"> </pre></li>
 <li><p>Mixed Mode (combination of the two)</p></li>
 </ul>
 
@@ -410,6 +415,8 @@
     <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">KyoAni</span>
+
+  
 </div>
 
         
