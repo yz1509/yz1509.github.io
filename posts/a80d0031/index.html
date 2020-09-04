@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 3.7.0">
+<meta name="generator" content="Hexo 5.1.1">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
@@ -52,19 +52,19 @@
 </script>
 
   <meta name="description" content="动态规划算法学习笔记。">
-<meta name="keywords" content="动态规划">
 <meta property="og:type" content="article">
 <meta property="og:title" content="动态规划">
 <meta property="og:url" content="https://yz1509.github.io/posts/a80d0031/index.html">
 <meta property="og:site_name" content="HTT">
 <meta property="og:description" content="动态规划算法学习笔记。">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://yz1509.github.io/posts/a80d0031/DP0701.png">
 <meta property="og:image" content="https://yz1509.github.io/posts/a80d0031/DP0702.png">
-<meta property="og:updated_time" content="2020-04-23T11:42:07.741Z">
+<meta property="article:published_time" content="2018-07-18T13:28:58.000Z">
+<meta property="article:modified_time" content="2020-04-23T11:42:07.741Z">
+<meta property="article:author" content="KyoAni">
+<meta property="article:tag" content="动态规划">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="动态规划">
-<meta name="twitter:description" content="动态规划算法学习笔记。">
 <meta name="twitter:image" content="https://yz1509.github.io/posts/a80d0031/DP0701.png">
 
 <link rel="canonical" href="https://yz1509.github.io/posts/a80d0031/">
@@ -262,14 +262,14 @@
 <a id="more"></a>
 <hr>
 <h2 id="定义">定义</h2>
-<p><a href="https://en.wikipedia.org/wiki/Dynamic_programming" target="_blank" rel="noopener">Dynamic Programming</a> (also known as dynamic optimization) is a method for solving a complex problem by breaking it down into a collection of simpler subproblems.</p>
+<p><a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Dynamic_programming">Dynamic Programming</a> (also known as dynamic optimization) is a method for solving a complex problem by breaking it down into a collection of simpler subproblems.</p>
 <blockquote>
 <p>本质:是对问题状态的定义和状态转移方程的定义。</p>
 </blockquote>
 <h2 id="解题思路">解题思路</h2>
 <h3 id="将原问题分解为子问题">将原问题分解为子问题</h3>
 <ul>
-<li>把原问题分解为若干个子问题，子问题和原问题形式相同或类似，只不过规模变小了。子问题都解决，原问题即解决。比如，<a href="http://bailian.openjudge.cn/practice/1163" target="_blank" rel="noopener">POJ 1163:数字三角形</a>。</li>
+<li>把原问题分解为若干个子问题，子问题和原问题形式相同或类似，只不过规模变小了。子问题都解决，原问题即解决。比如，<a target="_blank" rel="noopener" href="http://bailian.openjudge.cn/practice/1163">POJ 1163:数字三角形</a>。</li>
 <li>子问题的解一旦求出就会被保存，所以每个子问题只需求解一次。</li>
 </ul>
 <h3 id="确定状态">确定状态</h3>
@@ -299,7 +299,7 @@
 <h2 id="技巧">技巧</h2>
 <ul>
 <li>递归到动态规划的一般转化方法：递归函数有 <span class="math inline">\(n\)</span> 个参数，就定义一个 <span class="math inline">\(n\)</span> 维的数组，数组的下标是递归函数参数的取值范围，数组元素的值是递归函数的返回值，这样就可以从边界值开始，逐步填充数组，相当于计算递归函数值的逆过程。</li>
-<li><code>缓存</code>，<code>重叠子问题</code>，<code>记忆化</code>，这三个名词，都是在阐述递推式求解的技巧。以 <a href="https://en.wikipedia.org/wiki/Fibonacci_number" target="_blank" rel="noopener">Fibonacci 数列</a> 为例，计算第 100 项的时候，需要计算第 99 项和 98 项；在计算第 101 项的时候，需要第 100 项和第 99 项，这时候你还需要重新计算第 99 项吗？不需要，你只需要在第一次计算的时候把它记下来就可以了。上述的需要再次计算的第 99 项，就叫<code>重叠子问题</code>。如果没有计算过，就按照递推式计算，如果计算过，直接使用，就像<code>缓存</code>一样，这种方法，叫做<code>记忆化</code>，这是递推式求解的技巧。这种技巧，其实就是<strong>花费空间来节省时间</strong>。</li>
+<li><code>缓存</code>，<code>重叠子问题</code>，<code>记忆化</code>，这三个名词，都是在阐述递推式求解的技巧。以 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Fibonacci_number">Fibonacci 数列</a> 为例，计算第 100 项的时候，需要计算第 99 项和 98 项；在计算第 101 项的时候，需要第 100 项和第 99 项，这时候你还需要重新计算第 99 项吗？不需要，你只需要在第一次计算的时候把它记下来就可以了。上述的需要再次计算的第 99 项，就叫<code>重叠子问题</code>。如果没有计算过，就按照递推式计算，如果计算过，直接使用，就像<code>缓存</code>一样，这种方法，叫做<code>记忆化</code>，这是递推式求解的技巧。这种技巧，其实就是<strong>花费空间来节省时间</strong>。</li>
 </ul>
 <h2 id="动态规划的三种形式">动态规划的三种形式</h2>
 <ul>
@@ -313,14 +313,14 @@
 </ul>
 <h2 id="练习">练习</h2>
 <ul>
-<li><a href="http://bailian.openjudge.cn/practice/1163" target="_blank" rel="noopener">POJ 1163: 数字三角形</a></li>
-<li><a href="http://bailian.openjudge.cn/practice/2757" target="_blank" rel="noopener">POJ 2757: 最长上升子序列</a></li>
-<li><a href="http://bailian.openjudge.cn/practice/1458" target="_blank" rel="noopener">POJ 1458: 最长公共子序列</a></li>
-<li><a href="http://bailian.openjudge.cn/practice/2755" target="_blank" rel="noopener">POJ 2755: 神奇的口袋</a></li>
-<li><a href="http://poj.org/problem?id=3624" target="_blank" rel="noopener">POJ 3624: 0-1背包问题</a></li>
-<li><a href="http://bailian.openjudge.cn/practice/1088" target="_blank" rel="noopener">POJ 1088: 滑雪</a></li>
-<li><a href="http://bailian.openjudge.cn/practice/1390" target="_blank" rel="noopener">POJ 1390: 方盒游戏</a></li>
-<li><a href="http://bailian.openjudge.cn/practice/2373" target="_blank" rel="noopener">POJ 2373: 灌溉草场</a></li>
+<li><a target="_blank" rel="noopener" href="http://bailian.openjudge.cn/practice/1163">POJ 1163: 数字三角形</a></li>
+<li><a target="_blank" rel="noopener" href="http://bailian.openjudge.cn/practice/2757">POJ 2757: 最长上升子序列</a></li>
+<li><a target="_blank" rel="noopener" href="http://bailian.openjudge.cn/practice/1458">POJ 1458: 最长公共子序列</a></li>
+<li><a target="_blank" rel="noopener" href="http://bailian.openjudge.cn/practice/2755">POJ 2755: 神奇的口袋</a></li>
+<li><a target="_blank" rel="noopener" href="http://poj.org/problem?id=3624">POJ 3624: 0-1背包问题</a></li>
+<li><a target="_blank" rel="noopener" href="http://bailian.openjudge.cn/practice/1088">POJ 1088: 滑雪</a></li>
+<li><a target="_blank" rel="noopener" href="http://bailian.openjudge.cn/practice/1390">POJ 1390: 方盒游戏</a></li>
+<li><a target="_blank" rel="noopener" href="http://bailian.openjudge.cn/practice/2373">POJ 2373: 灌溉草场</a></li>
 <li>最佳加法表达式：有一个由 <span class="math inline">\(1 \dots 9\)</span> 组成的数字串.问如果将 <span class="math inline">\(m\)</span> 个加号插入到这个数字串中,在各种可能形成的表达式中，值最小的那个表达式的值是多少？</li>
 </ul>
 
@@ -332,7 +332,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/动态规划/" rel="tag"># 动态规划</a>
+              <a href="/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" rel="tag"># 动态规划</a>
           </div>
 
         
@@ -385,7 +385,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#定义"><span class="nav-number">1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解题思路"><span class="nav-number">2.</span> <span class="nav-text">解题思路</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#将原问题分解为子问题"><span class="nav-number">2.1.</span> <span class="nav-text">将原问题分解为子问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#确定状态"><span class="nav-number">2.2.</span> <span class="nav-text">确定状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#确定一些初始状态边界状态的值"><span class="nav-number">2.3.</span> <span class="nav-text">确定一些初始状态(边界状态)的值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#确定状态转移方程"><span class="nav-number">2.4.</span> <span class="nav-text">确定状态转移方程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#条件"><span class="nav-number">3.</span> <span class="nav-text">条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#和其他方法的异同"><span class="nav-number">4.</span> <span class="nav-text">和其他方法的异同</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#技巧"><span class="nav-number">5.</span> <span class="nav-text">技巧</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#动态规划的三种形式"><span class="nav-number">6.</span> <span class="nav-text">动态规划的三种形式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#练习"><span class="nav-number">7.</span> <span class="nav-text">练习</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-number">1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF"><span class="nav-number">2.</span> <span class="nav-text">解题思路</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%86%E5%8E%9F%E9%97%AE%E9%A2%98%E5%88%86%E8%A7%A3%E4%B8%BA%E5%AD%90%E9%97%AE%E9%A2%98"><span class="nav-number">2.1.</span> <span class="nav-text">将原问题分解为子问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A1%AE%E5%AE%9A%E7%8A%B6%E6%80%81"><span class="nav-number">2.2.</span> <span class="nav-text">确定状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A1%AE%E5%AE%9A%E4%B8%80%E4%BA%9B%E5%88%9D%E5%A7%8B%E7%8A%B6%E6%80%81%E8%BE%B9%E7%95%8C%E7%8A%B6%E6%80%81%E7%9A%84%E5%80%BC"><span class="nav-number">2.3.</span> <span class="nav-text">确定一些初始状态(边界状态)的值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A1%AE%E5%AE%9A%E7%8A%B6%E6%80%81%E8%BD%AC%E7%A7%BB%E6%96%B9%E7%A8%8B"><span class="nav-number">2.4.</span> <span class="nav-text">确定状态转移方程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9D%A1%E4%BB%B6"><span class="nav-number">3.</span> <span class="nav-text">条件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%92%8C%E5%85%B6%E4%BB%96%E6%96%B9%E6%B3%95%E7%9A%84%E5%BC%82%E5%90%8C"><span class="nav-number">4.</span> <span class="nav-text">和其他方法的异同</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%80%E5%B7%A7"><span class="nav-number">5.</span> <span class="nav-text">技巧</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E7%9A%84%E4%B8%89%E7%A7%8D%E5%BD%A2%E5%BC%8F"><span class="nav-number">6.</span> <span class="nav-text">动态规划的三种形式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0"><span class="nav-number">7.</span> <span class="nav-text">练习</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -421,10 +421,10 @@
 </div>
   <div class="links-of-author motion-element">
       <span class="links-of-author-item">
-        <a href="https://github.com/yz1509" title="GitHub &rarr; https://github.com/yz1509" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+        <a href="https://github.com/yz1509" title="GitHub &amp;rarr; https:&#x2F;&#x2F;github.com&#x2F;yz1509" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
       </span>
       <span class="links-of-author-item">
-        <a href="mailto:pro-765@qq.com" title="E-Mail &rarr; mailto:pro-765@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+        <a href="mailto:pro-765@qq.com" title="E-Mail &amp;rarr; mailto:pro-765@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
       </span>
   </div>
 
@@ -452,8 +452,6 @@
     <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">KyoAni</span>
-
-  
 </div>
 
         
@@ -498,9 +496,17 @@
   <script src="/lib/anime.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
-<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
 <script src="/js/schemes/muse.js"></script>
+
+
 <script src="/js/next-boot.js"></script>
+
 
 
 

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
 <meta name="theme-color" content="#222">
-<meta name="generator" content="Hexo 3.7.0">
+<meta name="generator" content="Hexo 5.1.1">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
@@ -52,13 +52,12 @@
 </script>
 
   <meta name="description" content="我不会运维，也不懂开发，仅供参考。">
-<meta name="keywords" content="Linux,面经,计算机网络,操作系统,数据库,运维开发工程师,Python">
 <meta property="og:type" content="article">
 <meta property="og:title" content="运维开发工程师面经">
 <meta property="og:url" content="https://yz1509.github.io/posts/7543f9ab/index.html">
 <meta property="og:site_name" content="HTT">
 <meta property="og:description" content="我不会运维，也不懂开发，仅供参考。">
-<meta property="og:locale" content="zh-CN">
+<meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://yz1509.github.io/posts/7543f9ab/e92d0ebc-7d46-413b-aec1-34a39602f787.png">
 <meta property="og:image" content="https://yz1509.github.io/posts/7543f9ab/f87afe72-c2df-4c12-ac03-9b8d581a8af8.jpg">
 <meta property="og:image" content="https://yz1509.github.io/posts/7543f9ab/a3253deb-8d21-40a1-aae4-7d178e4aa319.jpg">
@@ -74,10 +73,17 @@
 <meta property="og:image" content="https://yz1509.github.io/posts/7543f9ab/1492928416812_4.png">
 <meta property="og:image" content="https://yz1509.github.io/posts/7543f9ab/1492928416812_4.png">
 <meta property="og:image" content="https://yz1509.github.io/posts/7543f9ab/ProcessState.png">
-<meta property="og:updated_time" content="2019-10-31T02:12:19.457Z">
+<meta property="article:published_time" content="2018-08-18T04:34:54.000Z">
+<meta property="article:modified_time" content="2019-10-31T02:12:19.457Z">
+<meta property="article:author" content="KyoAni">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="面经">
+<meta property="article:tag" content="计算机网络">
+<meta property="article:tag" content="操作系统">
+<meta property="article:tag" content="数据库">
+<meta property="article:tag" content="运维开发工程师">
+<meta property="article:tag" content="Python">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="运维开发工程师面经">
-<meta name="twitter:description" content="我不会运维，也不懂开发，仅供参考。">
 <meta name="twitter:image" content="https://yz1509.github.io/posts/7543f9ab/e92d0ebc-7d46-413b-aec1-34a39602f787.png">
 
 <link rel="canonical" href="https://yz1509.github.io/posts/7543f9ab/">
@@ -247,7 +253,7 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/秋招/" itemprop="url" rel="index">
+                  <a href="/categories/%E7%A7%8B%E6%8B%9B/" itemprop="url" rel="index">
                     <span itemprop="name">秋招</span>
                   </a>
                 </span>
@@ -274,7 +280,7 @@
         <p>我不会运维，也不懂开发，仅供参考。</p>
 <a id="more"></a>
 <hr>
-<p>整理自牛客网<strong>傻妞妞-MM</strong>的<a href="https://www.nowcoder.com/discuss/50625" target="_blank" rel="noopener">面经</a>。</p>
+<p>整理自牛客网<strong>傻妞妞-MM</strong>的<a target="_blank" rel="noopener" href="https://www.nowcoder.com/discuss/50625">面经</a>。</p>
 <h1 id="linux-系统">Linux 系统</h1>
 <ul>
 <li>基本命令（系统性能信息的各种查看命令、可能会继续向下延伸：比如实时 CPU 负载的获取、网卡流量的抓包获取等，建议有多详细整理多详细。防火墙，文件查看，各种常用命令，请参考鸟哥基础等等。）；</li>
@@ -454,7 +460,7 @@
 <p>（四） 幂等性</p>
 <ul>
 <li>幂等的 HTTP 方法，同样的请求被执行一次与连续执行多次的效果是一样的，服务器的状态也是一样的。换句话说就是，幂等方法不应该具有副作用（统计用途除外）。</li>
-<li>在正确实现的条件下，GET，HEAD，PUT 和 DELETE 等方法都是幂等的，而 POST 方法不是。 &gt; DELETE /idX/delete HTTP/1.1 是幂等的，即便不同的请求接收到的状态码不一样 &gt; <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt; DELETE /idX/delete HTTP/1.1   -&gt; Returns 200 if idX exists</span><br><span class="line">&gt; DELETE /idX/delete HTTP/1.1   -&gt; Returns 404 as it just got deleted</span><br><span class="line">&gt; DELETE /idX/delete HTTP/1.1   -&gt; Returns 404</span><br><span class="line">&gt;</span><br></pre></td></tr></table></figure></li>
+<li>在正确实现的条件下，GET，HEAD，PUT 和 DELETE 等方法都是幂等的，而 POST 方法不是。 &gt; DELETE /idX/delete HTTP/1.1 是幂等的，即便不同的请求接收到的状态码不一样 &gt; <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">DELETE &#x2F;idX&#x2F;delete HTTP&#x2F;1.1   -&gt; Returns 200 if idX exists</span><br><span class="line">DELETE &#x2F;idX&#x2F;delete HTTP&#x2F;1.1   -&gt; Returns 404 as it just got deleted</span><br><span class="line">DELETE &#x2F;idX&#x2F;delete HTTP&#x2F;1.1   -&gt; Returns 404</span><br></pre></td></tr></table></figure></li>
 </ul>
 <p>（五） 可缓存</p>
 <p>如果要对响应进行缓存，需要满足以下条件：</p>
@@ -531,7 +537,7 @@
 <p>进行 HTTPs 通信时，服务器会把证书发送给客户端。客户端取得其中的公开密钥之后，先使用数字签名进行验证，如果验证通过，就可以开始通信了。</p>
 <p>通信开始时，客户端需要使用服务器的公开密钥将自己的私有密钥传输给服务器，之后再进行对称密钥加密。</p>
 <div data-align="center">
-<img src="/posts/7543f9ab/2017-06-11-ca.png" width="">
+<img src="/posts/7543f9ab/2017-06-11-ca.png" width>
 </div>
 <p><br></p>
 <p><strong>完整性保护</strong></p>
@@ -546,7 +552,7 @@
 <h2 id="dns">DNS</h2>
 <h3 id="dns-的解析过程">DNS 的解析过程</h3>
 <div data-align="center">
-<img src="/posts/7543f9ab/dns.jpg" width="">
+<img src="/posts/7543f9ab/dns.jpg" width>
 </div>
 <p><br></p>
 <ul>
@@ -890,8 +896,8 @@
 </ul>
 <h1 id="数据结构">数据结构</h1>
 <ul>
-<li>常见的<a href="https://yz1509.xyz/posts/7474c898/" target="_blank" rel="noopener">查找</a>、<a href="https://yz1509.xyz/posts/735e5788/" target="_blank" rel="noopener">排序</a>算法</li>
-<li><a href="https://yz1509.xyz/posts/ee040603/" target="_blank" rel="noopener">图</a>、<a href="https://yz1509.xyz/posts/7b216a3b/" target="_blank" rel="noopener">树</a>、链表等各种知识点</li>
+<li>常见的<a target="_blank" rel="noopener" href="https://yz1509.xyz/posts/7474c898/">查找</a>、<a target="_blank" rel="noopener" href="https://yz1509.xyz/posts/735e5788/">排序</a>算法</li>
+<li><a target="_blank" rel="noopener" href="https://yz1509.xyz/posts/ee040603/">图</a>、<a target="_blank" rel="noopener" href="https://yz1509.xyz/posts/7b216a3b/">树</a>、链表等各种知识点</li>
 </ul>
 <h1 id="运维相关">运维相关</h1>
 <h2 id="高可用性负载均衡">高可用性、负载均衡</h2>
@@ -960,11 +966,11 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/Linux/" rel="tag"># Linux</a>
-              <a href="/tags/面经/" rel="tag"># 面经</a>
-              <a href="/tags/计算机网络/" rel="tag"># 计算机网络</a>
-              <a href="/tags/操作系统/" rel="tag"># 操作系统</a>
-              <a href="/tags/数据库/" rel="tag"># 数据库</a>
-              <a href="/tags/运维开发工程师/" rel="tag"># 运维开发工程师</a>
+              <a href="/tags/%E9%9D%A2%E7%BB%8F/" rel="tag"># 面经</a>
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag"># 计算机网络</a>
+              <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag"># 操作系统</a>
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/" rel="tag"># 数据库</a>
+              <a href="/tags/%E8%BF%90%E7%BB%B4%E5%BC%80%E5%8F%91%E5%B7%A5%E7%A8%8B%E5%B8%88/" rel="tag"># 运维开发工程师</a>
               <a href="/tags/Python/" rel="tag"># Python</a>
           </div>
 
@@ -1021,7 +1027,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#linux-系统"><span class="nav-number">1.</span> <span class="nav-text">Linux 系统</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#计算机网络"><span class="nav-number">2.</span> <span class="nav-text">计算机网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#tcp-和-udp"><span class="nav-number">2.1.</span> <span class="nav-text">TCP 和 UDP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#tcp-和-udp-的区别"><span class="nav-number">2.1.1.</span> <span class="nav-text">TCP 和 UDP 的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#三次握手四次挥手以及其中各个状态的转换为什么是三次和四次time_wait-等待的意义"><span class="nav-number">2.1.2.</span> <span class="nav-text">三次握手四次挥手，以及其中各个状态的转换，为什么是三次和四次？Time_wait 等待的意义？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tcp-保证可靠的传输机制"><span class="nav-number">2.1.3.</span> <span class="nav-text">TCP 保证可靠的传输机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tcp-滑动窗口和回退-n-帧协议"><span class="nav-number">2.1.4.</span> <span class="nav-text">TCP 滑动窗口和回退 N 帧协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tcp-的流量控制"><span class="nav-number">2.1.5.</span> <span class="nav-text">TCP 的流量控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tcp-的拥塞控制拥塞控制中的四个算法"><span class="nav-number">2.1.6.</span> <span class="nav-text">TCP 的拥塞控制，拥塞控制中的四个算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#syn-攻击以及解决办法"><span class="nav-number">2.1.7.</span> <span class="nav-text">SYN 攻击以及解决办法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#http"><span class="nav-number">2.2.</span> <span class="nav-text">HTTP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#常见状态码"><span class="nav-number">2.2.1.</span> <span class="nav-text">常见状态码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#长连接短连接"><span class="nav-number">2.2.2.</span> <span class="nav-text">长连接、短连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#get-和-post-的区别"><span class="nav-number">2.2.3.</span> <span class="nav-text">Get 和 Post 的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#http-版本的区别"><span class="nav-number">2.2.4.</span> <span class="nav-text">HTTP 版本的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#https"><span class="nav-number">2.2.5.</span> <span class="nav-text">HTTPS</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dns"><span class="nav-number">2.3.</span> <span class="nav-text">DNS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dns-的解析过程"><span class="nav-number">2.3.1.</span> <span class="nav-text">DNS 的解析过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#常见的其他问题"><span class="nav-number">2.4.</span> <span class="nav-text">常见的其他问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ping-和-traceroute-的工作原理"><span class="nav-number">2.4.1.</span> <span class="nav-text">Ping 和 Traceroute 的工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#路由器和交换机的区别"><span class="nav-number">2.4.2.</span> <span class="nav-text">路由器和交换机的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#输入网址后背后发生了什么"><span class="nav-number">2.4.3.</span> <span class="nav-text">输入网址后，背后发生了什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#io-模型以及同步异步阻塞非阻塞的区别"><span class="nav-number">2.4.4.</span> <span class="nav-text">I/O 模型以及同步异步阻塞非阻塞的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bs和cs的区别"><span class="nav-number">2.4.5.</span> <span class="nav-text">B/S和C/S的区别</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#操作系统"><span class="nav-number">3.</span> <span class="nav-text">操作系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#进程和线程的区别"><span class="nav-number">3.1.</span> <span class="nav-text">进程和线程的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程的状态进程的切换方式"><span class="nav-number">3.2.</span> <span class="nav-text">进程的状态？进程的切换方式？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程同步的方式有哪些"><span class="nav-number">3.3.</span> <span class="nav-text">进程同步的方式有哪些</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程的通信方式有哪些"><span class="nav-number">3.4.</span> <span class="nav-text">进程的通信方式有哪些</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操作系统的常见进程调度算法"><span class="nav-number">3.5.</span> <span class="nav-text">操作系统的常见进程调度算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#死锁的四个条件解决与避免的方法"><span class="nav-number">3.6.</span> <span class="nav-text">死锁的四个条件，解决与避免的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#分页和分段有什么区别"><span class="nav-number">3.7.</span> <span class="nav-text">分页和分段有什么区别</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据库"><span class="nav-number">4.</span> <span class="nav-text">数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#事务"><span class="nav-number">4.1.</span> <span class="nav-text">事务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#acid性质其中各个性质的含义"><span class="nav-number">4.1.1.</span> <span class="nav-text">ACID性质，其中各个性质的含义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#脏读丢失修改不可重复读幻影读"><span class="nav-number">4.1.2.</span> <span class="nav-text">脏读、丢失修改、不可重复读、幻影读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#隔离级别"><span class="nav-number">4.1.3.</span> <span class="nav-text">隔离级别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据库的锁机制"><span class="nav-number">4.2.</span> <span class="nav-text">数据库的锁机制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#python"><span class="nav-number">5.</span> <span class="nav-text">Python</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#深拷贝和浅拷贝"><span class="nav-number">5.1.</span> <span class="nav-text">深拷贝和浅拷贝</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#数据结构"><span class="nav-number">6.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#运维相关"><span class="nav-number">7.</span> <span class="nav-text">运维相关</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#高可用性负载均衡"><span class="nav-number">7.1.</span> <span class="nav-text">高可用性、负载均衡</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#linux-%E7%B3%BB%E7%BB%9F"><span class="nav-number">1.</span> <span class="nav-text">Linux 系统</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C"><span class="nav-number">2.</span> <span class="nav-text">计算机网络</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#tcp-%E5%92%8C-udp"><span class="nav-number">2.1.</span> <span class="nav-text">TCP 和 UDP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#tcp-%E5%92%8C-udp-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">2.1.1.</span> <span class="nav-text">TCP 和 UDP 的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B%E4%BB%A5%E5%8F%8A%E5%85%B6%E4%B8%AD%E5%90%84%E4%B8%AA%E7%8A%B6%E6%80%81%E7%9A%84%E8%BD%AC%E6%8D%A2%E4%B8%BA%E4%BB%80%E4%B9%88%E6%98%AF%E4%B8%89%E6%AC%A1%E5%92%8C%E5%9B%9B%E6%AC%A1time_wait-%E7%AD%89%E5%BE%85%E7%9A%84%E6%84%8F%E4%B9%89"><span class="nav-number">2.1.2.</span> <span class="nav-text">三次握手四次挥手，以及其中各个状态的转换，为什么是三次和四次？Time_wait 等待的意义？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tcp-%E4%BF%9D%E8%AF%81%E5%8F%AF%E9%9D%A0%E7%9A%84%E4%BC%A0%E8%BE%93%E6%9C%BA%E5%88%B6"><span class="nav-number">2.1.3.</span> <span class="nav-text">TCP 保证可靠的传输机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tcp-%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E5%92%8C%E5%9B%9E%E9%80%80-n-%E5%B8%A7%E5%8D%8F%E8%AE%AE"><span class="nav-number">2.1.4.</span> <span class="nav-text">TCP 滑动窗口和回退 N 帧协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tcp-%E7%9A%84%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6"><span class="nav-number">2.1.5.</span> <span class="nav-text">TCP 的流量控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#tcp-%E7%9A%84%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E4%B8%AD%E7%9A%84%E5%9B%9B%E4%B8%AA%E7%AE%97%E6%B3%95"><span class="nav-number">2.1.6.</span> <span class="nav-text">TCP 的拥塞控制，拥塞控制中的四个算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#syn-%E6%94%BB%E5%87%BB%E4%BB%A5%E5%8F%8A%E8%A7%A3%E5%86%B3%E5%8A%9E%E6%B3%95"><span class="nav-number">2.1.7.</span> <span class="nav-text">SYN 攻击以及解决办法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#http"><span class="nav-number">2.2.</span> <span class="nav-text">HTTP</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%8A%B6%E6%80%81%E7%A0%81"><span class="nav-number">2.2.1.</span> <span class="nav-text">常见状态码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%95%BF%E8%BF%9E%E6%8E%A5%E7%9F%AD%E8%BF%9E%E6%8E%A5"><span class="nav-number">2.2.2.</span> <span class="nav-text">长连接、短连接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#get-%E5%92%8C-post-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">2.2.3.</span> <span class="nav-text">Get 和 Post 的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#http-%E7%89%88%E6%9C%AC%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">2.2.4.</span> <span class="nav-text">HTTP 版本的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#https"><span class="nav-number">2.2.5.</span> <span class="nav-text">HTTPS</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#dns"><span class="nav-number">2.3.</span> <span class="nav-text">DNS</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#dns-%E7%9A%84%E8%A7%A3%E6%9E%90%E8%BF%87%E7%A8%8B"><span class="nav-number">2.3.1.</span> <span class="nav-text">DNS 的解析过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E7%9A%84%E5%85%B6%E4%BB%96%E9%97%AE%E9%A2%98"><span class="nav-number">2.4.</span> <span class="nav-text">常见的其他问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ping-%E5%92%8C-traceroute-%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="nav-number">2.4.1.</span> <span class="nav-text">Ping 和 Traceroute 的工作原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B7%AF%E7%94%B1%E5%99%A8%E5%92%8C%E4%BA%A4%E6%8D%A2%E6%9C%BA%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">2.4.2.</span> <span class="nav-text">路由器和交换机的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BE%93%E5%85%A5%E7%BD%91%E5%9D%80%E5%90%8E%E8%83%8C%E5%90%8E%E5%8F%91%E7%94%9F%E4%BA%86%E4%BB%80%E4%B9%88"><span class="nav-number">2.4.3.</span> <span class="nav-text">输入网址后，背后发生了什么？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#io-%E6%A8%A1%E5%9E%8B%E4%BB%A5%E5%8F%8A%E5%90%8C%E6%AD%A5%E5%BC%82%E6%AD%A5%E9%98%BB%E5%A1%9E%E9%9D%9E%E9%98%BB%E5%A1%9E%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">2.4.4.</span> <span class="nav-text">I&#x2F;O 模型以及同步异步阻塞非阻塞的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bs%E5%92%8Ccs%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">2.4.5.</span> <span class="nav-text">B&#x2F;S和C&#x2F;S的区别</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F"><span class="nav-number">3.</span> <span class="nav-text">操作系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E5%92%8C%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">3.1.</span> <span class="nav-text">进程和线程的区别</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E7%9A%84%E7%8A%B6%E6%80%81%E8%BF%9B%E7%A8%8B%E7%9A%84%E5%88%87%E6%8D%A2%E6%96%B9%E5%BC%8F"><span class="nav-number">3.2.</span> <span class="nav-text">进程的状态？进程的切换方式？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E5%90%8C%E6%AD%A5%E7%9A%84%E6%96%B9%E5%BC%8F%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="nav-number">3.3.</span> <span class="nav-text">进程同步的方式有哪些</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%9B%E7%A8%8B%E7%9A%84%E9%80%9A%E4%BF%A1%E6%96%B9%E5%BC%8F%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="nav-number">3.4.</span> <span class="nav-text">进程的通信方式有哪些</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%B8%B8%E8%A7%81%E8%BF%9B%E7%A8%8B%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95"><span class="nav-number">3.5.</span> <span class="nav-text">操作系统的常见进程调度算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AD%BB%E9%94%81%E7%9A%84%E5%9B%9B%E4%B8%AA%E6%9D%A1%E4%BB%B6%E8%A7%A3%E5%86%B3%E4%B8%8E%E9%81%BF%E5%85%8D%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-number">3.6.</span> <span class="nav-text">死锁的四个条件，解决与避免的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E9%A1%B5%E5%92%8C%E5%88%86%E6%AE%B5%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-number">3.7.</span> <span class="nav-text">分页和分段有什么区别</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93"><span class="nav-number">4.</span> <span class="nav-text">数据库</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E5%8A%A1"><span class="nav-number">4.1.</span> <span class="nav-text">事务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#acid%E6%80%A7%E8%B4%A8%E5%85%B6%E4%B8%AD%E5%90%84%E4%B8%AA%E6%80%A7%E8%B4%A8%E7%9A%84%E5%90%AB%E4%B9%89"><span class="nav-number">4.1.1.</span> <span class="nav-text">ACID性质，其中各个性质的含义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%84%8F%E8%AF%BB%E4%B8%A2%E5%A4%B1%E4%BF%AE%E6%94%B9%E4%B8%8D%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB%E5%B9%BB%E5%BD%B1%E8%AF%BB"><span class="nav-number">4.1.2.</span> <span class="nav-text">脏读、丢失修改、不可重复读、幻影读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="nav-number">4.1.3.</span> <span class="nav-text">隔离级别</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%BA%93%E7%9A%84%E9%94%81%E6%9C%BA%E5%88%B6"><span class="nav-number">4.2.</span> <span class="nav-text">数据库的锁机制</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#python"><span class="nav-number">5.</span> <span class="nav-text">Python</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%B1%E6%8B%B7%E8%B4%9D%E5%92%8C%E6%B5%85%E6%8B%B7%E8%B4%9D"><span class="nav-number">5.1.</span> <span class="nav-text">深拷贝和浅拷贝</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-number">6.</span> <span class="nav-text">数据结构</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%90%E7%BB%B4%E7%9B%B8%E5%85%B3"><span class="nav-number">7.</span> <span class="nav-text">运维相关</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%AB%98%E5%8F%AF%E7%94%A8%E6%80%A7%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="nav-number">7.1.</span> <span class="nav-text">高可用性、负载均衡</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -1057,10 +1063,10 @@
 </div>
   <div class="links-of-author motion-element">
       <span class="links-of-author-item">
-        <a href="https://github.com/yz1509" title="GitHub &rarr; https://github.com/yz1509" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+        <a href="https://github.com/yz1509" title="GitHub &amp;rarr; https:&#x2F;&#x2F;github.com&#x2F;yz1509" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
       </span>
       <span class="links-of-author-item">
-        <a href="mailto:pro-765@qq.com" title="E-Mail &rarr; mailto:pro-765@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+        <a href="mailto:pro-765@qq.com" title="E-Mail &amp;rarr; mailto:pro-765@qq.com" rel="noopener" target="_blank"><i class="fa fa-fw fa-envelope"></i>E-Mail</a>
       </span>
   </div>
 
@@ -1088,8 +1094,6 @@
     <i class="fa fa-user"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">KyoAni</span>
-
-  
 </div>
 
         
@@ -1134,9 +1138,17 @@
   <script src="/lib/anime.min.js"></script>
   <script src="/lib/velocity/velocity.min.js"></script>
   <script src="/lib/velocity/velocity.ui.min.js"></script>
-<script src="/js/utils.js"></script><script src="/js/motion.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
 <script src="/js/schemes/muse.js"></script>
+
+
 <script src="/js/next-boot.js"></script>
+
 
 
 
