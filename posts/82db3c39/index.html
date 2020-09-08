@@ -60,8 +60,11 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://yz1509.github.io/posts/82db3c39/basic_anti_entropy_algo.png">
 <meta property="og:image" content="https://yz1509.github.io/posts/82db3c39/causal_anti_entropy_algo.png">
+<meta property="og:image" content="https://yz1509.github.io/posts/82db3c39/counter.png">
+<meta property="og:image" content="https://yz1509.github.io/posts/82db3c39/or_set.png">
+<meta property="og:image" content="https://yz1509.github.io/posts/82db3c39/multi_value.png">
 <meta property="article:published_time" content="2020-09-07T04:02:54.000Z">
-<meta property="article:modified_time" content="2020-09-07T14:10:49.765Z">
+<meta property="article:modified_time" content="2020-09-08T04:36:31.547Z">
 <meta property="article:author" content="KyoAni">
 <meta property="article:tag" content="最终一致性">
 <meta property="article:tag" content="CRDT">
@@ -219,10 +222,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-09-07 12:02:54 / 修改时间：22:10:49" itemprop="dateCreated datePublished" datetime="2020-09-07T12:02:54+08:00">2020-09-07</time>
+              <time title="创建时间：2020-09-07 12:02:54" itemprop="dateCreated datePublished" datetime="2020-09-07T12:02:54+08:00">2020-09-07</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-09-08 12:36:31" itemprop="dateModified" datetime="2020-09-08T12:36:31+08:00">2020-09-08</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -283,7 +292,7 @@
 <p>由 <code>join</code> 操作满足结合律、交换律和幂等易得此结论。</p>
 <h3 id="basic-anti-entropy-algorithm">Basic anti-entropy algorithm</h3>
 <figure>
-<img src="/posts/82db3c39/basic_anti_entropy_algo.png" alt><figcaption>basic_anti_entropy_algo</figcaption>
+<img src="/posts/82db3c39/basic_anti_entropy_algo.png" alt><figcaption>basic_anti_entropy_algo.png</figcaption>
 </figure>
 <p>The basic algorithm operators in two modes:</p>
 <ul>
@@ -307,7 +316,50 @@
 <p><strong>CRDT and <span class="math inline">\(\delta\)</span>-CRDT correspondence</strong>: Let <span class="math inline">\((\mathrm{S}, \mathrm{M}, \mathrm{Q})\)</span> be sa standard state-based CRDT and <span class="math inline">\((\mathrm{S}, \mathrm{M}^\delta, \mathrm{Q})\)</span> a corresponding delta-state decomposition. Any <span class="math inline">\(\delta\)</span>-CRDT state reachable by an execution <span class="math inline">\(\mathrm{E}^\delta\)</span> over <span class="math inline">\((\mathrm{S}, \mathrm{M}^\delta, \mathrm{Q})\)</span>, by a <code>delta-interval based anto-entropy algorithm</code> <span class="math inline">\(\mathrm{A}^\delta\)</span> satisfying the <code>causal delta-merging condition</code>, is equal to a state resulting from an execution <span class="math inline">\(\mathrm{E}\)</span> over <span class="math inline">\((\mathrm{S}, \mathrm{M}, \mathrm{Q})\)</span>, having the corresponding data-type operations, by an anti-entropy algorithm <span class="math inline">\(A\)</span> for state-based CRDTs.</p>
 <h3 id="anti-entropy-algorithm-ensuring-causal-consistency-of-delta-crdt">Anti-entropy algorithm ensuring causal consistency of <span class="math inline">\(\delta\)</span>-CRDT</h3>
 <figure>
-<img src="/posts/82db3c39/causal_anti_entropy_algo.png" alt><figcaption>causal_anti_entropy_algo</figcaption>
+<img src="/posts/82db3c39/causal_anti_entropy_algo.png" alt><figcaption>causal_anti_entropy_algo.png</figcaption>
+</figure>
+<ul>
+<li>Each node <span class="math inline">\(i\)</span> keeps a contiguous sequence of deltas <span class="math inline">\(d_i^l, \dots, d_i^u\)</span> in map <span class="math inline">\(\mathrm{D}\)</span> from integers to deltas, with <span class="math inline">\(l = min(dom(\mathrm{D})), u = max(dom(\mathrm{D}))\)</span>.</li>
+<li>Each node <span class="math inline">\(i\)</span> keeps an acknowledgments map <span class="math inline">\(\mathrm{A}\)</span> that stores, for each neighbor <span class="math inline">\(j\)</span>, the largest index <span class="math inline">\(b\)</span> for all delta-intervals <span class="math inline">\(\Delta_i^{a,b}\)</span> acknowledged by <span class="math inline">\(j\)</span> (after <span class="math inline">\(j\)</span> receives <span class="math inline">\(\Delta_i^{a,b}\)</span> from <span class="math inline">\(i\)</span> and joins it into <span class="math inline">\(\mathrm{X}_j\)</span>)</li>
+<li>可以看出，在 <code>Algorithm 2</code> 中，确保 <code>Causal delta-merging condition</code> 由发送方完成</li>
+</ul>
+<p>推论：<code>Algorithm 2</code> produces the same reachable states as a standard algorithm over a CRDT for which the <span class="math inline">\(\delta\)</span>-CRDT is a decomposition.</p>
+<h2 id="examples">Examples</h2>
+<h3 id="delta-crdt-counter"><span class="math inline">\(\delta\)</span>-CRDT Counter</h3>
+<figure>
+<img src="/posts/82db3c39/counter.png" alt><figcaption>counter.png</figcaption>
+</figure>
+<ul>
+<li>The CRDT state <span class="math inline">\(\Sigma\)</span> is a map from replica identifiers to positive integers</li>
+<li><span class="math inline">\(inc_i^\delta\)</span> increments the map entry correspondingto the local replica and only returns that entry, instead of the full map as <code>inc</code> in the state-based CRDT counter does.</li>
+</ul>
+<h3 id="delta-crdts-for-add-wins-or-sets"><span class="math inline">\(\delta\)</span>-CRDTs for Add-Wins OR-Sets</h3>
+<figure>
+<img src="/posts/82db3c39/or_set.png" alt><figcaption>or_set.png</figcaption>
+</figure>
+<p><strong>Add-Wins OR-Set with tombstones</strong></p>
+<ul>
+<li>The state <span class="math inline">\(\Sigma\)</span> consists of a set of tagged elements and a set of tags, acting as tombstones</li>
+<li>Globally unique tags of the form <span class="math inline">\(\mathbb{I} \times \mathbb{N}\)</span> are used and ensured by pairing a replica identifier in <span class="math inline">\(\mathbb{I}\)</span> with a monotonically increasing natural counter.</li>
+<li>在 <code>s</code> 中记录添加操作的结果，在 <code>t</code> 中记录删除操作的结果，两个集合保持单调递增</li>
+</ul>
+<p><strong>Optimized Add-Wins OR-Set</strong></p>
+<ul>
+<li>符号含义和 <code>With Tombstones</code> 版本相同</li>
+<li>维护 causal context set <code>c</code> 而不是 tombstones set <code>t</code></li>
+<li>在 <code>s</code> 中记录此时存在的元素，在 <code>c</code> 中记录操作历史信息</li>
+<li>合并操作中，<code>c</code> 可直接 <code>join</code>；<code>s</code> 在合并之后，保存的是满足以下条件之一的元素
+<ul>
+<li>the tripls present in both sets (therefore, not removed in either)</li>
+<li>any triple present in one of the sets and whose tag is not present in the causal context of the other state.</li>
+</ul></li>
+</ul>
+<p>Tips: When using an anti-entropy algorithm that provides causal consistency, then for each replica state <span class="math inline">\(\mathrm{X}_i = (s_i, c_i)\)</span> and replica identifier <span class="math inline">\(j \in \mathbb{I}\)</span>, we have a contiguous sequence:</p>
+<p><span class="math display">\[1 \le n \le max(\{k | (j, k) \in c_i\}) \Rightarrow (j, n) \in c_i\]</span></p>
+<p>因此在消息通信时，通过保证因果一致性，可减少存储空间占用。</p>
+<h3 id="optimized-multi-value-register-delta-crdt">Optimized Multi-value Register <span class="math inline">\(\delta\)</span>-CRDT</h3>
+<figure>
+<img src="/posts/82db3c39/multi_value.png" alt><figcaption>multi_value.png</figcaption>
 </figure>
 
     </div>
@@ -372,7 +424,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#cmrdt-%E5%92%8C-cvrdt-%E7%9A%84%E4%B8%8D%E8%B6%B3"><span class="nav-number">1.</span> <span class="nav-text">CmRDT 和 CvRDT 的不足</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#delta-state-crdts"><span class="nav-number">2.</span> <span class="nav-text">Delta-state CRDTs</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#definition"><span class="nav-number">2.1.</span> <span class="nav-text">Definition</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#delta-state-decomposition-of-standards-crdts"><span class="nav-number">2.2.</span> <span class="nav-text">Delta-state decomposition of standards CRDTs</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#state-convergence"><span class="nav-number">3.</span> <span class="nav-text">State Convergence</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#basic-anti-entropy-algorithm"><span class="nav-number">3.1.</span> <span class="nav-text">Basic anti-entropy algorithm</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#causal-consistency"><span class="nav-number">4.</span> <span class="nav-text">Causal Consistency</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#anti-entropy-algorithm-ensuring-causal-consistency-of-delta-crdt"><span class="nav-number">4.1.</span> <span class="nav-text">Anti-entropy algorithm ensuring causal consistency of \(\delta\)-CRDT</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#cmrdt-%E5%92%8C-cvrdt-%E7%9A%84%E4%B8%8D%E8%B6%B3"><span class="nav-number">1.</span> <span class="nav-text">CmRDT 和 CvRDT 的不足</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#delta-state-crdts"><span class="nav-number">2.</span> <span class="nav-text">Delta-state CRDTs</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#definition"><span class="nav-number">2.1.</span> <span class="nav-text">Definition</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#delta-state-decomposition-of-standards-crdts"><span class="nav-number">2.2.</span> <span class="nav-text">Delta-state decomposition of standards CRDTs</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#state-convergence"><span class="nav-number">3.</span> <span class="nav-text">State Convergence</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#basic-anti-entropy-algorithm"><span class="nav-number">3.1.</span> <span class="nav-text">Basic anti-entropy algorithm</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#causal-consistency"><span class="nav-number">4.</span> <span class="nav-text">Causal Consistency</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#anti-entropy-algorithm-ensuring-causal-consistency-of-delta-crdt"><span class="nav-number">4.1.</span> <span class="nav-text">Anti-entropy algorithm ensuring causal consistency of \(\delta\)-CRDT</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#examples"><span class="nav-number">5.</span> <span class="nav-text">Examples</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#delta-crdt-counter"><span class="nav-number">5.1.</span> <span class="nav-text">\(\delta\)-CRDT Counter</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#delta-crdts-for-add-wins-or-sets"><span class="nav-number">5.2.</span> <span class="nav-text">\(\delta\)-CRDTs for Add-Wins OR-Sets</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#optimized-multi-value-register-delta-crdt"><span class="nav-number">5.3.</span> <span class="nav-text">Optimized Multi-value Register \(\delta\)-CRDT</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
