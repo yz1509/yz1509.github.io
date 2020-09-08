@@ -59,7 +59,7 @@
 <meta property="og:description" content="CRDT 学习笔记。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-04-21T03:02:30.000Z">
-<meta property="article:modified_time" content="2020-09-08T04:36:24.179Z">
+<meta property="article:modified_time" content="2020-09-08T13:28:21.902Z">
 <meta property="article:author" content="KyoAni">
 <meta property="article:tag" content="最终一致性">
 <meta property="article:tag" content="CRDT">
@@ -224,7 +224,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-09-08 12:36:24" itemprop="dateModified" datetime="2020-09-08T12:36:24+08:00">2020-09-08</time>
+                <time title="修改时间：2020-09-08 21:28:21" itemprop="dateModified" datetime="2020-09-08T21:28:21+08:00">2020-09-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -317,10 +317,53 @@
 <p>在这篇文章中，作者主要提出了两种本质上等价的 CRDT：CvRDT 和 CmRDT。为了保证强最终一致性，作者表示在 CvRDT 中需定义合适的操作，使得状态集合在给定的偏序关系下构成 Join-semilattice；而在 CmRDT 中，操作需满足要么可比较，不可比的便可交换的条件，除此之外，还需要消息传输提供 <code>exactly once</code> 的保证。详细内容<a target="_blank" rel="noopener" href="http://k-on.me/posts/fa8423b1/#more">请点击</a>。</p>
 <h3 id="a-comprehensive-study-of-convergent-and-commutative-replicated-data-types"><a target="_blank" rel="noopener" href="https://hal.inria.fr/inria-00555588/document">A comprehensive study of Convergent and Commutative Replicated Data Types</a></h3>
 <p>理论内容和上一篇相比几乎相同，新增了一些 CRDT 数据结构示例、垃圾回收和简单应用的内容。</p>
+<h3 id="an-optimized-conflict-free-replicated-set"><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1210.3368.pdf">An Optimized Conflict-free Replicated Set</a></h3>
+<p>利用 Causal order 进行空间上的优化，和 <span class="math inline">\(\delta\)</span>-CRDT 中的 <code>Optimized Add-Wins OR-Set</code> 类似。</p>
 <h3 id="efficient-state-based-crdts-by-delta-mutation"><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1410.2803.pdf">Efficient State-based CRDTs by Delta-Mutation</a></h3>
 <p>本文正式定义了 <span class="math inline">\(\delta\)</span>-CRDT， 其通过传递状态增量而不是传递整个状态，有效地改善了 <code>CvRDT</code> 通信消耗过大的不足，最后给出了 <code>PN-Counter</code>、<code>OR-Set</code> 和 <code>Multi-value Register</code> 基于 <span class="math inline">\(\delta\)</span>-CRDT 的实现。详细内容<a target="_blank" rel="noopener" href="http://k-on.me/posts/82db3c39/#more">请点击</a>。</p>
+<h3 id="delta-state-replicated-data-types"><a target="_blank" rel="noopener" href="https://arxiv.org/pdf/1603.01529.pdf">Delta state replicated data types</a></h3>
+<p>本文在 <code>Efficient State-based CRDTs by Delta-Mutation</code> 基础之上补充了一些数学证明，添加了更丰富的示例，包括 <code>PN-Counter</code>、<code>GSet</code>、<code>2PSet</code>、<code>Add-Wins Last-Writer-Wins Set</code>、<code>Lexicographic Counter</code>、<code>Multi-Value Register</code>、<code>Add-Wins Set</code>、<code>Remove-Wins Set</code> 和 <code>A Map Embedding Causal -CRDTs</code>。</p>
+<h3 id="efficient-synchronization-of-state-based-crdts"><a target="_blank" rel="noopener" href="https://vitorenes.org/publication/enes-efficient-synchronization/enes-efficient-synchronization.pdf">Efficient Synchronization of State-Based CRDTs</a></h3>
+<p>本文在 <span class="math inline">\(\delta\)</span>-CRDT 的基础上，通过以下两步优化，以减小消息通信冗余带来的多余开销：</p>
+<ul>
+<li>Avoiding back-propagation of <span class="math inline">\(\delta\)</span>-groups</li>
+<li>Removing reundant state in received <span class="math inline">\(\delta\)</span>-groups</li>
+</ul>
+<blockquote>
+<p>私以为，完全可以通过使用适宜的网络拓扑结构，以防止消息回源带来的通信冗余开销。</p>
+</blockquote>
+<h3 id="conflict-free-replicated-data-types-crdts"><a target="_blank" rel="noopener" href="https://link.springer.com/referenceworkentry/10.1007%2F978-3-319-63962-8_185-1">Conflict-Free Replicated Data Types CRDTs</a></h3>
 <h2 id="conclusions">Conclusions</h2>
 <p>来自同一 replica 的消息可比较 (消息排序，保证顺序一致性，按 <code>key</code> 哈希批量发送，保证因果一致性) 不同 replicas 之间的消息可交换 消息层满足 <code>exactly once</code> 则无需保证幂等</p>
+<p>CRDT 动态规划说：</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: left;">DP</th>
+<th style="text-align: left;">CRDT</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">最终获得的结果与依次遍历获取更新的结果相同</td>
+<td style="text-align: left;">最终所有的节点会收敛至相同的状态</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">通过缓存历史信息降低时间复杂度，以空间换时间</td>
+<td style="text-align: left;">通过存储额外 meta 信息保证最终收敛至相同状态，操作都是 local 的，延时低，以空间换时间</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">状态与操作顺序无关，即操作需满足交换律，结合律</td>
+<td style="text-align: left;">并发更新操作需满足交换律、结合律，通过定义状态的结构获取，也即状态与并发操纵顺序无关</td>
+</tr>
+</tbody>
+</table>
+<p>又由 <a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/ASCII">ASCII 表</a> 可知，<span class="math inline">\(D \mapsto 68, P \mapsto 80, C \mapsto 67, R \mapsto 82, T \mapsto 84\)</span></p>
+<p>In <code>DP</code>:</p>
+<p><span class="math inline">\(68 + 80 = 148 = -log_{5-1-1-1}log_4{\underbrace{\sqrt{\cdots \sqrt{4}}}_{148}}\)</span></p>
+<p>In <code>CRDT</code>:</p>
+<p><span class="math inline">\(67 + 82 + 68 + 84 = 301 = -log_{5-1-1-1}log_4{\underbrace{\sqrt{\cdots \sqrt{4}}}_{301}}\)</span></p>
+<p>论证结束。</p>
 
     </div>
 
@@ -387,7 +430,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#crdt-%E7%9B%B8%E5%85%B3%E8%B5%84%E6%BA%90"><span class="nav-number">1.</span> <span class="nav-text">CRDT 相关资源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF%E7%9F%A5%E8%AF%86"><span class="nav-number">2.</span> <span class="nav-text">背景知识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-crdt-primer-part-i-defanging-order-theory"><span class="nav-number">2.1.</span> <span class="nav-text">A CRDT Primer Part I: Defanging Order Theory</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#order"><span class="nav-number">2.1.1.</span> <span class="nav-text">Order</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#join"><span class="nav-number">2.1.2.</span> <span class="nav-text">Join</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%E9%98%85%E8%AF%BB"><span class="nav-number">2.2.</span> <span class="nav-text">扩展阅读</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#crdt-%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87"><span class="nav-number">3.</span> <span class="nav-text">CRDT 相关论文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#conflict-free-replicated-data-types"><span class="nav-number">3.1.</span> <span class="nav-text">Conflict-free Replicated Data Types</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#a-comprehensive-study-of-convergent-and-commutative-replicated-data-types"><span class="nav-number">3.2.</span> <span class="nav-text">A comprehensive study of Convergent and Commutative Replicated Data Types</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#efficient-state-based-crdts-by-delta-mutation"><span class="nav-number">3.3.</span> <span class="nav-text">Efficient State-based CRDTs by Delta-Mutation</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conclusions"><span class="nav-number">4.</span> <span class="nav-text">Conclusions</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#crdt-%E7%9B%B8%E5%85%B3%E8%B5%84%E6%BA%90"><span class="nav-number">1.</span> <span class="nav-text">CRDT 相关资源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF%E7%9F%A5%E8%AF%86"><span class="nav-number">2.</span> <span class="nav-text">背景知识</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#a-crdt-primer-part-i-defanging-order-theory"><span class="nav-number">2.1.</span> <span class="nav-text">A CRDT Primer Part I: Defanging Order Theory</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#order"><span class="nav-number">2.1.1.</span> <span class="nav-text">Order</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#join"><span class="nav-number">2.1.2.</span> <span class="nav-text">Join</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%E9%98%85%E8%AF%BB"><span class="nav-number">2.2.</span> <span class="nav-text">扩展阅读</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#crdt-%E7%9B%B8%E5%85%B3%E8%AE%BA%E6%96%87"><span class="nav-number">3.</span> <span class="nav-text">CRDT 相关论文</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#conflict-free-replicated-data-types"><span class="nav-number">3.1.</span> <span class="nav-text">Conflict-free Replicated Data Types</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#a-comprehensive-study-of-convergent-and-commutative-replicated-data-types"><span class="nav-number">3.2.</span> <span class="nav-text">A comprehensive study of Convergent and Commutative Replicated Data Types</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#an-optimized-conflict-free-replicated-set"><span class="nav-number">3.3.</span> <span class="nav-text">An Optimized Conflict-free Replicated Set</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#efficient-state-based-crdts-by-delta-mutation"><span class="nav-number">3.4.</span> <span class="nav-text">Efficient State-based CRDTs by Delta-Mutation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#delta-state-replicated-data-types"><span class="nav-number">3.5.</span> <span class="nav-text">Delta state replicated data types</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#efficient-synchronization-of-state-based-crdts"><span class="nav-number">3.6.</span> <span class="nav-text">Efficient Synchronization of State-Based CRDTs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#conflict-free-replicated-data-types-crdts"><span class="nav-number">3.7.</span> <span class="nav-text">Conflict-Free Replicated Data Types CRDTs</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#conclusions"><span class="nav-number">4.</span> <span class="nav-text">Conclusions</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
