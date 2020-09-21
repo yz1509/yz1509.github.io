@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>GO on HTT - ふわふわ時間</title>
+    <link>https://yz1509.github.io/tags/go/</link>
+    <description>Recent content in GO on HTT - ふわふわ時間</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Fri, 22 Nov 2019 18:47:27 +0000</lastBuildDate><atom:link href="https://yz1509.github.io/tags/go/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>GO 进程资源占用分析</title>
+      <link>https://yz1509.github.io/post/go%E8%BF%9B%E7%A8%8B%E8%B5%84%E6%BA%90%E5%8D%A0%E7%94%A8%E5%88%86%E6%9E%90/</link>
+      <pubDate>Fri, 22 Nov 2019 18:47:27 +0000</pubDate>
+      
+      <guid>https://yz1509.github.io/post/go%E8%BF%9B%E7%A8%8B%E8%B5%84%E6%BA%90%E5%8D%A0%E7%94%A8%E5%88%86%E6%9E%90/</guid>
+      <description>使用 pprof 和 graphviz 分析进程内存分配，CPU 耗时等信息。 当我们想分析自己写的代码中内存分配主要发生在哪或者哪些语句比较耗时时，可以使用 pprof 帮我们记录这些</description>
+    </item>
+    
+  </channel>
+</rss>

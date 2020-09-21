@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>C&#43;&#43; on HTT - ふわふわ時間</title>
+    <link>https://yz1509.github.io/categories/c&#43;&#43;/</link>
+    <description>Recent content in C&#43;&#43; on HTT - ふわふわ時間</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 11 Dec 2019 19:45:55 +0000</lastBuildDate><atom:link href="https://yz1509.github.io/categories/c++/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>CCIA-线程间同步</title>
+      <link>https://yz1509.github.io/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%90%8C%E6%AD%A5/</link>
+      <pubDate>Wed, 11 Dec 2019 19:45:55 +0000</pubDate>
+      
+      <guid>https://yz1509.github.io/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%90%8C%E6%AD%A5/</guid>
+      <description>《C++ Concurrentcy in Action 2nd》 第四章阅读笔记。 在多线程编程中，不仅需要知道处理数据的一致性问题，还需要熟悉线程之间的同步机制。 等待某个事件/条件 当一</description>
+    </item>
+    
+    <item>
+      <title>CCIA-线程间共享数据</title>
+      <link>https://yz1509.github.io/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%85%B1%E4%BA%AB%E6%95%B0%E6%8D%AE/</link>
+      <pubDate>Fri, 15 Nov 2019 17:15:13 +0000</pubDate>
+      
+      <guid>https://yz1509.github.io/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%85%B1%E4%BA%AB%E6%95%B0%E6%8D%AE/</guid>
+      <description>《C++ Concurrentcy in Action 2nd》 第三章阅读笔记。 使用互斥锁保护共享数据 在 C++ 中使用互斥锁 构造一个 std::mutex 的实例即可创建一个互斥锁，使用成员函数 lock() 和 unlock() 可分别执行</description>
+    </item>
+    
+    <item>
+      <title>CCIA-线程管理</title>
+      <link>https://yz1509.github.io/post/ccia-%E7%BA%BF%E7%A8%8B%E7%AE%A1%E7%90%86/</link>
+      <pubDate>Thu, 14 Nov 2019 14:20:01 +0000</pubDate>
+      
+      <guid>https://yz1509.github.io/post/ccia-%E7%BA%BF%E7%A8%8B%E7%AE%A1%E7%90%86/</guid>
+      <description>《C++ Concurrentcy in Action 2nd》 第二章阅读笔记。 基础线程管理 启动线程 使用 C++ 线程库启动线程，可以归结为构造 std::thread 对象，例如： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16</description>
+    </item>
+    
+  </channel>
+</rss>

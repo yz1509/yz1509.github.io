@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>红黑树 on HTT - ふわふわ時間</title>
+    <link>https://yz1509.github.io/tags/%E7%BA%A2%E9%BB%91%E6%A0%91/</link>
+    <description>Recent content in 红黑树 on HTT - ふわふわ時間</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 25 Jul 2018 15:06:19 +0000</lastBuildDate><atom:link href="https://yz1509.github.io/tags/%E7%BA%A2%E9%BB%91%E6%A0%91/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>树</title>
+      <link>https://yz1509.github.io/post/%E6%A0%91/</link>
+      <pubDate>Wed, 25 Jul 2018 15:06:19 +0000</pubDate>
+      
+      <guid>https://yz1509.github.io/post/%E6%A0%91/</guid>
+      <description>主要介绍二叉树和红黑树。 什么是树 定义 1 树是没有简单回路的连通无向图。 定义 2 有根树是指定一个顶点作为根并且每条边的方向都离开根的树。 二叉树 如果</description>
+    </item>
+    
+  </channel>
+</rss>

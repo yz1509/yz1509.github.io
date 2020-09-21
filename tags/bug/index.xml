@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>bug on HTT - ふわふわ時間</title>
+    <link>https://yz1509.github.io/tags/bug/</link>
+    <description>Recent content in bug on HTT - ふわふわ時間</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 25 Jul 2018 20:23:21 +0000</lastBuildDate><atom:link href="https://yz1509.github.io/tags/bug/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>吐血bug合集（持续更新）</title>
+      <link>https://yz1509.github.io/post/%E5%90%90%E8%A1%80bug%E5%90%88%E9%9B%86/</link>
+      <pubDate>Wed, 25 Jul 2018 20:23:21 +0000</pubDate>
+      
+      <guid>https://yz1509.github.io/post/%E5%90%90%E8%A1%80bug%E5%90%88%E9%9B%86/</guid>
+      <description>量子波动更新。 图片后缀名的大小写有区别，比如 ![avatar](sample.png) 本地可以正常加载 sample.PNG，但是上传后静态网页加载失败 = = 使用表格时，一定要前后都有</description>
+    </item>
+    
+  </channel>
+</rss>

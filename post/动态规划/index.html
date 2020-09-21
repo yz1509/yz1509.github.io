@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>动态规划 - HTT - ふわふわ時間</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="765PRO.P" />
+  <meta name="description" content="动态规划算法学习笔记。 定义 Dynamic Programming (also known as dynamic optimization) is a method for solving a complex problem by breaking it down into a collection of simpler subproblems. 本质:是对问题状态的定义和状态转移方程的定义。 解题思路 将原问题分" />
+
+  <meta name="keywords" content="K-ON, KyoAni" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.0-DEV" />
+
+
+<link rel="canonical" href="https://yz1509.github.io/post/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" />
+
+
+
+
+
+
+
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.b3a8813c06e6d785beba22bf8264e174fa2cb3a396b22f9ba24e2c00c18aaf7f.css" integrity="sha256-s6iBPAbm14W&#43;uiK/gmThdPoss6OWsi&#43;bok4sAMGKr38=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="动态规划" />
+<meta property="og:description" content="动态规划算法学习笔记。 定义 Dynamic Programming (also known as dynamic optimization) is a method for solving a complex problem by breaking it down into a collection of simpler subproblems. 本质:是对问题状态的定义和状态转移方程的定义。 解题思路 将原问题分" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://yz1509.github.io/post/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" />
+<meta property="article:published_time" content="2018-07-18T21:28:58+00:00" />
+<meta property="article:modified_time" content="2018-07-18T21:28:58+00:00" />
+<meta itemprop="name" content="动态规划">
+<meta itemprop="description" content="动态规划算法学习笔记。 定义 Dynamic Programming (also known as dynamic optimization) is a method for solving a complex problem by breaking it down into a collection of simpler subproblems. 本质:是对问题状态的定义和状态转移方程的定义。 解题思路 将原问题分">
+<meta itemprop="datePublished" content="2018-07-18T21:28:58+00:00" />
+<meta itemprop="dateModified" content="2018-07-18T21:28:58+00:00" />
+<meta itemprop="wordCount" content="1749">
+
+
+
+<meta itemprop="keywords" content="动态规划," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="动态规划"/>
+<meta name="twitter:description" content="动态规划算法学习笔记。 定义 Dynamic Programming (also known as dynamic optimization) is a method for solving a complex problem by breaking it down into a collection of simpler subproblems. 本质:是对问题状态的定义和状态转移方程的定义。 解题思路 将原问题分"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">HTT</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://yz1509.github.io/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://yz1509.github.io/about/">About</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://yz1509.github.io/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://yz1509.github.io/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://yz1509.github.io/categories/">Categories</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      HTT
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://yz1509.github.io/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://yz1509.github.io/about/">About</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://yz1509.github.io/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://yz1509.github.io/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://yz1509.github.io/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">动态规划</h1>
+      
+      <div class="post-meta">
+        <time datetime="2018-07-18" class="post-time">
+          2018-07-18
+        </time>
+        <div class="post-category">
+            <a href="https://yz1509.github.io/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"> 数据结构与算法 </a>
+            
+          </div>
+        <span class="more-meta"> 1749 words </span>
+          <span class="more-meta"> 4 min read </span>
+
+        
+        
+          <span id="busuanzi_container_page_pv">
+            | 阅读 <span id="busuanzi_value_page_pv"></span>
+          </span>
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#定义">定义</a></li>
+    <li><a href="#解题思路">解题思路</a>
+      <ul>
+        <li><a href="#将原问题分解为子问题">将原问题分解为子问题</a></li>
+        <li><a href="#确定状态">确定状态</a></li>
+        <li><a href="#确定一些初始状态边界状态的值">确定一些初始状态(边界状态)的值</a></li>
+        <li><a href="#确定状态转移方程">确定状态转移方程</a></li>
+      </ul>
+    </li>
+    <li><a href="#条件">条件</a></li>
+    <li><a href="#和其他方法的异同">和其他方法的异同</a></li>
+    <li><a href="#技巧">技巧</a></li>
+    <li><a href="#动态规划的三种形式">动态规划的三种形式</a></li>
+    <li><a href="#练习">练习</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>动态规划算法学习笔记。</p>
+<!-- more -->
+<hr>
+<h2 id="定义">定义</h2>
+<p><a href="https://en.wikipedia.org/wiki/Dynamic_programming">Dynamic Programming</a> (also known as dynamic optimization) is a method for solving a complex problem by breaking it down into a collection of simpler subproblems.</p>
+<blockquote>
+<p>本质:是对问题状态的定义和状态转移方程的定义。</p>
+</blockquote>
+<h2 id="解题思路">解题思路</h2>
+<h3 id="将原问题分解为子问题">将原问题分解为子问题</h3>
+<ul>
+<li>把原问题分解为若干个子问题，子问题和原问题形式相同或类似，只不过规模变小了。子问题都解决，原问题即解决。比如，<a href="http://bailian.openjudge.cn/practice/1163">POJ 1163:数字三角形</a>。</li>
+<li>子问题的解一旦求出就会被保存，所以每个子问题只需求解一次。</li>
+</ul>
+<h3 id="确定状态">确定状态</h3>
+<p>在用动态规划解题时，我们往往将和子问题相关的各个变量的一组取值，称之为一个<code>状态</code>。一个<code>状态</code>对应于一个或多个子问题，所谓某个<code>状态</code>下的值，就是这个<code>状态</code>所对应的子问题的解。</p>
+<p>所有<code>状态</code>的集合，构成问题的<code>状态空间</code>。<code>状态空间</code>的大小，与用动态规划解决问题的时间复杂度直接相关。在数字三角形的例子里，一共有 $\frac{N\times(N + 1)}{2}​$ 个数字，所以这个问题的状态空间里一共就有 $\frac{N\times(N + 1)}{2}​$ 个状态。</p>
+<p>整个问题的时间复杂度是状态数目乘以计算每个状态所需时间。在数字三角形里每个<code>状态</code>只需要经过一次，且在每个状态上作计算所花的时间都是和 $N$ 无关的常数。</p>
+<p>用动态规划解题，经常碰到的情况是，$K$ 个整型变量构成一个状态 (如数字三角形中的行号和列号这两个变量构成<code>状态</code>)。如果这 $K$ 个整型变量的取值范围分别是 $N_1, N_2, ……, N_k$，那么，我们就可以用一个 $K$ 维的数组 $array[N_1][N_2] \dots [N_k]$来存储各个状态的值。这个值未必就是一个整数或浮点数，可能是需要一个结构才能表示的，那么 <code>array</code> 就可以是一个结构数组。一个<code>状态</code>下的值通常会是一个或多个子问题的解。</p>
+<h3 id="确定一些初始状态边界状态的值">确定一些初始状态(边界状态)的值</h3>
+<p>以数字三角形为例，初始状态就是底边数字，值就是底边数字值。</p>
+<h3 id="确定状态转移方程">确定状态转移方程</h3>
+<p>定义出什么是<code>状态</code>，以及在该<code>状态</code>下的值后，就要找出不同的状态之间如何迁移——即如何从一个或多个值已知的<code>状态</code>，求出另一个<code>状态</code>的值 (<strong>人人为我</strong>递推型)。状态的迁移可以用递推公式表示，此递推公式也可被称作<strong>状态转移方程</strong>。</p>
+<p>数字三角形的状态转移方程:</p>
+<p>$MaxSum[r][j] = \begin{cases}D[r][j], &amp;r = N \cr Max(MaxSum[r+1][j], MaxSum[r+1][j+1]) + D[r][j], &amp;otherwise \end{cases}$</p>
+<h2 id="条件">条件</h2>
+<p>在对状态和状态转移方程的定义过程中，需满足<strong>最优子结构</strong>，并且<strong>无后效性</strong>：</p>
+<ul>
+<li>最优子结构性质：如果问题的最优解所包含的子问题的解也是最优的，我们就称该问题具有最优子结构性质。</li>
+<li>无后效性：当前的若干状态值一旦确定，则此后过程的演变就只和这若干个状态的值有关，和之前是采取哪种手段或经过哪条路径演变到当前的这若干个状态，没有关系。</li>
+</ul>
+<h2 id="和其他方法的异同">和其他方法的异同</h2>
+<ul>
+<li>递推：每个阶段只有一个状态</li>
+<li>贪心：每个阶段的最优状态都是由上一个阶段的最优状态得到</li>
+<li>搜索：每个阶段的最优状态是由之前<strong>所有</strong>阶段的状态的组合得到</li>
+<li>动态规划：每个阶段的最优状态可以从之前某个阶段的某个或某些状态直接得到而不管之前这个状态是如何得到的。</li>
+</ul>
+<h2 id="技巧">技巧</h2>
+<ul>
+<li>递归到动态规划的一般转化方法：递归函数有 $n$ 个参数，就定义一个 $n$ 维的数组，数组的下标是递归函数参数的取值范围，数组元素的值是递归函数的返回值，这样就可以从边界值开始，逐步填充数组，相当于计算递归函数值的逆过程。</li>
+<li><code>缓存</code>，<code>重叠子问题</code>，<code>记忆化</code>，这三个名词，都是在阐述递推式求解的技巧。以 <a href="https://en.wikipedia.org/wiki/Fibonacci_number">Fibonacci 数列</a> 为例，计算第 100 项的时候，需要计算第 99 项和 98 项；在计算第 101 项的时候，需要第 100 项和第 99 项，这时候你还需要重新计算第 99 项吗？不需要，你只需要在第一次计算的时候把它记下来就可以了。上述的需要再次计算的第 99 项，就叫<code>重叠子问题</code>。如果没有计算过，就按照递推式计算，如果计算过，直接使用，就像<code>缓存</code>一样，这种方法，叫做<code>记忆化</code>，这是递推式求解的技巧。这种技巧，其实就是<strong>花费空间来节省时间</strong>。</li>
+</ul>
+<h2 id="动态规划的三种形式">动态规划的三种形式</h2>
+<ul>
+<li>
+<p>记忆递归型</p>
+<ul>
+<li>优点：只经过有用的状态，没有浪费。递推型会查看一些没用的状态，有浪费!</li>
+<li>缺点：可能会因递归层数太深导致爆栈，函数调用带来额外时间开销。无法使用滚动数组节省空间。总体来说，比递推型慢。</li>
+</ul>
+</li>
+<li>
+<p><code>我为人人</code>递推型：没有什么明显的优势，有时比较符合思考的习惯。个别特殊题目中会比<code>人人为我</code>型节省空间。</p>
+<p><img src="/DP0701.png" width = "570" height = "250" alt="我为人人" align=center /></p>
+</li>
+<li>
+<p><code>人人为我</code>递推型：在选取最优备选状态的值 $F_m, F_n, …, F_y$ 时，有可能有好的算法或数据结构可以用来显著降低时间复杂度。</p>
+<p><img src="/DP0702.png" width = "500" height = "250" alt="人人为我" align=center /></p>
+</li>
+</ul>
+<h2 id="练习">练习</h2>
+<ul>
+<li><a href="http://bailian.openjudge.cn/practice/1163">POJ 1163: 数字三角形</a></li>
+<li><a href="http://bailian.openjudge.cn/practice/2757">POJ 2757: 最长上升子序列</a></li>
+<li><a href="http://bailian.openjudge.cn/practice/1458">POJ 1458: 最长公共子序列</a></li>
+<li><a href="http://bailian.openjudge.cn/practice/2755">POJ 2755: 神奇的口袋</a></li>
+<li><a href="http://poj.org/problem?id=3624">POJ 3624: 0-1背包问题</a></li>
+<li><a href="http://bailian.openjudge.cn/practice/1088">POJ 1088: 滑雪</a></li>
+<li><a href="http://bailian.openjudge.cn/practice/1390">POJ 1390: 方盒游戏</a></li>
+<li><a href="http://bailian.openjudge.cn/practice/2373">POJ 2373: 灌溉草场</a></li>
+<li>最佳加法表达式：有一个由 $1 \dots 9$ 组成的数字串.问如果将 $m$ 个加号插入到这个数字串中,在各种可能形成的表达式中，值最小的那个表达式的值是多少？</li>
+</ul>
+
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">765PRO.P</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2018-07-18
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://yz1509.github.io/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">动态规划</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/%E5%88%86%E6%B2%BB%E7%AE%97%E6%B3%95/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">分治算法</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="pro-765@qq.com" rel="me noopener" class="iconfont"
+      title="email"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1451 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M664.781909 681.472759 0 97.881301C0 3.997201 71.046997 0 71.046997 0L474.477909 0 961.649408 0 1361.641813 0C1361.641813 0 1432.688811 3.997201 1432.688811 97.881301L771.345323 681.472759C771.345323 681.472759 764.482731 685.154773 753.594283 688.65053L753.594283 688.664858C741.602731 693.493018 729.424896 695.068979 718.077952 694.839748 706.731093 695.068979 694.553173 693.493018 682.561621 688.664858L682.561621 688.65053C671.644501 685.140446 664.781909 681.472759 664.781909 681.472759L664.781909 681.472759ZM718.063616 811.603883C693.779541 811.016482 658.879232 802.205449 619.10784 767.734955 542.989056 701.759633 0 212.052267 0 212.052267L0 942.809523C0 942.809523 0 1024 83.726336 1024L682.532949 1024 753.579947 1024 1348.948139 1024C1432.688811 1024 1432.688811 942.809523 1432.688811 942.809523L1432.688811 212.052267C1432.688811 212.052267 893.138176 701.759633 817.019477 767.734955 777.248 802.205449 742.347691 811.03081 718.063616 811.603883L718.063616 811.603883Z"></path>
+</svg>
+
+    </a>
+  
+    <a href="https://github.com/yz1509" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://yz1509.github.io/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2018 -
+    2020
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        765PRO.P
+        
+      </span></span>
+
+  
+  
+    <span id="busuanzi_container">
+      访客数/访问量：<span id="busuanzi_value_site_uv"></span>/<span id="busuanzi_value_site_pv"></span>
+    </span>
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

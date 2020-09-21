@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Linux on HTT - ふわふわ時間</title>
+    <link>https://yz1509.github.io/tags/linux/</link>
+    <description>Recent content in Linux on HTT - ふわふわ時間</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 12 Oct 2019 20:00:38 +0000</lastBuildDate><atom:link href="https://yz1509.github.io/tags/linux/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Linux相关小问题</title>
+      <link>https://yz1509.github.io/post/linux%E7%9B%B8%E5%85%B3%E5%B0%8F%E9%97%AE%E9%A2%98/</link>
+      <pubDate>Sat, 12 Oct 2019 20:00:38 +0000</pubDate>
+      
+      <guid>https://yz1509.github.io/post/linux%E7%9B%B8%E5%85%B3%E5%B0%8F%E9%97%AE%E9%A2%98/</guid>
+      <description>这个人明明遇到过很多问题，却总是忘了记录。 手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？ 使用 echo $PATH 命令检查环境变量，如新版本软件</description>
+    </item>
+    
+  </channel>
+</rss>

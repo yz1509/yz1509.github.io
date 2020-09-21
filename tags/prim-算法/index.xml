@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Prim 算法 on HTT - ふわふわ時間</title>
+    <link>https://yz1509.github.io/tags/prim-%E7%AE%97%E6%B3%95/</link>
+    <description>Recent content in Prim 算法 on HTT - ふわふわ時間</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Thu, 26 Jul 2018 13:17:37 +0000</lastBuildDate><atom:link href="https://yz1509.github.io/tags/prim-%E7%AE%97%E6%B3%95/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>图</title>
+      <link>https://yz1509.github.io/post/%E5%9B%BE/</link>
+      <pubDate>Thu, 26 Jul 2018 13:17:37 +0000</pubDate>
+      
+      <guid>https://yz1509.github.io/post/%E5%9B%BE/</guid>
+      <description>简单介绍图及其相关算法。 什么是图 定义 一个图 $G = (V, E)$ 由顶点（或结点）的非空集 $V$ 和边的集合 $E$ 构成，每条边有一个或两个顶点与它相连，这样的顶点称为</description>
+    </item>
+    
+  </channel>
+</rss>

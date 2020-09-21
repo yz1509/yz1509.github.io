@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://yz1509.github.io/sitemap.xml

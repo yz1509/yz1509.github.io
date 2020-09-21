@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>操作系统 on HTT - ふわふわ時間</title>
+    <link>https://yz1509.github.io/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/</link>
+    <description>Recent content in 操作系统 on HTT - ふわふわ時間</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 26 Aug 2020 20:38:59 +0000</lastBuildDate><atom:link href="https://yz1509.github.io/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>NVM-notes</title>
+      <link>https://yz1509.github.io/post/nvm-notes/</link>
+      <pubDate>Wed, 26 Aug 2020 20:38:59 +0000</pubDate>
+      
+      <guid>https://yz1509.github.io/post/nvm-notes/</guid>
+      <description>NVM 相关笔记。 Intel Optane DC Persistent Memory Overview 原文地址 Intel Optane DC Persistent Memory has two main properties: It is persistent. Data is maintained even when the system power is off. This memory is byte-addressable. Like in regular DRAM, programs can access data structures in place at cache line granularity, avoiding the need to access data in large blocks as it currently happens</description>
+    </item>
+    
+  </channel>
+</rss>

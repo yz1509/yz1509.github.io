@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>动态规划 on HTT - ふわふわ時間</title>
+    <link>https://yz1509.github.io/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</link>
+    <description>Recent content in 动态规划 on HTT - ふわふわ時間</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 18 Jul 2018 21:28:58 +0000</lastBuildDate><atom:link href="https://yz1509.github.io/tags/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>动态规划</title>
+      <link>https://yz1509.github.io/post/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</link>
+      <pubDate>Wed, 18 Jul 2018 21:28:58 +0000</pubDate>
+      
+      <guid>https://yz1509.github.io/post/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</guid>
+      <description>动态规划算法学习笔记。 定义 Dynamic Programming (also known as dynamic optimization) is a method for solving a complex problem by breaking it down into a collection of simpler subproblems. 本质:是对问题状态的定义和状态转移方程的定义。 解题思路 将原问题分</description>
+    </item>
+    
+  </channel>
+</rss>
