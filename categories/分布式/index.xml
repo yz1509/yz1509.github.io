@@ -13,7 +13,7 @@
       <pubDate>Mon, 17 Aug 2020 20:08:58 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%85%B3%E7%AC%94%E8%AE%B0/</guid>
-      <description>分布式系统相关资源汇总及简要笔记。 基础概念 一致性相关 Strong consistency models 中文版 英文版 正确性 (Correctness) 我们说一个系统是由状态和一些导致状态转移的操作组成的 系统的正确</description>
+      <description>&lt;p&gt;分布式系统相关资源汇总及简要笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -22,7 +22,7 @@
       <pubDate>Tue, 30 Jul 2019 22:57:40 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/thrift-protocol%E6%A6%82%E8%BF%B0/</guid>
-      <description>Thrift 协议层简单介绍。 协议层类关系图 协议层相关的类主要实现与数据传输格式封装的协议相关的内容。可以发现，所有的协议类都直接或间接继承 TProtocol 类，协议层</description>
+      <description>&lt;p&gt;Thrift 协议层简单介绍。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -31,7 +31,7 @@
       <pubDate>Tue, 30 Jul 2019 22:57:26 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/thrift-transport%E6%A6%82%E8%BF%B0/</guid>
-      <description>Thrift 传输层简单介绍。 传输层类关系图 传输层类关系图主要分为三部分来看： 抽象基类 TTransport，它是所有传输类的基类，有很大一部分类直接从它</description>
+      <description>&lt;p&gt;Thrift 传输层简单介绍。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -40,7 +40,7 @@
       <pubDate>Fri, 26 Jul 2019 23:48:45 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/thrift%E6%A6%82%E8%BF%B0/</guid>
-      <description>Thrift 是一个基于静态代码生成的跨语言的RPC协议栈实现，它可以生成包括 C++, Java, Python, Ruby, PHP 等主流语言的代码，这些代码实现了 RPC 的协议层和传输层功能，从而让用</description>
+      <description>&lt;p&gt;Thrift 是一个基于静态代码生成的跨语言的RPC协议栈实现，它可以生成包括 C++, Java, Python, Ruby, PHP 等主流语言的代码，这些代码实现了 RPC 的协议层和传输层功能，从而让用户可以集中精力于服务的调用和实现。&lt;/p&gt;</description>
     </item>
     
   </channel>

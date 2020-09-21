@@ -13,7 +13,7 @@
       <pubDate>Mon, 07 Sep 2020 12:02:54 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/efficient-state-based-crdts-by-delta-mutation/</guid>
-      <description>Efficient State-based CRDTs by Delta-Mutation 阅读笔记。 论文地址 代码地址 CmRDT 和 CvRDT 的不足 本文作者认为 CmRDT 的不足之处有三： 为确保幂等性：要求消息传输提供 exactly once 的保证 (本身幂等的操作无需此</description>
+      <description>&lt;p&gt;Efficient State-based CRDTs by Delta-Mutation 阅读笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -22,7 +22,7 @@
       <pubDate>Wed, 17 Jun 2020 11:15:10 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/crdts-in-redis/</guid>
-      <description>Redis 全球多活调研笔记。 CRDT 简单介绍 在 Conflict-free Replicated Data Types 一文中，作者依据传递消息内容的区别，提出了两种 CRDT： CvRDT(State-based Convergent Replicated Data Type): 基于状态的聚合复制数据类型 条件： 状</description>
+      <description>&lt;p&gt;Redis 全球多活调研笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -31,7 +31,7 @@
       <pubDate>Wed, 22 Apr 2020 18:09:55 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/conflict-free-replicated-data-types/</guid>
-      <description>Conflict free replicated data types 阅读笔记。 论文地址 最终一致性 Eventual Consistency 一个分布式系统是最终一致的，需满足以下条件： Eventual delivery: 在健康节点上执行的更新操作最终会被传递至所有健康节</description>
+      <description>&lt;p&gt;Conflict free replicated data types 阅读笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -40,7 +40,7 @@
       <pubDate>Tue, 21 Apr 2020 11:02:30 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/crdt-notes/</guid>
-      <description>CRDT 学习笔记。 CRDT 相关资源 CRDT wiki CRDT Website CRDT Research Awesome CRDT 背景知识 A CRDT Primer Part I: Defanging Order Theory Order Definition An Order set is a binary relation $\le$ on a set $\mathcal{S}$, written $(\mathcal{S},\le)$. Core concepts If we can say that $a \le b$ or $b \le a$, then we know that $a$ is comparable to $b$.</description>
+      <description>&lt;p&gt;CRDT 学习笔记。&lt;/p&gt;</description>
     </item>
     
   </channel>

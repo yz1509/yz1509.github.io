@@ -13,7 +13,7 @@
       <pubDate>Tue, 30 Jul 2019 22:57:40 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/thrift-protocol%E6%A6%82%E8%BF%B0/</guid>
-      <description>Thrift 协议层简单介绍。 协议层类关系图 协议层相关的类主要实现与数据传输格式封装的协议相关的内容。可以发现，所有的协议类都直接或间接继承 TProtocol 类，协议层</description>
+      <description>&lt;p&gt;Thrift 协议层简单介绍。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -22,7 +22,7 @@
       <pubDate>Tue, 30 Jul 2019 22:57:26 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/thrift-transport%E6%A6%82%E8%BF%B0/</guid>
-      <description>Thrift 传输层简单介绍。 传输层类关系图 传输层类关系图主要分为三部分来看： 抽象基类 TTransport，它是所有传输类的基类，有很大一部分类直接从它</description>
+      <description>&lt;p&gt;Thrift 传输层简单介绍。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -31,7 +31,7 @@
       <pubDate>Fri, 26 Jul 2019 23:48:45 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/thrift%E6%A6%82%E8%BF%B0/</guid>
-      <description>Thrift 是一个基于静态代码生成的跨语言的RPC协议栈实现，它可以生成包括 C++, Java, Python, Ruby, PHP 等主流语言的代码，这些代码实现了 RPC 的协议层和传输层功能，从而让用</description>
+      <description>&lt;p&gt;Thrift 是一个基于静态代码生成的跨语言的RPC协议栈实现，它可以生成包括 C++, Java, Python, Ruby, PHP 等主流语言的代码，这些代码实现了 RPC 的协议层和传输层功能，从而让用户可以集中精力于服务的调用和实现。&lt;/p&gt;</description>
     </item>
     
   </channel>

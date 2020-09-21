@@ -23,7 +23,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <meta name="author" content="765PRO.P" />
-  <meta name="description" content="《C&#43;&#43; Concurrentcy in Action 2nd》 第二章阅读笔记。 基础线程管理 启动线程 使用 C&#43;&#43; 线程库启动线程，可以归结为构造 std::thread 对象，例如： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16" />
+  <meta name="description" content="《C&#43;&#43; Concurrentcy in Action 2nd》 第二章阅读笔记。
+" />
 
   <meta name="keywords" content="K-ON, KyoAni" />
 
@@ -60,13 +61,13 @@
 
 
 <meta property="og:title" content="CCIA-线程管理" />
-<meta property="og:description" content="《C&#43;&#43; Concurrentcy in Action 2nd》 第二章阅读笔记。 基础线程管理 启动线程 使用 C&#43;&#43; 线程库启动线程，可以归结为构造 std::thread 对象，例如： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16" />
+<meta property="og:description" content="《C&#43;&#43; Concurrentcy in Action 2nd》 第二章阅读笔记。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://yz1509.github.io/post/ccia-%E7%BA%BF%E7%A8%8B%E7%AE%A1%E7%90%86/" />
 <meta property="article:published_time" content="2019-11-14T14:20:01+00:00" />
 <meta property="article:modified_time" content="2019-11-14T14:20:01+00:00" />
 <meta itemprop="name" content="CCIA-线程管理">
-<meta itemprop="description" content="《C&#43;&#43; Concurrentcy in Action 2nd》 第二章阅读笔记。 基础线程管理 启动线程 使用 C&#43;&#43; 线程库启动线程，可以归结为构造 std::thread 对象，例如： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16">
+<meta itemprop="description" content="《C&#43;&#43; Concurrentcy in Action 2nd》 第二章阅读笔记。">
 <meta itemprop="datePublished" content="2019-11-14T14:20:01+00:00" />
 <meta itemprop="dateModified" content="2019-11-14T14:20:01+00:00" />
 <meta itemprop="wordCount" content="2594">
@@ -76,7 +77,7 @@
 <meta itemprop="keywords" content="C&#43;&#43;,多线程,并发," />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="CCIA-线程管理"/>
-<meta name="twitter:description" content="《C&#43;&#43; Concurrentcy in Action 2nd》 第二章阅读笔记。 基础线程管理 启动线程 使用 C&#43;&#43; 线程库启动线程，可以归结为构造 std::thread 对象，例如： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16"/>
+<meta name="twitter:description" content="《C&#43;&#43; Concurrentcy in Action 2nd》 第二章阅读笔记。"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -330,16 +331,24 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#启动线程">启动线程</a></li>
-    <li><a href="#等待线程完成">等待线程完成</a></li>
-    <li><a href="#分离线程">分离线程</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#提防隐式转换">提防隐式转换</a></li>
-    <li><a href="#传递引用">传递引用</a></li>
-    <li><a href="#传递成员函数指针">传递成员函数指针</a></li>
-    <li><a href="#传递仅支持-move-的参数">传递仅支持 <code>move</code> 的参数</a></li>
+    <li><a href="#基础线程管理">基础线程管理</a>
+      <ul>
+        <li><a href="#启动线程">启动线程</a></li>
+        <li><a href="#等待线程完成">等待线程完成</a></li>
+        <li><a href="#分离线程">分离线程</a></li>
+      </ul>
+    </li>
+    <li><a href="#传递参数">传递参数</a>
+      <ul>
+        <li><a href="#提防隐式转换">提防隐式转换</a></li>
+        <li><a href="#传递引用">传递引用</a></li>
+        <li><a href="#传递成员函数指针">传递成员函数指针</a></li>
+        <li><a href="#传递仅支持-move-的参数">传递仅支持 <code>move</code> 的参数</a></li>
+      </ul>
+    </li>
+    <li><a href="#转移线程所有权">转移线程所有权</a></li>
+    <li><a href="#选择所需线程的数量">选择所需线程的数量</a></li>
+    <li><a href="#线程标识">线程标识</a></li>
   </ul>
 </nav>
   </div>
@@ -348,10 +357,9 @@
     
     <div class="post-content">
       <p>《C++ Concurrentcy in Action 2nd》 第二章阅读笔记。</p>
-<!-- more -->
 <hr>
-<h1 id="基础线程管理">基础线程管理</h1>
-<h2 id="启动线程">启动线程</h2>
+<h2 id="基础线程管理">基础线程管理</h2>
+<h3 id="启动线程">启动线程</h3>
 <p>使用 C++ 线程库启动线程，可以归结为构造 <code>std::thread</code> 对象，例如：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -425,7 +433,7 @@
 <span class="p">});</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="等待线程完成">等待线程完成</h2>
+</div><h3 id="等待线程完成">等待线程完成</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -566,7 +574,7 @@
 </div>
 </div></li>
 </ol>
-<h2 id="分离线程">分离线程</h2>
+<h3 id="分离线程">分离线程</h3>
 <p>通过调用 <code>detach()</code> 可让线程在后台运行。可以通过调用 <code>joinable()</code> 判断线程是否可以分离。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -608,7 +616,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h1 id="传递参数">传递参数</h1>
+</div><h2 id="传递参数">传递参数</h2>
 <p>向可调用对象或函数传递参数很简单，只需要将这些参数作为 <code>std::thread</code> 构造函数的附加参数即可。但需要注意的是，在默认情况下，这些参数会被拷贝至新线程的独立内存空间中，以供新线程访问，并如同临时变量一样作为右值传递给可调用对象或函数。即使函数中的参数是引用的形式，拷贝操作也会执行。例如：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -621,7 +629,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>代码创建了一个调用 <code>f(3, &quot;hello&quot;)</code> 的线程。注意，函数 <code>f</code> 需要一个 <code>std::string</code> 对象作为第二个参数，但这里使用的是字符串的字面值，也就是 <code>char const *</code> 类型。之后，在线程的上下文中完成字面值向 <code>std::string</code> 对象的转化。</p>
-<h2 id="提防隐式转换">提防隐式转换</h2>
+<h3 id="提防隐式转换">提防隐式转换</h3>
 <p>特别需要注意的是，当指向动态变量的指针作为参数传递给线程的情况，代码如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -670,7 +678,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="传递引用">传递引用</h2>
+</div><h3 id="传递引用">传递引用</h3>
 <p>当你尝试使用线程更新一个引用传递的数据结构时也会出现问题：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -706,7 +714,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>从而，<code>update_data_for_widget</code> 就会接收到一个 <code>data</code> 变量的引用，而非 <code>data</code> 变量的拷贝副本，这样代码就能顺利的通过编译。</p>
-<h2 id="传递成员函数指针">传递成员函数指针</h2>
+<h3 id="传递成员函数指针">传递成员函数指针</h3>
 <p>你也可以向线程传递一个成员函数指针，并提供一个合适的对象指针作为函数第一个参数：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -729,7 +737,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>在这段代码中，新线程将会调用 <code>my_x.do_lengthy_work()</code>，其中 <code>my_x</code> 的地址作为对象指针提供给函数。你也可以为成员函数提供参数：<code>std::thread</code> 构造函数的第三个参数就是成员函数的第一个参数。</p>
-<h2 id="传递仅支持-move-的参数">传递仅支持 <code>move</code> 的参数</h2>
+<h3 id="传递仅支持-move-的参数">传递仅支持 <code>move</code> 的参数</h3>
 <p>当原对象是一个临时变量时，自动进行 <code>move</code> 操作，但当原对象是一个命名变量，那么传递的时候就需要使用 <code>std::move()</code> 进行显示 <code>move</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -746,7 +754,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p><code>std::thread</code> 对象其实和 <code>std::unique</code> 类似，也是仅支持 <code>move</code>，不支持 <code>copy</code> 的类型。这说明了在同一时刻，至多仅有一个 <code>std::thread</code> 实例与一个执行中的线程关联，而且允许在不同的实例之间转移线程的所有权。</p>
-<h1 id="转移线程所有权">转移线程所有权</h1>
+<h2 id="转移线程所有权">转移线程所有权</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -919,7 +927,7 @@
 </div>
 </div><p><em>Tips:</em> 此处使用的 <code>emplace_back</code> 比 <code>push_back</code> 更高效，它仅需要传入对象构造函数所需的参数。
 <a href="https://devdocs.io/cpp/container/vector/emplace_back">接口定义</a>  &amp;&amp;  <a href="https://stackoverflow.com/questions/4303513/push-back-vs-emplace-back">两者对比</a></p>
-<h1 id="选择所需线程的数量">选择所需线程的数量</h1>
+<h2 id="选择所需线程的数量">选择所需线程的数量</h2>
 <p>函数 <code>std:🧵:hardware_concurrency()</code> 返回当前可真正并行运行的线程数（不过需要确定当前运行环境是否支持该命令）。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1009,7 +1017,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h1 id="线程标识">线程标识</h1>
+</div><h2 id="线程标识">线程标识</h2>
 <p>线程标识的类型是 <code>std:🧵:id</code>，可通过种方式获取：</p>
 <ul>
 <li>调用 <code>std::thread</code> 对象的成员函数 <code>get_id()</code></li>

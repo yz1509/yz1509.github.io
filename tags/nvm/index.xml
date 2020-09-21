@@ -13,7 +13,7 @@
       <pubDate>Wed, 26 Aug 2020 20:38:59 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/nvm-notes/</guid>
-      <description>NVM 相关笔记。 Intel Optane DC Persistent Memory Overview 原文地址 Intel Optane DC Persistent Memory has two main properties: It is persistent. Data is maintained even when the system power is off. This memory is byte-addressable. Like in regular DRAM, programs can access data structures in place at cache line granularity, avoiding the need to access data in large blocks as it currently happens</description>
+      <description>&lt;p&gt;NVM 相关笔记。&lt;/p&gt;</description>
     </item>
     
   </channel>

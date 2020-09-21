@@ -13,7 +13,7 @@
       <pubDate>Wed, 22 Jan 2020 10:36:38 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/%E5%88%9D%E8%AF%95%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/</guid>
-      <description>利用 perf + FlameGraph 进行性能调优。 简单使用示例： 1 2 3 4 5 6 7 // perf # perf record -F 99 -p pid --call-graph dwarf sleep 60 # perf script &amp;gt; out.perf // FlameGraph # ./stackcollapse-perf.pl out.perf &amp;gt; out.folded # ./flamegraph.pl out.folded &amp;gt; flameGraph.svg Perf 命令示例</description>
+      <description>&lt;p&gt;利用 &lt;a href=&#34;https://github.com/torvalds/linux/tree/master/tools/perf&#34;&gt;perf&lt;/a&gt; + &lt;a href=&#34;https://github.com/brendangregg/FlameGraph&#34;&gt;FlameGraph&lt;/a&gt; 进行性能调优。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -22,7 +22,7 @@
       <pubDate>Sat, 12 Oct 2019 20:00:38 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/linux%E7%9B%B8%E5%85%B3%E5%B0%8F%E9%97%AE%E9%A2%98/</guid>
-      <description>这个人明明遇到过很多问题，却总是忘了记录。 手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？ 使用 echo $PATH 命令检查环境变量，如新版本软件</description>
+      <description>&lt;p&gt;这个人明明遇到过很多问题，却总是忘了记录。&lt;/p&gt;</description>
     </item>
     
   </channel>

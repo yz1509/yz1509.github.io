@@ -13,7 +13,7 @@
       <pubDate>Thu, 27 Aug 2020 10:45:48 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/redis-modules-apis/</guid>
-      <description>Redis Modules APIs 介绍。 源码地址 内存管理 虽然在模块中可以调用 malloc() 和 free() 函数，但是通过 malloc() 分配的内存并不会被计算到 used_memory 信息中去，也不会受到 maxmemory 限制，所以应首先考虑使</description>
+      <description>&lt;p&gt;Redis Modules APIs 介绍。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -22,7 +22,7 @@
       <pubDate>Wed, 19 Aug 2020 16:52:01 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/introduction-to-redis-modules/</guid>
-      <description>Redis Modules 入门。 Introduction to Redis modules 原文地址 加载、卸载和查看 Modules 加载 Modules 有两种加载方式： 在 redis.conf 中设置：loadmodule /path/to/mymodule.so 通过 redis command 实时加载：MODULE LOAD /path/to/mymodule.so 也可在</description>
+      <description>&lt;p&gt;Redis Modules 入门。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -31,7 +31,7 @@
       <pubDate>Wed, 17 Jun 2020 11:15:10 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/crdts-in-redis/</guid>
-      <description>Redis 全球多活调研笔记。 CRDT 简单介绍 在 Conflict-free Replicated Data Types 一文中，作者依据传递消息内容的区别，提出了两种 CRDT： CvRDT(State-based Convergent Replicated Data Type): 基于状态的聚合复制数据类型 条件： 状</description>
+      <description>&lt;p&gt;Redis 全球多活调研笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -40,7 +40,7 @@
       <pubDate>Wed, 16 Oct 2019 17:50:09 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/redisstreams/</guid>
-      <description>主要介绍 Redis Streams 数据结构及部分操作，并不涉及源码部分。 整理自 Streams: a new general purpose data structure in Redis、An update on Redis Streams development、Redis streams as a pure data</description>
+      <description>&lt;p&gt;主要介绍 Redis Streams 数据结构及部分操作，并不涉及源码部分。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -49,7 +49,7 @@
       <pubDate>Sat, 12 Oct 2019 20:10:31 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/redis%E6%BA%90%E7%A0%81%E4%B9%8Bsds/</guid>
-      <description>Redis 简单字符串的源码读后感 (超500字)。 源码文件 /src/sds.h &amp;amp; sdsalloc.h &amp;amp; /src/sds.c sds 数据结构 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 typedef char *sds;</description>
+      <description>&lt;p&gt;Redis 简单字符串的源码读后感 (超500字)。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -58,7 +58,7 @@
       <pubDate>Sat, 12 Oct 2019 20:08:45 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/redis%E6%BA%90%E7%A0%81%E4%B9%8Badlist/</guid>
-      <description>Redis 底层链表结构相关源码阅读笔记。 源码文件 /src/adlist.h &amp;amp; /src/adlist.c adlist 数据结构 adlist 其实是一个双向链表，我们首先介绍其链表节点、链表迭代器和链表的数据结构。 链表节点 1</description>
+      <description>&lt;p&gt;Redis 底层链表结构相关源码阅读笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -67,7 +67,7 @@
       <pubDate>Sat, 12 Oct 2019 20:07:44 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/redis%E6%BA%90%E7%A0%81%E4%B9%8Bzmalloc/</guid>
-      <description>Redis 内存分配及释放相关源码阅读笔记，版本: 47ff13637 Redis 6.0.1 源码文件 /src/zmalloc.h &amp;amp; /src/zmalloc.c 分配内存 zmalloc 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 void *zmalloc(size_t size) { // 调用 malloc 分配内存 void *ptr = malloc(size+PREFIX_SIZE);</description>
+      <description>&lt;p&gt;Redis 内存分配及释放相关源码阅读笔记，版本: &lt;a href=&#34;https://github.com/antirez/redis/commit/47ff13637e1254e5a6ac962afa3e963d2f284783&#34;&gt;47ff13637 Redis 6.0.1&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>

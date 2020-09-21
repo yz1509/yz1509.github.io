@@ -13,7 +13,7 @@
       <pubDate>Wed, 11 Dec 2019 19:45:55 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%90%8C%E6%AD%A5/</guid>
-      <description>《C++ Concurrentcy in Action 2nd》 第四章阅读笔记。 在多线程编程中，不仅需要知道处理数据的一致性问题，还需要熟悉线程之间的同步机制。 等待某个事件/条件 当一</description>
+      <description>&lt;p&gt;《C++ Concurrentcy in Action 2nd》 第四章阅读笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -22,7 +22,7 @@
       <pubDate>Fri, 15 Nov 2019 17:15:13 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%85%B1%E4%BA%AB%E6%95%B0%E6%8D%AE/</guid>
-      <description>《C++ Concurrentcy in Action 2nd》 第三章阅读笔记。 使用互斥锁保护共享数据 在 C++ 中使用互斥锁 构造一个 std::mutex 的实例即可创建一个互斥锁，使用成员函数 lock() 和 unlock() 可分别执行</description>
+      <description>&lt;p&gt;《C++ Concurrentcy in Action 2nd》 第三章阅读笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -31,7 +31,7 @@
       <pubDate>Thu, 14 Nov 2019 14:20:01 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/ccia-%E7%BA%BF%E7%A8%8B%E7%AE%A1%E7%90%86/</guid>
-      <description>《C++ Concurrentcy in Action 2nd》 第二章阅读笔记。 基础线程管理 启动线程 使用 C++ 线程库启动线程，可以归结为构造 std::thread 对象，例如： 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16</description>
+      <description>&lt;p&gt;《C++ Concurrentcy in Action 2nd》 第二章阅读笔记。&lt;/p&gt;</description>
     </item>
     
   </channel>

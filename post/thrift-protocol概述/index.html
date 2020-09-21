@@ -23,7 +23,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <meta name="author" content="765PRO.P" />
-  <meta name="description" content="Thrift 协议层简单介绍。 协议层类关系图 协议层相关的类主要实现与数据传输格式封装的协议相关的内容。可以发现，所有的协议类都直接或间接继承 TProtocol 类，协议层" />
+  <meta name="description" content="Thrift 协议层简单介绍。
+" />
 
   <meta name="keywords" content="K-ON, KyoAni" />
 
@@ -60,23 +61,23 @@
 
 
 <meta property="og:title" content="Thrift-Protocol 概述" />
-<meta property="og:description" content="Thrift 协议层简单介绍。 协议层类关系图 协议层相关的类主要实现与数据传输格式封装的协议相关的内容。可以发现，所有的协议类都直接或间接继承 TProtocol 类，协议层" />
+<meta property="og:description" content="Thrift 协议层简单介绍。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://yz1509.github.io/post/thrift-protocol%E6%A6%82%E8%BF%B0/" />
 <meta property="article:published_time" content="2019-07-30T22:57:40+00:00" />
 <meta property="article:modified_time" content="2019-07-30T22:57:40+00:00" />
 <meta itemprop="name" content="Thrift-Protocol 概述">
-<meta itemprop="description" content="Thrift 协议层简单介绍。 协议层类关系图 协议层相关的类主要实现与数据传输格式封装的协议相关的内容。可以发现，所有的协议类都直接或间接继承 TProtocol 类，协议层">
+<meta itemprop="description" content="Thrift 协议层简单介绍。">
 <meta itemprop="datePublished" content="2019-07-30T22:57:40+00:00" />
 <meta itemprop="dateModified" content="2019-07-30T22:57:40+00:00" />
-<meta itemprop="wordCount" content="1549">
+<meta itemprop="wordCount" content="1548">
 
 
 
 <meta itemprop="keywords" content="thrift," />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Thrift-Protocol 概述"/>
-<meta name="twitter:description" content="Thrift 协议层简单介绍。 协议层类关系图 协议层相关的类主要实现与数据传输格式封装的协议相关的内容。可以发现，所有的协议类都直接或间接继承 TProtocol 类，协议层"/>
+<meta name="twitter:description" content="Thrift 协议层简单介绍。"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -308,7 +309,7 @@
             <a href="https://yz1509.github.io/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"> 分布式 </a>
             
           </div>
-        <span class="more-meta"> 1549 words </span>
+        <span class="more-meta"> 1548 words </span>
           <span class="more-meta"> 4 min read </span>
 
         
@@ -330,22 +331,30 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#支持的数据结构">支持的数据结构</a></li>
-    <li><a href="#写函数">写函数</a></li>
-    <li><a href="#读函数">读函数</a></li>
-    <li><a href="#构造函数">构造函数</a></li>
-    <li><a href="#其他函数">其他函数</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#继承关系">继承关系</a></li>
-    <li><a href="#主要操作">主要操作</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#继承关系-1">继承关系</a></li>
-    <li><a href="#读写函数">读写函数</a></li>
-    <li><a href="#其他操作">其他操作</a></li>
+    <li><a href="#协议层类关系图">协议层类关系图</a></li>
+    <li><a href="#tprotocol">Tprotocol</a>
+      <ul>
+        <li><a href="#支持的数据结构">支持的数据结构</a></li>
+        <li><a href="#写函数">写函数</a></li>
+        <li><a href="#读函数">读函数</a></li>
+        <li><a href="#构造函数">构造函数</a></li>
+        <li><a href="#其他函数">其他函数</a></li>
+      </ul>
+    </li>
+    <li><a href="#tprotocoldefaults">TProtocolDefaults</a>
+      <ul>
+        <li><a href="#继承关系">继承关系</a></li>
+        <li><a href="#主要操作">主要操作</a></li>
+      </ul>
+    </li>
+    <li><a href="#tvirtualprotocol">TVirtualProtocol</a>
+      <ul>
+        <li><a href="#继承关系-1">继承关系</a></li>
+        <li><a href="#读写函数">读写函数</a></li>
+        <li><a href="#其他操作">其他操作</a></li>
+      </ul>
+    </li>
+    <li><a href="#为何要有-tprotocoldefaults-和-tvirtualprotocol">为何要有 <code>TProtocolDefaults</code> 和 <code>TVirtualProtocol</code></a></li>
   </ul>
 </nav>
   </div>
@@ -354,19 +363,18 @@
     
     <div class="post-content">
       <p>Thrift 协议层简单介绍。</p>
-<!-- more -->
 <hr>
-<h1 id="协议层类关系图">协议层类关系图</h1>
+<h2 id="协议层类关系图">协议层类关系图</h2>
 <p>协议层相关的类主要实现与数据传输格式封装的协议相关的内容。可以发现，所有的协议类都直接或间接继承 TProtocol 类，协议层类关系图主要分为三部分来看：</p>
 <ul>
 <li>抽象基类 Tprotocol，它是所有协议类的基类，有很大一部分类直接从它继承实现它定义的接口函数（纯虚函数）</li>
 <li>TProtocol 的默认实现 TProtocolDefaults 类和虚拟协议类 TVirtualProtocol 及其子类</li>
 <li>各种协议类的对象生成工厂类，负责某一种具体协议类对象的生产</li>
 </ul>
-<h1 id="tprotocol">Tprotocol</h1>
+<h2 id="tprotocol">Tprotocol</h2>
 <p>源码路径：<code>thrift/lib/cpp/src/thrift/protocol/TProtocol.h</code></p>
 <p>抽象类 TProtocol 对于每一种数据类型都提供了读写的开始和结束的方法，这里的读写方法应该是针对网络 I/O 读写，不过真正实现网络读写的是 TTransport 相关类，此处的读写方法主要针对数据的处理（如数据格式调整）。除了有针对具体的数据类型的读写方法，消息也可以通过网络传递。所以也定义了消息的读写方法。此外，还定义了一些公用的功能，例如跳过某一个结构不读，大小端数据格式调整、主机字节序和网络字节序的相互转换等。</p>
-<h2 id="支持的数据结构">支持的数据结构</h2>
+<h3 id="支持的数据结构">支持的数据结构</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -431,7 +439,7 @@
 <span class="p">};</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="写函数">写函数</h2>
+</div><h3 id="写函数">写函数</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -460,7 +468,7 @@
 </span><span class="c1"></span><span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="读函数">读函数</h2>
+</div><h3 id="读函数">读函数</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -499,7 +507,7 @@
 </span><span class="c1"></span><span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="构造函数">构造函数</h2>
+</div><h3 id="构造函数">构造函数</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -514,7 +522,7 @@
   <span class="p">{}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="其他函数">其他函数</h2>
+</div><h3 id="其他函数">其他函数</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -548,9 +556,9 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>此外还有一些与输入，输出递归深度有关的函数在上面并未列出。</p>
-<h1 id="tprotocoldefaults">TProtocolDefaults</h1>
+<h2 id="tprotocoldefaults">TProtocolDefaults</h2>
 <p>源码路径：<code>thrift/lib/cpp/src/thrift/protocol/TVirtualProtocol.h</code></p>
-<h2 id="继承关系">继承关系</h2>
+<h3 id="继承关系">继承关系</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -559,15 +567,15 @@
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">class</span> <span class="nc">TProtocolDefaults</span> <span class="o">:</span> <span class="k">public</span> <span class="n">TProtocol</span> <span class="p">{};</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="主要操作">主要操作</h2>
+</div><h3 id="主要操作">主要操作</h3>
 <ol>
 <li>重写了父类非虚拟的读写函数，这些函数都会抛出一个 <code>TProtocolException::NOT_IMPLEMENTED</code> 异常</li>
 <li>重写了父类的 <code>skip</code> 函数，直接调用父类中的 <code>skip</code> 模板函数</li>
 <li>构造函数直接调用父类的构造函数</li>
 </ol>
-<h1 id="tvirtualprotocol">TVirtualProtocol</h1>
+<h2 id="tvirtualprotocol">TVirtualProtocol</h2>
 <p>源码路径：<code>thrift/lib/cpp/src/thrift/protocol/TVirtualProtocol.h</code></p>
-<h2 id="继承关系-1">继承关系</h2>
+<h3 id="继承关系-1">继承关系</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -578,7 +586,7 @@
 <span class="k">class</span> <span class="nc">TVirtualProtocol</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Super_</span> <span class="p">{};</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="读写函数">读写函数</h2>
+</div><h3 id="读写函数">读写函数</h3>
 <p>TVirtualProtocol 类中的读写函数会重写父类中的读写纯虚函数，其都是通过 <code>this</code> 指针调用模板参数 <code>class Protocol_</code> 中相应的实现方法来实现自己的读写函数，例如：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -596,14 +604,13 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="其他操作">其他操作</h2>
+</div><h3 id="其他操作">其他操作</h3>
 <ol>
 <li>提供了 <code>skip</code> 函数和针对 <code>std::vector&lt;boo&gt;</code> 的 <code>readBool</code> 函数的默认实现</li>
 <li>构造函数直接调用父类的构造函数</li>
 </ol>
-<h1 id="为何要有-tprotocoldefaults-和-tvirtualprotocol-">为何要有 TProtocolDefaults 和 TVirtualProtocol ？</h1>
+<h2 id="为何要有-tprotocoldefaults-和-tvirtualprotocol">为何要有 <code>TProtocolDefaults</code> 和 <code>TVirtualProtocol</code></h2>
 <p>下面来分析如果不从定义的默认实现类继承，直接从抽象类继承怎样会产生无限递归调用。现在我们假设直接从抽象类继承，那么如果一个指向子类对象的父类（TProtocol）调用 <code>writeMessageBegin</code> 方法，因为这个方法不是虚拟函数（不会动态绑定）所以就会调用父类的 <code>writeMessageBegin</code> 方法，然后父类会直接调用它的纯虚函数 <code>writeMessageBegin_virt</code>，这个函数就会动态绑定，就会执行子类的实现，在这里就是通过虚协议类 TVirtualProtocol 实现的，而这个函数又会调用之类的 <code>writeMessageBegin</code> 方法，如果子类没有实现这个方法，那么就又回到父类的这个方法了,从而产生无限递归调用。那么如果默认是从默认实现类 TProtocolDefaults 继承，那么就会执行它的 <code>writeMessageBegin</code> 方法，从而抛出一个异常，就不会产生无限递归调用。</p>
-
     </div>
 
     

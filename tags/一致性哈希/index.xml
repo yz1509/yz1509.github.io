@@ -13,7 +13,7 @@
       <pubDate>Sat, 12 Oct 2019 21:26:09 +0000</pubDate>
       
       <guid>https://yz1509.github.io/post/consistenthashing/</guid>
-      <description>一致性哈希的 first paper (maybe) 阅读笔记。 论文地址 Whydunit 当大量的客户端同时对单个服务器发起请求时，可能会使该服务器(Hot spots) &amp;ldquo;swamped&amp;rdquo; （无法使用）。除此之外，还可能会</description>
+      <description>&lt;p&gt;一致性哈希的 first paper (maybe) 阅读笔记。&lt;/p&gt;</description>
     </item>
     
   </channel>

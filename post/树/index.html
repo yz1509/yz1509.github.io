@@ -23,7 +23,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <meta name="author" content="765PRO.P" />
-  <meta name="description" content="主要介绍二叉树和红黑树。 什么是树 定义 1 树是没有简单回路的连通无向图。 定义 2 有根树是指定一个顶点作为根并且每条边的方向都离开根的树。 二叉树 如果" />
+  <meta name="description" content="主要介绍二叉树和红黑树。
+" />
 
   <meta name="keywords" content="K-ON, KyoAni" />
 
@@ -60,13 +61,13 @@
 
 
 <meta property="og:title" content="树" />
-<meta property="og:description" content="主要介绍二叉树和红黑树。 什么是树 定义 1 树是没有简单回路的连通无向图。 定义 2 有根树是指定一个顶点作为根并且每条边的方向都离开根的树。 二叉树 如果" />
+<meta property="og:description" content="主要介绍二叉树和红黑树。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://yz1509.github.io/post/%E6%A0%91/" />
 <meta property="article:published_time" content="2018-07-25T15:06:19+00:00" />
 <meta property="article:modified_time" content="2018-07-25T15:06:19+00:00" />
 <meta itemprop="name" content="树">
-<meta itemprop="description" content="主要介绍二叉树和红黑树。 什么是树 定义 1 树是没有简单回路的连通无向图。 定义 2 有根树是指定一个顶点作为根并且每条边的方向都离开根的树。 二叉树 如果">
+<meta itemprop="description" content="主要介绍二叉树和红黑树。">
 <meta itemprop="datePublished" content="2018-07-25T15:06:19+00:00" />
 <meta itemprop="dateModified" content="2018-07-25T15:06:19+00:00" />
 <meta itemprop="wordCount" content="2190">
@@ -76,7 +77,7 @@
 <meta itemprop="keywords" content="二叉搜索树,红黑树," />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="树"/>
-<meta name="twitter:description" content="主要介绍二叉树和红黑树。 什么是树 定义 1 树是没有简单回路的连通无向图。 定义 2 有根树是指定一个顶点作为根并且每条边的方向都离开根的树。 二叉树 如果"/>
+<meta name="twitter:description" content="主要介绍二叉树和红黑树。"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -330,32 +331,27 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#二叉树">二叉树</a></li>
-    <li><a href="#分支无限制的有根树">分支无限制的有根树</a></li>
-  </ul>
-
-  <ul>
-    <li><a href="#什么是二叉搜索树">什么是二叉搜索树</a></li>
-    <li><a href="#查询二叉搜索树">查询二叉搜索树</a>
+    <li><a href="#什么是树">什么是树</a>
       <ul>
-        <li><a href="#查找">查找</a></li>
-        <li><a href="#最大小关键字元素">最大（小）关键字元素</a></li>
-        <li><a href="#后继和前驱">后继和前驱</a></li>
+        <li><a href="#二叉树">二叉树</a></li>
+        <li><a href="#分支无限制的有根树">分支无限制的有根树</a></li>
       </ul>
     </li>
-    <li><a href="#插入和删除">插入和删除</a>
+    <li><a href="#二叉搜索树">二叉搜索树</a>
       <ul>
-        <li><a href="#插入">插入</a></li>
-        <li><a href="#删除">删除</a></li>
+        <li><a href="#什么是二叉搜索树">什么是二叉搜索树</a></li>
+        <li><a href="#查询二叉搜索树">查询二叉搜索树</a></li>
+        <li><a href="#插入和删除">插入和删除</a></li>
       </ul>
     </li>
-  </ul>
-
-  <ul>
-    <li><a href="#红黑树的性质">红黑树的性质</a></li>
-    <li><a href="#旋转">旋转</a></li>
-    <li><a href="#插入-1">插入</a></li>
-    <li><a href="#删除-1">删除</a></li>
+    <li><a href="#红黑树">红黑树</a>
+      <ul>
+        <li><a href="#红黑树的性质">红黑树的性质</a></li>
+        <li><a href="#旋转">旋转</a></li>
+        <li><a href="#插入-1">插入</a></li>
+        <li><a href="#删除-1">删除</a></li>
+      </ul>
+    </li>
   </ul>
 </nav>
   </div>
@@ -364,26 +360,25 @@
     
     <div class="post-content">
       <p>主要介绍二叉树和红黑树。</p>
-<!-- more -->
 <hr>
-<h1 id="什么是树">什么是树</h1>
+<h2 id="什么是树">什么是树</h2>
 <p><strong>定义 1</strong> 树是没有简单回路的连通无向图。</p>
 <p><strong>定义 2</strong> 有根树是指定一个顶点作为根并且每条边的方向都离开根的树。
 <img src="/tree001.png" alt="树"></p>
-<h2 id="二叉树">二叉树</h2>
+<h3 id="二叉树">二叉树</h3>
 <ul>
 <li>如果 $x.p = NIL$，则 $x$ 是根结点</li>
-<li>属性 $T.root$ 指向整棵树 $T$ 的根结点，如果 $T.root = NIL$，则该数为空
-<img src="/tree002.png" alt="二叉树"></li>
+<li>属性 $T.root$ 指向整棵树 $T$ 的根结点，如果 $T.root = NIL$，则该数为空</li>
 </ul>
-<h2 id="分支无限制的有根树">分支无限制的有根树</h2>
+<p><img src="/tree002.png" alt="二叉树"></p>
+<h3 id="分支无限制的有根树">分支无限制的有根树</h3>
 <ul>
 <li>$x.left-child$ 指向结点 $x$ 的最左边的孩子结点</li>
-<li>$x.right-sibling$ 指向结点 $x$ 右侧相邻的兄弟结点
-<img src="/tree003.png" alt="分支无限制"></li>
+<li>$x.right-sibling$ 指向结点 $x$ 右侧相邻的兄弟结点</li>
 </ul>
-<h1 id="二叉搜索树">二叉搜索树</h1>
-<h2 id="什么是二叉搜索树">什么是二叉搜索树</h2>
+<p><img src="/tree003.png" alt="分支无限制"></p>
+<h2 id="二叉搜索树">二叉搜索树</h2>
+<h3 id="什么是二叉搜索树">什么是二叉搜索树</h3>
 <p>二叉搜索树（binary-search-tree，BST）性质：设 $x$ 是二叉搜索树中的一个结点。如果 $y$ 是 $x$ 左子树中的一个结点，那么 $y.key \leq x.key$；如果 $y$ 是 $x$ 右子树中的一个结点，那么 $y.key \geq x.key$。</p>
 <p>中序遍历：</p>
 <div class="highlight"><div class="chroma">
@@ -395,21 +390,21 @@
 </span><span class="lnt">5
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">INORDER</span><span class="o">-</span><span class="n">TREE</span><span class="o">-</span><span class="n">WALK</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-	<span class="k">if</span> <span class="n">x</span> <span class="err">≠</span> <span class="n">NIL</span>
-		<span class="n">INOREDER</span><span class="o">-</span><span class="n">TREE</span><span class="o">-</span><span class="n">WALK</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">left</span><span class="p">)</span>
-		<span class="n">print</span> <span class="n">x</span><span class="p">.</span><span class="n">key</span>
-		<span class="n">INOREDER</span><span class="o">-</span><span class="n">TREE</span><span class="o">-</span><span class="n">WALK</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">right</span><span class="p">)</span>
+<pre class="chroma"><code class="language-py" data-lang="py"><span class="n">INORDER</span><span class="o">-</span><span class="n">TREE</span><span class="o">-</span><span class="n">WALK</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="err">≠</span> <span class="n">NIL</span>
+        <span class="n">INOREDER</span><span class="o">-</span><span class="n">TREE</span><span class="o">-</span><span class="n">WALK</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">left</span><span class="p">)</span>
+        <span class="k">print</span> <span class="n">x</span><span class="o">.</span><span class="n">key</span>
+        <span class="n">INOREDER</span><span class="o">-</span><span class="n">TREE</span><span class="o">-</span><span class="n">WALK</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">right</span><span class="p">)</span>
 </code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p>中序遍历时间复杂度为 O(n)，使用替换法，通过证明 $T(n) \le (c+d)n + c$，可以证得 $T(n) = O(n)$</p>
 </blockquote>
-<h2 id="查询二叉搜索树">查询二叉搜索树</h2>
-<h3 id="查找">查找</h3>
+<h3 id="查询二叉搜索树">查询二叉搜索树</h3>
+<h4 id="查找">查找</h4>
 <ul>
-<li>递归版本</li>
-</ul>
+<li>
+<p>递归版本</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -421,16 +416,16 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">TREE</span><span class="o">-</span><span class="n">SEARCH</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
-	<span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">NIL</span> <span class="n">or</span> <span class="n">k</span> <span class="o">==</span> <span class="n">x</span><span class="p">.</span><span class="n">key</span>
-		<span class="k">return</span> <span class="n">x</span>
-	<span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">x</span><span class="p">.</span><span class="n">key</span>
-		<span class="k">return</span> <span class="n">TREE</span><span class="o">-</span><span class="n">SEARCH</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">left</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
-	<span class="k">else</span> <span class="k">return</span> <span class="n">TREE</span><span class="o">-</span><span class="n">SEARCH</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">right</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">NIL</span> <span class="n">or</span> <span class="n">k</span> <span class="o">==</span> <span class="n">x</span><span class="p">.</span><span class="n">key</span>
+        <span class="k">return</span> <span class="n">x</span>
+    <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">x</span><span class="p">.</span><span class="n">key</span>
+        <span class="k">return</span> <span class="n">TREE</span><span class="o">-</span><span class="n">SEARCH</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">left</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="k">else</span> <span class="k">return</span> <span class="n">TREE</span><span class="o">-</span><span class="n">SEARCH</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">right</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
 </code></pre></td></tr></table>
 </div>
-</div><ul>
-<li>迭代版本（效率更高）</li>
-</ul>
+</div></li>
+<li>
+<p>迭代版本（效率更高）</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -441,18 +436,20 @@
 </span><span class="lnt">6
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">ITERATIVE</span><span class="o">-</span><span class="n">TREE</span><span class="o">-</span><span class="n">SEARCH</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
-	<span class="k">while</span> <span class="n">x</span> <span class="err">≠</span> <span class="n">NIL</span> <span class="n">and</span> <span class="n">k</span> <span class="err">≠</span> <span class="n">x</span><span class="p">.</span><span class="n">key</span>
-		<span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">x</span><span class="p">.</span><span class="n">key</span>
-			<span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">left</span>
-		<span class="k">else</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">right</span>
-	<span class="k">return</span> <span class="n">x</span>
+<pre class="chroma"><code class="language-py" data-lang="py"><span class="n">ITERATIVE</span><span class="o">-</span><span class="n">TREE</span><span class="o">-</span><span class="n">SEARCH</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">)</span>
+    <span class="k">while</span> <span class="n">x</span> <span class="err">≠</span> <span class="n">NIL</span> <span class="ow">and</span> <span class="n">k</span> <span class="err">≠</span> <span class="n">x</span><span class="o">.</span><span class="n">key</span>
+        <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="n">x</span><span class="o">.</span><span class="n">key</span>
+           <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">left</span>
+        <span class="k">else</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">right</span>
+    <span class="k">return</span> <span class="n">x</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="最大小关键字元素">最大（小）关键字元素</h3>
-<ul>
-<li>最小关键字</li>
+</div></li>
 </ul>
+<h4 id="最大小关键字元素">最大（小）关键字元素</h4>
+<ul>
+<li>
+<p>最小关键字</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -462,14 +459,14 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">TREE</span><span class="o">-</span><span class="n">MINIMUM</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-	<span class="k">while</span> <span class="n">x</span><span class="p">.</span><span class="n">left</span> <span class="err">≠</span> <span class="n">NIL</span>
-		<span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">left</span>
-	<span class="k">return</span> <span class="n">x</span>
+    <span class="k">while</span> <span class="n">x</span><span class="p">.</span><span class="n">left</span> <span class="err">≠</span> <span class="n">NIL</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">left</span>
+    <span class="k">return</span> <span class="n">x</span>
 </code></pre></td></tr></table>
 </div>
-</div><ul>
-<li>最大关键字</li>
-</ul>
+</div></li>
+<li>
+<p>最大关键字</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -479,12 +476,14 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">TREE</span><span class="o">-</span><span class="n">MAXIMUM</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-	<span class="k">while</span> <span class="n">x</span><span class="p">.</span><span class="n">right</span> <span class="err">≠</span> <span class="n">NIL</span>
-		<span class="n">x</span> <span class="o">=</span> <span class="p">.</span><span class="n">right</span>
-	<span class="k">return</span> <span class="n">x</span>
+    <span class="k">while</span> <span class="n">x</span><span class="p">.</span><span class="n">right</span> <span class="err">≠</span> <span class="n">NIL</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">.</span><span class="n">right</span>
+    <span class="k">return</span> <span class="n">x</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="后继和前驱">后继和前驱</h3>
+</div></li>
+</ul>
+<h4 id="后继和前驱">后继和前驱</h4>
 <p>如果所有的关键字互不相同，则一个结点 $x$ 的后继是大于 $x.key$ 的最小关键字的结点。二叉搜索树的性质允许我们没有任何关键字的比较来确定一个结点的后继。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -499,20 +498,20 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">TREE</span><span class="o">-</span><span class="n">SUCCESSOR</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-	<span class="k">if</span> <span class="n">x</span><span class="p">.</span><span class="n">right</span> <span class="err">≠</span> <span class="n">NIL</span>
-		<span class="k">return</span> <span class="n">TREE</span><span class="o">-</span><span class="n">MINIMUM</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">right</span><span class="p">)</span>
-	<span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span>
-	<span class="k">while</span> <span class="n">y</span> <span class="err">≠</span> <span class="n">NIL</span> <span class="n">and</span> <span class="n">x</span> <span class="o">==</span> <span class="n">y</span><span class="p">.</span><span class="n">right</span>
-		<span class="n">x</span> <span class="o">=</span> <span class="n">y</span>
-		<span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">.</span><span class="n">p</span>
-	<span class="k">return</span> <span class="n">y</span>
+    <span class="k">if</span> <span class="n">x</span><span class="p">.</span><span class="n">right</span> <span class="err">≠</span> <span class="n">NIL</span>
+        <span class="k">return</span> <span class="n">TREE</span><span class="o">-</span><span class="n">MINIMUM</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">right</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span>
+    <span class="k">while</span> <span class="n">y</span> <span class="err">≠</span> <span class="n">NIL</span> <span class="n">and</span> <span class="n">x</span> <span class="o">==</span> <span class="n">y</span><span class="p">.</span><span class="n">right</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">y</span><span class="p">.</span><span class="n">p</span>
+    <span class="k">return</span> <span class="n">y</span>
 </code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p>在一棵高度为 $h$ 的二叉搜索树上，动态集合上的操作 SEARCH、MINIMUM、MAXIMUM、SUCCESSOR、PREDECESSOR 可以在 $O(h)$ 时间内完成。</p>
 </blockquote>
-<h2 id="插入和删除">插入和删除</h2>
-<h3 id="插入">插入</h3>
+<h3 id="插入和删除">插入和删除</h3>
+<h4 id="插入">插入</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -532,30 +531,30 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">TREE</span><span class="o">-</span><span class="n">INSERT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
-	<span class="n">y</span> <span class="o">=</span> <span class="n">NIL</span>		<span class="c1">// 保存 z 要插入的位置
-</span><span class="c1"></span>	<span class="n">x</span> <span class="o">=</span> <span class="n">T</span><span class="p">.</span><span class="n">root</span>
-	<span class="k">while</span> <span class="n">x</span> <span class="err">≠</span> <span class="n">NIL</span>
-		<span class="n">y</span> <span class="o">=</span> <span class="n">x</span>
-		<span class="k">if</span> <span class="n">z</span><span class="p">.</span><span class="n">key</span> <span class="o">&lt;</span> <span class="n">x</span><span class="p">.</span><span class="n">key</span>
-			<span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">left</span>
-		<span class="k">else</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">right</span>
-	<span class="n">z</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">y</span>
-	<span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="n">NIL</span>
-		<span class="n">T</span><span class="p">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">z</span>	<span class="c1">// tree T was empty
-</span><span class="c1"></span>	<span class="k">else</span> <span class="k">if</span> <span class="n">z</span><span class="p">.</span><span class="n">key</span> <span class="o">&lt;</span> <span class="n">y</span><span class="p">.</span><span class="n">key</span>
-		<span class="n">y</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">z</span>
-	<span class="k">else</span> <span class="n">y</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">z</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">NIL</span>        <span class="c1">// 保存 z 要插入的位置
+</span><span class="c1"></span>    <span class="n">x</span> <span class="o">=</span> <span class="n">T</span><span class="p">.</span><span class="n">root</span>
+    <span class="k">while</span> <span class="n">x</span> <span class="err">≠</span> <span class="n">NIL</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="k">if</span> <span class="n">z</span><span class="p">.</span><span class="n">key</span> <span class="o">&lt;</span> <span class="n">x</span><span class="p">.</span><span class="n">key</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">left</span>
+        <span class="k">else</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">right</span>
+    <span class="n">z</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">y</span>
+    <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="n">NIL</span>
+        <span class="n">T</span><span class="p">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">z</span>    <span class="c1">// tree T was empty
+</span><span class="c1"></span>    <span class="k">else</span> <span class="k">if</span> <span class="n">z</span><span class="p">.</span><span class="n">key</span> <span class="o">&lt;</span> <span class="n">y</span><span class="p">.</span><span class="n">key</span>
+        <span class="n">y</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">z</span>
+    <span class="k">else</span> <span class="n">y</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">z</span>
 </code></pre></td></tr></table>
 </div>
 </div><p><img src="/tree004.png" alt="插入"></p>
-<h3 id="删除">删除</h3>
+<h4 id="删除">删除</h4>
 <p>从二叉搜索树 $T$ 中删除结点 $z$ 分为三种基本情况</p>
 <ol>
 <li>如果 $z$ 没有孩子结点，那么直接将它删除，并修改它的父结点，用 NIL 替换 $z$</li>
 <li>如果 $z$ 只有一个孩子，那么将这个孩子提升到树中 $z$ 的位置上，并修改 $z$ 的父结点，用 $z$ 的孩子来替换 $z$</li>
-<li>如果 $z$ 有两个孩子，那么找到 $z$ 的后继 $y$，用 $y$ 来占据树中 $z$ 的位置
-<img src="/tree005.png" alt="删除"></li>
+<li>如果 $z$ 有两个孩子，那么找到 $z$ 的后继 $y$，用 $y$ 来占据树中 $z$ 的位置</li>
 </ol>
+<p><img src="/tree005.png" alt="删除"></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -585,35 +584,35 @@
 <td class="lntd">
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="c1">// 用一棵以 v 为根的子树来替换一棵以 u 为根的子树
 </span><span class="c1"></span><span class="n">TRANSPLANT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-	<span class="k">if</span> <span class="n">u</span><span class="p">.</span><span class="n">p</span> <span class="o">==</span> <span class="n">NIL</span>
-		<span class="n">T</span><span class="p">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">v</span>
-	<span class="k">else</span> <span class="k">if</span> <span class="n">u</span> <span class="o">==</span> <span class="n">u</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">left</span>
-		<span class="n">u</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">v</span>
-	<span class="k">else</span> <span class="n">u</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">v</span>
-	<span class="k">if</span> <span class="n">v</span> <span class="err">≠</span> <span class="n">NIL</span>
-		<span class="n">v</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">u</span><span class="p">.</span><span class="n">p</span>
-		
+    <span class="k">if</span> <span class="n">u</span><span class="p">.</span><span class="n">p</span> <span class="o">==</span> <span class="n">NIL</span>
+        <span class="n">T</span><span class="p">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="n">u</span> <span class="o">==</span> <span class="n">u</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">left</span>
+        <span class="n">u</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="k">else</span> <span class="n">u</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="k">if</span> <span class="n">v</span> <span class="err">≠</span> <span class="n">NIL</span>
+        <span class="n">v</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">u</span><span class="p">.</span><span class="n">p</span>
+
 <span class="n">TREE</span><span class="o">-</span><span class="n">DELETE</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
-	<span class="k">if</span> <span class="n">z</span><span class="p">.</span><span class="n">left</span> <span class="o">==</span> <span class="n">NIL</span>	<span class="c1">// (a)
-</span><span class="c1"></span>		<span class="n">TRANSPLANT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">z</span><span class="p">.</span><span class="n">right</span><span class="p">)</span>
-	<span class="k">else</span> <span class="k">if</span> <span class="n">z</span><span class="p">.</span><span class="n">right</span> <span class="o">==</span> <span class="n">NIL</span>	<span class="c1">// (b)
-</span><span class="c1"></span>		<span class="n">TRANSPLANT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">z</span><span class="p">.</span><span class="n">left</span><span class="p">)</span>
-	<span class="k">else</span> <span class="n">y</span> <span class="o">=</span> <span class="n">TREE</span><span class="o">-</span><span class="n">MINIMUM</span><span class="p">(</span><span class="n">z</span><span class="p">.</span><span class="n">right</span><span class="p">)</span>
-		<span class="k">if</span> <span class="n">y</span><span class="p">.</span><span class="n">p</span> <span class="err">≠</span> <span class="n">z</span>	<span class="c1">// (d)
-</span><span class="c1"></span>			<span class="n">TRANSPLANT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">y</span><span class="p">.</span><span class="n">right</span><span class="p">)</span>
-			<span class="n">y</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">z</span><span class="p">.</span><span class="n">right</span>
-			<span class="n">y</span><span class="p">.</span><span class="n">right</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">y</span>
-		<span class="n">TRANSPLANT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>	<span class="c1">// (c)
-</span><span class="c1"></span>		<span class="n">y</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">z</span><span class="p">.</span><span class="n">left</span>
-		<span class="n">y</span><span class="p">.</span><span class="n">left</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">y</span>
+    <span class="k">if</span> <span class="n">z</span><span class="p">.</span><span class="n">left</span> <span class="o">==</span> <span class="n">NIL</span>    <span class="c1">// (a)
+</span><span class="c1"></span>        <span class="n">TRANSPLANT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">z</span><span class="p">.</span><span class="n">right</span><span class="p">)</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="n">z</span><span class="p">.</span><span class="n">right</span> <span class="o">==</span> <span class="n">NIL</span>    <span class="c1">// (b)
+</span><span class="c1"></span>        <span class="n">TRANSPLANT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">z</span><span class="p">.</span><span class="n">left</span><span class="p">)</span>
+    <span class="k">else</span> <span class="n">y</span> <span class="o">=</span> <span class="n">TREE</span><span class="o">-</span><span class="n">MINIMUM</span><span class="p">(</span><span class="n">z</span><span class="p">.</span><span class="n">right</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">y</span><span class="p">.</span><span class="n">p</span> <span class="err">≠</span> <span class="n">z</span>    <span class="c1">// (d)
+</span><span class="c1"></span>            <span class="n">TRANSPLANT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">y</span><span class="p">.</span><span class="n">right</span><span class="p">)</span>
+            <span class="n">y</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">z</span><span class="p">.</span><span class="n">right</span>
+            <span class="n">y</span><span class="p">.</span><span class="n">right</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="n">TRANSPLANT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>    <span class="c1">// (c)
+</span><span class="c1"></span>        <span class="n">y</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">z</span><span class="p">.</span><span class="n">left</span>
+        <span class="n">y</span><span class="p">.</span><span class="n">left</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">y</span>
 </code></pre></td></tr></table>
 </div>
 </div><blockquote>
 <p>在一棵高度为 $h$ 的二叉搜索树上，实现动态集合的操作 INSERT 和 DELETE，可以在 $O(h)$ 时间内完成。
 一棵有 $n$ 个不同关键字的随机构建二叉搜索树的期望高度为 $O(lg n)$</p>
 </blockquote>
-<h1 id="红黑树">红黑树</h1>
-<h2 id="红黑树的性质">红黑树的性质</h2>
+<h2 id="红黑树">红黑树</h2>
+<h3 id="红黑树的性质">红黑树的性质</h3>
 <p>一棵红黑树是满足下面红黑性质的二叉搜索树：</p>
 <ol>
 <li>每个结点或是红色的，或是黑色的</li>
@@ -622,15 +621,15 @@
 <li>如果一个结点是红色的，则它的两个子结点都是黑色的</li>
 <li>对每个结点，从该结点到其所有后代叶结点的简单路径上，均包含相同数目的黑色结点</li>
 </ol>
-<p>从某个结点 $x$ 出发（不含该结点）到达一个叶结点的任意一条简单路径上的黑色结点个数称为该结点的 black-height，记为 bh(x)。
-<img src="/tree006.png" alt="红黑树"></p>
+<p>从某个结点 $x$ 出发（不含该结点）到达一个叶结点的任意一条简单路径上的黑色结点个数称为该结点的 black-height，记为 bh(x)。</p>
+<p><img src="/tree006.png" alt="红黑树"></p>
 <blockquote>
 <p>一棵有 $n$ 个内部结点的红黑树的高度至多为 $2lg(n+1)$。</p>
 </blockquote>
-<h2 id="旋转">旋转</h2>
-<p>旋转是一种能保持二叉搜索树性质的局部操作。分为两种旋转：左旋和右旋。
-<img src="/tree007.png" alt="旋转">
-在 LEFT-ROTATION 的伪代码中，假设 $x.right \ne T.nil$ 且根结点的父结点为 $T.nil$。</p>
+<h3 id="旋转">旋转</h3>
+<p>旋转是一种能保持二叉搜索树性质的局部操作。分为两种旋转：左旋和右旋。</p>
+<p><img src="/tree007.png" alt="旋转"></p>
+<p>在 LEFT-ROTATION 的伪代码中，假设 $x.right \ne T.nil$ 且根结点的父结点为 $T.nil$。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -649,30 +648,36 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">LEFT</span><span class="o">-</span><span class="n">ROTATION</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
-	<span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">right</span>			<span class="c1">// set y
-</span><span class="c1"></span>	<span class="n">x</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">y</span> <span class="o">=</span> <span class="n">left</span>	<span class="c1">// turn y&#39;s left subtree into x&#39;s right subtree
-</span><span class="c1"></span>	<span class="k">if</span> <span class="n">y</span><span class="p">.</span><span class="n">left</span> <span class="err">≠</span> <span class="n">T</span><span class="p">.</span><span class="n">nil</span>
-		<span class="n">y</span><span class="p">.</span><span class="n">left</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">x</span>
-	<span class="n">y</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span>			<span class="c1">// link x&#39;s parent to y
-</span><span class="c1"></span>	<span class="k">if</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span> <span class="o">==</span> <span class="n">T</span><span class="p">.</span><span class="n">nil</span>
-		<span class="n">T</span><span class="p">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">y</span>
-	<span class="k">else</span> <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">left</span>
-		<span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span><span class="n">y</span>
-	<span class="k">else</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">y</span>
-	<span class="n">y</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">x</span>			<span class="c1">// put x on y&#39;s left
-</span><span class="c1"></span>	<span class="n">x</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">y</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">right</span>            <span class="c1">// set y
+</span><span class="c1"></span>    <span class="n">x</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">y</span> <span class="o">=</span> <span class="n">left</span>    <span class="c1">// turn y&#39;s left subtree into x&#39;s right subtree
+</span><span class="c1"></span>    <span class="k">if</span> <span class="n">y</span><span class="p">.</span><span class="n">left</span> <span class="err">≠</span> <span class="n">T</span><span class="p">.</span><span class="n">nil</span>
+        <span class="n">y</span><span class="p">.</span><span class="n">left</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">x</span>
+    <span class="n">y</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span>            <span class="c1">// link x&#39;s parent to y
+</span><span class="c1"></span>    <span class="k">if</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span> <span class="o">==</span> <span class="n">T</span><span class="p">.</span><span class="n">nil</span>
+        <span class="n">T</span><span class="p">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">y</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">left</span>
+        <span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span><span class="n">y</span>
+    <span class="k">else</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">y</span>
+    <span class="n">y</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">x</span>            <span class="c1">// put x on y&#39;s left
+</span><span class="c1"></span>    <span class="n">x</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">y</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>RIGHT-ROTATION 操作的伪代码是对称的。在旋转操作中只有指针改变，其他属性都保持不变。下图给出了一个 LEFT-ROTATION 操作修改二叉搜索树的例子。
-<img src="/tree008.png" alt="左旋例子"></p>
-<h2 id="插入-1">插入</h2>
+</div><p>RIGHT-ROTATION 操作的伪代码是对称的。在旋转操作中只有指针改变，其他属性都保持不变。下图给出了一个 LEFT-ROTATION 操作修改二叉搜索树的例子。</p>
+<p><img src="/tree008.png" alt="左旋例子"></p>
+<h3 id="插入-1">插入</h3>
 <p>有三种情况：</p>
 <ol>
-<li>$z$ 的叔结点 $y$ 是红色的
-<img src="/tree009.png" alt="红黑树插入case1"></li>
-<li>$z$ 的叔结点 $y$ 是黑色的且 $z$ 是一个右孩子</li>
-<li>$z$ 的叔结点 $y$ 是黑色的且 $z$ 是一个左孩子
-<img src="/tree010_v2.png" alt="case2&3"></li>
+<li>
+<p>$z$ 的叔结点 $y$ 是红色的</p>
+<p><img src="/tree009.png" alt="红黑树插入case1"></p>
+</li>
+<li>
+<p>$z$ 的叔结点 $y$ 是黑色的且 $z$ 是一个右孩子</p>
+</li>
+<li>
+<p>$z$ 的叔结点 $y$ 是黑色的且 $z$ 是一个左孩子</p>
+<p><img src="/tree010_v2.png" alt="case2&3"></p>
+</li>
 </ol>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -719,47 +724,47 @@
 <td class="lntd">
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="c1">// 将 z 插入树 T 中，然后将 z 着为红色
 </span><span class="c1"></span><span class="n">RB</span><span class="o">-</span><span class="n">INSERT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
-	<span class="n">y</span> <span class="o">=</span> <span class="n">T</span><span class="p">.</span><span class="n">nil</span>
-	<span class="n">x</span> <span class="o">=</span> <span class="n">T</span><span class="p">.</span><span class="n">root</span>
-	<span class="n">whil</span> <span class="n">x</span> <span class="err">≠</span> <span class="n">T</span><span class="p">.</span><span class="n">nil</span>
-		<span class="n">y</span> <span class="o">=</span> <span class="n">x</span>
-		<span class="k">if</span> <span class="n">z</span><span class="p">.</span><span class="n">key</span> <span class="o">&lt;</span> <span class="n">x</span><span class="p">.</span><span class="n">key</span>
-			<span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">left</span>
-		<span class="k">else</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">right</span>
-	<span class="n">z</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">y</span>
-	<span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="n">T</span><span class="p">.</span><span class="n">nil</span>
-		<span class="n">T</span><span class="p">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">z</span>
-	<span class="k">else</span> <span class="k">if</span> <span class="n">z</span><span class="p">.</span><span class="n">key</span> <span class="o">&lt;</span> <span class="n">y</span><span class="p">.</span><span class="n">key</span>
-		<span class="n">y</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">z</span>
-	<span class="k">else</span> <span class="n">y</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">z</span>
-	<span class="n">z</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">T</span><span class="p">.</span><span class="n">nil</span>
-	<span class="n">z</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">T</span><span class="p">.</span><span class="n">nil</span>
-	<span class="n">z</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">RED</span>
-	<span class="n">RB</span><span class="o">-</span><span class="n">INSERT</span><span class="o">-</span><span class="n">FIXUP</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">T</span><span class="p">.</span><span class="n">nil</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">T</span><span class="p">.</span><span class="n">root</span>
+    <span class="n">whil</span> <span class="n">x</span> <span class="err">≠</span> <span class="n">T</span><span class="p">.</span><span class="n">nil</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="k">if</span> <span class="n">z</span><span class="p">.</span><span class="n">key</span> <span class="o">&lt;</span> <span class="n">x</span><span class="p">.</span><span class="n">key</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">left</span>
+        <span class="k">else</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">right</span>
+    <span class="n">z</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">y</span>
+    <span class="k">if</span> <span class="n">y</span> <span class="o">==</span> <span class="n">T</span><span class="p">.</span><span class="n">nil</span>
+        <span class="n">T</span><span class="p">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">z</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="n">z</span><span class="p">.</span><span class="n">key</span> <span class="o">&lt;</span> <span class="n">y</span><span class="p">.</span><span class="n">key</span>
+        <span class="n">y</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">z</span>
+    <span class="k">else</span> <span class="n">y</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">z</span>
+    <span class="n">z</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">T</span><span class="p">.</span><span class="n">nil</span>
+    <span class="n">z</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">T</span><span class="p">.</span><span class="n">nil</span>
+    <span class="n">z</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">RED</span>
+    <span class="n">RB</span><span class="o">-</span><span class="n">INSERT</span><span class="o">-</span><span class="n">FIXUP</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
 
 <span class="c1">// 插入 z 后，对树进行调整来保持红黑性质
 </span><span class="c1"></span><span class="n">RB</span><span class="o">-</span><span class="n">INSERT</span><span class="o">-</span><span class="n">FIXUP</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
-	<span class="k">while</span> <span class="n">z</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">color</span> <span class="o">==</span> <span class="n">RED</span>
-		<span class="k">if</span> <span class="n">z</span><span class="p">.</span><span class="n">p</span> <span class="o">==</span> <span class="n">z</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">left</span>
-			<span class="n">y</span> <span class="o">=</span> <span class="n">z</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">right</span>
-			<span class="k">if</span> <span class="n">y</span><span class="p">.</span><span class="n">color</span> <span class="o">==</span> <span class="n">RED</span>
-				<span class="n">z</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">BLACK</span>		<span class="c1">// case 1
-</span><span class="c1"></span>				<span class="n">y</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">BLACK</span> 		<span class="c1">// case 1
-</span><span class="c1"></span>				<span class="n">z</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">RED</span>		<span class="c1">// case 1
-</span><span class="c1"></span>				<span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">p</span>				<span class="c1">// case 1
-</span><span class="c1"></span>			<span class="k">else</span> <span class="k">if</span> <span class="n">z</span> <span class="o">==</span> <span class="n">z</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">right</span>
-				<span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="p">.</span><span class="n">p</span>					<span class="c1">// case 2
-</span><span class="c1"></span>				<span class="n">LEFT</span><span class="o">-</span><span class="n">ROTATION</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>		<span class="c1">// case 2
-</span><span class="c1"></span>			<span class="n">z</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">BLACK</span>			<span class="c1">// case 3
-</span><span class="c1"></span>			<span class="n">z</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">RED</span>			<span class="c1">// case 3
-</span><span class="c1"></span>			<span class="n">RIGHT</span><span class="o">-</span><span class="n">ROTATION</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">p</span><span class="p">)</span>	<span class="c1">// case 3
-</span><span class="c1"></span>		<span class="k">else</span><span class="p">(</span><span class="n">same</span> <span class="n">as</span> <span class="n">then</span> <span class="n">clause</span>
-				<span class="n">with</span> <span class="s">&#34;right&#34;</span> <span class="n">and</span> <span class="s">&#34;left&#34;</span> <span class="n">exchanged</span><span class="p">)</span>
-	<span class="n">T</span><span class="p">.</span><span class="n">root</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">BLACK</span>
+    <span class="k">while</span> <span class="n">z</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">color</span> <span class="o">==</span> <span class="n">RED</span>
+        <span class="k">if</span> <span class="n">z</span><span class="p">.</span><span class="n">p</span> <span class="o">==</span> <span class="n">z</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">left</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">z</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">right</span>
+            <span class="k">if</span> <span class="n">y</span><span class="p">.</span><span class="n">color</span> <span class="o">==</span> <span class="n">RED</span>
+                <span class="n">z</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">BLACK</span>        <span class="c1">// case 1
+</span><span class="c1"></span>                <span class="n">y</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">BLACK</span>         <span class="c1">// case 1
+</span><span class="c1"></span>                <span class="n">z</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">RED</span>        <span class="c1">// case 1
+</span><span class="c1"></span>                <span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">p</span>                <span class="c1">// case 1
+</span><span class="c1"></span>            <span class="k">else</span> <span class="k">if</span> <span class="n">z</span> <span class="o">==</span> <span class="n">z</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">right</span>
+                <span class="n">z</span> <span class="o">=</span> <span class="n">z</span><span class="p">.</span><span class="n">p</span>                    <span class="c1">// case 2
+</span><span class="c1"></span>                <span class="n">LEFT</span><span class="o">-</span><span class="n">ROTATION</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>        <span class="c1">// case 2
+</span><span class="c1"></span>            <span class="n">z</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">BLACK</span>            <span class="c1">// case 3
+</span><span class="c1"></span>            <span class="n">z</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">RED</span>            <span class="c1">// case 3
+</span><span class="c1"></span>            <span class="n">RIGHT</span><span class="o">-</span><span class="n">ROTATION</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">p</span><span class="p">)</span>    <span class="c1">// case 3
+</span><span class="c1"></span>        <span class="k">else</span><span class="p">(</span><span class="n">same</span> <span class="n">as</span> <span class="n">then</span> <span class="n">clause</span>
+                <span class="n">with</span> <span class="s">&#34;right&#34;</span> <span class="n">and</span> <span class="s">&#34;left&#34;</span> <span class="n">exchanged</span><span class="p">)</span>
+    <span class="n">T</span><span class="p">.</span><span class="n">root</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">BLACK</span>
 </code></pre></td></tr></table>
 </div>
 </div><p><img src="/tree011.png" alt="红黑树插入"></p>
-<h2 id="删除-1">删除</h2>
+<h3 id="删除-1">删除</h3>
 <p>有四种情况：</p>
 <ol>
 <li>$x$ 的兄弟结点 $w$ 是红色的</li>
@@ -833,68 +838,67 @@
 <td class="lntd">
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="c1">// 用一棵以 v 为根的子树来替换一棵以 u 为根的子树
 </span><span class="c1"></span><span class="n">RB</span><span class="o">-</span><span class="n">TRANSPLANT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-	<span class="k">if</span> <span class="n">u</span><span class="p">.</span><span class="n">p</span> <span class="o">==</span> <span class="n">T</span><span class="p">.</span><span class="n">nil</span>
-		<span class="n">T</span><span class="p">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">v</span>
-	<span class="k">else</span> <span class="k">if</span> <span class="n">u</span> <span class="o">==</span> <span class="n">u</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">left</span>
-		<span class="n">u</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">v</span>
-	<span class="k">else</span> <span class="n">u</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="k">if</span> <span class="n">u</span><span class="p">.</span><span class="n">p</span> <span class="o">==</span> <span class="n">T</span><span class="p">.</span><span class="n">nil</span>
+        <span class="n">T</span><span class="p">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="n">u</span> <span class="o">==</span> <span class="n">u</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">left</span>
+        <span class="n">u</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">v</span>
+    <span class="k">else</span> <span class="n">u</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">v</span>
 <span class="n">v</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">u</span><span class="p">.</span><span class="n">p</span>
 
 <span class="c1">// 过程和 TREE-DELETE 类似
 </span><span class="c1"></span><span class="n">RB</span><span class="o">-</span><span class="n">DELETE</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
-	<span class="n">y</span> <span class="o">=</span> <span class="n">z</span>
-	<span class="n">y</span><span class="o">-</span><span class="n">original</span><span class="o">-</span><span class="n">color</span> <span class="o">=</span> <span class="n">y</span><span class="p">.</span><span class="n">color</span>
-	<span class="k">if</span> <span class="n">z</span><span class="p">.</span><span class="n">left</span> <span class="o">==</span> <span class="n">T</span><span class="p">.</span><span class="n">nil</span>
-		<span class="n">x</span> <span class="o">=</span> <span class="n">z</span><span class="p">.</span><span class="n">right</span>
-		<span class="n">RB</span><span class="o">-</span><span class="n">TRANSPLANT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">z</span><span class="p">.</span><span class="n">right</span><span class="p">)</span>
-	<span class="k">else</span> <span class="k">if</span> <span class="n">z</span><span class="p">.</span><span class="n">right</span> <span class="o">==</span> <span class="n">T</span><span class="p">.</span><span class="n">nil</span>
-		<span class="n">x</span> <span class="o">=</span> <span class="n">z</span><span class="p">.</span><span class="n">left</span>
-		<span class="n">RB</span><span class="o">-</span><span class="n">TRANSPLANT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">z</span><span class="p">.</span><span class="n">left</span><span class="p">)</span>
-	<span class="k">else</span> <span class="n">y</span> <span class="o">=</span> <span class="n">TREE</span><span class="o">-</span><span class="n">MINIMUM</span><span class="p">(</span><span class="n">z</span><span class="p">.</span><span class="n">right</span><span class="p">)</span>
-		<span class="n">y</span><span class="o">-</span><span class="n">orginal</span><span class="o">-</span><span class="n">color</span> <span class="o">=</span> <span class="n">y</span><span class="p">.</span><span class="n">color</span>
-		<span class="n">x</span> <span class="o">=</span> <span class="n">y</span><span class="p">.</span><span class="n">right</span>
-		<span class="k">if</span> <span class="n">y</span><span class="p">.</span><span class="n">p</span> <span class="o">==</span> <span class="n">z</span>
-			<span class="n">x</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">y</span>
-		<span class="k">else</span> <span class="n">RB</span><span class="o">-</span><span class="n">TRANSPLANT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">y</span><span class="p">.</span><span class="n">right</span><span class="p">)</span>
-			<span class="n">y</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">z</span><span class="p">.</span><span class="n">right</span>
-			<span class="n">y</span><span class="p">.</span><span class="n">right</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">y</span>
-		<span class="n">RB</span><span class="o">-</span><span class="n">TRANSPLANT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-		<span class="n">y</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">z</span><span class="p">.</span><span class="n">left</span>
-		<span class="n">y</span><span class="p">.</span><span class="n">left</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">y</span>
-		<span class="n">y</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">z</span><span class="p">.</span><span class="n">color</span>
-	<span class="k">if</span> <span class="n">y</span><span class="o">-</span><span class="n">orginal</span><span class="o">-</span><span class="n">color</span> <span class="o">==</span> <span class="n">BLACK</span>
-		<span class="n">RB</span><span class="o">-</span><span class="n">DELETE</span><span class="o">-</span><span class="n">FIXUP</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
-		
+    <span class="n">y</span> <span class="o">=</span> <span class="n">z</span>
+    <span class="n">y</span><span class="o">-</span><span class="n">original</span><span class="o">-</span><span class="n">color</span> <span class="o">=</span> <span class="n">y</span><span class="p">.</span><span class="n">color</span>
+    <span class="k">if</span> <span class="n">z</span><span class="p">.</span><span class="n">left</span> <span class="o">==</span> <span class="n">T</span><span class="p">.</span><span class="n">nil</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">z</span><span class="p">.</span><span class="n">right</span>
+        <span class="n">RB</span><span class="o">-</span><span class="n">TRANSPLANT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">z</span><span class="p">.</span><span class="n">right</span><span class="p">)</span>
+    <span class="k">else</span> <span class="k">if</span> <span class="n">z</span><span class="p">.</span><span class="n">right</span> <span class="o">==</span> <span class="n">T</span><span class="p">.</span><span class="n">nil</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">z</span><span class="p">.</span><span class="n">left</span>
+        <span class="n">RB</span><span class="o">-</span><span class="n">TRANSPLANT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">z</span><span class="p">.</span><span class="n">left</span><span class="p">)</span>
+    <span class="k">else</span> <span class="n">y</span> <span class="o">=</span> <span class="n">TREE</span><span class="o">-</span><span class="n">MINIMUM</span><span class="p">(</span><span class="n">z</span><span class="p">.</span><span class="n">right</span><span class="p">)</span>
+        <span class="n">y</span><span class="o">-</span><span class="n">orginal</span><span class="o">-</span><span class="n">color</span> <span class="o">=</span> <span class="n">y</span><span class="p">.</span><span class="n">color</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">y</span><span class="p">.</span><span class="n">right</span>
+        <span class="k">if</span> <span class="n">y</span><span class="p">.</span><span class="n">p</span> <span class="o">==</span> <span class="n">z</span>
+            <span class="n">x</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="k">else</span> <span class="n">RB</span><span class="o">-</span><span class="n">TRANSPLANT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">y</span><span class="p">.</span><span class="n">right</span><span class="p">)</span>
+            <span class="n">y</span><span class="p">.</span><span class="n">right</span> <span class="o">=</span> <span class="n">z</span><span class="p">.</span><span class="n">right</span>
+            <span class="n">y</span><span class="p">.</span><span class="n">right</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="n">RB</span><span class="o">-</span><span class="n">TRANSPLANT</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">y</span><span class="p">.</span><span class="n">left</span> <span class="o">=</span> <span class="n">z</span><span class="p">.</span><span class="n">left</span>
+        <span class="n">y</span><span class="p">.</span><span class="n">left</span><span class="p">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">y</span>
+        <span class="n">y</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">z</span><span class="p">.</span><span class="n">color</span>
+    <span class="k">if</span> <span class="n">y</span><span class="o">-</span><span class="n">orginal</span><span class="o">-</span><span class="n">color</span> <span class="o">==</span> <span class="n">BLACK</span>
+        <span class="n">RB</span><span class="o">-</span><span class="n">DELETE</span><span class="o">-</span><span class="n">FIXUP</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
 <span class="c1">// 通过改变颜色和执行旋转来恢复红黑性质
 </span><span class="c1"></span><span class="n">RB</span><span class="o">-</span><span class="n">DELETE</span><span class="o">-</span><span class="n">FIXUP</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
-	<span class="k">while</span> <span class="n">x</span> <span class="err">≠</span> <span class="n">T</span><span class="p">.</span><span class="n">root</span> <span class="n">and</span> <span class="n">x</span><span class="p">.</span><span class="n">color</span> <span class="o">==</span> <span class="n">BLACK</span>
-		<span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">left</span>
-			<span class="n">w</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">right</span>
-			<span class="k">if</span> <span class="n">w</span><span class="p">.</span><span class="n">color</span> <span class="o">==</span> <span class="n">RED</span>
-				<span class="n">w</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">BLACK</span>			<span class="c1">// case 1
-</span><span class="c1"></span>				<span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">RED</span>			<span class="c1">// case 1
-</span><span class="c1"></span>				<span class="n">LEFT</span><span class="o">-</span><span class="n">ROTATION</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">)</span>	<span class="c1">// case 1
-</span><span class="c1"></span>				<span class="n">w</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">right</span>			<span class="c1">// case 1
-</span><span class="c1"></span>			<span class="k">if</span> <span class="n">w</span><span class="p">.</span><span class="n">left</span><span class="p">.</span><span class="n">color</span> <span class="o">==</span> <span class="n">BLACK</span> <span class="n">and</span> <span class="n">w</span><span class="p">.</span><span class="n">right</span><span class="p">.</span><span class="n">color</span> <span class="o">==</span> <span class="n">BLACK</span>
-				<span class="n">w</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">RED</span>			<span class="c1">// case 2
-</span><span class="c1"></span>				<span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span>					<span class="c1">// case 2
-</span><span class="c1"></span>			<span class="k">else</span> <span class="k">if</span> <span class="n">w</span><span class="p">.</span><span class="n">right</span><span class="p">.</span><span class="n">color</span> <span class="o">==</span> <span class="n">BLACK</span>
-				<span class="n">w</span><span class="p">.</span><span class="n">left</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">BLACK</span>	<span class="c1">// case 3
-</span><span class="c1"></span>				<span class="n">w</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">RED</span>			<span class="c1">// case 3
-</span><span class="c1"></span>				<span class="n">RIGHT</span><span class="o">-</span><span class="n">ROTATION</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>	<span class="c1">// case 3
-</span><span class="c1"></span>				<span class="n">w</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">right</span>			<span class="c1">// case 3
-</span><span class="c1"></span>			<span class="n">w</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">color</span>		<span class="c1">// case 4
-</span><span class="c1"></span>			<span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">BLACK</span>		<span class="c1">// case 4
-</span><span class="c1"></span>			<span class="n">w</span><span class="p">.</span><span class="n">right</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">BLACK</span>	<span class="c1">// case 4
-</span><span class="c1"></span>			<span class="n">LEFT</span><span class="o">-</span><span class="n">ROTATION</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">)</span>	<span class="c1">// case 4
-</span><span class="c1"></span>			<span class="n">x</span> <span class="o">=</span> <span class="n">T</span><span class="p">.</span><span class="n">root</span>				<span class="c1">// case 4
-</span><span class="c1"></span>		<span class="k">else</span> <span class="p">(</span><span class="n">same</span> <span class="n">as</span> <span class="n">then</span> <span class="n">clause</span> <span class="n">wiht</span>
-				<span class="s">&#34;right&#34;</span> <span class="n">and</span> <span class="s">&#34;left&#34;</span> <span class="n">exchanged</span><span class="p">)</span>
-	<span class="n">x</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">BLACK</span>
+    <span class="k">while</span> <span class="n">x</span> <span class="err">≠</span> <span class="n">T</span><span class="p">.</span><span class="n">root</span> <span class="n">and</span> <span class="n">x</span><span class="p">.</span><span class="n">color</span> <span class="o">==</span> <span class="n">BLACK</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">left</span>
+            <span class="n">w</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">right</span>
+            <span class="k">if</span> <span class="n">w</span><span class="p">.</span><span class="n">color</span> <span class="o">==</span> <span class="n">RED</span>
+                <span class="n">w</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">BLACK</span>            <span class="c1">// case 1
+</span><span class="c1"></span>                <span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">RED</span>            <span class="c1">// case 1
+</span><span class="c1"></span>                <span class="n">LEFT</span><span class="o">-</span><span class="n">ROTATION</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">)</span>    <span class="c1">// case 1
+</span><span class="c1"></span>                <span class="n">w</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">right</span>            <span class="c1">// case 1
+</span><span class="c1"></span>            <span class="k">if</span> <span class="n">w</span><span class="p">.</span><span class="n">left</span><span class="p">.</span><span class="n">color</span> <span class="o">==</span> <span class="n">BLACK</span> <span class="n">and</span> <span class="n">w</span><span class="p">.</span><span class="n">right</span><span class="p">.</span><span class="n">color</span> <span class="o">==</span> <span class="n">BLACK</span>
+                <span class="n">w</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">RED</span>            <span class="c1">// case 2
+</span><span class="c1"></span>                <span class="n">x</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span>                    <span class="c1">// case 2
+</span><span class="c1"></span>            <span class="k">else</span> <span class="k">if</span> <span class="n">w</span><span class="p">.</span><span class="n">right</span><span class="p">.</span><span class="n">color</span> <span class="o">==</span> <span class="n">BLACK</span>
+                <span class="n">w</span><span class="p">.</span><span class="n">left</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">BLACK</span>    <span class="c1">// case 3
+</span><span class="c1"></span>                <span class="n">w</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">RED</span>            <span class="c1">// case 3
+</span><span class="c1"></span>                <span class="n">RIGHT</span><span class="o">-</span><span class="n">ROTATION</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>    <span class="c1">// case 3
+</span><span class="c1"></span>                <span class="n">w</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">right</span>            <span class="c1">// case 3
+</span><span class="c1"></span>            <span class="n">w</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">color</span>        <span class="c1">// case 4
+</span><span class="c1"></span>            <span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">BLACK</span>        <span class="c1">// case 4
+</span><span class="c1"></span>            <span class="n">w</span><span class="p">.</span><span class="n">right</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">BLACK</span>    <span class="c1">// case 4
+</span><span class="c1"></span>            <span class="n">LEFT</span><span class="o">-</span><span class="n">ROTATION</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">x</span><span class="p">.</span><span class="n">p</span><span class="p">)</span>    <span class="c1">// case 4
+</span><span class="c1"></span>            <span class="n">x</span> <span class="o">=</span> <span class="n">T</span><span class="p">.</span><span class="n">root</span>                <span class="c1">// case 4
+</span><span class="c1"></span>        <span class="k">else</span> <span class="p">(</span><span class="n">same</span> <span class="n">as</span> <span class="n">then</span> <span class="n">clause</span> <span class="n">wiht</span>
+                <span class="s">&#34;right&#34;</span> <span class="n">and</span> <span class="s">&#34;left&#34;</span> <span class="n">exchanged</span><span class="p">)</span>
+    <span class="n">x</span><span class="p">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">BLACK</span>
 </code></pre></td></tr></table>
 </div>
 </div><p><img src="/tree012.png" alt="四种情况"></p>
-
     </div>
 
     
