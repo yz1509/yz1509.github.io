@@ -6,7 +6,16 @@
     <description>Recent content in Tags on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 07 Sep 2020 12:02:54 +0000</lastBuildDate><atom:link href="https://k-on.me/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 22 Sep 2020 14:44:15 +0800</lastBuildDate><atom:link href="https://k-on.me/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>C</title>
+      <link>https://k-on.me/tags/c/</link>
+      <pubDate>Tue, 22 Sep 2020 14:44:15 +0800</pubDate>
+      
+      <guid>https://k-on.me/tags/c/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>CRDT</title>
       <link>https://k-on.me/tags/crdt/</link>
@@ -175,15 +184,6 @@
       <pubDate>Thu, 26 Jul 2018 13:17:37 +0000</pubDate>
       
       <guid>https://k-on.me/tags/bellman-ford-%E7%AE%97%E6%B3%95/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>BFS</title>
-      <link>https://k-on.me/tags/bfs/</link>
-      <pubDate>Thu, 26 Jul 2018 13:17:37 +0000</pubDate>
-      
-      <guid>https://k-on.me/tags/bfs/</guid>
       <description></description>
     </item>
     

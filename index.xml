@@ -6,10 +6,55 @@
     <description>Recent content on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 07 Sep 2020 12:02:54 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 22 Sep 2020 14:44:15 +0800</lastBuildDate>
     
         <atom:link href="https://k-on.me/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>我的 C 语言基础果然有问题</title>
+      <link>https://k-on.me/post/c-notes/</link>
+      <pubDate>Tue, 22 Sep 2020 14:44:15 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/c-notes/</guid>
+      
+        <description>&lt;p&gt;记录 C 语言相关小知识。&lt;/p&gt;
+&lt;h2 id=&#34;关键字&#34;&gt;关键字&lt;/h2&gt;
+&lt;h3 id=&#34;volatile&#34;&gt;&lt;code&gt;volatile&lt;/code&gt;&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;k&#34;&gt;volatile&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;lru_clock&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;cm&#34;&gt;/* Server global current LRU time. */&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;参考 &lt;a href=&#34;https://en.cppreference.com/w/c/language/volatile&#34;&gt;C 语言标准&lt;/a&gt; 和 &lt;a href=&#34;https://liam.page/2018/01/18/volatile-in-C-and-Cpp/&#34;&gt;谈谈 C/C++ 中的 volatile&lt;/a&gt; 可知：对 &lt;code&gt;volatile&lt;/code&gt; 变量的访问，编译器不能做任何假设和推理，都必须按部就班地与「内存」进行交互。&lt;/p&gt;
+&lt;h2 id=&#34;结构体&#34;&gt;结构体&lt;/h2&gt;
+&lt;h3 id=&#34;结构体内的冒号&#34;&gt;结构体内的冒号&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;k&#34;&gt;typedef&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;redisObject&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;nl&#34;&gt;type&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;nl&#34;&gt;encoding&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;nl&#34;&gt;lru&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;:&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;24&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;refcount&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ptr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;用冒号限定该 &lt;code&gt;field&lt;/code&gt; 所占的位数。&lt;/p&gt;</description>
+      
+    </item>
     
     <item>
       <title>Efficient State-based CRDTs by Delta-Mutation</title>
@@ -12302,85 +12347,6 @@ c_i^{k-1} \cup {u_i^k(a)} &amp;amp; f = u_i^k(a)
 &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;</description>
-      
-    </item>
-    
-    <item>
-      <title>Linux相关小问题</title>
-      <link>https://k-on.me/post/linux%E7%9B%B8%E5%85%B3%E5%B0%8F%E9%97%AE%E9%A2%98/</link>
-      <pubDate>Sat, 12 Oct 2019 20:00:38 +0000</pubDate>
-      
-      <guid>https://k-on.me/post/linux%E7%9B%B8%E5%85%B3%E5%B0%8F%E9%97%AE%E9%A2%98/</guid>
-      
-        <description>&lt;p&gt;这个人明明遇到过很多问题，却总是忘了记录。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;手动卸载旧版本软件安装完新版本之后提示-no-such-file-or-directory-怎么办&#34;&gt;手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;使用 &lt;code&gt;echo $PATH&lt;/code&gt; 命令检查环境变量，如新版本软件安装路径不在环境变量中，添加。如新版本软件安装路径已在环境变量中，转 2.
-&lt;ul&gt;
-&lt;li&gt;添加环境变量：编辑 &lt;code&gt;/etc/profile&lt;/code&gt; or &lt;code&gt;/ect/environment&lt;/code&gt; or &lt;code&gt;~/.bashrc&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;因为 bash 路径是有缓存的，只要运行过的命令，bash 就会保存到一张 hash 表中，下次直接从 hash 表中找地址，故需要我们手动删除缓存
-&lt;ul&gt;
-&lt;li&gt;运行 &lt;code&gt;hash&lt;/code&gt; 命令，查看缓存的 hash 表&lt;/li&gt;
-&lt;li&gt;运行 &lt;code&gt;hash -d &amp;lt;softname&amp;gt;&lt;/code&gt; 删除掉 &lt;code&gt;&amp;lt;softname&amp;gt;&lt;/code&gt; 的缓存&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;h2 id=&#34;gccg-版本切换&#34;&gt;gcc/g++ 版本切换&lt;/h2&gt;
-&lt;ol&gt;
-&lt;li&gt;查看所安装的各个版本&lt;/li&gt;
-&lt;/ol&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;ls /usr/bin/gcc*
-ls /usr/bin/g++*
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;ol start=&#34;2&#34;&gt;
-&lt;li&gt;设置候选优先级&lt;/li&gt;
-&lt;/ol&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;&lt;span class=&#34;c1&#34;&gt;# 以 gcc-5 和 gcc-7 为例，最后的数字是优先级，数字越大，优先级越高&lt;/span&gt;
-update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-5 &lt;span class=&#34;m&#34;&gt;100&lt;/span&gt;
-update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 &lt;span class=&#34;m&#34;&gt;80&lt;/span&gt;
-
-&lt;span class=&#34;c1&#34;&gt;# 以 g++-5 和 g++-7 为例，最后的数字是优先级，数字越大，优先级越高&lt;/span&gt;
-update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 &lt;span class=&#34;m&#34;&gt;100&lt;/span&gt;
-update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 &lt;span class=&#34;m&#34;&gt;80&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;ol start=&#34;3&#34;&gt;
-&lt;li&gt;切换版本&lt;/li&gt;
-&lt;/ol&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-sh&#34; data-lang=&#34;sh&#34;&gt;update-alternatives --config gcc
-
-update-alternatives --config g++
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;注意保持 gcc 和 g++ 的版本一致。&lt;/p&gt;</description>
       
     </item>
     

@@ -6,7 +6,16 @@
     <description>Recent content in Posts on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 07 Sep 2020 12:02:54 +0000</lastBuildDate><atom:link href="https://k-on.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 22 Sep 2020 14:44:15 +0800</lastBuildDate><atom:link href="https://k-on.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>我的 C 语言基础果然有问题</title>
+      <link>https://k-on.me/post/c-notes/</link>
+      <pubDate>Tue, 22 Sep 2020 14:44:15 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/c-notes/</guid>
+      <description>&lt;p&gt;记录 C 语言相关小知识。&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>Efficient State-based CRDTs by Delta-Mutation</title>
       <link>https://k-on.me/post/efficient-state-based-crdts-by-delta-mutation/</link>
@@ -176,15 +185,6 @@
       
       <guid>https://k-on.me/post/redis%E6%BA%90%E7%A0%81%E4%B9%8Bzmalloc/</guid>
       <description>&lt;p&gt;Redis 内存分配及释放相关源码阅读笔记，版本: &lt;a href=&#34;https://github.com/antirez/redis/commit/47ff13637e1254e5a6ac962afa3e963d2f284783&#34;&gt;47ff13637 Redis 6.0.1&lt;/a&gt;&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Linux相关小问题</title>
-      <link>https://k-on.me/post/linux%E7%9B%B8%E5%85%B3%E5%B0%8F%E9%97%AE%E9%A2%98/</link>
-      <pubDate>Sat, 12 Oct 2019 20:00:38 +0000</pubDate>
-      
-      <guid>https://k-on.me/post/linux%E7%9B%B8%E5%85%B3%E5%B0%8F%E9%97%AE%E9%A2%98/</guid>
-      <description>&lt;p&gt;这个人明明遇到过很多问题，却总是忘了记录。&lt;/p&gt;</description>
     </item>
     
   </channel>
