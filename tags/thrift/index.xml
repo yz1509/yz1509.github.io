@@ -2,35 +2,35 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>thrift on HTT - ふわふわ時間</title>
-    <link>https://yz1509.github.io/tags/thrift/</link>
+    <link>https://k-on.me/tags/thrift/</link>
     <description>Recent content in thrift on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 30 Jul 2019 22:57:40 +0000</lastBuildDate><atom:link href="https://yz1509.github.io/tags/thrift/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 30 Jul 2019 22:57:40 +0000</lastBuildDate><atom:link href="https://k-on.me/tags/thrift/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Thrift-Protocol 概述</title>
-      <link>https://yz1509.github.io/post/thrift-protocol%E6%A6%82%E8%BF%B0/</link>
+      <link>https://k-on.me/post/thrift-protocol%E6%A6%82%E8%BF%B0/</link>
       <pubDate>Tue, 30 Jul 2019 22:57:40 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/thrift-protocol%E6%A6%82%E8%BF%B0/</guid>
+      <guid>https://k-on.me/post/thrift-protocol%E6%A6%82%E8%BF%B0/</guid>
       <description>&lt;p&gt;Thrift 协议层简单介绍。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Thrift-Transport 概述</title>
-      <link>https://yz1509.github.io/post/thrift-transport%E6%A6%82%E8%BF%B0/</link>
+      <link>https://k-on.me/post/thrift-transport%E6%A6%82%E8%BF%B0/</link>
       <pubDate>Tue, 30 Jul 2019 22:57:26 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/thrift-transport%E6%A6%82%E8%BF%B0/</guid>
+      <guid>https://k-on.me/post/thrift-transport%E6%A6%82%E8%BF%B0/</guid>
       <description>&lt;p&gt;Thrift 传输层简单介绍。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Thrift 概述</title>
-      <link>https://yz1509.github.io/post/thrift%E6%A6%82%E8%BF%B0/</link>
+      <link>https://k-on.me/post/thrift%E6%A6%82%E8%BF%B0/</link>
       <pubDate>Fri, 26 Jul 2019 23:48:45 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/thrift%E6%A6%82%E8%BF%B0/</guid>
+      <guid>https://k-on.me/post/thrift%E6%A6%82%E8%BF%B0/</guid>
       <description>&lt;p&gt;Thrift 是一个基于静态代码生成的跨语言的RPC协议栈实现，它可以生成包括 C++, Java, Python, Ruby, PHP 等主流语言的代码，这些代码实现了 RPC 的协议层和传输层功能，从而让用户可以集中精力于服务的调用和实现。&lt;/p&gt;</description>
     </item>
     

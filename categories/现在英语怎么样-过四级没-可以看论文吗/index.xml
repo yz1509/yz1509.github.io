@@ -2,35 +2,35 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>现在英语怎么样 过四级没 可以看论文吗 on HTT - ふわふわ時間</title>
-    <link>https://yz1509.github.io/categories/%E7%8E%B0%E5%9C%A8%E8%8B%B1%E8%AF%AD%E6%80%8E%E4%B9%88%E6%A0%B7-%E8%BF%87%E5%9B%9B%E7%BA%A7%E6%B2%A1-%E5%8F%AF%E4%BB%A5%E7%9C%8B%E8%AE%BA%E6%96%87%E5%90%97/</link>
+    <link>https://k-on.me/categories/%E7%8E%B0%E5%9C%A8%E8%8B%B1%E8%AF%AD%E6%80%8E%E4%B9%88%E6%A0%B7-%E8%BF%87%E5%9B%9B%E7%BA%A7%E6%B2%A1-%E5%8F%AF%E4%BB%A5%E7%9C%8B%E8%AE%BA%E6%96%87%E5%90%97/</link>
     <description>Recent content in 现在英语怎么样 过四级没 可以看论文吗 on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 07 Sep 2020 12:02:54 +0000</lastBuildDate><atom:link href="https://yz1509.github.io/categories/%E7%8E%B0%E5%9C%A8%E8%8B%B1%E8%AF%AD%E6%80%8E%E4%B9%88%E6%A0%B7-%E8%BF%87%E5%9B%9B%E7%BA%A7%E6%B2%A1-%E5%8F%AF%E4%BB%A5%E7%9C%8B%E8%AE%BA%E6%96%87%E5%90%97/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 07 Sep 2020 12:02:54 +0000</lastBuildDate><atom:link href="https://k-on.me/categories/%E7%8E%B0%E5%9C%A8%E8%8B%B1%E8%AF%AD%E6%80%8E%E4%B9%88%E6%A0%B7-%E8%BF%87%E5%9B%9B%E7%BA%A7%E6%B2%A1-%E5%8F%AF%E4%BB%A5%E7%9C%8B%E8%AE%BA%E6%96%87%E5%90%97/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Efficient State-based CRDTs by Delta-Mutation</title>
-      <link>https://yz1509.github.io/post/efficient-state-based-crdts-by-delta-mutation/</link>
+      <link>https://k-on.me/post/efficient-state-based-crdts-by-delta-mutation/</link>
       <pubDate>Mon, 07 Sep 2020 12:02:54 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/efficient-state-based-crdts-by-delta-mutation/</guid>
+      <guid>https://k-on.me/post/efficient-state-based-crdts-by-delta-mutation/</guid>
       <description>&lt;p&gt;Efficient State-based CRDTs by Delta-Mutation 阅读笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Conflict free replicated data types</title>
-      <link>https://yz1509.github.io/post/conflict-free-replicated-data-types/</link>
+      <link>https://k-on.me/post/conflict-free-replicated-data-types/</link>
       <pubDate>Wed, 22 Apr 2020 18:09:55 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/conflict-free-replicated-data-types/</guid>
+      <guid>https://k-on.me/post/conflict-free-replicated-data-types/</guid>
       <description>&lt;p&gt;Conflict free replicated data types 阅读笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Consistent Hashing</title>
-      <link>https://yz1509.github.io/post/consistenthashing/</link>
+      <link>https://k-on.me/post/consistenthashing/</link>
       <pubDate>Sat, 12 Oct 2019 21:26:09 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/consistenthashing/</guid>
+      <guid>https://k-on.me/post/consistenthashing/</guid>
       <description>&lt;p&gt;一致性哈希的 first paper (maybe) 阅读笔记。&lt;/p&gt;</description>
     </item>
     

@@ -2,44 +2,44 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>最终一致性 on HTT - ふわふわ時間</title>
-    <link>https://yz1509.github.io/tags/%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7/</link>
+    <link>https://k-on.me/tags/%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7/</link>
     <description>Recent content in 最终一致性 on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 07 Sep 2020 12:02:54 +0000</lastBuildDate><atom:link href="https://yz1509.github.io/tags/%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 07 Sep 2020 12:02:54 +0000</lastBuildDate><atom:link href="https://k-on.me/tags/%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Efficient State-based CRDTs by Delta-Mutation</title>
-      <link>https://yz1509.github.io/post/efficient-state-based-crdts-by-delta-mutation/</link>
+      <link>https://k-on.me/post/efficient-state-based-crdts-by-delta-mutation/</link>
       <pubDate>Mon, 07 Sep 2020 12:02:54 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/efficient-state-based-crdts-by-delta-mutation/</guid>
+      <guid>https://k-on.me/post/efficient-state-based-crdts-by-delta-mutation/</guid>
       <description>&lt;p&gt;Efficient State-based CRDTs by Delta-Mutation 阅读笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>CRDTs in Redis</title>
-      <link>https://yz1509.github.io/post/crdts-in-redis/</link>
+      <link>https://k-on.me/post/crdts-in-redis/</link>
       <pubDate>Wed, 17 Jun 2020 11:15:10 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/crdts-in-redis/</guid>
+      <guid>https://k-on.me/post/crdts-in-redis/</guid>
       <description>&lt;p&gt;Redis 全球多活调研笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Conflict free replicated data types</title>
-      <link>https://yz1509.github.io/post/conflict-free-replicated-data-types/</link>
+      <link>https://k-on.me/post/conflict-free-replicated-data-types/</link>
       <pubDate>Wed, 22 Apr 2020 18:09:55 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/conflict-free-replicated-data-types/</guid>
+      <guid>https://k-on.me/post/conflict-free-replicated-data-types/</guid>
       <description>&lt;p&gt;Conflict free replicated data types 阅读笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>CRDT-notes</title>
-      <link>https://yz1509.github.io/post/crdt-notes/</link>
+      <link>https://k-on.me/post/crdt-notes/</link>
       <pubDate>Tue, 21 Apr 2020 11:02:30 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/crdt-notes/</guid>
+      <guid>https://k-on.me/post/crdt-notes/</guid>
       <description>&lt;p&gt;CRDT 学习笔记。&lt;/p&gt;</description>
     </item>
     

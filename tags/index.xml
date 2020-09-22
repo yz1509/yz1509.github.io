@@ -2,188 +2,188 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tags on HTT - ふわふわ時間</title>
-    <link>https://yz1509.github.io/tags/</link>
+    <link>https://k-on.me/tags/</link>
     <description>Recent content in Tags on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 07 Sep 2020 12:02:54 +0000</lastBuildDate><atom:link href="https://yz1509.github.io/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 07 Sep 2020 12:02:54 +0000</lastBuildDate><atom:link href="https://k-on.me/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>CRDT</title>
-      <link>https://yz1509.github.io/tags/crdt/</link>
+      <link>https://k-on.me/tags/crdt/</link>
       <pubDate>Mon, 07 Sep 2020 12:02:54 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/tags/crdt/</guid>
+      <guid>https://k-on.me/tags/crdt/</guid>
       <description></description>
     </item>
     
     <item>
       <title>最终一致性</title>
-      <link>https://yz1509.github.io/tags/%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7/</link>
+      <link>https://k-on.me/tags/%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7/</link>
       <pubDate>Mon, 07 Sep 2020 12:02:54 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/tags/%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7/</guid>
+      <guid>https://k-on.me/tags/%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Redis</title>
-      <link>https://yz1509.github.io/tags/redis/</link>
+      <link>https://k-on.me/tags/redis/</link>
       <pubDate>Thu, 27 Aug 2020 10:45:48 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/tags/redis/</guid>
+      <guid>https://k-on.me/tags/redis/</guid>
       <description></description>
     </item>
     
     <item>
       <title>NVM</title>
-      <link>https://yz1509.github.io/tags/nvm/</link>
+      <link>https://k-on.me/tags/nvm/</link>
       <pubDate>Wed, 26 Aug 2020 20:38:59 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/tags/nvm/</guid>
+      <guid>https://k-on.me/tags/nvm/</guid>
       <description></description>
     </item>
     
     <item>
       <title>一致性</title>
-      <link>https://yz1509.github.io/tags/%E4%B8%80%E8%87%B4%E6%80%A7/</link>
+      <link>https://k-on.me/tags/%E4%B8%80%E8%87%B4%E6%80%A7/</link>
       <pubDate>Mon, 17 Aug 2020 20:08:58 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/tags/%E4%B8%80%E8%87%B4%E6%80%A7/</guid>
+      <guid>https://k-on.me/tags/%E4%B8%80%E8%87%B4%E6%80%A7/</guid>
       <description></description>
     </item>
     
     <item>
       <title>分布式系统</title>
-      <link>https://yz1509.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/</link>
+      <link>https://k-on.me/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/</link>
       <pubDate>Mon, 17 Aug 2020 20:08:58 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/</guid>
+      <guid>https://k-on.me/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/</guid>
       <description></description>
     </item>
     
     <item>
       <title>FlameGraph</title>
-      <link>https://yz1509.github.io/tags/flamegraph/</link>
+      <link>https://k-on.me/tags/flamegraph/</link>
       <pubDate>Wed, 22 Jan 2020 10:36:38 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/tags/flamegraph/</guid>
+      <guid>https://k-on.me/tags/flamegraph/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Perf</title>
-      <link>https://yz1509.github.io/tags/perf/</link>
+      <link>https://k-on.me/tags/perf/</link>
       <pubDate>Wed, 22 Jan 2020 10:36:38 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/tags/perf/</guid>
+      <guid>https://k-on.me/tags/perf/</guid>
       <description></description>
     </item>
     
     <item>
       <title>钓鱼</title>
-      <link>https://yz1509.github.io/tags/%E9%92%93%E9%B1%BC/</link>
+      <link>https://k-on.me/tags/%E9%92%93%E9%B1%BC/</link>
       <pubDate>Mon, 23 Dec 2019 19:59:24 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/tags/%E9%92%93%E9%B1%BC/</guid>
+      <guid>https://k-on.me/tags/%E9%92%93%E9%B1%BC/</guid>
       <description></description>
     </item>
     
     <item>
       <title>C&#43;&#43;</title>
-      <link>https://yz1509.github.io/tags/c&#43;&#43;/</link>
+      <link>https://k-on.me/tags/c&#43;&#43;/</link>
       <pubDate>Wed, 11 Dec 2019 19:45:55 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/tags/c&#43;&#43;/</guid>
+      <guid>https://k-on.me/tags/c&#43;&#43;/</guid>
       <description></description>
     </item>
     
     <item>
       <title>多线程</title>
-      <link>https://yz1509.github.io/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</link>
+      <link>https://k-on.me/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</link>
       <pubDate>Wed, 11 Dec 2019 19:45:55 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</guid>
+      <guid>https://k-on.me/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/</guid>
       <description></description>
     </item>
     
     <item>
       <title>并发</title>
-      <link>https://yz1509.github.io/tags/%E5%B9%B6%E5%8F%91/</link>
+      <link>https://k-on.me/tags/%E5%B9%B6%E5%8F%91/</link>
       <pubDate>Wed, 11 Dec 2019 19:45:55 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/tags/%E5%B9%B6%E5%8F%91/</guid>
+      <guid>https://k-on.me/tags/%E5%B9%B6%E5%8F%91/</guid>
       <description></description>
     </item>
     
     <item>
       <title>GO</title>
-      <link>https://yz1509.github.io/tags/go/</link>
+      <link>https://k-on.me/tags/go/</link>
       <pubDate>Fri, 22 Nov 2019 18:47:27 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/tags/go/</guid>
+      <guid>https://k-on.me/tags/go/</guid>
       <description></description>
     </item>
     
     <item>
       <title>graphviz</title>
-      <link>https://yz1509.github.io/tags/graphviz/</link>
+      <link>https://k-on.me/tags/graphviz/</link>
       <pubDate>Fri, 22 Nov 2019 18:47:27 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/tags/graphviz/</guid>
+      <guid>https://k-on.me/tags/graphviz/</guid>
       <description></description>
     </item>
     
     <item>
       <title>pprof</title>
-      <link>https://yz1509.github.io/tags/pprof/</link>
+      <link>https://k-on.me/tags/pprof/</link>
       <pubDate>Fri, 22 Nov 2019 18:47:27 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/tags/pprof/</guid>
+      <guid>https://k-on.me/tags/pprof/</guid>
       <description></description>
     </item>
     
     <item>
       <title>一致性哈希</title>
-      <link>https://yz1509.github.io/tags/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C/</link>
+      <link>https://k-on.me/tags/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C/</link>
       <pubDate>Sat, 12 Oct 2019 21:26:09 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/tags/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C/</guid>
+      <guid>https://k-on.me/tags/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Linux</title>
-      <link>https://yz1509.github.io/tags/linux/</link>
+      <link>https://k-on.me/tags/linux/</link>
       <pubDate>Sat, 12 Oct 2019 20:00:38 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/tags/linux/</guid>
+      <guid>https://k-on.me/tags/linux/</guid>
       <description></description>
     </item>
     
     <item>
       <title>thrift</title>
-      <link>https://yz1509.github.io/tags/thrift/</link>
+      <link>https://k-on.me/tags/thrift/</link>
       <pubDate>Tue, 30 Jul 2019 22:57:40 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/tags/thrift/</guid>
+      <guid>https://k-on.me/tags/thrift/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Bellman-Ford 算法</title>
-      <link>https://yz1509.github.io/tags/bellman-ford-%E7%AE%97%E6%B3%95/</link>
+      <link>https://k-on.me/tags/bellman-ford-%E7%AE%97%E6%B3%95/</link>
       <pubDate>Thu, 26 Jul 2018 13:17:37 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/tags/bellman-ford-%E7%AE%97%E6%B3%95/</guid>
+      <guid>https://k-on.me/tags/bellman-ford-%E7%AE%97%E6%B3%95/</guid>
       <description></description>
     </item>
     
     <item>
       <title>BFS</title>
-      <link>https://yz1509.github.io/tags/bfs/</link>
+      <link>https://k-on.me/tags/bfs/</link>
       <pubDate>Thu, 26 Jul 2018 13:17:37 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/tags/bfs/</guid>
+      <guid>https://k-on.me/tags/bfs/</guid>
       <description></description>
     </item>
     

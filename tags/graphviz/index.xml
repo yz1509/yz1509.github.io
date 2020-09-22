@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>graphviz on HTT - ふわふわ時間</title>
-    <link>https://yz1509.github.io/tags/graphviz/</link>
+    <link>https://k-on.me/tags/graphviz/</link>
     <description>Recent content in graphviz on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 22 Nov 2019 18:47:27 +0000</lastBuildDate><atom:link href="https://yz1509.github.io/tags/graphviz/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 22 Nov 2019 18:47:27 +0000</lastBuildDate><atom:link href="https://k-on.me/tags/graphviz/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>GO 进程资源占用分析</title>
-      <link>https://yz1509.github.io/post/go%E8%BF%9B%E7%A8%8B%E8%B5%84%E6%BA%90%E5%8D%A0%E7%94%A8%E5%88%86%E6%9E%90/</link>
+      <link>https://k-on.me/post/go%E8%BF%9B%E7%A8%8B%E8%B5%84%E6%BA%90%E5%8D%A0%E7%94%A8%E5%88%86%E6%9E%90/</link>
       <pubDate>Fri, 22 Nov 2019 18:47:27 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/go%E8%BF%9B%E7%A8%8B%E8%B5%84%E6%BA%90%E5%8D%A0%E7%94%A8%E5%88%86%E6%9E%90/</guid>
+      <guid>https://k-on.me/post/go%E8%BF%9B%E7%A8%8B%E8%B5%84%E6%BA%90%E5%8D%A0%E7%94%A8%E5%88%86%E6%9E%90/</guid>
       <description>&lt;p&gt;使用 pprof 和 graphviz 分析进程内存分配，CPU 耗时等信息。&lt;/p&gt;</description>
     </item>
     

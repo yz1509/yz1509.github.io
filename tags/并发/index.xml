@@ -2,35 +2,35 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>并发 on HTT - ふわふわ時間</title>
-    <link>https://yz1509.github.io/tags/%E5%B9%B6%E5%8F%91/</link>
+    <link>https://k-on.me/tags/%E5%B9%B6%E5%8F%91/</link>
     <description>Recent content in 并发 on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 11 Dec 2019 19:45:55 +0000</lastBuildDate><atom:link href="https://yz1509.github.io/tags/%E5%B9%B6%E5%8F%91/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 11 Dec 2019 19:45:55 +0000</lastBuildDate><atom:link href="https://k-on.me/tags/%E5%B9%B6%E5%8F%91/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>CCIA-线程间同步</title>
-      <link>https://yz1509.github.io/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%90%8C%E6%AD%A5/</link>
+      <link>https://k-on.me/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%90%8C%E6%AD%A5/</link>
       <pubDate>Wed, 11 Dec 2019 19:45:55 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%90%8C%E6%AD%A5/</guid>
+      <guid>https://k-on.me/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%90%8C%E6%AD%A5/</guid>
       <description>&lt;p&gt;《C++ Concurrentcy in Action 2nd》 第四章阅读笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>CCIA-线程间共享数据</title>
-      <link>https://yz1509.github.io/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%85%B1%E4%BA%AB%E6%95%B0%E6%8D%AE/</link>
+      <link>https://k-on.me/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%85%B1%E4%BA%AB%E6%95%B0%E6%8D%AE/</link>
       <pubDate>Fri, 15 Nov 2019 17:15:13 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%85%B1%E4%BA%AB%E6%95%B0%E6%8D%AE/</guid>
+      <guid>https://k-on.me/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%85%B1%E4%BA%AB%E6%95%B0%E6%8D%AE/</guid>
       <description>&lt;p&gt;《C++ Concurrentcy in Action 2nd》 第三章阅读笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>CCIA-线程管理</title>
-      <link>https://yz1509.github.io/post/ccia-%E7%BA%BF%E7%A8%8B%E7%AE%A1%E7%90%86/</link>
+      <link>https://k-on.me/post/ccia-%E7%BA%BF%E7%A8%8B%E7%AE%A1%E7%90%86/</link>
       <pubDate>Thu, 14 Nov 2019 14:20:01 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/ccia-%E7%BA%BF%E7%A8%8B%E7%AE%A1%E7%90%86/</guid>
+      <guid>https://k-on.me/post/ccia-%E7%BA%BF%E7%A8%8B%E7%AE%A1%E7%90%86/</guid>
       <description>&lt;p&gt;《C++ Concurrentcy in Action 2nd》 第二章阅读笔记。&lt;/p&gt;</description>
     </item>
     

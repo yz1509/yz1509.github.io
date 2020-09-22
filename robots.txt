@@ -1,2 +1,2 @@
 User-agent: *
-Sitemap: https://yz1509.github.io/sitemap.xml
+Sitemap: https://k-on.me/sitemap.xml

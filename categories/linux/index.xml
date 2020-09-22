@@ -2,26 +2,26 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Linux on HTT - ふわふわ時間</title>
-    <link>https://yz1509.github.io/categories/linux/</link>
+    <link>https://k-on.me/categories/linux/</link>
     <description>Recent content in Linux on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 22 Jan 2020 10:36:38 +0000</lastBuildDate><atom:link href="https://yz1509.github.io/categories/linux/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 22 Jan 2020 10:36:38 +0000</lastBuildDate><atom:link href="https://k-on.me/categories/linux/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>初试性能调优</title>
-      <link>https://yz1509.github.io/post/%E5%88%9D%E8%AF%95%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/</link>
+      <link>https://k-on.me/post/%E5%88%9D%E8%AF%95%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/</link>
       <pubDate>Wed, 22 Jan 2020 10:36:38 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/%E5%88%9D%E8%AF%95%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/</guid>
+      <guid>https://k-on.me/post/%E5%88%9D%E8%AF%95%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/</guid>
       <description>&lt;p&gt;利用 &lt;a href=&#34;https://github.com/torvalds/linux/tree/master/tools/perf&#34;&gt;perf&lt;/a&gt; + &lt;a href=&#34;https://github.com/brendangregg/FlameGraph&#34;&gt;FlameGraph&lt;/a&gt; 进行性能调优。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Linux相关小问题</title>
-      <link>https://yz1509.github.io/post/linux%E7%9B%B8%E5%85%B3%E5%B0%8F%E9%97%AE%E9%A2%98/</link>
+      <link>https://k-on.me/post/linux%E7%9B%B8%E5%85%B3%E5%B0%8F%E9%97%AE%E9%A2%98/</link>
       <pubDate>Sat, 12 Oct 2019 20:00:38 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/linux%E7%9B%B8%E5%85%B3%E5%B0%8F%E9%97%AE%E9%A2%98/</guid>
+      <guid>https://k-on.me/post/linux%E7%9B%B8%E5%85%B3%E5%B0%8F%E9%97%AE%E9%A2%98/</guid>
       <description>&lt;p&gt;这个人明明遇到过很多问题，却总是忘了记录。&lt;/p&gt;</description>
     </item>
     

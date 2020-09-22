@@ -2,71 +2,71 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>数据结构与算法 on HTT - ふわふわ時間</title>
-    <link>https://yz1509.github.io/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/</link>
+    <link>https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/</link>
     <description>Recent content in 数据结构与算法 on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 17 Jun 2020 11:15:10 +0000</lastBuildDate><atom:link href="https://yz1509.github.io/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 17 Jun 2020 11:15:10 +0000</lastBuildDate><atom:link href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>CRDTs in Redis</title>
-      <link>https://yz1509.github.io/post/crdts-in-redis/</link>
+      <link>https://k-on.me/post/crdts-in-redis/</link>
       <pubDate>Wed, 17 Jun 2020 11:15:10 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/crdts-in-redis/</guid>
+      <guid>https://k-on.me/post/crdts-in-redis/</guid>
       <description>&lt;p&gt;Redis 全球多活调研笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>CRDT-notes</title>
-      <link>https://yz1509.github.io/post/crdt-notes/</link>
+      <link>https://k-on.me/post/crdt-notes/</link>
       <pubDate>Tue, 21 Apr 2020 11:02:30 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/crdt-notes/</guid>
+      <guid>https://k-on.me/post/crdt-notes/</guid>
       <description>&lt;p&gt;CRDT 学习笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>图</title>
-      <link>https://yz1509.github.io/post/%E5%9B%BE/</link>
+      <link>https://k-on.me/post/%E5%9B%BE/</link>
       <pubDate>Thu, 26 Jul 2018 13:17:37 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/%E5%9B%BE/</guid>
+      <guid>https://k-on.me/post/%E5%9B%BE/</guid>
       <description>&lt;p&gt;简单介绍图及其相关算法。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>树</title>
-      <link>https://yz1509.github.io/post/%E6%A0%91/</link>
+      <link>https://k-on.me/post/%E6%A0%91/</link>
       <pubDate>Wed, 25 Jul 2018 15:06:19 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/%E6%A0%91/</guid>
+      <guid>https://k-on.me/post/%E6%A0%91/</guid>
       <description>&lt;p&gt;主要介绍二叉树和红黑树。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>排序算法</title>
-      <link>https://yz1509.github.io/post/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</link>
+      <link>https://k-on.me/post/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</link>
       <pubDate>Thu, 19 Jul 2018 10:07:14 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</guid>
+      <guid>https://k-on.me/post/%E6%8E%92%E5%BA%8F%E7%AE%97%E6%B3%95/</guid>
       <description>&lt;p&gt;掌握了排序算法就不会失业.jpg&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>分治算法</title>
-      <link>https://yz1509.github.io/post/%E5%88%86%E6%B2%BB%E7%AE%97%E6%B3%95/</link>
+      <link>https://k-on.me/post/%E5%88%86%E6%B2%BB%E7%AE%97%E6%B3%95/</link>
       <pubDate>Wed, 18 Jul 2018 21:59:06 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/%E5%88%86%E6%B2%BB%E7%AE%97%E6%B3%95/</guid>
+      <guid>https://k-on.me/post/%E5%88%86%E6%B2%BB%E7%AE%97%E6%B3%95/</guid>
       <description>&lt;p&gt;分治算法学习笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>动态规划</title>
-      <link>https://yz1509.github.io/post/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</link>
+      <link>https://k-on.me/post/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</link>
       <pubDate>Wed, 18 Jul 2018 21:28:58 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</guid>
+      <guid>https://k-on.me/post/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/</guid>
       <description>&lt;p&gt;动态规划算法学习笔记。&lt;/p&gt;</description>
     </item>
     

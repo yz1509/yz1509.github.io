@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>NVM on HTT - ふわふわ時間</title>
-    <link>https://yz1509.github.io/tags/nvm/</link>
+    <link>https://k-on.me/tags/nvm/</link>
     <description>Recent content in NVM on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 26 Aug 2020 20:38:59 +0000</lastBuildDate><atom:link href="https://yz1509.github.io/tags/nvm/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 26 Aug 2020 20:38:59 +0000</lastBuildDate><atom:link href="https://k-on.me/tags/nvm/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>NVM-notes</title>
-      <link>https://yz1509.github.io/post/nvm-notes/</link>
+      <link>https://k-on.me/post/nvm-notes/</link>
       <pubDate>Wed, 26 Aug 2020 20:38:59 +0000</pubDate>
       
-      <guid>https://yz1509.github.io/post/nvm-notes/</guid>
+      <guid>https://k-on.me/post/nvm-notes/</guid>
       <description>&lt;p&gt;NVM 相关笔记。&lt;/p&gt;</description>
     </item>
     
