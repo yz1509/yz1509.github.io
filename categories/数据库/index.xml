@@ -6,7 +6,52 @@
     <description>Recent content in 数据库 on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 27 Aug 2020 10:45:48 +0000</lastBuildDate><atom:link href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 24 Sep 2020 14:42:15 +0800</lastBuildDate><atom:link href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Redis 源码阅读 --- ziplist</title>
+      <link>https://k-on.me/post/redis-sourcecode-ziplist/</link>
+      <pubDate>Thu, 24 Sep 2020 14:42:15 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/redis-sourcecode-ziplist/</guid>
+      <description>Redis 压缩列表相关源码阅读笔记，源码文件 ziplist.h &amp;amp; ziplist.c。 ziplist 数据结构 ziplist 是为了节省内存而设计的压缩双向链表，支持 push 和 pop 操作，由于 ziplist 存储在连续</description>
+    </item>
+    
+    <item>
+      <title>Redis 源码阅读 --- adlist</title>
+      <link>https://k-on.me/post/redis-sourcecode-adlist/</link>
+      <pubDate>Thu, 24 Sep 2020 14:39:37 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/redis-sourcecode-adlist/</guid>
+      <description>&lt;p&gt;Redis 双向链表相关源码阅读笔记，源码文件 &lt;code&gt;adlist.h&lt;/code&gt; &amp;amp; &lt;code&gt;adlist.c&lt;/code&gt;。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Redis 源码阅读 --- sds</title>
+      <link>https://k-on.me/post/redis-sourcecode-sds/</link>
+      <pubDate>Thu, 24 Sep 2020 10:42:57 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/redis-sourcecode-sds/</guid>
+      <description>&lt;p&gt;Redis 简单字符串相关源码阅读笔记，源码文件 &lt;code&gt;sdsalloc.h&lt;/code&gt; &amp;amp; &lt;code&gt;sds.h&lt;/code&gt; &amp;amp; &lt;code&gt;sds.c&lt;/code&gt;。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Redis 源码阅读 --- zmalloc</title>
+      <link>https://k-on.me/post/redis-sourcecode-zmalloc/</link>
+      <pubDate>Wed, 23 Sep 2020 17:14:57 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/redis-sourcecode-zmalloc/</guid>
+      <description>&lt;p&gt;Redis 内存分配及释放相关源码阅读笔记，源码文件 &lt;code&gt;zmalloc.h&lt;/code&gt; &amp;amp; &lt;code&gt;zmalloc.c&lt;/code&gt;。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Redis 源码阅读 --- 序</title>
+      <link>https://k-on.me/post/redis-sourcecode-overview/</link>
+      <pubDate>Mon, 21 Sep 2020 11:03:57 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/redis-sourcecode-overview/</guid>
+      <description>&lt;p&gt;Redis 源码阅读笔记，本文主要讲述 Redis 代码组织结构。&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>Redis Modules APIs</title>
       <link>https://k-on.me/post/redis-modules-apis/</link>
@@ -32,33 +77,6 @@
       
       <guid>https://k-on.me/post/redisstreams/</guid>
       <description>&lt;p&gt;主要介绍 Redis Streams 数据结构及部分操作，并不涉及源码部分。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Redis 源码之 sds</title>
-      <link>https://k-on.me/post/redis%E6%BA%90%E7%A0%81%E4%B9%8Bsds/</link>
-      <pubDate>Sat, 12 Oct 2019 20:10:31 +0000</pubDate>
-      
-      <guid>https://k-on.me/post/redis%E6%BA%90%E7%A0%81%E4%B9%8Bsds/</guid>
-      <description>&lt;p&gt;Redis 简单字符串的源码读后感 (超500字)。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Redis 源码之 adlist</title>
-      <link>https://k-on.me/post/redis%E6%BA%90%E7%A0%81%E4%B9%8Badlist/</link>
-      <pubDate>Sat, 12 Oct 2019 20:08:45 +0000</pubDate>
-      
-      <guid>https://k-on.me/post/redis%E6%BA%90%E7%A0%81%E4%B9%8Badlist/</guid>
-      <description>&lt;p&gt;Redis 底层链表结构相关源码阅读笔记。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Redis 源码之 zmalloc</title>
-      <link>https://k-on.me/post/redis%E6%BA%90%E7%A0%81%E4%B9%8Bzmalloc/</link>
-      <pubDate>Sat, 12 Oct 2019 20:07:44 +0000</pubDate>
-      
-      <guid>https://k-on.me/post/redis%E6%BA%90%E7%A0%81%E4%B9%8Bzmalloc/</guid>
-      <description>&lt;p&gt;Redis 内存分配及释放相关源码阅读笔记，版本: &lt;a href=&#34;https://github.com/antirez/redis/commit/47ff13637e1254e5a6ac962afa3e963d2f284783&#34;&gt;47ff13637 Redis 6.0.1&lt;/a&gt;&lt;/p&gt;</description>
     </item>
     
   </channel>
