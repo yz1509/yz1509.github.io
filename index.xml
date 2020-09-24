@@ -19,7 +19,6 @@
       <guid>https://k-on.me/post/redis-sourcecode-ziplist/</guid>
       
         <description>&lt;p&gt;Redis 压缩列表相关源码阅读笔记，源码文件 &lt;code&gt;ziplist.h&lt;/code&gt; &amp;amp; &lt;code&gt;ziplist.c&lt;/code&gt;。&lt;/p&gt;
-&lt;!-- more --&gt;
 &lt;hr&gt;
 &lt;h2 id=&#34;ziplist-数据结构&#34;&gt;ziplist 数据结构&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;ziplist&lt;/code&gt; 是为了节省内存而设计的压缩双向链表，支持 &lt;code&gt;push&lt;/code&gt; 和 &lt;code&gt;pop&lt;/code&gt; 操作，由于 &lt;code&gt;ziplist&lt;/code&gt; 存储在连续的内存中，因此每次修改都需要 &lt;code&gt;realloc&lt;/code&gt; 和 &lt;code&gt;memmove&lt;/code&gt; 操作，因此具体的时间复杂度取决于 &lt;code&gt;ziplist&lt;/code&gt; 占用内存的大小。&lt;/p&gt;
@@ -347,8 +346,7 @@
 &lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;ziplistRepr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;zl&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;格式化输出 &lt;code&gt;ziplist&lt;/code&gt;。&lt;/p&gt;
-</description>
+&lt;/div&gt;&lt;p&gt;格式化输出 &lt;code&gt;ziplist&lt;/code&gt;。&lt;/p&gt;</description>
       
     </item>
     
