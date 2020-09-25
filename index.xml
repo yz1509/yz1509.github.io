@@ -2586,7 +2586,7 @@ s-hdrlen          s-1       s
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;quicklist.c&lt;/code&gt;, &lt;code&gt;quicklist.h&lt;/code&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;A generic doubly linked quicklist implementation&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;A doubly linked list of ziplists&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
