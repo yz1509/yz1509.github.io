@@ -12,13 +12,13 @@
     
     
     <item>
-      <title>Redis Sourcecode Dict</title>
+      <title>Redis 源码阅读 --- dict</title>
       <link>https://k-on.me/post/redis-sourcecode-dict/</link>
       <pubDate>Sun, 27 Sep 2020 10:15:20 +0800</pubDate>
       
       <guid>https://k-on.me/post/redis-sourcecode-dict/</guid>
       
-        <description>&lt;p&gt;Redis &lt;code&gt;dict&lt;/code&gt; 实现相关源码阅读笔记，源码文件 &lt;code&gt;dict.h&lt;/code&gt; &amp;amp; &lt;code&gt;dict.c&lt;/code&gt;。&lt;/p&gt;
+        <description>&lt;p&gt;Redis dict 实现相关源码阅读笔记，源码文件 &lt;code&gt;dict.h&lt;/code&gt; &amp;amp; &lt;code&gt;dict.c&lt;/code&gt;。&lt;/p&gt;
 &lt;hr&gt;
 &lt;h2 id=&#34;数据结构&#34;&gt;数据结构&lt;/h2&gt;
 &lt;p&gt;在 Redis 中，&lt;code&gt;dict&lt;/code&gt; 不仅用于实现不同的对象类型，还用于数据库的实现，其数据结构如下所示。&lt;/p&gt;
