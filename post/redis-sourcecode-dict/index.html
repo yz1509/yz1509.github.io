@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Redis Sourcecode Dict - HTT - ふわふわ時間</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="765PRO.P" />
+  <meta name="description" content="Redis dict 实现相关源码阅读笔记，源码文件 dict.h &amp;amp; dict.c。
+" />
+
+  <meta name="keywords" content="K-ON, KyoAni" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.0-DEV" />
+
+
+<link rel="canonical" href="https://k-on.me/post/redis-sourcecode-dict/" />
+
+
+
+
+
+
+
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.b3a8813c06e6d785beba22bf8264e174fa2cb3a396b22f9ba24e2c00c18aaf7f.css" integrity="sha256-s6iBPAbm14W&#43;uiK/gmThdPoss6OWsi&#43;bok4sAMGKr38=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Redis Sourcecode Dict" />
+<meta property="og:description" content="Redis dict 实现相关源码阅读笔记，源码文件 dict.h &amp; dict.c。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://k-on.me/post/redis-sourcecode-dict/" />
+<meta property="article:published_time" content="2020-09-27T10:15:20+08:00" />
+<meta property="article:modified_time" content="2020-09-27T10:15:20+08:00" />
+<meta itemprop="name" content="Redis Sourcecode Dict">
+<meta itemprop="description" content="Redis dict 实现相关源码阅读笔记，源码文件 dict.h &amp; dict.c。">
+<meta itemprop="datePublished" content="2020-09-27T10:15:20+08:00" />
+<meta itemprop="dateModified" content="2020-09-27T10:15:20+08:00" />
+<meta itemprop="wordCount" content="2252">
+
+
+
+<meta itemprop="keywords" content="Redis," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Redis Sourcecode Dict"/>
+<meta name="twitter:description" content="Redis dict 实现相关源码阅读笔记，源码文件 dict.h &amp; dict.c。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">HTT</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/about/">About</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/categories/">Categories</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      HTT
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/about/">About</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Redis Sourcecode Dict</h1>
+      
+      <div class="post-meta">
+        <time datetime="2020-09-27" class="post-time">
+          2020-09-27
+        </time>
+        <div class="post-category">
+            <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
+            
+          </div>
+        <span class="more-meta"> 2252 words </span>
+          <span class="more-meta"> 5 min read </span>
+
+        
+        
+          <span id="busuanzi_container_page_pv">
+            | 阅读 <span id="busuanzi_value_page_pv"></span>
+          </span>
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#数据结构">数据结构</a></li>
+    <li><a href="#dict-apis">dict APIs</a>
+      <ul>
+        <li><a href="#getset-interfaces">Get/Set Interfaces</a></li>
+        <li><a href="#dictcreate">dictCreate</a></li>
+        <li><a href="#dictexpand">dictExpand</a></li>
+        <li><a href="#dictresize">dictResize</a></li>
+        <li><a href="#dictrehash">dictRehash</a></li>
+        <li><a href="#dictrehashmilliseconds">dictRehashMilliseconds</a></li>
+        <li><a href="#dictaddraw">dictAddRaw</a></li>
+        <li><a href="#dictadd">dictAdd</a></li>
+        <li><a href="#dictaddorfind">dictAddOrFind</a></li>
+        <li><a href="#dictreplace">dictReplace</a></li>
+        <li><a href="#dictdelete">dictDelete</a></li>
+        <li><a href="#dictunlink">dictUnlink</a></li>
+        <li><a href="#dictfreeunlinkedentry">dictFreeUnlinkedEntry</a></li>
+        <li><a href="#dictrelease">dictRelease</a></li>
+        <li><a href="#dictempty">dictEmpty</a></li>
+        <li><a href="#dictfind">dictFind</a></li>
+        <li><a href="#dictfetchvalue">dictFetchValue</a></li>
+        <li><a href="#dictgetiterator">dictGetIterator</a></li>
+        <li><a href="#dictgetsafeiterator">dictGetSafeIterator</a></li>
+        <li><a href="#dictnext">dictNext</a></li>
+        <li><a href="#dictreleaseiterator----释放迭代器">dictReleaseIterator &ndash; 释放迭代器</a></li>
+        <li><a href="#dictgetrandomkey">dictGetRandomKey</a></li>
+        <li><a href="#dictgetsomekeys">dictGetSomeKeys</a></li>
+        <li><a href="#dictgetfairrandomkey">dictGetFairRandomKey</a></li>
+        <li><a href="#dictfindentryrefbyptrandhash">dictFindEntryRefByPtrAndHash</a></li>
+        <li><a href="#dictscan">dictScan</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>Redis <code>dict</code> 实现相关源码阅读笔记，源码文件 <code>dict.h</code> &amp; <code>dict.c</code>。</p>
+<hr>
+<h2 id="数据结构">数据结构</h2>
+<p>在 Redis 中，<code>dict</code> 不仅用于实现不同的对象类型，还用于数据库的实现，其数据结构如下所示。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">typedef</span> <span class="k">struct</span> <span class="nc">dict</span> <span class="p">{</span>
+    <span class="n">dictType</span> <span class="o">*</span><span class="n">type</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">privdata</span><span class="p">;</span>
+    <span class="n">dictht</span> <span class="n">ht</span><span class="p">[</span><span class="mi">2</span><span class="p">];</span>
+    <span class="kt">long</span> <span class="n">rehashidx</span><span class="p">;</span> <span class="cm">/* rehashing not in progress if rehashidx == -1 */</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">iterators</span><span class="p">;</span> <span class="cm">/* number of iterators currently running */</span>
+<span class="p">}</span> <span class="n">dict</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>dictType</strong></p>
+<p>其中字典类型 <code>dictType</code> 的结构如下，可以看出，用户可以传入各种自定义的操作函数以实现不同的字典类型。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">typedef</span> <span class="k">struct</span> <span class="nc">dictType</span> <span class="p">{</span>
+    <span class="cm">/* 自定义哈希值计算函数 */</span>
+    <span class="kt">uint64_t</span> <span class="p">(</span><span class="o">*</span><span class="n">hashFunction</span><span class="p">)(</span><span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
+    <span class="cm">/* 自定义键复制函数 */</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="n">keyDup</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span><span class="n">privdata</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
+    <span class="cm">/* 自定义值复制函数 */</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="n">valDup</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span><span class="n">privdata</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">obj</span><span class="p">);</span>
+    <span class="cm">/* 自定义键比较函数 */</span>
+    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">keyCompare</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span><span class="n">privdata</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key1</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key2</span><span class="p">);</span>
+    <span class="cm">/* 自定义键析构函数 */</span>
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">keyDestructor</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span><span class="n">privdata</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
+    <span class="cm">/* 自定义值析构函数 */</span>
+    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">valDestructor</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span><span class="n">privdata</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">obj</span><span class="p">);</span>
+<span class="p">}</span> <span class="n">dictType</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>dictht</strong></p>
+<p>可以看到在 <code>dict</code> 中有两个哈希表 <code>dictht</code>，方便实现渐进式 Rehash，以免在字典中数据量较大时 Rehash 操作带来较大延时，关于 Rehash 的详细内容将在之后描述。</p>
+<p><code>dictht</code> 的结构如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">typedef</span> <span class="k">struct</span> <span class="nc">dictht</span> <span class="p">{</span>
+    <span class="n">dictEntry</span> <span class="o">**</span><span class="n">table</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">size</span><span class="p">;</span> <span class="cm">/* size of table */</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">sizemask</span><span class="p">;</span> <span class="cm">/* size - 1 */</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">used</span><span class="p">;</span> <span class="cm">/* total dictEntries in table */</span>
+<span class="p">}</span> <span class="n">dictht</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="nc">dictEntry</span> <span class="p">{</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">;</span>
+    <span class="k">union</span> <span class="p">{</span>
+        <span class="kt">void</span> <span class="o">*</span><span class="n">val</span><span class="p">;</span>
+        <span class="kt">uint64_t</span> <span class="n">u64</span><span class="p">;</span>
+        <span class="kt">int64_t</span> <span class="n">s64</span><span class="p">;</span>
+        <span class="kt">double</span> <span class="n">d</span><span class="p">;</span>
+    <span class="p">}</span> <span class="n">v</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="nc">dictEntry</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">dictEntry</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Redis 哈希表使用单向链表解决哈希冲突，新加入的节点 <code>dictEntry</code> 置于 table 中相应 bucket 的头部。</p>
+<ul>
+<li>在 <code>dictht</code> 中，table 的长度 <code>size</code> 始终为 2 的整数倍(在 <a href="https://github.com/redis/redis/blob/6.0.8/src/dict.c#L975">_dictNextPower</a> 函数中实现)，而 <code>sizemask = size - 1</code>，从而可以将取余操作转化为位运算</li>
+<li>在 <code>dictEntry</code> 中，使用 <code>union</code> 来存储不同类型的值 <code>v</code></li>
+</ul>
+<p><strong>迭代器</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* If safe is set to 1 this is a safe iterator, that means, you can call
+</span><span class="cm"> * dictAdd, dictFind, and other functions against the dictionary even while
+</span><span class="cm"> * iterating. Otherwise it is a non safe iterator, and only dictNext()
+</span><span class="cm"> * should be called while iterating. */</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="nc">dictIterator</span> <span class="p">{</span>
+    <span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">;</span>
+    <span class="kt">long</span> <span class="n">index</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">table</span><span class="p">,</span> <span class="n">safe</span><span class="p">;</span>
+    <span class="n">dictEntry</span> <span class="o">*</span><span class="n">entry</span><span class="p">,</span> <span class="o">*</span><span class="n">nextEntry</span><span class="p">;</span>
+    <span class="cm">/* unsafe iterator fingerprint for misuse detection. */</span>
+    <span class="kt">long</span> <span class="kt">long</span> <span class="n">fingerprint</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">dictIterator</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在 <code>dict</code> 结构中的 <code>iterators</code> 表示的是当前正在运行的安全(<code>safe=1</code>)迭代器个数，其不为 0，意味着此时不能进行 Rehash 操作。</p>
+<h2 id="dict-apis">dict APIs</h2>
+<h3 id="getset-interfaces">Get/Set Interfaces</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Enable resizing of the hash table  */</span>
+<span class="kt">void</span> <span class="nf">dictEnableResize</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="cm">/* Disable resizing of the hash table  */</span>
+<span class="kt">void</span> <span class="nf">dictDisableResize</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="cm">/* Get hash value of the specified key
+</span><span class="cm"> * Use dictType-&gt;hashFunction */</span>
+<span class="kt">uint64_t</span> <span class="nf">dictGetHash</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
+
+<span class="cm">/* The default hashing function uses SipHash implementation
+</span><span class="cm"> * in siphash.c. */</span>
+<span class="kt">void</span> <span class="nf">dictSetHashFunctionSeed</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="o">*</span><span class="n">seed</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">memcpy</span><span class="p">(</span><span class="n">dict_hash_function_seed</span><span class="p">,</span><span class="n">seed</span><span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="n">dict_hash_function_seed</span><span class="p">));</span>
+<span class="p">}</span>
+<span class="kt">uint8_t</span> <span class="o">*</span><span class="nf">dictGetHashFunctionSeed</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">dict_hash_function_seed</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="kt">uint64_t</span> <span class="nf">dictGenHashFunction</span><span class="p">(</span><span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span> <span class="kt">int</span> <span class="n">len</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">siphash</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">len</span><span class="p">,</span><span class="n">dict_hash_function_seed</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="kt">uint64_t</span> <span class="nf">dictGenCaseHashFunction</span><span class="p">(</span><span class="k">const</span> <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="kt">int</span> <span class="n">len</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">siphash_nocase</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span><span class="n">len</span><span class="p">,</span><span class="n">dict_hash_function_seed</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/* Get stats of the specified dict */</span>
+<span class="kt">void</span> <span class="nf">dictGetStats</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">bufsize</span><span class="p">,</span> <span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="dictcreate">dictCreate</h3>
+<p>依据 <code>type</code> 和 <code>privDataPtr</code> 创建一个 <code>dict</code> 并初始化。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Create a new hash table */</span>
+<span class="n">dict</span> <span class="o">*</span><span class="nf">dictCreate</span><span class="p">(</span><span class="n">dictType</span> <span class="o">*</span><span class="n">type</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">privDataPtr</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="dictexpand">dictExpand</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Expand or create the hash table */</span>
+<span class="kt">int</span> <span class="nf">dictExpand</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">size</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>处于以下情形之一时，返回 <code>DICT_ERR</code>:</p>
+<ul>
+<li><code>dict</code> 正在 Rehash</li>
+<li>传入的 <code>size</code> 小于 <code>dictht.used</code></li>
+<li>新的 <code>dictht.size</code>(大于 <code>size</code> 的最小 2 的幂次方) 和现有哈希表 size 相同</li>
+</ul>
+<p>如果当前 <code>ht[0].table == NULL</code>，表示该操作仅为初始化 <code>ht[0]</code>；否则，该操作初始化 <code>ht[1]</code> 以用于 Rehash。</p>
+<h3 id="dictresize">dictResize</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Resize the table to the minimal size that contains all the elements,
+</span><span class="cm"> * but with the invariant of a USED/BUCKETS ratio near to &lt;= 1 */</span>
+<span class="kt">int</span> <span class="nf">dictResize</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="dictrehash">dictRehash</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">int</span> <span class="nf">dictRehash</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在每次调用 <code>dictRehash</code> 时，最多迁移 <code>n</code> 个非空 bucket，返回 1 时表示 Rehash 操作还未完成，未处于 Rehash 状态或 Rehash 完成时返回 0.</p>
+<h3 id="dictrehashmilliseconds">dictRehashMilliseconds</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Rehash for an amount of time between ms milliseconds and ms+1 milliseconds */</span>
+<span class="kt">int</span> <span class="nf">dictRehashMilliseconds</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="kt">int</span> <span class="n">ms</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="dictaddraw">dictAddRaw</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">dictEntry</span> <span class="o">*</span><span class="nf">dictAddRaw</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span> <span class="n">dictEntry</span> <span class="o">**</span><span class="n">existing</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在 <code>dict</code> 中添加一个键值为 <code>key</code> 的 <code>dictEntry</code>，并返回该 <code>dictEntry</code> 的指针，便于事后设置 <code>value</code>。</p>
+<ul>
+<li>每次添加前会检查 <code>dict</code> 是否处于 Rehash 状态，如果处于 Rehash 状态，且 <code>dict.iterators = 0</code> 时，迁移一个非空 bucket</li>
+<li>如果 <code>key</code> 已存在，返回 <code>NULL</code>，此时如果传入的 <code>existing</code> 不为空，则 <code>*existing</code> 会设置为指向与 <code>key</code> 对应的 <code>dictEntry</code> 的指针</li>
+<li>如果正处于 Rehash 状态，欲添加的 <code>dictEntry</code> 会添加至 <code>ht[1]</code></li>
+</ul>
+<h3 id="dictadd">dictAdd</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Add an element to the target hash table */</span>
+<span class="kt">int</span> <span class="nf">dictAdd</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">val</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>先调用 <code>dictAddRaw</code> 插入 <code>key</code>，再调用 <code>dictSetVal</code> 关联 <code>key</code> 和 <code>val</code>。如果 <code>key</code> 已存在则返回 <code>DICT_ERR</code>，添加成功返回 <code>DICT_OK</code>。</p>
+<h3 id="dictaddorfind">dictAddOrFind</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Add or Find:
+</span><span class="cm"> * dictAddOrFind() is simply a version of dictAddRaw() that always
+</span><span class="cm"> * returns the hash entry of the specified key, even if the key already
+</span><span class="cm"> * exists and can&#39;t be added (in that case the entry of the already
+</span><span class="cm"> * existing key is returned.) */</span>
+<span class="n">dictEntry</span> <span class="o">*</span><span class="nf">dictAddOrFind</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">dictEntry</span> <span class="o">*</span><span class="n">entry</span><span class="p">,</span> <span class="o">*</span><span class="n">existing</span><span class="p">;</span>
+    <span class="n">entry</span> <span class="o">=</span> <span class="n">dictAddRaw</span><span class="p">(</span><span class="n">d</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="o">&amp;</span><span class="n">existing</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">entry</span> <span class="o">?</span> <span class="nl">entry</span> <span class="p">:</span> <span class="n">existing</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="dictreplace">dictReplace</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Add or Overwrite:
+</span><span class="cm"> * Add an element, discarding the old value if the key already exists.
+</span><span class="cm"> * Return 1 if the key was added from scratch, 0 if there was already an
+</span><span class="cm"> * element with such key and dictReplace() just performed a value update
+</span><span class="cm"> * operation. */</span>
+<span class="kt">int</span> <span class="nf">dictReplace</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">val</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="dictdelete">dictDelete</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Remove an element, returning DICT_OK on success or DICT_ERR if the
+</span><span class="cm"> * element was not found. */</span>
+<span class="kt">int</span> <span class="nf">dictDelete</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="dictunlink">dictUnlink</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Remove an element from the table, but without actually releasing
+</span><span class="cm"> * the key, value and dictionary entry. The dictionary entry is returned
+</span><span class="cm"> * if the element was found (and unlinked from the table), and the user
+</span><span class="cm"> * should later call `dictFreeUnlinkedEntry()` with it in order to release it.
+</span><span class="cm"> * Otherwise if the key is not found, NULL is returned. */</span>
+<span class="n">dictEntry</span> <span class="o">*</span><span class="nf">dictUnlink</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">ht</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="dictfreeunlinkedentry">dictFreeUnlinkedEntry</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* You need to call this function to really free the entry after a call
+</span><span class="cm"> * to dictUnlink(). It&#39;s safe to call this function with &#39;he&#39; = NULL. */</span>
+<span class="kt">void</span> <span class="nf">dictFreeUnlinkedEntry</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="n">dictEntry</span> <span class="o">*</span><span class="n">he</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="dictrelease">dictRelease</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Clear &amp; Release the hash table */</span>
+<span class="kt">void</span> <span class="nf">dictRelease</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="dictempty">dictEmpty</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Clear &amp; Reset the hash table */</span>
+<span class="kt">void</span> <span class="nf">dictEmpty</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="kt">void</span><span class="p">(</span><span class="n">callback</span><span class="p">)(</span><span class="kt">void</span><span class="o">*</span><span class="p">));</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="dictfind">dictFind</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Returns the hash entry of the specified key, or NULL */</span>
+<span class="n">dictEntry</span> <span class="o">*</span> <span class="nf">dictFind</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="dictfetchvalue">dictFetchValue</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Returns the value of the specified key,  or NULL */</span>
+<span class="kt">void</span> <span class="o">*</span><span class="nf">dictFetchValue</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="dictgetiterator">dictGetIterator</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Return the dict iterator of the specified dict */</span>
+<span class="n">dictIterator</span> <span class="o">*</span><span class="nf">dictGetIterator</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在调用 <code>dictGetIterator</code> 后，并不会修改 <code>d-&gt;iterators</code>。</p>
+<h3 id="dictgetsafeiterator">dictGetSafeIterator</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">dictIterator</span> <span class="o">*</span><span class="nf">dictGetSafeIterator</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">dictIterator</span> <span class="o">*</span><span class="n">i</span> <span class="o">=</span> <span class="n">dictGetIterator</span><span class="p">(</span><span class="n">d</span><span class="p">);</span>
+
+    <span class="n">i</span><span class="o">-&gt;</span><span class="n">safe</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">i</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="dictnext">dictNext</h3>
+<p>获取下一个 <code>dictEntry</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">dictEntry</span> <span class="o">*</span><span class="nf">dictNext</span><span class="p">(</span><span class="n">dictIterator</span> <span class="o">*</span><span class="n">iter</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="dictreleaseiterator----释放迭代器">dictReleaseIterator &ndash; 释放迭代器</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="nf">dictReleaseIterator</span><span class="p">(</span><span class="n">dictIterator</span> <span class="o">*</span><span class="n">iter</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="dictgetrandomkey">dictGetRandomKey</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Return a random entry from the hash table. Useful to
+</span><span class="cm"> * implement randomized algorithms */</span>
+<span class="n">dictEntry</span> <span class="o">*</span><span class="nf">dictGetRandomKey</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>首先随机选择一个非空的 bucket，然后从该 bucket 中随机选择一个 <code>dictEntry</code> 作为返回值。可以看出，长度越短的 bucket 中的 <code>dictEntry</code> 被选中的概率越大。</p>
+<h3 id="dictgetsomekeys">dictGetSomeKeys</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* This function samples the dictionary to return a few keys from random
+</span><span class="cm"> * locations. */</span>
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">dictGetSomeKeys</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="n">dictEntry</span> <span class="o">**</span><span class="n">des</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">count</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>函数返回时，在 <code>des</code> 中存储采样所得的 <code>dictEntry</code> 数组结果，不保证元素不会重复，<code>des</code> 所指的内存空闲需能容纳 <code>count</code> 个 <code>dictEntry</code> 指针</li>
+<li>函数返回值为 <code>des</code> 中包含的 <code>dictEntry</code> 个数，其可能小于 <code>count</code></li>
+<li>比调用 <code>count</code> 次 <code>dictGetRandomKey</code> 高效</li>
+</ul>
+<h3 id="dictgetfairrandomkey">dictGetFairRandomKey</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* This is like dictGetRandomKey() from the POV of the API, but will do more
+</span><span class="cm"> * work to ensure a better distribution of the returned element. */</span>
+<span class="n">dictEntry</span> <span class="o">*</span><span class="nf">dictGetFairRandomKey</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>会先尝试调用 <code>dictGetSomeKeys</code> 获取 <code>GETFAIR_NUM_ENTRIES</code> 个 <code>dictEntry</code>，再随机挑选一个返回</li>
+<li>调用 <code>dictGetSomeKeys</code> 返回值为 0 时，直接调用 <code>dictGetRandomKey</code>，返回其结果</li>
+</ul>
+<h3 id="dictfindentryrefbyptrandhash">dictFindEntryRefByPtrAndHash</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Finds the dictEntry reference by using pointer and pre-calculated hash.
+</span><span class="cm"> * oldkey is a dead pointer and should not be accessed.
+</span><span class="cm"> * the hash value should be provided using dictGetHash.
+</span><span class="cm"> * no string / key comparison is performed.
+</span><span class="cm"> * return value is the reference to the dictEntry if found, or NULL if not found. */</span>
+<span class="n">dictEntry</span> <span class="o">**</span><span class="nf">dictFindEntryRefByPtrAndHash</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">oldptr</span><span class="p">,</span> <span class="kt">uint64_t</span> <span class="n">hash</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="dictscan">dictScan</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* dictScan() is used to iterate over the elements of a dictionary. */</span>
+<span class="kt">unsigned</span> <span class="kt">long</span> <span class="nf">dictScan</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span>
+                       <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">cursor</span><span class="p">,</span>
+                       <span class="n">dictScanFunction</span> <span class="o">*</span><span class="n">fn</span><span class="p">,</span>
+                       <span class="n">dictScanBucketFunction</span> <span class="o">*</span><span class="n">bucketfn</span><span class="p">,</span>
+                       <span class="kt">void</span> <span class="o">*</span><span class="n">privdata</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p>Scan 开始时，设置 <code>cursor = 0</code> 调用该函数</p>
+</li>
+<li>
+<p>该函数每次迭代后，返回 <code>cursor</code> 用于下次调用</p>
+</li>
+<li>
+<p>当返回的 <code>cursor</code> 等于 0 时，表示 Scan 结束</p>
+</li>
+<li>
+<p>保证返回所有 <code>dictEntry</code>，但不保证不重复</p>
+</li>
+<li>
+<p>如下所示，<code>cursor</code> 并不是按序递增，而是按位反转之后递增，这保证了在 Rehash 时不会漏掉 bucket</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">cursor</span> <span class="o">=</span> <span class="n">rev</span><span class="p">(</span><span class="n">cursor</span><span class="p">);</span>
+<span class="n">cursor</span><span class="o">++</span><span class="p">;</span>
+<span class="n">cursor</span> <span class="o">=</span> <span class="n">rev</span><span class="p">(</span><span class="n">cursor</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">765PRO.P</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2020-09-27
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://k-on.me/tags/redis/">Redis</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/redis-sourcecode-ziplist/">
+            <span class="next-text nav-default">Redis 源码阅读 --- ziplist</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="pro-765@qq.com" rel="me noopener" class="iconfont"
+      title="email"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1451 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M664.781909 681.472759 0 97.881301C0 3.997201 71.046997 0 71.046997 0L474.477909 0 961.649408 0 1361.641813 0C1361.641813 0 1432.688811 3.997201 1432.688811 97.881301L771.345323 681.472759C771.345323 681.472759 764.482731 685.154773 753.594283 688.65053L753.594283 688.664858C741.602731 693.493018 729.424896 695.068979 718.077952 694.839748 706.731093 695.068979 694.553173 693.493018 682.561621 688.664858L682.561621 688.65053C671.644501 685.140446 664.781909 681.472759 664.781909 681.472759L664.781909 681.472759ZM718.063616 811.603883C693.779541 811.016482 658.879232 802.205449 619.10784 767.734955 542.989056 701.759633 0 212.052267 0 212.052267L0 942.809523C0 942.809523 0 1024 83.726336 1024L682.532949 1024 753.579947 1024 1348.948139 1024C1432.688811 1024 1432.688811 942.809523 1432.688811 942.809523L1432.688811 212.052267C1432.688811 212.052267 893.138176 701.759633 817.019477 767.734955 777.248 802.205449 742.347691 811.03081 718.063616 811.603883L718.063616 811.603883Z"></path>
+</svg>
+
+    </a>
+  
+    <a href="https://github.com/yz1509" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://k-on.me/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2018 -
+    2020
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        765PRO.P
+        
+      </span></span>
+
+  
+  
+    <span id="busuanzi_container">
+      访客数/访问量：<span id="busuanzi_value_site_uv"></span>/<span id="busuanzi_value_site_pv"></span>
+    </span>
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
