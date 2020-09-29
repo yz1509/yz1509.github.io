@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 源码阅读笔记，本文主要讲述 Redis 代码组织结构。">
 <meta itemprop="datePublished" content="2020-09-21T11:03:57+08:00" />
 <meta itemprop="dateModified" content="2020-09-21T11:03:57+08:00" />
-<meta itemprop="wordCount" content="1031">
+<meta itemprop="wordCount" content="1040">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 1031 words </span>
+        <span class="more-meta"> 1040 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -493,9 +493,9 @@
 <td style="text-align:left">HyperLogLog 数据结构的实现</td>
 </tr>
 <tr>
-<td style="text-align:left"></td>
+<td style="text-align:left">Y</td>
 <td style="text-align:left"><code>intset.c</code>, <code>intset.h</code></td>
-<td style="text-align:left">整数集合数据结构的实现，用于优化 SET 类型</td>
+<td style="text-align:left">整数集合数据结构的实现，用于优化整数 SET，以节省内存</td>
 </tr>
 <tr>
 <td style="text-align:left"></td>
@@ -760,7 +760,7 @@
 <tr>
 <td style="text-align:left"></td>
 <td style="text-align:left"><code>zipmap.c</code>, <code>zipmap.h</code></td>
-<td style="text-align:left">ZIPMAP 数据结构的实现，在 Redis 2.6 以前用与优化 HASH 类型，Redis 2.6 开始已经废弃</td>
+<td style="text-align:left">ZIPMAP 数据结构的实现，<a href="https://github.com/redis/redis/issues/188#issuecomment-2732599">在 Redis 2.6 以前用于优化 Hash 类型，Redis 2.6 开始已经废弃</a></td>
 </tr>
 <tr>
 <td style="text-align:left">Y</td>
