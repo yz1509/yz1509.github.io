@@ -51,6 +51,13 @@
   </url>
   
   <url>
+    <loc>https://k-on.me/post/redis-sourcecode-quicklist/</loc>
+    <lastmod>2020-09-24T18:35:10+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://k-on.me/post/redis-sourcecode-ziplist/</loc>
     <lastmod>2020-09-24T14:42:15+08:00</lastmod>
     <changefreq>weekly</changefreq>

@@ -70,7 +70,7 @@
 <meta itemprop="description" content="记录 C 语言相关小知识。">
 <meta itemprop="datePublished" content="2020-09-22T14:44:15+08:00" />
 <meta itemprop="dateModified" content="2020-09-22T14:44:15+08:00" />
-<meta itemprop="wordCount" content="130">
+<meta itemprop="wordCount" content="290">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/c/"> C </a>
             
           </div>
-        <span class="more-meta"> 130 words </span>
+        <span class="more-meta"> 290 words </span>
           <span class="more-meta"> 1 min read </span>
 
         
@@ -333,12 +333,17 @@
   <ul>
     <li><a href="#关键字">关键字</a>
       <ul>
-        <li><a href="#volatile"><code>volatile</code></a></li>
+        <li><a href="#volatile">volatile</a></li>
       </ul>
     </li>
     <li><a href="#结构体">结构体</a>
       <ul>
         <li><a href="#结构体内的冒号">结构体内的冒号</a></li>
+      </ul>
+    </li>
+    <li><a href="#编译器相关">编译器相关</a>
+      <ul>
+        <li><a href="#__builtin_expect">__builtin_expect</a></li>
       </ul>
     </li>
   </ul>
@@ -350,7 +355,7 @@
     <div class="post-content">
       <p>记录 C 语言相关小知识。</p>
 <h2 id="关键字">关键字</h2>
-<h3 id="volatile"><code>volatile</code></h3>
+<h3 id="volatile">volatile</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -383,6 +388,31 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>用冒号限定该 <code>field</code> 所占的位数。</p>
+<h2 id="编译器相关">编译器相关</h2>
+<h3 id="__builtin_expect">__builtin_expect</h3>
+<p>GCC (version &gt;= 2.96) 提供 <code>__builtin_expect()</code> 的支持，允许程序员将最有可能执行的分支告诉编译器，这样编译器可以对代码进行优化，以减少指令跳转带来的性能下降。</p>
+<p>一般的使用方法是使用 <code>likely</code> 和 <code>unlikely</code> 封装该指令，例如：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cp">#if __GNUC__ &gt;= 3
+</span><span class="cp">#define likely(x) __builtin_expect(!!(x), 1)    </span><span class="cm">/* x 很可能为真 */</span><span class="cp">
+</span><span class="cp">#define unlikely(x) __builtin_expect(!!(x), 0)  </span><span class="cm">/* x 很可能为假 */</span><span class="cp">
+</span><span class="cp">#else
+</span><span class="cp">#define likely(x) (x)
+</span><span class="cp">#define unlikely(x) (x)
+</span><span class="cp">#endif
+</span></code></pre></td></tr></table>
+</div>
+</div><p>此处两次取非的作用是将 <code>x</code> 强转为“布尔类型”(0 or 1 in C)。</p>
     </div>
 
     

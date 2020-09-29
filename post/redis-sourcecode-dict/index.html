@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis dict 实现相关源码阅读笔记，源码文件 dict.h &amp; dict.c。">
 <meta itemprop="datePublished" content="2020-09-27T10:15:20+08:00" />
 <meta itemprop="dateModified" content="2020-09-27T10:15:20+08:00" />
-<meta itemprop="wordCount" content="2252">
+<meta itemprop="wordCount" content="2269">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 2252 words </span>
+        <span class="more-meta"> 2269 words </span>
           <span class="more-meta"> 5 min read </span>
 
         
@@ -477,7 +477,16 @@
 <li>在 <code>dictht</code> 中，table 的长度 <code>size</code> 始终为 2 的整数倍(在 <a href="https://github.com/redis/redis/blob/6.0.8/src/dict.c#L975">_dictNextPower</a> 函数中实现)，而 <code>sizemask = size - 1</code>，从而可以将取余操作转化为位运算</li>
 <li>在 <code>dictEntry</code> 中，使用 <code>union</code> 来存储不同类型的值 <code>v</code></li>
 </ul>
-<p><strong>迭代器</strong></p>
+<p><em>Tips</em>: 对 $b = 2^n$ 取余</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">a</span> <span class="o">%</span> <span class="n">b</span> <span class="o">=</span> <span class="n">a</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">b</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>迭代器</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -1000,8 +1009,8 @@
       <nav class="post-nav">
         
         
-          <a class="next" href="/post/redis-sourcecode-ziplist/">
-            <span class="next-text nav-default">Redis 源码阅读 --- ziplist</span>
+          <a class="next" href="/post/redis-sourcecode-quicklist/">
+            <span class="next-text nav-default">Redis 源码阅读 --- quicklist</span>
             <span class="prev-text nav-mobile">Next</span>
             
             <i class="iconfont">

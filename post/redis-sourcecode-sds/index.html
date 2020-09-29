@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 简单字符串相关源码阅读笔记，源码文件 sdsalloc.h &amp; sds.h &amp; sds.c。">
 <meta itemprop="datePublished" content="2020-09-24T10:42:57+08:00" />
 <meta itemprop="dateModified" content="2020-09-24T10:42:57+08:00" />
-<meta itemprop="wordCount" content="4894">
+<meta itemprop="wordCount" content="4896">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 4894 words </span>
+        <span class="more-meta"> 4896 words </span>
           <span class="more-meta"> 10 min read </span>
 
         
@@ -509,7 +509,7 @@
 <p>关于 sds 的头部结构，作者定义了五种不同类型的 <code>sdshdr</code> 供程序使用，区别只是存储 <code>len</code> 和 <code>alloc</code> 使用的整型长度不同，目的应该为了<a href="https://github.com/antirez/redis/pull/2509">节省内存</a>。</p>
 <p><code>sdshdr5</code> 会在 <code>key</code> 的长度小于 32 时使用，详细可了解 <a href="https://github.com/antirez/redis/blob/7ca81170c7e98a4f70f203dd1afe027efe3aed89/src/db.c"><code>dbAdd</code></a> -&gt; <code>sdsdup</code> -&gt; <code>sdsnewlen</code> 的代码。</p>
 <p><code>__attribute__ ((__packed__))</code> 的作用就是告诉编译器取消结构体在编译过程中的优化对齐，以紧凑模式来分配内存。按照实际占用字节数进行对齐，是 GCC 特有的语法。这个功能是跟操作系统没关系，跟编译器有关。</p>
-<p>在上述结构体定义中，<code>char buf[]</code> 使用了<a href="https://en.wikipedia.org/wiki/Flexible_array_member">柔性数组</a> 的特性，其长度为 0，不占用额外的内存空间，<code>buf</code> 实际指向的是结构体之后的内存空间，如果给这个结构体分配的内容大于这个结构体实际大小，后面多余的部分就是这个 <code>buf</code> 的内容，也可用此类特性实现 C 语言变长数组。</p>
+<p>在上述结构体定义中，<code>char buf[]</code> 使用了<a href="https://en.wikipedia.org/wiki/Flexible_array_member">柔性数组成员</a> 的特性，其长度为 0，不占用额外的内存空间，<code>buf</code> 实际指向的是结构体之后的内存空间，如果给这个结构体分配的内容大于这个结构体实际大小，后面多余的部分就是这个 <code>buf</code> 的内容，也可用此类特性实现 C 语言变长数组。</p>
 <h2 id="sds-构造函数">sds 构造函数</h2>
 <h3 id="sdsnewlen">sdsnewlen</h3>
 <p>根据指针 <code>init</code> 和长度 <code>initlen</code> 构造一个 sds。</p>

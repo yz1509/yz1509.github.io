@@ -17,6 +17,15 @@
     </item>
     
     <item>
+      <title>Redis 源码阅读 --- quicklist</title>
+      <link>https://k-on.me/post/redis-sourcecode-quicklist/</link>
+      <pubDate>Thu, 24 Sep 2020 18:35:10 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/redis-sourcecode-quicklist/</guid>
+      <description>&lt;p&gt;Redis 快速链表相关源码阅读笔记，源码文件 &lt;code&gt;quicklist.h&lt;/code&gt; &amp;amp; &lt;code&gt;quicklist.c&lt;/code&gt;。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Redis 源码阅读 --- ziplist</title>
       <link>https://k-on.me/post/redis-sourcecode-ziplist/</link>
       <pubDate>Thu, 24 Sep 2020 14:42:15 +0800</pubDate>

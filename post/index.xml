@@ -17,6 +17,15 @@
     </item>
     
     <item>
+      <title>Redis 源码阅读 --- quicklist</title>
+      <link>https://k-on.me/post/redis-sourcecode-quicklist/</link>
+      <pubDate>Thu, 24 Sep 2020 18:35:10 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/redis-sourcecode-quicklist/</guid>
+      <description>&lt;p&gt;Redis 快速链表相关源码阅读笔记，源码文件 &lt;code&gt;quicklist.h&lt;/code&gt; &amp;amp; &lt;code&gt;quicklist.c&lt;/code&gt;。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Redis 源码阅读 --- ziplist</title>
       <link>https://k-on.me/post/redis-sourcecode-ziplist/</link>
       <pubDate>Thu, 24 Sep 2020 14:42:15 +0800</pubDate>
@@ -176,15 +185,6 @@
       
       <guid>https://k-on.me/post/go%E8%BF%9B%E7%A8%8B%E8%B5%84%E6%BA%90%E5%8D%A0%E7%94%A8%E5%88%86%E6%9E%90/</guid>
       <description>&lt;p&gt;使用 pprof 和 graphviz 分析进程内存分配，CPU 耗时等信息。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>CCIA-线程间共享数据</title>
-      <link>https://k-on.me/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%85%B1%E4%BA%AB%E6%95%B0%E6%8D%AE/</link>
-      <pubDate>Fri, 15 Nov 2019 17:15:13 +0000</pubDate>
-      
-      <guid>https://k-on.me/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%85%B1%E4%BA%AB%E6%95%B0%E6%8D%AE/</guid>
-      <description>&lt;p&gt;《C++ Concurrentcy in Action 2nd》 第三章阅读笔记。&lt;/p&gt;</description>
     </item>
     
   </channel>
