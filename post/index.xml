@@ -6,7 +6,16 @@
     <description>Recent content in Posts on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 28 Sep 2020 21:06:04 +0800</lastBuildDate><atom:link href="https://k-on.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 09 Oct 2020 10:44:07 +0800</lastBuildDate><atom:link href="https://k-on.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Redis 源码阅读 --- Object</title>
+      <link>https://k-on.me/post/redis-sourcecode-object/</link>
+      <pubDate>Fri, 09 Oct 2020 10:44:07 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/redis-sourcecode-object/</guid>
+      <description>&lt;p&gt;Redis Object 相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; 和 &lt;code&gt;object.c&lt;/code&gt;。&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>Redis 源码阅读 --- intset</title>
       <link>https://k-on.me/post/redis-sourcecode-intset/</link>
@@ -176,15 +185,6 @@
       
       <guid>https://k-on.me/post/%E9%92%93%E9%B1%BC%E5%AE%9E%E6%88%98%E6%8A%80%E5%B7%A7/</guid>
       <description>&lt;p&gt;我再也不想当空军了.jpg&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>CCIA-线程间同步</title>
-      <link>https://k-on.me/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%90%8C%E6%AD%A5/</link>
-      <pubDate>Wed, 11 Dec 2019 19:45:55 +0000</pubDate>
-      
-      <guid>https://k-on.me/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%90%8C%E6%AD%A5/</guid>
-      <description>&lt;p&gt;《C++ Concurrentcy in Action 2nd》 第四章阅读笔记。&lt;/p&gt;</description>
     </item>
     
   </channel>
