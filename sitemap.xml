@@ -58,6 +58,13 @@
   </url>
   
   <url>
+    <loc>https://k-on.me/tags/%E5%93%88%E5%B8%8C%E8%A1%A8/</loc>
+    <lastmod>2020-09-27T10:15:20+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://k-on.me/post/redis-sourcecode-quicklist/</loc>
     <lastmod>2020-09-24T18:35:10+08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -79,8 +86,22 @@
   </url>
   
   <url>
+    <loc>https://k-on.me/tags/%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/</loc>
+    <lastmod>2020-09-24T14:39:37+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://k-on.me/post/redis-sourcecode-sds/</loc>
     <lastmod>2020-09-24T10:42:57+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://k-on.me/tags/malloc/</loc>
+    <lastmod>2020-09-23T17:14:57+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>

@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 简单字符串相关源码阅读笔记，源码文件 sdsalloc.h &amp; sds.h &amp; sds.c。">
 <meta itemprop="datePublished" content="2020-09-24T10:42:57+08:00" />
 <meta itemprop="dateModified" content="2020-09-24T10:42:57+08:00" />
-<meta itemprop="wordCount" content="4896">
+<meta itemprop="wordCount" content="4736">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 4896 words </span>
+        <span class="more-meta"> 4736 words </span>
           <span class="more-meta"> 10 min read </span>
 
         
@@ -1456,11 +1456,7 @@ s-hdrlen          s-1       s
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><ul>
-<li>可以发现函数在执行过程中并未调用 <code>free</code>，是否存在内存泄漏的风险？具体需要观察后续对该函数的调用场景进行分析，暂时 MARK</li>
-<li>虽然作者提示原指针会失效，但是在函数中可以发现返回的就是原指针值，表示疑惑</li>
-</ul>
-<h3 id="sdsrange">sdsrange</h3>
+</div><h3 id="sdsrange">sdsrange</h3>
 <p>依据 <code>start</code> 和 <code>end</code> 索引下标修剪 sds 字符串，注意：</p>
 <ul>
 <li><code>start</code> 和 <code>end</code> 可以为负数，类似数组的下标索引</li>
@@ -1474,8 +1470,7 @@ s-hdrlen          s-1       s
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="nf">sdsrange</span><span class="p">(</span><span class="n">sds</span> <span class="n">s</span><span class="p">,</span> <span class="n">ssize_t</span> <span class="n">start</span><span class="p">,</span> <span class="n">ssize_t</span> <span class="n">end</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><p>同上，可以发现函数在执行过程中并未调用 <code>free</code>，是否存在内存泄漏的风险？具体需要观察后续对该函数的调用场景进行分析，暂时 MARK。</p>
-<h2 id="split-操作">split 操作</h2>
+</div><h2 id="split-操作">split 操作</h2>
 <h3 id="sdssplitlen">sdssplitlen</h3>
 <p>使用长为 <code>seplen</code> 的二进制安全字符串 <code>sep</code> 作为分隔符，将长为 <code>len</code> 的二进制安全字符串 <code>s</code> 分割成 <code>count</code> 个 sds 字符串。</p>
 <div class="highlight"><div class="chroma">
