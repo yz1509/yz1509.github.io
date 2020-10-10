@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Redis 源码阅读 --- Object - HTT - ふわふわ時間</title>
+  <title>Redis 源码阅读 --- object - HTT - ふわふわ時間</title>
   
 
 <meta name="renderer" content="webkit" />
@@ -60,23 +60,23 @@
 
 
 
-<meta property="og:title" content="Redis 源码阅读 --- Object" />
+<meta property="og:title" content="Redis 源码阅读 --- object" />
 <meta property="og:description" content="Redis Object 相关源码阅读笔记，源码文件 server.h 和 object.c。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://k-on.me/post/redis-sourcecode-object/" />
 <meta property="article:published_time" content="2020-10-09T10:44:07+08:00" />
 <meta property="article:modified_time" content="2020-10-09T10:44:07+08:00" />
-<meta itemprop="name" content="Redis 源码阅读 --- Object">
+<meta itemprop="name" content="Redis 源码阅读 --- object">
 <meta itemprop="description" content="Redis Object 相关源码阅读笔记，源码文件 server.h 和 object.c。">
 <meta itemprop="datePublished" content="2020-10-09T10:44:07+08:00" />
 <meta itemprop="dateModified" content="2020-10-09T10:44:07+08:00" />
-<meta itemprop="wordCount" content="2610">
+<meta itemprop="wordCount" content="2653">
 
 
 
 <meta itemprop="keywords" content="Redis," />
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Redis 源码阅读 --- Object"/>
+<meta name="twitter:title" content="Redis 源码阅读 --- object"/>
 <meta name="twitter:description" content="Redis Object 相关源码阅读笔记，源码文件 server.h 和 object.c。"/>
 
 <!--[if lte IE 9]>
@@ -299,7 +299,7 @@
           <article class="post bg-white">
     
     <header class="post-header">
-      <h1 class="post-title">Redis 源码阅读 --- Object</h1>
+      <h1 class="post-title">Redis 源码阅读 --- object</h1>
       
       <div class="post-meta">
         <time datetime="2020-10-09" class="post-time">
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 2610 words </span>
+        <span class="more-meta"> 2653 words </span>
           <span class="more-meta"> 6 min read </span>
 
         
@@ -459,43 +459,43 @@
 </tr>
 <tr>
 <td style="text-align:left">OBJ_SET</td>
-<td style="text-align:left">OBJ_ENCODING_HT</td>
-<td></td>
+<td style="text-align:left">OBJ_ENCODING_INTSET</td>
+<td style="text-align:left">Integers in radix 10 in the range of 64 bit signed integers &amp;&amp; number of entries $\le$ <code>set-max-intset-entries</code></td>
 </tr>
 <tr>
 <td style="text-align:left"></td>
-<td style="text-align:left">OBJ_ENCODING_INTSET</td>
-<td></td>
+<td style="text-align:left">OBJ_ENCODING_HT</td>
+<td style="text-align:left">Others</td>
 </tr>
 <tr>
 <td style="text-align:left">OBJ_ZSET</td>
-<td style="text-align:left">OBJ_ENCODING_SKIPLIST</td>
-<td></td>
+<td style="text-align:left">OBJ_ENCODING_ZIPLIST</td>
+<td style="text-align:left">Number of entries $\le$ <code>zset-max-ziplist-entries</code> &amp;&amp; value size $\le$ <code>zset-max-ziplist-value</code></td>
 </tr>
 <tr>
 <td style="text-align:left"></td>
-<td style="text-align:left">OBJ_ENCODING_ZIPLIST</td>
-<td></td>
+<td style="text-align:left">OBJ_ENCODING_SKIPLIST</td>
+<td style="text-align:left">Others</td>
 </tr>
 <tr>
 <td style="text-align:left">OBJ_HASH</td>
 <td style="text-align:left">OBJ_ENCODING_ZIPLIST</td>
-<td></td>
+<td style="text-align:left">Number of entries $\le$ <code>hash-max-ziplist-entries</code> &amp;&amp; value size $\le$ <code>hash-max-ziplist-value</code></td>
 </tr>
 <tr>
 <td style="text-align:left"></td>
 <td style="text-align:left">OBJ_ENCODING_HT</td>
-<td></td>
+<td style="text-align:left">Others</td>
 </tr>
 <tr>
 <td style="text-align:left">OBJ_MODULE</td>
 <td style="text-align:left">OBJ_ENCODING_RAW</td>
-<td></td>
+<td style="text-align:left">All</td>
 </tr>
 <tr>
 <td style="text-align:left">OBJ_STREAM</td>
 <td style="text-align:left">OBJ_ENCODING_STREAM</td>
-<td></td>
+<td style="text-align:left">All</td>
 </tr>
 </tbody>
 </table>
@@ -554,7 +554,7 @@
 </span><span class="cm"> *
 </span><span class="cm"> * The current limit of 44 is chosen so that the biggest string object
 </span><span class="cm"> * we allocate as EMBSTR will still fit into the 64 byte arena of jemalloc. */</span>
- <span class="cp">#define OBJ_ENCODING_EMBSTR_SIZE_LIMIT 44
+<span class="cp">#define OBJ_ENCODING_EMBSTR_SIZE_LIMIT 44
 </span><span class="cp"></span><span class="n">robj</span> <span class="o">*</span><span class="nf">createStringObject</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">ptr</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">len</span><span class="p">)</span> <span class="p">{</span>
     <span class="k">if</span> <span class="p">(</span><span class="n">len</span> <span class="o">&lt;=</span> <span class="n">OBJ_ENCODING_EMBSTR_SIZE_LIMIT</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">createEmbeddedStringObject</span><span class="p">(</span><span class="n">ptr</span><span class="p">,</span><span class="n">len</span><span class="p">);</span>

@@ -12,7 +12,7 @@
     
     
     <item>
-      <title>Redis 源码阅读 --- Object</title>
+      <title>Redis 源码阅读 --- object</title>
       <link>https://k-on.me/post/redis-sourcecode-object/</link>
       <pubDate>Fri, 09 Oct 2020 10:44:07 +0800</pubDate>
       
@@ -128,43 +128,43 @@
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;OBJ_SET&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;OBJ_ENCODING_HT&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;OBJ_ENCODING_INTSET&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Integers in radix 10 in the range of 64 bit signed integers &amp;amp;&amp;amp; number of entries $\le$ &lt;code&gt;set-max-intset-entries&lt;/code&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;OBJ_ENCODING_INTSET&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;OBJ_ENCODING_HT&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Others&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;OBJ_ZSET&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;OBJ_ENCODING_SKIPLIST&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;OBJ_ENCODING_ZIPLIST&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Number of entries $\le$ &lt;code&gt;zset-max-ziplist-entries&lt;/code&gt; &amp;amp;&amp;amp; value size $\le$ &lt;code&gt;zset-max-ziplist-value&lt;/code&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;OBJ_ENCODING_ZIPLIST&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;OBJ_ENCODING_SKIPLIST&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Others&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;OBJ_HASH&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;OBJ_ENCODING_ZIPLIST&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Number of entries $\le$ &lt;code&gt;hash-max-ziplist-entries&lt;/code&gt; &amp;amp;&amp;amp; value size $\le$ &lt;code&gt;hash-max-ziplist-value&lt;/code&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;OBJ_ENCODING_HT&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Others&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;OBJ_MODULE&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;OBJ_ENCODING_RAW&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;All&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;OBJ_STREAM&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;OBJ_ENCODING_STREAM&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;All&lt;/td&gt;
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
@@ -223,7 +223,7 @@
 &lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *
 &lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * The current limit of 44 is chosen so that the biggest string object
 &lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * we allocate as EMBSTR will still fit into the 64 byte arena of jemalloc. */&lt;/span&gt;
- &lt;span class=&#34;cp&#34;&gt;#define OBJ_ENCODING_EMBSTR_SIZE_LIMIT 44
+&lt;span class=&#34;cp&#34;&gt;#define OBJ_ENCODING_EMBSTR_SIZE_LIMIT 44
 &lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;createStringObject&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;const&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ptr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;size_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;len&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
     &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;len&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;OBJ_ENCODING_EMBSTR_SIZE_LIMIT&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
         &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;createEmbeddedStringObject&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ptr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;len&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
@@ -4624,7 +4624,7 @@ s-hdrlen          s-1       s
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;listpack_malloc.h&lt;/code&gt;, &lt;code&gt;listpack.c&lt;/code&gt;, &lt;code&gt;listpack.h&lt;/code&gt;&lt;/td&gt;
-&lt;td&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;A lists of strings serialization format&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
@@ -4677,7 +4677,7 @@ s-hdrlen          s-1       s
 &lt;td style=&#34;text-align:left&#34;&gt;Redis 的数据库通知实现&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Y&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;object.c&lt;/code&gt;&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;Redis 的对象系统实现&lt;/td&gt;
 &lt;/tr&gt;
