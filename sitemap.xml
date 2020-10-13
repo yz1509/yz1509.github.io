@@ -51,6 +51,13 @@
   </url>
   
   <url>
+    <loc>https://k-on.me/post/redis-sourcecode-skiplist/</loc>
+    <lastmod>2020-10-06T11:10:35+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://k-on.me/post/redis-sourcecode-intset/</loc>
     <lastmod>2020-09-28T21:06:04+08:00</lastmod>
     <changefreq>weekly</changefreq>
