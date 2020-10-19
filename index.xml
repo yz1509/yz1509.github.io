@@ -6,10 +6,1148 @@
     <description>Recent content on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 09 Oct 2020 10:44:07 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 13 Oct 2020 17:11:09 +0800</lastBuildDate>
     
         <atom:link href="https://k-on.me/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Redis 源码阅读 --- Database</title>
+      <link>https://k-on.me/post/redis-sourcecode-db/</link>
+      <pubDate>Tue, 13 Oct 2020 17:11:09 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/redis-sourcecode-db/</guid>
+      
+        <description>&lt;p&gt;Redis 数据库实现相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; &amp;amp; &lt;code&gt;server.c&lt;/code&gt; &amp;amp; &lt;code&gt;db.c&lt;/code&gt; &amp;amp; &lt;code&gt;evict.c&lt;/code&gt; &amp;amp; &lt;code&gt;expire.c&lt;/code&gt; &amp;amp; &lt;code&gt;blocked.c&lt;/code&gt;。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;redisdb&#34;&gt;redisDb&lt;/h2&gt;
+&lt;p&gt;Redis 数据库由多个 &lt;a href=&#34;https://k-on.me/post/redis-sourcecode-dict/&#34;&gt;dict&lt;/a&gt; 组成，其结构定义如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Redis database representation. There are multiple databases identified
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * by integers from 0 (the default database) up to the max configured
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * database. The database number is the &amp;#39;id&amp;#39; field in the structure. */&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;typedef&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;dict&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dict&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;                 &lt;span class=&#34;cm&#34;&gt;/* The keyspace for this DB */&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;dict&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;expires&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;              &lt;span class=&#34;cm&#34;&gt;/* Timeout of keys with a timeout set */&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;dict&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;blocking_keys&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;        &lt;span class=&#34;cm&#34;&gt;/* Keys with clients waiting for data (BLPOP)*/&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;dict&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ready_keys&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;           &lt;span class=&#34;cm&#34;&gt;/* Blocked keys that received a PUSH */&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;dict&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;watched_keys&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;         &lt;span class=&#34;cm&#34;&gt;/* WATCHED keys for MULTI/EXEC CAS */&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;id&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;                     &lt;span class=&#34;cm&#34;&gt;/* Database ID */&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;avg_ttl&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;          &lt;span class=&#34;cm&#34;&gt;/* Average TTL, just for stats */&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;expires_cursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;cm&#34;&gt;/* Cursor of the active expire cycle. */&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;list&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;defrag_later&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;         &lt;span class=&#34;cm&#34;&gt;/* List of key names to attempt to defrag
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt;                                 * one by one, gradually. */&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;在之前 Redis dict 结构的介绍中，我们知道 dict 可以有不同的 &lt;a href=&#34;https://k-on.me/post/redis-sourcecode-dict/#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84&#34;&gt;dictType&lt;/a&gt;，不同类型的 dict 的区别在于 kv 类型及其相关操作不同，在 &lt;code&gt;redisDb&lt;/code&gt; 中的各个 dict 其类型如下:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;field&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;dictType&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;key&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;value&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;dict&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;dbDictType&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;sds strings&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;redis objects&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;expires&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;keyptrDictType&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;sds strings&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;long long&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;blocking_keys&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;keylistDictType&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;redis objects&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;lists&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;ready_keys&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;objectKeyPointerValueDictType&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;redis objects&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;dummy pointers&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;watched_keys&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;keylistDictType&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;redis objects&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;lists&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;dbDictType&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Redis 数据库 keysapce 的 &lt;code&gt;dictType&lt;/code&gt; 为 &lt;code&gt;dbDictType&lt;/code&gt;, 其定义如下，键使用 &lt;code&gt;sds&lt;/code&gt; 而不使用 &lt;code&gt;robj&lt;/code&gt;，可以节省内存。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Db-&amp;gt;dict, keys are sds strings, vals are Redis objects. */&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;dictType&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dbDictType&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;dictSdsHash&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;                &lt;span class=&#34;cm&#34;&gt;/* hash function */&lt;/span&gt;
+    &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;                       &lt;span class=&#34;cm&#34;&gt;/* key dup */&lt;/span&gt;
+    &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;                       &lt;span class=&#34;cm&#34;&gt;/* val dup */&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;dictSdsKeyCompare&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;          &lt;span class=&#34;cm&#34;&gt;/* key compare */&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;dictSdsDestructor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;          &lt;span class=&#34;cm&#34;&gt;/* key destructor */&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;dictObjectDestructor&lt;/span&gt;        &lt;span class=&#34;cm&#34;&gt;/* val destructor */&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;keyptrDictType&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;键类型为 &lt;code&gt;sds&lt;/code&gt;，会复用 &lt;code&gt;redisDb-&amp;gt;dict&lt;/code&gt; 中的键值，值类型为 &lt;code&gt;long long&lt;/code&gt;，记录了该对象何时 (absolute unix time in milliseconds) 会失效。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Db-&amp;gt;expires */&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;dictType&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;keyptrDictType&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;dictSdsHash&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;                &lt;span class=&#34;cm&#34;&gt;/* hash function */&lt;/span&gt;
+    &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;                       &lt;span class=&#34;cm&#34;&gt;/* key dup */&lt;/span&gt;
+    &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;                       &lt;span class=&#34;cm&#34;&gt;/* val dup */&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;dictSdsKeyCompare&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;          &lt;span class=&#34;cm&#34;&gt;/* key compare */&lt;/span&gt;
+    &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;                       &lt;span class=&#34;cm&#34;&gt;/* key destructor */&lt;/span&gt;
+    &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;                        &lt;span class=&#34;cm&#34;&gt;/* val destructor */&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;keylistDictType&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Keylist hash table type has unencoded redis objects as keys and
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * lists as values. It&amp;#39;s used for blocking operations (BLPOP) and to
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * map swapped keys to a list of clients waiting for this keys to be loaded. */&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;dictType&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;keylistDictType&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;dictObjHash&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;                &lt;span class=&#34;cm&#34;&gt;/* hash function */&lt;/span&gt;
+    &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;                       &lt;span class=&#34;cm&#34;&gt;/* key dup */&lt;/span&gt;
+    &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;                       &lt;span class=&#34;cm&#34;&gt;/* val dup */&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;dictObjKeyCompare&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;          &lt;span class=&#34;cm&#34;&gt;/* key compare */&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;dictObjectDestructor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;       &lt;span class=&#34;cm&#34;&gt;/* key destructor */&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;dictListDestructor&lt;/span&gt;          &lt;span class=&#34;cm&#34;&gt;/* val destructor */&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;objectKeyPointerValueDictType&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Generic hash table type where keys are Redis Objects,
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * Values dummy pointers. */&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;dictType&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;objectKeyPointerValueDictType&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;dictEncObjHash&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;            &lt;span class=&#34;cm&#34;&gt;/* hash function */&lt;/span&gt;
+    &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;                      &lt;span class=&#34;cm&#34;&gt;/* key dup */&lt;/span&gt;
+    &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;                      &lt;span class=&#34;cm&#34;&gt;/* val dup */&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;dictEncObjKeyCompare&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;      &lt;span class=&#34;cm&#34;&gt;/* key compare */&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;dictObjectDestructor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;      &lt;span class=&#34;cm&#34;&gt;/* key destructor */&lt;/span&gt;
+    &lt;span class=&#34;nb&#34;&gt;NULL&lt;/span&gt;                       &lt;span class=&#34;cm&#34;&gt;/* val destructor */&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;};&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;redisdb-apis&#34;&gt;redisDb APIs&lt;/h2&gt;
+&lt;h3 id=&#34;查找&#34;&gt;查找&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;lookupKey&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Low level key lookup API, not actually called directly from commands
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * implementations that should instead rely on lookupKeyRead(),
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * lookupKeyWrite() and lookupKeyReadWithFlags(). */&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;lookupKey&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;flags&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;其中 &lt;code&gt;flags&lt;/code&gt; 用于指示是否更新 &lt;code&gt;robj-&amp;gt;lru&lt;/code&gt;，其取值有二：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;LOOKUP_NONE&lt;/code&gt;: no special flags are passed.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LOOKUP_NOTOUCH&lt;/code&gt;: don&amp;rsquo;t alter the last access time of the key.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;除此之外，若此时正有子线程正在进行保存 RDB、重写 AOF 或加载 module 相关操作时，也不会更新该数据对象的 &lt;code&gt;lru&lt;/code&gt; 值，以避免一个数据对象被疯狂复制多次。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;key&lt;/code&gt; 存在于 &lt;code&gt;db&lt;/code&gt; 中时，返回其关联的 value 值，否则返回 &lt;code&gt;NULL&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;lookupKeyReadWithFlags&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Lookup a key for read operations, or return NULL if the key is not found
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * in the specified DB. */&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;lookupKeyReadWithFlags&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;flags&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;在该函数中，在调用 &lt;code&gt;lookupKey&lt;/code&gt; 判断 &lt;code&gt;key&lt;/code&gt; 是否存在于 &lt;code&gt;db&lt;/code&gt; 中之前，会先调用 &lt;code&gt;expireIfNeeded&lt;/code&gt; 判断该 &lt;code&gt;key&lt;/code&gt; 是否已过期(有关过期的内容将在下文详述)。从库为了和主库保持数据的一致性，并不会主动清理过期键，而是会同步主库在清理过期键时发送的 &lt;code&gt;DEL&lt;/code&gt; 命令，但在该查找操作中，如果 &lt;code&gt;key&lt;/code&gt; 已过期，从库虽未删除该 &lt;code&gt;key&lt;/code&gt;，但仍然会返回 &lt;code&gt;NULL&lt;/code&gt;，表示该 &lt;code&gt;key&lt;/code&gt; 逻辑上不存在，以和主库保持一致的视图。&lt;/p&gt;
+&lt;p&gt;调用该函数有以下副作用：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在 Redis 主库中，若 &lt;code&gt;key&lt;/code&gt; 达到其过期时间，则会被删除，同步或异步删除则取决于配置的 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L985&#34;&gt;lazyfree-lazy-expire&lt;/a&gt; 值 (调用 &lt;code&gt;expireIfNeeded&lt;/code&gt; 引起)&lt;/li&gt;
+&lt;li&gt;可能会更新 &lt;code&gt;robj-&amp;gt;lru&lt;/code&gt; (调用 &lt;code&gt;lookupKey&lt;/code&gt; 引起)&lt;/li&gt;
+&lt;li&gt;会更新数据库的 &lt;code&gt;hits&lt;/code&gt; 或 &lt;code&gt;misses&lt;/code&gt; 状态信息&lt;/li&gt;
+&lt;li&gt;如果启用了键空间通知，则会触发 &lt;code&gt;keymiss&lt;/code&gt; 通知&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;lookupKeyRead&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Like lookupKeyReadWithFlags(), but does not use any flag, which is the
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * common case. */&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;lookupKeyRead&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;lookupKeyReadWithFlags&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;LOOKUP_NONE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;lookupKeyWriteWithFlags&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Lookup a key for write operations, and as a side effect, if needed, expires
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * the key if its TTL is reached.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * Returns the linked value object if the key exists or NULL if the key
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * does not exist in the specified DB. */&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;lookupKeyWriteWithFlags&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;flags&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;expireIfNeeded&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;lookupKey&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;flags&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;others&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;lookupKeyWrite&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;lookupKeyWriteWithFlags&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;LOOKUP_NONE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+&lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;lookupKeyReadOrReply&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;client&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;reply&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;o&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;lookupKeyRead&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;!&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;o&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;addReply&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;reply&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;o&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+&lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;lookupKeyWriteOrReply&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;client&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;reply&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;o&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;lookupKeyWrite&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;!&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;o&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;addReply&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;reply&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;o&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;添加&#34;&gt;添加&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;dbAdd&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Add the key to the DB. It&amp;#39;s up to the caller to increment the reference
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * counter of the value if needed.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * The program is aborted if the key already exists. */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;dbAdd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;val&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;在将 &lt;code&gt;key&lt;/code&gt; 加入 &lt;code&gt;db-&amp;gt;dict&lt;/code&gt; 时，会复制 &lt;code&gt;key&lt;/code&gt; 的字符串值，将 &lt;code&gt;key&lt;/code&gt; 以 &lt;code&gt;sds&lt;/code&gt; 形式加入 &lt;code&gt;db&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;如果值类型为 list、zset 或 stream，&lt;code&gt;key&lt;/code&gt; 此时在 &lt;code&gt;db-&amp;gt;blocking_keys&lt;/code&gt; 中且不在 &lt;code&gt;db-&amp;gt;ready_keys&lt;/code&gt; 时，会将 &lt;code&gt;key&lt;/code&gt; 加入 &lt;code&gt;db-&amp;gt;ready_keys&lt;/code&gt; 中&lt;/li&gt;
+&lt;li&gt;若 Redis 服务器为 cluster 模式，会将 &lt;code&gt;key&lt;/code&gt; 和对应的 &lt;code&gt;slot&lt;/code&gt; 建立映射，表示 &lt;code&gt;key&lt;/code&gt; 存在于该 &lt;code&gt;slot&lt;/code&gt; 中&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;dbAddRDBLoad&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* This is a special version of dbAdd() that is used only when loading
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * keys from the RDB file: the key is passed as an SDS string that is
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * retained by the function (and not freed by the caller). */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;dbAddRDBLoad&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sds&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;val&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;即使 &lt;code&gt;key&lt;/code&gt; 此时在 &lt;code&gt;db-&amp;gt;dict&lt;/code&gt; 中，也不会触发 aborted，而是会返回 0&lt;/li&gt;
+&lt;li&gt;如果 &lt;code&gt;key&lt;/code&gt; 成功加入 &lt;code&gt;db-&amp;gt;dict&lt;/code&gt; 中，则返回 1&lt;/li&gt;
+&lt;li&gt;由于传入的 &lt;code&gt;key&lt;/code&gt; 类型为 &lt;code&gt;sds&lt;/code&gt;，所以和 &lt;code&gt;dbAdd&lt;/code&gt; 相比并无复制字符串操作，因此在成功加入时，调用方不可对 &lt;code&gt;key&lt;/code&gt; 进行释放操作，此时 &lt;code&gt;key&lt;/code&gt; 的所有权交予 &lt;code&gt;db-&amp;gt;dict&lt;/code&gt;；但在返回 0 时，&lt;code&gt;key&lt;/code&gt; 的释放操作需由调用方完成&lt;/li&gt;
+&lt;li&gt;若 Redis 服务器为 cluster 模式，会将 &lt;code&gt;key&lt;/code&gt; 和对应的 &lt;code&gt;slot&lt;/code&gt; 建立映射，表示 &lt;code&gt;key&lt;/code&gt; 存在于该 &lt;code&gt;slot&lt;/code&gt; 中&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;dbOverwrite&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Overwrite an existing key with a new value. Incrementing the reference
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * count of the new value is up to the caller.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * This function does not modify the expire time of the existing key.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * The program is aborted if the key was not already present. */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;dbOverwrite&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;val&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;setKey &amp;amp; genericSetKey&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Common case for genericSetKey() where the TTL is not retained. */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;setKey&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;client&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;val&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;genericSetKey&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;val&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+&lt;span class=&#34;cm&#34;&gt;/* High level Set operation. This function can be used in order to set
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * a key, whatever it was existing or not, to a new object. */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;genericSetKey&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;client&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                   &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;val&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;keepttl&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;signal&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;在 &lt;code&gt;genericSetKey&lt;/code&gt; 中：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;keepttl&lt;/code&gt; 指示是否保持该 &lt;code&gt;key&lt;/code&gt; 的 ttl 不变，其值由具体的写入命令参数决定&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;signal&lt;/code&gt; 指示是否需要调用 &lt;code&gt;signalModifiedKey&lt;/code&gt; 通知该 &lt;code&gt;key&lt;/code&gt; 已被修改，除了在 redis module 中，该值一直为 1，而在 redis module 中，该值为 0。使用 Redis module 可以通过调用 &lt;code&gt;RedisModule_SignalModifiedKey&lt;/code&gt; 通知该 &lt;code&gt;key&lt;/code&gt; 已被修改&lt;/li&gt;
+&lt;li&gt;在该函数中无论 &lt;code&gt;key&lt;/code&gt; 先前是否存在，都会将 &lt;code&gt;key-val&lt;/code&gt; 对写入 &lt;code&gt;db&lt;/code&gt; 中&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;val&lt;/code&gt; 的引用计数会增加&lt;/li&gt;
+&lt;li&gt;在 &lt;code&gt;keepttl&lt;/code&gt; 不为 1 时，与 &lt;code&gt;key&lt;/code&gt; 关联的过期时间会被移除&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;删除&#34;&gt;删除&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;删除某个 key&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Delete a key, value, and associated expiration entry if any, from the DB */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;dbSyncDelete&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+
+&lt;span class=&#34;cm&#34;&gt;/* This is a wrapper whose behavior depends on the Redis lazy free
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * configuration. Deletes the key synchronously or asynchronously. */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;dbDelete&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;server&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;lazyfree_lazy_server_del&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;?&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dbAsyncDelete&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:&lt;/span&gt;
+                                             &lt;span class=&#34;n&#34;&gt;dbSyncDelete&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;删除指定的 db&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;emptyDb&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dbnum&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;flags&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;callback&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;emptyDbGeneric&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;server&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dbnum&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;flags&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;callback&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+&lt;span class=&#34;cm&#34;&gt;/* Remove all keys from all the databases in a Redis server.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * If callback is given the function is called from time to time to
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * signal that work is in progress.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * The dbnum can be -1 if all the DBs should be flushed, or the specified
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * DB number if we want to flush only a single Redis database number.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * Flags are be EMPTYDB_NO_FLAGS if no special flags are specified or
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * 1. EMPTYDB_ASYNC if we want the memory to be freed in a different thread.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * 2. EMPTYDB_BACKUP if we want to empty the backup dictionaries created by
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *    disklessLoadMakeBackups. In that case we only free memory and avoid
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *    firing module events.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * and the function to return ASAP.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * On success the fuction returns the number of keys removed from the
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * database(s). Otherwise -1 is returned in the specific case the
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * DB number is out of range, and errno is set to EINVAL. */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;emptyDbGeneric&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dbarray&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dbnum&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;flags&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                         &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;callback&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;));&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;utils&#34;&gt;Utils&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;dbRandomKey&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Return a random key, in form of a Redis object.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * If there are no keys, NULL is returned.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * The function makes sure to return keys not already expired. */&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;dbRandomKey&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;dbUnshareStringValue&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Prepare the string object stored at &amp;#39;key&amp;#39; to be modified destructively
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * to implement commands like SETBIT or APPEND.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * An object is usually ready to be modified unless one of the two conditions
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * are true:
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * 1) The object &amp;#39;o&amp;#39; is shared (refcount &amp;gt; 1), we don&amp;#39;t want to affect
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *    other users.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * 2) The object encoding is not &amp;#34;RAW&amp;#34;.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * If the object is found in one of the above conditions (or both) by the
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * function, an unshared / not-encoded copy of the string object is stored
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * at &amp;#39;key&amp;#39; in the specified &amp;#39;db&amp;#39;. Otherwise the object &amp;#39;o&amp;#39; itself is
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * returned. */&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;dbUnshareStringValue&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;o&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h2 id=&#34;expire&#34;&gt;expire&lt;/h2&gt;
+&lt;p&gt;设置了过期时间的 &lt;code&gt;key&lt;/code&gt;，会将 &amp;lt;key, expire-time&amp;gt; 映射加入到 &lt;code&gt;redisDb-&amp;gt;expires&lt;/code&gt; 字典中，以支持后续的键过期行为。Redis 的键过期以被动的方式进行，只会在访问到该 &lt;code&gt;key&lt;/code&gt; 的时候触发。访问的方式大致可以分为两种：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;在客户端访问到该 &lt;code&gt;key&lt;/code&gt; 时调用 &lt;code&gt;expireIfNeeded&lt;/code&gt; 触发过期删除操作，例如查找、删除、&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/db.c#L296&#34;&gt;随机返回 key&lt;/a&gt;和 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/db.c#L867&#34;&gt;Scan&lt;/a&gt;操作时&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;为防止有些过期 &lt;code&gt;key&lt;/code&gt; 一直未被访问从而无法释放，Redis 主库还会定时调用 &lt;code&gt;activeExpireCycle&lt;/code&gt; 主动去扫描过期键空间清理过期 &lt;code&gt;key&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L5257&#34;&gt;main&lt;/a&gt;-&amp;gt;&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2943&#34;&gt;initServer&lt;/a&gt;-&amp;gt;&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L1968&#34;&gt;serverCron&lt;/a&gt;-&amp;gt;&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L1698&#34;&gt;databasesCron&lt;/a&gt;-&amp;gt;&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/expire.c#L123&#34;&gt;activeExpireCycle&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L5257&#34;&gt;main&lt;/a&gt;-&amp;gt;&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2981&#34;&gt;initServer&lt;/a&gt;-&amp;gt;&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2149&#34;&gt;beforeSleep&lt;/a&gt;-&amp;gt;&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/expire.c#L123&#34;&gt;activeExpireCycle&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;过期 &lt;code&gt;key&lt;/code&gt; 的删除分为同步和异步两种方式，由配置项 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L985&#34;&gt;lazyfree-lazy-expire&lt;/a&gt; 决定采用何种方式。&lt;/p&gt;
+&lt;h3 id=&#34;expire-apis&#34;&gt;Expire APIs&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;removeExpire&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Remove an expire fo the specified key. */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;removeExpire&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;只有当 &lt;code&gt;key&lt;/code&gt; 在 &lt;code&gt;redisDb-&amp;gt;dict&lt;/code&gt; 中时，才会尝试从 &lt;code&gt;redisDb-&amp;gt;expires&lt;/code&gt; 删除与 &lt;code&gt;key&lt;/code&gt; 对应的 &lt;code&gt;dictEntry&lt;/code&gt; 并释放其占用的内存。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;setExpire&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Set an expire to the specified key. */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;setExpire&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;client&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;c&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;when&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;当调用请求来自客户端时，&lt;code&gt;c&lt;/code&gt; 为客户端上下文，否则 &lt;code&gt;c&lt;/code&gt; 为 &lt;code&gt;NULL&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;when&lt;/code&gt; 为过期时间，其为 unix time 的绝对值，即 &lt;code&gt;key&lt;/code&gt; 在 &lt;code&gt;when&lt;/code&gt; 这一时刻过期，单位为 &lt;code&gt;ms&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;redisDb-&amp;gt;expires&lt;/code&gt; 复用 &lt;code&gt;redisDb-&amp;gt;dict&lt;/code&gt; 的键字符串&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;getExpire&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Return the expire time of the specified key, or -1 if no expire
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * is associated with this key (i.e. the key is non volatile) */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getExpire&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;propagateExpire&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Propagate expires into slaves and the AOF file.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * When a key expires in the master, a DEL operation for this key is sent
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * to all the slaves and the AOF file if enabled.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * This way the key expiry is centralized in one place, and since both
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * AOF and the master-&amp;gt;slave link guarantee operation ordering, everything
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * will be consistent even if we allow write operations against expiring
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * keys. */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;propagateExpire&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;lazy&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;keyIsExpired&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Check if the key is expired. */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;keyIsExpired&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;如果此时正在 loading data，则不会进行过期操作，因此该函数直接返回 0&lt;/li&gt;
+&lt;li&gt;如果正在运行 lua 脚本，则会把 lua 脚本开始运行的时间 &lt;code&gt;server.lua_time_start&lt;/code&gt; 作为当前时间，这是为了防止在 lua 脚本运行期间 key 过期同步至从库，从而导致在从库上 lua 脚本的运行和主库不一致的情况发生，详情可见 &lt;a href=&#34;https://github.com/redis/redis/issues/1525&#34;&gt;issue 1525&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;如果此时正在某个命令运行期间，会使用缓存的 &lt;code&gt;server.mstime&lt;/code&gt; 作为当前时间&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;expireIfNeeded&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* The return value of the function is 0 if the key is still valid,
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * otherwise the function returns 1 if the key is expired. */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;expireIfNeeded&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;db&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;正如之前所述，在客户端访问 &lt;code&gt;key&lt;/code&gt; 时可能需要先调用 &lt;code&gt;expireIfNeeded&lt;/code&gt; 检测该 &lt;code&gt;key&lt;/code&gt; 是否已过期。该函数的运行模式与 Redis 服务器角色有关：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在 Redis 主库中，如果此时 &lt;code&gt;key&lt;/code&gt; 已过期，会触发删除 &lt;code&gt;key&lt;/code&gt; 操作，并将删除操作同步至 salves 和 AOF&lt;/li&gt;
+&lt;li&gt;在 Redis 从库中，如果此时 &lt;code&gt;key&lt;/code&gt; 已过期，则只会立马返回 1 表示该 &lt;code&gt;key&lt;/code&gt; 已过期，但不会执行删除操作，这是因为从库为了和主库的数据保持一致，其过期 &lt;code&gt;key&lt;/code&gt; 的清理由同步主库的 del 消息完成&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;主库清理过期键&#34;&gt;主库清理过期键&lt;/h3&gt;
+&lt;p&gt;之前我们介绍过 Redis 主库除了在访问 key 时触发过期操作，还会定期调用 &lt;code&gt;activeExpireCycle&lt;/code&gt; 清理过期 key，其接口如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;activeExpireCycle&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;type&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;code&gt;type&lt;/code&gt; 参数表示该函数使用何种模式运行，共有两种模式：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;ACTIVE_EXPIRE_CYCLE_FAST&lt;/code&gt;: 在 &lt;code&gt;beforeSleep&lt;/code&gt; 中调用 &lt;code&gt;activeExpireCycle&lt;/code&gt; 时使用该模式，将单次清理过期 key 的执行时间限制在 &lt;code&gt;config_cycle_fast_duration&lt;/code&gt;(默认为 $1ms$) 之内&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ACTIVE_EXPIRE_CYCLE_SLOW&lt;/code&gt;: 在 &lt;code&gt;databaseCron&lt;/code&gt; 中调用 &lt;code&gt;activeExpireCycle&lt;/code&gt; 时使用该模式，将定期清理过期 key 操作使用 CPU 占比控制在 &lt;code&gt;config_cycle_slow_time_perc&lt;/code&gt;(默认为 $25%$) 之内，单次执行时间限制为 &lt;code&gt;config_cycle_slow_time_perc*1000000/server.hz/100&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;上述出现的参数可使用配置项 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L938&#34;&gt;active-expire-effort&lt;/a&gt; 配置，对应关系如下：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;active-expire-effort&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;fast_duration(ms)&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;slow_time_perc&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;keys_per_loop&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;acceptable_stale&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;$a + 1$&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;$1 + \frac{a}{4}$&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;$25\% + 2a\%$&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;$20 + 5a$&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;$10\% - a\%$&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;$[1, 10]$&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;$[1, 3.25]$&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;$[25\%, 43\%]$&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;$[20, 65]$&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;$[10\%, 1\%]$&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;其中，keys_per_loop(&lt;code&gt;config_keys_per_loop&lt;/code&gt;) 指的是每次迭代扫描的 key 的数量上限，acceptable_stale(&lt;code&gt;config_cycle_acceptable_stale&lt;/code&gt;) 指的是可容忍的已过期键比例。从上表可以的值，当 &lt;code&gt;active-expire-effort&lt;/code&gt; 值越大时，每次清理过期 key 的调用执行时间上限越长，单个迭代内扫描 key 数量上限越大，对已过期键占比的容忍度越低。&lt;/p&gt;
+&lt;p&gt;该函数以“伪增量”(期间写入的过期 key 可能在本次全面遍历中未被访问)形式对过期键空间进行扫描，使用局部静态变量记录上次执行的状态：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;current_db&lt;/code&gt; 记录上次调用此函数时的 &lt;code&gt;server.db&lt;/code&gt; 的位置，每个 &lt;code&gt;redisDb&lt;/code&gt; 内部的扫描位置则由 &lt;code&gt;redisDb-&amp;gt;expires_cursor&lt;/code&gt; 记录&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;timelimit_exit&lt;/code&gt; 记录上次执行是否超时。每次调用该函数扫描的 db 数量上限默认为 &lt;code&gt;CRON_DBS_PER_CALL&lt;/code&gt; 如果该值大于 &lt;code&gt;server.dbnum&lt;/code&gt; 或上次该函数执行超时时，每次调用该函数扫描的 db 数量上限则设置为 &lt;code&gt;server.dbnum&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;last_fast_cycle&lt;/code&gt; 记录上次以 fast 模式运行该函数的起始时间，以防止上次 fast 模式扫描过程超时且尚未终止时启动新的 fast 模式扫描过程&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在以下情况下，该函数会立马返回，不启动扫描过程：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在 client paused 期间，Redis 数据库是静态的，其不仅会阻止客户端的写入，也不会执行 evict 和 expire 操作，因此，若 &lt;code&gt;server.clients_paused&lt;/code&gt; 为真时，该函数会直接返回&lt;/li&gt;
+&lt;li&gt;在 fast 模式下，上次该函数并未超时退出，且此时已过期键占比近似值 &lt;code&gt;server.stat_expired_stale_perc&lt;/code&gt; 小于可容忍上限 &lt;code&gt;config_cycle_acceptable_stale&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;在 fast 模式下，上次 fast 模式扫描过程超时且可能尚未终止&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在扫描过程中，该函数会试图遍历指定的 db 数量，其终止条件有二：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;函数运行时间超出时间限制&lt;/li&gt;
+&lt;li&gt;每个 db 在单次迭代中已过期键占比低于可容忍值，则切换至下一 db，遍历 db 数量达到指定上限时扫描终止&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在扫描过程中，该函数还会更新 Redis 运行状态：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;server.stat_expiredkeys&lt;/code&gt;：已过期键总数&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;redisDb-&amp;gt;avg_ttl&lt;/code&gt;：ttl 近似平均值，先前值为 0 时，使用本次迭代值作为 ttl 近似平均值；否则以先前值权重 $98\%$，单次迭代值权重 $2\%$ 进行加权平均&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;server.stat_expired_time_cap_reached_count&lt;/code&gt;：Expire cycles 超时退出次数&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;server.stat_expire_cycle_time_used&lt;/code&gt;: Expire cycles 使用总时间 (ms)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;server.stat_expired_stale_perc&lt;/code&gt;：已过期键占比近似值，以先前值占比 $95\%$，本次调用运行值占比 $5\%$ 进行加权平均&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;处于可写模式下的从库清理过期键&#34;&gt;处于可写模式下的从库清理过期键&lt;/h3&gt;
+&lt;p&gt;TODO&lt;/p&gt;
+&lt;h3 id=&#34;expire-commands&#34;&gt;Expire Commands&lt;/h3&gt;
+&lt;p&gt;TODO&lt;/p&gt;
+&lt;h2 id=&#34;evict&#34;&gt;evict&lt;/h2&gt;
+&lt;p&gt;在之前关于 redis object 的介绍中，我们知道 redis obejct 有一个 filed 为 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/object.c#L51&#34;&gt;lru&lt;/a&gt;，其在创建时初始化，在&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/db.c#L63&#34;&gt;每次查找操作时更新&lt;/a&gt;，它的作用就是用于挑选目标 key 进行淘汰。&lt;/p&gt;
+&lt;p&gt;Redis 作为内存数据库，通常会设置 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L859&#34;&gt;maxmemory&lt;/a&gt; 指定可用的最大内存空间大小。若设置了 &lt;code&gt;maxmemory&lt;/code&gt; 值，则 Redis Server 会在每次执行命令之前调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L3612&#34;&gt;freeMemoryIfNeededAndSafe&lt;/a&gt; 以检查目前内存使用量是否已经达到 &lt;code&gt;maxmemory&lt;/code&gt;，若为真，会根据设置的 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L890&#34;&gt;maxmemory-policy&lt;/a&gt; 决定淘汰 key 的方式，可选策略如下：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;volatile-lru&lt;/code&gt;: Evict using approximated LRU, only keys with an expire set.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;allkeys-lru&lt;/code&gt;: Evict any key using approximated LRU.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;volatile-lfu&lt;/code&gt;: Evict using approximated LFU, only keys with an expire set.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;allkeys-lfu&lt;/code&gt;: Evict any key using approximated LFU.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;volatile-random&lt;/code&gt;: Remove a random key having an expire set.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;allkeys-random&lt;/code&gt;: Remove a random key, any key.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;volatile-ttl&lt;/code&gt;: Remove the key with the nearest expire time (minor TTL)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;noeviction&lt;/code&gt;: Don&amp;rsquo;t evict anything, just return an error on write operations.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;接下来我们重点介绍在 Redis 中 LRU/LFU 相关策略的实现。&lt;/p&gt;
+&lt;h3 id=&#34;least-recently-usedlru&#34;&gt;Least Recently Used(LRU)&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;获取 lruclock&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Return the LRU clock, based on the clock resolution. This is a time
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * in a reduced-bits format that can be used to set and check the
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * object-&amp;gt;lru field of redisObject structures. */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getLRUClock&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;mstime&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;LRU_CLOCK_RESOLUTION&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;LRU_CLOCK_MAX&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+&lt;span class=&#34;cm&#34;&gt;/* This function is used to obtain the current LRU clock.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * If the current resolution is lower than the frequency we refresh the
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * LRU clock (as it should be in production servers) we return the
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * precomputed value, otherwise we need to resort to a system call. */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;LRU_CLOCK&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;通过调用 &lt;code&gt;getLRUClock&lt;/code&gt; 可以获得此时的 lruclock 值，其精度由 &lt;code&gt;LRU_CLOCK_RESOLUTION&lt;/code&gt; 控制，数值最大位数为 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.h#L613&#34;&gt;LRU_BITS&lt;/a&gt;。&lt;/p&gt;
+&lt;p&gt;从 &lt;a href=&#34;https://github.com/redis/redis/issues/2552&#34;&gt;issues 2552&lt;/a&gt; 可知，为性能考虑，应尽量避免调用 &lt;code&gt;gettimeofday&lt;/code&gt; 来获取时间，因此 Redis 还提供了 &lt;code&gt;LRU_CLOCK&lt;/code&gt; 接口在 &lt;code&gt;LRU_CLOCK_RESOLUTION&lt;/code&gt; 精度范围内，返回 Redis Server 此时正缓存的 lruclock 值。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;计算 idle time&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Given an object returns the min number of milliseconds the object was never
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * requested, using an approximated LRU algorithm. */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;estimateObjectIdleTime&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;o&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h3 id=&#34;least-frequently-usedlfu&#34;&gt;Least Frequently Used(LFU)&lt;/h3&gt;
+&lt;p&gt;从 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.h#L623&#34;&gt;redisObject&lt;/a&gt; 的定义中，我们知道 LFU 和 LRU 复用同一 field &lt;code&gt;lru&lt;/code&gt;，因此在 LFU 中访问频率的大小只可用 &lt;code&gt;LRU_BITS&lt;/code&gt; 位来表示。Redis 使用下图所示的结构表示频率：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;         16 bits      8 bits
+    +----------------+--------+
+    + Last decr time | LOG_C  |
+    +----------------+--------+
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Last decr time&lt;/code&gt;: 最近一次访问时间&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;LOG_C&lt;/code&gt;：对数计数器&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;增加计数&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;因为位数有限，因此 LFU 使用 8-bit 对数计数器 &lt;code&gt;LOG_C&lt;/code&gt; 表示访问频率，在初始 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/object.c#L51&#34;&gt;createObject&lt;/a&gt; 时，值为 &lt;code&gt;LFU_INIT_VAL&lt;/code&gt;，其大小表示其接下来可能会被访问的“潜能”。&lt;/p&gt;
+&lt;p&gt;在每次访问 Redis 数据对象时，会调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/db.c#L48&#34;&gt;LFULogIncr&lt;/a&gt; 尝试增加对数计数，其代码如下所示：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Logarithmically increment a counter. The greater is the current counter value
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * the less likely is that it gets really implemented. Saturate it at 255. */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;uint8_t&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;LFULogIncr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;uint8_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;255&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;255&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;double&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;r&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;double&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rand&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;RAND_MAX&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;double&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;baseval&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;LFU_INIT_VAL&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;baseval&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;baseval&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;double&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mf&#34;&gt;1.0&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;baseval&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;server&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;lfu_log_factor&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;r&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;p&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;++&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;可以看出，counter 增加满足以下公式：&lt;/p&gt;
+&lt;p&gt;$$
+NewC =
+\begin{cases}
+255, &amp;amp; curC = 255 \cr
+curC + 1, &amp;amp; curC \le \text{LFU_INIT_VAL} \cr
+curC_{1 - p} | (curC + 1)_p, &amp;amp; curC &amp;gt; \text{LFU_INIT_VAL} \cr
+\end{cases}
+$$&lt;/p&gt;
+&lt;p&gt;其中当目前计数值大于 &lt;code&gt;LFU_INIT_VAL&lt;/code&gt; 时，会以概率 $p$ 加 1，从代码中可以看出 $p$ 的大小和当前计数值大小反相关。代码中出现的常量 &lt;code&gt;lfu_log_factor&lt;/code&gt; 可通过 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L1768&#34;&gt;redis.conf&lt;/a&gt; 配置，其值越大，计数器加 1 的概率就越小，可参考如下表格(表格中 counter 数值非数学期望值)：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;factor&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;100 hits&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;1000 hits&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;100K hits&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;1M hits&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;10M hits&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;0&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;104&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;255&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;255&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;255&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;255&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;1&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;18&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;49&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;255&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;255&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;255&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;10&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;10&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;18&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;142&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;255&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;255&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;100&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;8&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;11&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;49&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;143&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;255&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;减小计数&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;使用 LFU 策略时，需要并不是历史总访问频率的大小，而是“最近”访问频率的信息，因此需要设计合理降低对数计数器的方法。Redis 使用 16-bit 的 &lt;code&gt;Last decr time&lt;/code&gt; 记录数据对象最近一次被访问的时间(取名为 &lt;code&gt;Last decr time&lt;/code&gt; 可能是因为在每次更新 LFU 时会先调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/db.c#L47&#34;&gt;LFUDecrAndReturn&lt;/a&gt; 下调当前计数值)。相关源码如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;18
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;19
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;20
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;21
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;22
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;23
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;24
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;25
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;26
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;27
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Return the current time in minutes, just taking the least significant
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * 16 bits. The returned time is suitable to be stored as LDT (last decrement
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * time) for the LFU implementation. */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;LFUGetTimeInMinutes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;server&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;unixtime&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;/&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;60&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;65535&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+&lt;span class=&#34;cm&#34;&gt;/* Given an object last access time, compute the minimum number of minutes
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * that elapsed since the last access. */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;LFUTimeElapsed&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ldt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;now&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;LFUGetTimeInMinutes&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;now&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ldt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;now&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ldt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;65535&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ldt&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;now&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+&lt;span class=&#34;cm&#34;&gt;/* If the object decrement time is reached decrement the LFU counter but
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * do not update LFU fields of the object, we update the access time
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * and counter in an explicit way when the object is really accessed. */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;LFUDecrAndReturn&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;o&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ldt&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;o&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;lru&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;o&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;lru&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;255&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;num_periods&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;server&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;lfu_decay_time&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;?&lt;/span&gt;
+                                &lt;span class=&#34;n&#34;&gt;LFUTimeElapsed&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ldt&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;/&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;server&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;nl&#34;&gt;lfu_decay_time&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;num_periods&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+        &lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;num_periods&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;?&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;num_periods&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;counter&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;可以看出，在 &lt;code&gt;LFUDecrAndReturn&lt;/code&gt; 中，参数 &lt;code&gt;lfu_decay_time&lt;/code&gt; 类似于元素的半衰期，控制着计数值随时间流逝而衰减的行为，其值同样可通过 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L1769&#34;&gt;redis.conf&lt;/a&gt; 配置。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;当 &lt;code&gt;lfu_decay_time&lt;/code&gt; 为 0 时，计数器不随时间衰减&lt;/li&gt;
+&lt;li&gt;当 &lt;code&gt;lfu_decay_time&lt;/code&gt; 大于 0 时，每经过 &lt;code&gt;lfu_decay_time&lt;/code&gt; 分钟，计数器减 1，直至为 0&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;还可以发现在 &lt;code&gt;LFUDecrAndReturn&lt;/code&gt; 中并不会改变 &lt;code&gt;robj-&amp;gt;lru&lt;/code&gt; 的值，只是返回此时经过衰减之后的计数值。其值的更改会在每次&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/db.c#L65&#34;&gt;真正访问该数据对象&lt;/a&gt;时发生。&lt;/p&gt;
+&lt;h3 id=&#34;evict-pool&#34;&gt;Evict pool&lt;/h3&gt;
+&lt;p&gt;Redis 使用淘汰候选数组 &lt;code&gt;EvictionPoolLRU&lt;/code&gt; 保存着可淘汰 key 的信息，其中每个候选 key 的相关信息由 &lt;code&gt;evictionPoolEntry&lt;/code&gt; 表示，其结构定义如下:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;evictionPoolEntry&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;idle&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;    &lt;span class=&#34;cm&#34;&gt;/* Object idle time (inverse frequency for LFU) */&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;sds&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;                    &lt;span class=&#34;cm&#34;&gt;/* Key name. */&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;sds&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cached&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;                 &lt;span class=&#34;cm&#34;&gt;/* Cached SDS object for key name. */&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dbid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;                   &lt;span class=&#34;cm&#34;&gt;/* Key DB number. */&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;};&lt;/span&gt;
+
+&lt;span class=&#34;k&#34;&gt;static&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;evictionPoolEntry&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;EvictionPoolLRU&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;key&lt;/code&gt; 字段存储该数据对象的键值，但并不会复用 &lt;code&gt;sds&lt;/code&gt;，而是会复制数据对象的键值&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;cached&lt;/code&gt; 字段是为了在键长度小于 &lt;code&gt;EVPOOL_CACHED_SDS_SIZE&lt;/code&gt; 时复用之前复制数据对象键值时分配的内存空间，否则会申请新的内存空间来存储数据对象的键值&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在数组 &lt;code&gt;EvictionPoolLRU&lt;/code&gt; 中，&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用 LRU 相关策略时，entry 按照 idle time 从小到大排序&lt;/li&gt;
+&lt;li&gt;使用 LFU 相关策略时，entry 按照访问频率从大到小排序&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;当 redis server 初始化时，会&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2894&#34;&gt;调用 evictionPoolAlloc&lt;/a&gt; 初始化 &lt;code&gt;EvictionPoolLRU&lt;/code&gt;，此时数组中尚无候选 key 信息，&lt;code&gt;cached&lt;/code&gt; 字段指向长为 &lt;code&gt;EVPOOL_CACHED_SDS_SIZE&lt;/code&gt; 的 &lt;code&gt;sds&lt;/code&gt;。数组会在每次需要淘汰 key 时通过调用 &lt;code&gt;evictionPoolPopulate&lt;/code&gt; 填充。其接口如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;evictionPoolPopulate&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dbid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                          &lt;span class=&#34;n&#34;&gt;dict&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;sampledict&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                          &lt;span class=&#34;n&#34;&gt;dict&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;keydict&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
+                          &lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;evictionPoolEntry&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pool&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;dbid&lt;/code&gt;: database ID&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;sampledict&lt;/code&gt;: 采样的 keysapce，随 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L890&#34;&gt;maxmemory-policy&lt;/a&gt; 而定
+&lt;ul&gt;
+&lt;li&gt;若只能淘汰过期 key，则采样空间为 &lt;code&gt;redisDb-&amp;gt;expires&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;若所有 key 均可淘汰，则采样空间为 &lt;code&gt;redisDb-&amp;gt;dict&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;keydict&lt;/code&gt;: redisDb 的 keysapce，即 &lt;code&gt;redisDb-&amp;gt;dict&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pool&lt;/code&gt;: 静态变量 &lt;code&gt;EvictionPoolLRU&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;该函数的大致处理流程如下：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;从采样空间 &lt;code&gt;sampledict&lt;/code&gt; 中尝试采样 &lt;code&gt;maxmemory_samples&lt;/code&gt; 个数据对象&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;maxmemory_samples&lt;/code&gt; 可由 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L901&#34;&gt;redis.conf&lt;/a&gt; 配置&lt;/li&gt;
+&lt;li&gt;返回的采样结果中，数据对象可能有重复，其总数也可能小于 &lt;code&gt;maxmemory_samples&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;获得采样数据对象的 idle 值&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果淘汰策略为 LRU 相关， &lt;code&gt;idle = estimateObjectIdleTime(o)&lt;/code&gt;，即为该对象的 idle time&lt;/li&gt;
+&lt;li&gt;如果淘汰策略为 LFU 相关，&lt;code&gt;idle = 255 - LFUDecrAndReturn(o)&lt;/code&gt;，此时对数计数器值越大，idle 越小&lt;/li&gt;
+&lt;li&gt;如果淘汰策略为 TTL 相关，&lt;code&gt;idle = ULLONG_MAX - expire_unix_time&lt;/code&gt;，越早过期，idle 越大&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;根据 idle 值，将该数据对象插入 &lt;code&gt;EvictionPoolLRU&lt;/code&gt; 中相应的位置，维持数组的有序性(idle 从小到大)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;free-memory&#34;&gt;Free memory&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;获得目前数据库内存使用情况&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;9
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* We don&amp;#39;t want to count AOF buffers and slaves output buffers as
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * used memory: the eviction should use mostly data size. This function
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * returns the sum of AOF and slaves buffer. */&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;size_t&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;freeMemoryGetNotCountedMemory&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+
+&lt;span class=&#34;cm&#34;&gt;/* Get the memory status from the point of view of the maxmemory directive:
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * if the memory used is under the maxmemory setting then C_OK is returned.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * Otherwise, if we are over the memory limit, the function returns C_ERR. */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;getMaxmemoryState&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;size_t&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;total&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;size_t&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;logical&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;size_t&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;tofree&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;float&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;level&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;Redis 在进行淘汰 key 操作时，会排除 slave 和 AOF 客户端缓冲区占用的内存，该排除部分的值大小可调用 &lt;code&gt;freeMemoryGetNotCountedMemory&lt;/code&gt; 获得。&lt;/p&gt;
+&lt;p&gt;在 &lt;code&gt;getMaxmemoryState&lt;/code&gt; 中，除了返回 &lt;code&gt;C_OK&lt;/code&gt; 或 &lt;code&gt;C_ERR&lt;/code&gt; 表示是否超最大内存限制之外，还会视情况填充传入的非 &lt;code&gt;NULL&lt;/code&gt; 参数：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;total&lt;/code&gt;: total amount of bytes used. (Populated both for C_ERR and C_OK)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;logical&lt;/code&gt;: the amount of memory used minus the slaves/AOF buffers. (Populated when C_ERR is returned)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;tofree&lt;/code&gt;: the amount of memory that should be released in order to return back into the memory limits. (Populated when C_ERR is returned)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;level&lt;/code&gt;: the ratio of memory usage (used_memory/maxmemory). (Populated both for C_ERR and C_OK)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;freeMemoryIfNeeded&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;正如前文所述，Redis 服务器设置了 &lt;code&gt;maxmemory&lt;/code&gt; 值时，会在每次执行命令之前调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L3612&#34;&gt;freeMemoryIfNeededAndSafe&lt;/a&gt; 以检查目前内存使用量是否已经达到 &lt;code&gt;maxmemory&lt;/code&gt;，该函数源码如下:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;freeMemoryIfNeededAndSafe&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;server&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;lua_timedout&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;||&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;server&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;loading&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;C_OK&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;freeMemoryIfNeeded&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;可以看出，&lt;code&gt;freeMemoryIfNeededAndSafe&lt;/code&gt; 会在以下两种情况下，不检测当前内存使用状况，直接返回 &lt;code&gt;C_OK&lt;/code&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;当前有执行超时的 lua 脚本&lt;/li&gt;
+&lt;li&gt;当前正在加载数据&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;在 &lt;code&gt;freeMemoryIfNeeded&lt;/code&gt; 函数中，会根据当前内存使用状况和 &lt;code&gt;maxmemory&lt;/code&gt; 值尝试进行内存释放操作以使内存使用量满足 &lt;code&gt;maxmemory&lt;/code&gt; 的限制。其接口如下:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;freeMemoryIfNeeded&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;一般情况下，当前内存使用量低于 &lt;code&gt;maxmemory&lt;/code&gt; 或在进行释放内存操作后低于 &lt;code&gt;maxmemory&lt;/code&gt; 时，函数返回 &lt;code&gt;C_OK&lt;/code&gt;，否则返回 &lt;code&gt;C_ERR&lt;/code&gt;。&lt;/li&gt;
+&lt;li&gt;默认情况下从库无 &lt;code&gt;maxmemory&lt;/code&gt; 限制，直接返回 &lt;code&gt;C_OK&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;在 client paused 期间，Redis 数据库是静态的，其不仅会阻止客户端的写入，也不会执行 evict 和 expire 操作，因此，若 &lt;code&gt;server.clients_paused&lt;/code&gt; 为真时，该函数会直接返回 &lt;code&gt;C_OK&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;当内存管理策略为 &lt;code&gt;noeviction&lt;/code&gt; 时，会检查当前 lazyfree 队列中是否有任务，若为真则等待 &lt;code&gt;lazyfree&lt;/code&gt; 任务完成后调用 &lt;code&gt;getMaxmemoryState&lt;/code&gt; 得到此时的内存使用状态并返回&lt;/li&gt;
+&lt;li&gt;根据内存管理策略采样选择最合适的 key 进行淘汰直至内存使用量低于 &lt;code&gt;maxmemory&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;当内存管理策略不为 random 相关类型时，每次删除一个 key 之前都会调用 &lt;code&gt;evictionPoolPopulate&lt;/code&gt; 填充 evict pool，随后从后往前遍历得到此时最适合删除的 key&lt;/li&gt;
+&lt;li&gt;当内存管略为 volatile 相关类型时，因为采样空间 &lt;code&gt;redisDb-&amp;gt;expires&lt;/code&gt; 可能为空，因此可能无法通过淘汰 key 使得内存使用量低于 &lt;code&gt;maxmemory&lt;/code&gt;，此时只能和 &lt;code&gt;noeviction&lt;/code&gt; 一样，等待 lazyfree 的操作结果&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;redisdb-相关命令&#34;&gt;redisDb 相关命令&lt;/h2&gt;
+&lt;p&gt;TODO&lt;/p&gt;</description>
+      
+    </item>
     
     <item>
       <title>Redis 源码阅读 --- object</title>
@@ -5021,7 +6159,7 @@ s-hdrlen          s-1       s
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Y&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;db.c&lt;/code&gt;&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;数据库实现&lt;/td&gt;
 &lt;/tr&gt;
@@ -5046,14 +6184,14 @@ s-hdrlen          s-1       s
 &lt;td style=&#34;text-align:left&#34;&gt;二进制的大端、小端转换函数&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Y&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;evict.c&lt;/code&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;maxmemory handling and LRU eviction.&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Maxmemory directive handling (LRU eviction and other policies).&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Y&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;expire.c&lt;/code&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;Handling of expired keys&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Implementation of EXPIRE (keys with fixed time to live).&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
@@ -12062,40 +13200,6 @@ c_i^{k-1} \cup {u_i^k(a)} &amp;amp; f = u_i^k(a)
 &lt;p&gt;In &lt;code&gt;CRDT&lt;/code&gt;:&lt;/p&gt;
 &lt;p&gt;$67 + 82 + 68 + 84 = 301 = -11 \times (4! - 51) + 4$&lt;/p&gt;
 &lt;p&gt;Q.E.D&lt;/p&gt;</description>
-      
-    </item>
-    
-    <item>
-      <title>初试性能调优</title>
-      <link>https://k-on.me/post/%E5%88%9D%E8%AF%95%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/</link>
-      <pubDate>Wed, 22 Jan 2020 10:36:38 +0000</pubDate>
-      
-      <guid>https://k-on.me/post/%E5%88%9D%E8%AF%95%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/</guid>
-      
-        <description>&lt;p&gt;利用 &lt;a href=&#34;https://github.com/torvalds/linux/tree/master/tools/perf&#34;&gt;perf&lt;/a&gt; + &lt;a href=&#34;https://github.com/brendangregg/FlameGraph&#34;&gt;FlameGraph&lt;/a&gt; 进行性能调优。&lt;/p&gt;
-&lt;hr&gt;
-&lt;p&gt;简单使用示例：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;c1&#34;&gt;// perf
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;# perf record -F 99 -p pid --call-graph dwarf sleep 60
-&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;# perf script &amp;gt; out.perf
-&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;
-&lt;span class=&#34;c1&#34;&gt;// FlameGraph
-&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;# ./stackcollapse-perf.pl out.perf &amp;gt; out.folded
-&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;# ./flamegraph.pl out.folded &amp;gt; flameGraph.svg
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;&lt;a href=&#34;http://www.brendangregg.com/perf.html&#34;&gt;Perf 命令示例&lt;/a&gt;&lt;/p&gt;</description>
       
     </item>
     

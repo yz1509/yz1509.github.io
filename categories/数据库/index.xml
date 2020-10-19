@@ -6,7 +6,16 @@
     <description>Recent content in 数据库 on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 09 Oct 2020 10:44:07 +0800</lastBuildDate><atom:link href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 13 Oct 2020 17:11:09 +0800</lastBuildDate><atom:link href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Redis 源码阅读 --- Database</title>
+      <link>https://k-on.me/post/redis-sourcecode-db/</link>
+      <pubDate>Tue, 13 Oct 2020 17:11:09 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/redis-sourcecode-db/</guid>
+      <description>&lt;p&gt;Redis 数据库实现相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; &amp;amp; &lt;code&gt;server.c&lt;/code&gt; &amp;amp; &lt;code&gt;db.c&lt;/code&gt; &amp;amp; &lt;code&gt;evict.c&lt;/code&gt; &amp;amp; &lt;code&gt;expire.c&lt;/code&gt; &amp;amp; &lt;code&gt;blocked.c&lt;/code&gt;。&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>Redis 源码阅读 --- object</title>
       <link>https://k-on.me/post/redis-sourcecode-object/</link>

@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 源码阅读笔记，本文主要讲述 Redis 代码组织结构。">
 <meta itemprop="datePublished" content="2020-09-21T11:03:57+08:00" />
 <meta itemprop="dateModified" content="2020-09-21T11:03:57+08:00" />
-<meta itemprop="wordCount" content="1050">
+<meta itemprop="wordCount" content="1061">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 1050 words </span>
+        <span class="more-meta"> 1061 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -433,7 +433,7 @@
 <td></td>
 </tr>
 <tr>
-<td style="text-align:left"></td>
+<td style="text-align:left">Y</td>
 <td style="text-align:left"><code>db.c</code></td>
 <td style="text-align:left">数据库实现</td>
 </tr>
@@ -458,14 +458,14 @@
 <td style="text-align:left">二进制的大端、小端转换函数</td>
 </tr>
 <tr>
-<td style="text-align:left"></td>
+<td style="text-align:left">Y</td>
 <td style="text-align:left"><code>evict.c</code></td>
-<td style="text-align:left">maxmemory handling and LRU eviction.</td>
+<td style="text-align:left">Maxmemory directive handling (LRU eviction and other policies).</td>
 </tr>
 <tr>
-<td style="text-align:left"></td>
+<td style="text-align:left">Y</td>
 <td style="text-align:left"><code>expire.c</code></td>
-<td style="text-align:left">Handling of expired keys</td>
+<td style="text-align:left">Implementation of EXPIRE (keys with fixed time to live).</td>
 </tr>
 <tr>
 <td style="text-align:left"></td>
