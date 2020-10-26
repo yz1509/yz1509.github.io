@@ -2312,7 +2312,7 @@ $$&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;length&lt;/code&gt;: &lt;code&gt;intset&lt;/code&gt; 中的整数个数&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;在 &lt;code&gt;contents&lt;/code&gt; 存储的整数是有序的，因此可存储长度以用于二分查找&lt;/li&gt;
-&lt;li&gt;为维护有序性以及采用正确的编码方式，每次插入删除会有内存重分配和内存拷贝过程，因此 &lt;code&gt;intset&lt;/code&gt; 的长度不宜过长，其上限可在 &lt;code&gt;redis.conf&lt;/code&gt; 中通过设置 &lt;code&gt;set-max-intset-entries&lt;/code&gt; 进行配置，当整数集合中的元素个数超过此长度时，集合的底层实现会转为使用 &lt;code&gt;dict&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;为维护有序性以及采用正确的编码方式，每次插入删除会有内存重分配和内存拷贝过程，因此 &lt;code&gt;intset&lt;/code&gt; 的长度不宜过长，其上限可在 &lt;code&gt;redis.conf&lt;/code&gt; 中通过设置 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L1570&#34;&gt;set-max-intset-entries&lt;/a&gt; 进行配置，当整数集合中的元素个数超过此长度时，集合的底层实现会转为使用 &lt;code&gt;dict&lt;/code&gt;。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
@@ -6099,7 +6099,7 @@ s-hdrlen          s-1       s
 &lt;td style=&#34;text-align:left&#34;&gt;Redis 的异步网络框架，内容主要为对 socket 库的包装&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Y&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;aof.c&lt;/code&gt;&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;AOF 功能的实现&lt;/td&gt;
 &lt;/tr&gt;
@@ -6319,7 +6319,7 @@ s-hdrlen          s-1       s
 &lt;td style=&#34;text-align:left&#34;&gt;A radix tree implementation&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Y&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;rdb.c&lt;/code&gt;, &lt;code&gt;rdb.h&lt;/code&gt;&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;RDB 持久化功能的实现&lt;/td&gt;
 &lt;/tr&gt;

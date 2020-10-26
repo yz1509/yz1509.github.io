@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 整型集合相关源码阅读笔记，源码文件 intset.h &amp; intset.c。">
 <meta itemprop="datePublished" content="2020-09-28T21:06:04+08:00" />
 <meta itemprop="dateModified" content="2020-09-28T21:06:04+08:00" />
-<meta itemprop="wordCount" content="375">
+<meta itemprop="wordCount" content="379">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 375 words </span>
+        <span class="more-meta"> 379 words </span>
           <span class="more-meta"> 1 min read </span>
 
         
@@ -371,7 +371,7 @@
 <p><code>length</code>: <code>intset</code> 中的整数个数</p>
 <ul>
 <li>在 <code>contents</code> 存储的整数是有序的，因此可存储长度以用于二分查找</li>
-<li>为维护有序性以及采用正确的编码方式，每次插入删除会有内存重分配和内存拷贝过程，因此 <code>intset</code> 的长度不宜过长，其上限可在 <code>redis.conf</code> 中通过设置 <code>set-max-intset-entries</code> 进行配置，当整数集合中的元素个数超过此长度时，集合的底层实现会转为使用 <code>dict</code></li>
+<li>为维护有序性以及采用正确的编码方式，每次插入删除会有内存重分配和内存拷贝过程，因此 <code>intset</code> 的长度不宜过长，其上限可在 <code>redis.conf</code> 中通过设置 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L1570">set-max-intset-entries</a> 进行配置，当整数集合中的元素个数超过此长度时，集合的底层实现会转为使用 <code>dict</code>。</li>
 </ul>
 </li>
 </ul>
