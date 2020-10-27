@@ -6,7 +6,16 @@
     <description>Recent content in Redis on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 13 Oct 2020 17:11:09 +0800</lastBuildDate><atom:link href="https://k-on.me/tags/redis/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 20 Oct 2020 20:43:16 +0800</lastBuildDate><atom:link href="https://k-on.me/tags/redis/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Redis 源码阅读 --- 持久化</title>
+      <link>https://k-on.me/post/redis-sourcecode-persistence/</link>
+      <pubDate>Tue, 20 Oct 2020 20:43:16 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/redis-sourcecode-persistence/</guid>
+      <description>&lt;p&gt;Redis 持久化相关源码阅读笔记，源码文件 &lt;code&gt;rdb.h&lt;/code&gt; &amp;amp; &lt;code&gt;rdb.c&lt;/code&gt; &amp;amp; &lt;code&gt;aof.c&lt;/code&gt;。&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>Redis 源码阅读 --- Database</title>
       <link>https://k-on.me/post/redis-sourcecode-db/</link>

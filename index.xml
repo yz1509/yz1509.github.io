@@ -6,10 +6,537 @@
     <description>Recent content on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 13 Oct 2020 17:11:09 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 20 Oct 2020 20:43:16 +0800</lastBuildDate>
     
         <atom:link href="https://k-on.me/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Redis 源码阅读 --- 持久化</title>
+      <link>https://k-on.me/post/redis-sourcecode-persistence/</link>
+      <pubDate>Tue, 20 Oct 2020 20:43:16 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/redis-sourcecode-persistence/</guid>
+      
+        <description>&lt;p&gt;Redis 持久化相关源码阅读笔记，源码文件 &lt;code&gt;rdb.h&lt;/code&gt; &amp;amp; &lt;code&gt;rdb.c&lt;/code&gt; &amp;amp; &lt;code&gt;aof.c&lt;/code&gt;。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Redis 提供两种持久化方式供选择：RDB 和 AOF，其详细介绍可阅读 &lt;a href=&#34;https://redis.io/topics/persistence&#34;&gt;Redis Persistence&lt;/a&gt;。&lt;/p&gt;
+&lt;h2 id=&#34;rdb&#34;&gt;RDB&lt;/h2&gt;
+&lt;p&gt;RDB 为数据集在某一时间点的 snapshot，可通过 &lt;a href=&#34;https://redis.io/commands/bgsave&#34;&gt;BGSAVE&lt;/a&gt; 或 &lt;a href=&#34;https://redis.io/commands/save&#34;&gt;SAVE&lt;/a&gt; 命令主动触发，也同通过配置 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L287&#34;&gt;save&lt;/a&gt; 相关参数&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L1985&#34;&gt;被动触发&lt;/a&gt;达到备份数据的目的。除此之外，Redis 的&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/replication.c#L638&#34;&gt;主从全量同步&lt;/a&gt;时也会生成 rdb 文件以供同步使用。&lt;/p&gt;
+&lt;h3 id=&#34;rdb-编码格式&#34;&gt;RDB 编码格式&lt;/h3&gt;
+&lt;p&gt;在 RDB 文件中，每种数据类型都会按照 &lt;code&gt;&amp;lt;type&amp;gt; &amp;lt;len&amp;gt; &amp;lt;data&amp;gt;&lt;/code&gt; 的顺序编码，当 &lt;code&gt;type&lt;/code&gt; 为某些类型时，会省略 &lt;code&gt;data&lt;/code&gt; 字段。&lt;code&gt;type&lt;/code&gt; 字段长度固定为 1 byte (0-255)，值得注意的是，其不仅涵盖不同的数据对象类型，还包含多种 RDB opcodes。这些 RDB opcodes 类型用于在编码(解码)时存储(加载)除了数据对象内容外的额外信息，以备份(恢复)数据库的完整状态。&lt;/p&gt;
+&lt;h4 id=&#34;object-types&#34;&gt;Object types&lt;/h4&gt;
+&lt;p&gt;从 &lt;code&gt;rdbSaveObjectType&lt;/code&gt; 函数中我们可以知道不同的数据对象类型与 RDB type 的对应关系如下表所示：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;robj-&amp;gt;type&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;robj-&amp;gt;encoding&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;RDB type&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;OBJ_STRING&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;All&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_STRING&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;OBJ_LIST&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;OBJ_ENCODING_QUICKLIST&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_LIST_QUICKLIST&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;OBJ_SET&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;OBJ_ENCODING_INTSET&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_SET_INTSET&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;OBJ_ENCODING_HT&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_SET&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;OBJ_ZSET&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;OBJ_ENCODING_ZIPLIST&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_ZSET_ZIPLIST&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;OBJ_ENCODING_SKIPLIST&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_ZSET_2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;OBJ_HASH&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;OBJ_ENCODING_ZIPLIST&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_HASH_ZIPLIST&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;OBJ_ENCODING_HT&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_HASH&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;OBJ_STREAM&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;All&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_STREAM_LISTPACKS&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;OBJ_MODULE&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;All&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_MODULE_2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;code&gt;RDB_TYPE_ZSET&lt;/code&gt; 和 &lt;code&gt;RDB_TYPE_MODULE&lt;/code&gt; 目前在编码时已不再使用，仅供解码时使用，以便能兼容之前版本的 RDB。容易看出高版本的 Redis 可以解码低版本的 RDB 文件，而低版本的 Redis 不可解码高版本的 RDB 文件。&lt;/p&gt;
+&lt;p&gt;从 &lt;code&gt;rdbSaveKeyValuePair&lt;/code&gt; 函数中我们可以看到，在存储数据对象内容时会按照 &lt;code&gt;&amp;lt;RDB type&amp;gt; &amp;lt;key&amp;gt; &amp;lt;value&amp;gt;&lt;/code&gt; 的顺序排布，其中 &lt;code&gt;key&lt;/code&gt; 和字符串对象值的存储格式一致，均调用 &lt;code&gt;rdbSaveStringObject&lt;/code&gt; 进行存储。&lt;/p&gt;
+&lt;p&gt;从 &lt;code&gt;rdbSaveObject&lt;/code&gt; 中我们可以发现 &lt;code&gt;value&lt;/code&gt; 的存储格式与数据对象的类型(RDB type)有关，其对应关系如下所示：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;RDB type&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;RDB content (不考虑压缩)&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_STRING&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;&amp;lt;len&amp;gt; [data]&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_LIST_QUICKLIST&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;&amp;lt;ql-&amp;gt;len&amp;gt; &amp;lt;zlbytes&amp;gt; [zdata] ......&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_SET_INTSET&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;&amp;lt;intsetBytes&amp;gt; [intset.data]&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_SET&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;&amp;lt;dictSize&amp;gt; &amp;lt;ele.len&amp;gt; [ele.data] ......&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_ZSET_ZIPLIST&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;&amp;lt;zlbytes&amp;gt; [zdata]&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_ZSET&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;兼容旧版 RDB，已弃用&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_ZSET_2&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;&amp;lt;zsl-&amp;gt;length&amp;gt; &amp;lt;member.len&amp;gt; [member.data] &amp;lt;score&amp;gt; ......&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_HASH_ZIPLIST&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;&amp;lt;zlbytes&amp;gt; [zdata]&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_HASH&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;&amp;lt;dictSize&amp;gt; &amp;lt;field.len&amp;gt; [field.data] &amp;lt;value.len&amp;gt; [value.data] ......&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_STREAM_LISTPACKS&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;TODO&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_MODULE&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;兼容旧版 RDB，已弃用&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_TYPE_MODULE_2&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;TODO&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;code&gt;&amp;lt;&amp;gt;&lt;/code&gt; 表示该项必定存在，&lt;code&gt;[]&lt;/code&gt; 表示该项可能不存在&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;strong&gt;RDB_TYPE_STRING&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;n&#34;&gt;ssize_t&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;rdbSaveStringObject&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rio&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;rdb&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;obj&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;字符串对象调用 &lt;code&gt;rdbSaveStringObject&lt;/code&gt; 进行存储，其编码会在以下情况下省略 &lt;code&gt;data&lt;/code&gt; 字段：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;robj-&amp;gt;encoding&lt;/code&gt; 为 &lt;code&gt;OBJ_ENCODING_INT&lt;/code&gt; 且数值范围为 $[2^{-31}, 2^{31}-1]$ (&lt;code&gt;int32_t&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;字符串长度小于 11 且可转化为 &lt;code&gt;int32_t&lt;/code&gt; 范围内的整型&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;通过阅读 &lt;code&gt;rdbSaveRawString&lt;/code&gt; 可以发现，当使用 &lt;code&gt;&amp;lt;len&amp;gt; &amp;lt;data&amp;gt;&lt;/code&gt; 存储字符串对象时，若 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L330&#34;&gt;rdbcompression&lt;/a&gt; 配置为 yes，且字符串长度大于 20，则会尝试对字符串进行 LZF 压缩，若压缩后最小可节省 4 byte，则调用 &lt;code&gt;rdbSaveLzfBlob&lt;/code&gt; 存储压缩后的内容：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;+----------+--------------+--------------+---------------+
+| 11000011 | compress_len | original_len | compress_data |
++----------+--------------+--------------+---------------+
+   1 byte
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;strong&gt;OBJ_ENCODING_QUICKLIST&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;首先存储 &lt;code&gt;ql-&amp;gt;len&lt;/code&gt;，即 quicklist 中节点的个数；然后遍历 quicklist，如果当前 &lt;code&gt;quicklistNode&lt;/code&gt; 已被压缩，则调用 &lt;code&gt;rdbSaveLzfBlob&lt;/code&gt; 存储压缩后的 &lt;code&gt;ziplist&lt;/code&gt;，否则调用 &lt;code&gt;rdbSaveRawString&lt;/code&gt; 存储 &lt;code&gt;ziplist&lt;/code&gt;。可以看出 &lt;code&gt;ziplist&lt;/code&gt; 被当成字符串直接存储，便于存取。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;RDB_TYPE_SET&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;当集合类型使用 &lt;code&gt;dict&lt;/code&gt; 作为底层实现时，其对应的 RDB type 为 &lt;code&gt;RDB_TYPE_SET&lt;/code&gt;。在 &lt;code&gt;RDB_TYPE_SET&lt;/code&gt; 中，首先存储集合大小 &lt;code&gt;dictSize&lt;/code&gt;；随后遍历 &lt;code&gt;dict&lt;/code&gt;，调用 &lt;code&gt;rdbSaveRawString&lt;/code&gt; 存储 &lt;code&gt;dictEntry-&amp;gt;key&lt;/code&gt; (集合类型中 &lt;code&gt;dictEntry-&amp;gt;val&lt;/code&gt; 为空)。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;RDB_TYPE_SET_INTSET&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;当集合类型使用 &lt;code&gt;intset&lt;/code&gt; 作为底层实现时，其对应的 RDB type 为 &lt;code&gt;RDB_TYPE_SET_INTSET&lt;/code&gt;，调用 &lt;code&gt;rdbSaveRawString&lt;/code&gt; 存储整个 &lt;code&gt;intset&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;RDB_TYPE_ZSET_ZIPLIST&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;当 ZSET 使用 &lt;code&gt;ziplist&lt;/code&gt; 作为底层实现时，其对应的 RDB type 为 &lt;code&gt;RDB_TYPE_ZSET_ZIPLIST&lt;/code&gt;，调用 &lt;code&gt;rdbSaveRawString&lt;/code&gt; 存储整个 &lt;code&gt;ziplist&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;RDB_TYPE_ZSET_2&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;当 ZSET 使用 skiplist 作为底层实现时，其对应的 RDB type 为 &lt;code&gt;RDB_TYPE_ZSET_2&lt;/code&gt;。首先存储 skiplist 中的节点个数 &lt;code&gt;zskiplist-&amp;gt;length&lt;/code&gt;，随后逆序遍历 skiplist，调用 &lt;code&gt;rdbSaveRawString&lt;/code&gt; 存储 &lt;code&gt;zskiplistNode-&amp;gt;ele&lt;/code&gt;；调用 &lt;code&gt;rdbSaveBinaryDoubleValue&lt;/code&gt; 存储 &lt;code&gt;zskiplistNode-&amp;gt;score&lt;/code&gt;。逆序遍历的目的是为了在 RDB load 阶段便于 skiplist 的插入操作，由于每个将要插入的节点都小于当前最小的节点，因此只需往头部插入即可。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;RDB_TYPE_HASH_ZIPLIST&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;当 Hash 使用 &lt;code&gt;ziplist&lt;/code&gt; 作为底层实现时，其对应的 RDB type 为 &lt;code&gt;RDB_TYPE_HASH_ZIPLIST&lt;/code&gt;，调用 &lt;code&gt;rdbSaveRawString&lt;/code&gt; 存储整个 &lt;code&gt;ziplist&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;RDB_TYPE_HASH&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;当 Hash 使用 &lt;code&gt;dict&lt;/code&gt; 作为底层实现时，其对应的 RDB type 为 &lt;code&gt;RDB_TYPE_HASH&lt;/code&gt;。首先存储哈希表大小 &lt;code&gt;dictSize&lt;/code&gt;；随后遍历 &lt;code&gt;dict&lt;/code&gt;，调用两次 &lt;code&gt;rdbSaveRawString&lt;/code&gt; 按序存储 &lt;code&gt;dictEntry-&amp;gt;key&lt;/code&gt; 和 &lt;code&gt;dictEntry-&amp;gt;v.val&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;RDB_TYPE_STREAM_LISTPACKS&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;TODO&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;RDB_TYPE_MODULE_2&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;TODO&lt;/p&gt;
+&lt;h4 id=&#34;rdb-opcodes&#34;&gt;RDB opcodes&lt;/h4&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;RDB type&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;Meaning&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;RDB content&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_OPCODE_MODULE_AUX&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Module auxiliary data&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;TODO&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_OPCODE_IDLE&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;LRU idle time&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;len: &lt;code&gt;&amp;lt;idletime&amp;gt;&lt;/code&gt; (seconds)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_OPCODE_FREQ&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;LFU frequency&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Raw: &lt;code&gt;&amp;lt;LFUCounter&amp;gt;&lt;/code&gt; (8-bit)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_OPCODE_AUX&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB aux field&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Str: &lt;code&gt;&amp;lt;key.len&amp;gt; [key.data] &amp;lt;val.len&amp;gt; [val.data]&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_OPCODE_RESIZEDB&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Hash table resize hint&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;len: &lt;code&gt;&amp;lt;db_size&amp;gt; &amp;lt;expires_size&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_OPCODE_EXPIRETIME_MS&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Expire time in milliseconds&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Raw: &lt;code&gt;&amp;lt;expiretime&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_OPCODE_EXPIRETIME&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Old expire time in seconds&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;兼容旧版 RDB，已弃用&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_OPCODE_SELECTDB&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;DB number of the following keys&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;len: &lt;code&gt;&amp;lt;current_db_id&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;RDB_OPCODE_EOF&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;End of the RDB file&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Raw: &lt;code&gt;&amp;lt;cksum&amp;gt;&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;ul&gt;
+&lt;li&gt;省略 redis module sub opcodes&lt;/li&gt;
+&lt;li&gt;len 表示该字段内容与 &lt;code&gt;len&lt;/code&gt; 字段编码规则相同，将在下节讲述&lt;/li&gt;
+&lt;li&gt;Raw 表示该字段内容定长，直接写入存储&lt;/li&gt;
+&lt;li&gt;Str 表示该字段调用 &lt;code&gt;rdbSaveRawString&lt;/code&gt; 写入&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;length-编码&#34;&gt;length 编码&lt;/h3&gt;
+&lt;p&gt;Redis 为了节省存储空间，不仅会对 &lt;code&gt;data&lt;/code&gt; 字段进行压缩，而且也会使用不定长空间存储 &lt;code&gt;len&lt;/code&gt; 字段。通过读取 &lt;code&gt;len&lt;/code&gt; 字段首个字节可知道此时的编码格式。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;长度信息&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;通过阅读 &lt;code&gt;rdbSaveLen&lt;/code&gt; 可以发现，在使用 &lt;code&gt;len&lt;/code&gt; 字段存储长度信息时，其原生值为整型，根据整型值的大小可用以下四种编码方式之一进行存储：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;00|XXXXXX&lt;/code&gt;: the len is the 6 bits of this byte&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;01|XXXXXX XXXXXXXX&lt;/code&gt;: the len is 14 byes, 6 bits + 8 bits of next byte&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;10|000000 &amp;lt;32 bit integer&amp;gt;&lt;/code&gt;: A full 32 bit len in net byte order will follow&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;10|000001 &amp;lt;64 bit integer&amp;gt;&lt;/code&gt;:  A full 64 bit len in net byte order will follow&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;字符串对象编码&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;正如之前所说，在存储字符串对象时，一般会使用 &lt;code&gt;len&lt;/code&gt; 字段存储字符串长度，&lt;code&gt;data&lt;/code&gt; 字段存储字符串内容，但在字符串对象可用整型表示时或可压缩节省空间时，&lt;code&gt;len&lt;/code&gt; 字段所存储的信息便不是字符串长度信息，通过阅读 &lt;code&gt;rdbEncodeInteger&lt;/code&gt;，可以发现根据 &lt;code&gt;len&lt;/code&gt; 字段首字节我们可以知道字符串对象此时的编码方式：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;11|000000 &amp;lt;8 bit integer&amp;gt;&lt;/code&gt;: 字符串对象可用 8 bit 整型表示&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;11|000001 &amp;lt;16 bit integer&amp;gt;&lt;/code&gt;: 字符串对象可用 16 bit 整型表示&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;11|000010 &amp;lt;32 bit integer&amp;gt;&lt;/code&gt;: 字符串对象可用 32 bit 整型表示&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;11|000011 &amp;lt;compress_len&amp;gt; &amp;lt;original_len&amp;gt; &amp;lt;compress_data&amp;gt;&lt;/code&gt;: 字符串对象可压缩&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;rdb-文件内容排布&#34;&gt;RDB 文件内容排布&lt;/h3&gt;
+&lt;p&gt;通过阅读 &lt;code&gt;rdbSaveRio&lt;/code&gt;，我们可以知道 RDB 文件内容的排布方式：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;RDB 版本号：格式为 &lt;code&gt;REDIS0009&lt;/code&gt;，其中 $9$ 为Redis-6.0.8 的 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/rdb.h#L41&#34;&gt;RDB_VERSION&lt;/a&gt;，直接写入二进制串无编码&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Aux Fields: 编码格式 &lt;code&gt;&amp;lt;RDB_OPCODE_AUX&amp;gt; &amp;lt;key.len&amp;gt; [key.data] &amp;lt;val.len&amp;gt; [val.data]&lt;/code&gt;，key-val 对内容如下，其中：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;若传入的 &lt;code&gt;rdbSaveInfo&lt;/code&gt;(rsi) 为空，则无须存储 &lt;code&gt;repl-stream-db&lt;/code&gt;、&lt;code&gt;repl-id&lt;/code&gt; 和 &lt;code&gt;repl-offset&lt;/code&gt; 信息。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;aof-preamble&lt;/code&gt; 为 1 时，表示该 rdb 文件是 AOF 重写时生成的，可通过配置项 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L1195&#34;&gt;aof-use-rdb-preamble&lt;/a&gt; 修改该值。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;key&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;value&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;meaning&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;redis-ver&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;REDIS_VERSION&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;redis 当前版本&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;redis-bits&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;sizeof(void*)&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;处理器运算位数&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;ctime&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;time(NULL)&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;创建时间&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;used-mem&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;zmalloc_used_memory()&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;实际分配内存大小&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;repl-stream-db&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;rsi-&amp;gt;repl_stream_db&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;DB to select in server.master client&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;repl-id&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;server.replid&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;My current replication ID&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;repl-offset&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;server.master_repl_offset&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;My current replication offset&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;aof-preamble&lt;/code&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;0 or 1&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Load/save the RDB as AOF preamble?&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Module-specific aux values: Iterate over modules, and trigger rdb aux saving for the ones modules types who asked for it. (when is &lt;code&gt;REDISMODULE_AUX_BEFORE_RDB&lt;/code&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;遍历及存储每个 &lt;code&gt;redisDb&lt;/code&gt; 的具体信息：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;db 编号：&lt;code&gt;&amp;lt;RDB_OPCODE_SELECTDB&amp;gt; &amp;lt;current_db_id&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;db 大小：&lt;code&gt;RDB_OPCODE_RESIZEDB &amp;lt;db_size&amp;gt; &amp;lt;expires_size&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;遍历 &lt;code&gt;redisDb-&amp;gt;dict&lt;/code&gt;，存储数据对象相关信息：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;如有过期时间，则存储 &lt;code&gt;&amp;lt;RDB_OPCODE_EXPIRETIME_MS&amp;gt; &amp;lt;expiretime&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;按照内存管理策略存储 LRU/LFU 信息:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;LRU: &lt;code&gt;&amp;lt;RDB_OPCODE_IDLE&amp;gt; &amp;lt;idletime&amp;gt;&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;LFU: &lt;code&gt;&amp;lt;RDB_OPCODE_FREQ&amp;gt; &amp;lt;LFUCounter&amp;gt;&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;数据对象内容：&lt;code&gt;&amp;lt;type&amp;gt; &amp;lt;key&amp;gt; &amp;lt;value&amp;gt;&lt;/code&gt;，详细内容可参照 &lt;a href=&#34;https://k-on.me/post/redis-sourcecode-persistence/#object-types&#34;&gt;Object types&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Lua scripts: 若传入的 &lt;code&gt;rdbSaveInfo&lt;/code&gt; 不为空，则遍历及存储此时缓存的 lua 脚本信息，每个 lua 脚本的编码格式为 &lt;code&gt;&amp;lt;RDB_OPCODE_AUX&amp;gt; &amp;lt;lua&amp;gt; &amp;lt;lua-script&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Module-specific aux values: Iterate over modules, and trigger rdb aux saving for the ones modules types who asked for it. (when is &lt;code&gt;REDISMODULE_AUX_AFTER_RDB&lt;/code&gt;)&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;EOF opcode: &lt;code&gt;&amp;lt;RDB_OPCODE_EOF&amp;gt; &amp;lt;cksum&amp;gt;&lt;/code&gt;，若未启用计算校验和，则 &lt;code&gt;cksum&lt;/code&gt; 值为 0&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;rdb-相关命令&#34;&gt;RDB 相关命令&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;SAVE&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;TODO&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;BGSAVE&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;TODO&lt;/p&gt;
+&lt;h2 id=&#34;aof&#34;&gt;AOF&lt;/h2&gt;
+&lt;p&gt;Redis 除了使用数据集的 snapshot (RDB) 提供持久化保证之外，还会使用 Append Only Flie(AOF) 记录写请求。&lt;/p&gt;
+&lt;h3 id=&#34;写入-aof-缓冲区&#34;&gt;写入 AOF 缓冲区&lt;/h3&gt;
+&lt;p&gt;在 Redis 调用 &lt;code&gt;propagate&lt;/code&gt; 函数将请求同步至 AOF 和 replications 时，会调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L3212&#34;&gt;feedAppendOnlyFile&lt;/a&gt; 函数将请求写入 AOF 缓冲区，该函数的接口如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;feedAppendOnlyFile&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;redisCommand&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cmd&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dictid&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;robj&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;**&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;argv&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;argc&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;其执行流程大致为：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;如传入的 &lt;code&gt;dictid&lt;/code&gt; 和上次记录请求时的 db 不同，则写入 &lt;code&gt;SELECT dictid&lt;/code&gt; 请求以切换 db&lt;/li&gt;
+&lt;li&gt;命令转换，将过期相对时间改为绝对时间：
+&lt;ul&gt;
+&lt;li&gt;Translate &lt;code&gt;EXPIRE&lt;/code&gt;/&lt;code&gt;PEXPIRE&lt;/code&gt;/&lt;code&gt;EXPIREAT&lt;/code&gt; into &lt;code&gt;PEXPIREAT&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Translate &lt;code&gt;SETEX&lt;/code&gt;/&lt;code&gt;PSETEX&lt;/code&gt; to &lt;code&gt;SET&lt;/code&gt; and &lt;code&gt;PEXPIREAT&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Translate &lt;code&gt;SET [EX seconds][PX milliseconds]&lt;/code&gt; to &lt;code&gt;SET&lt;/code&gt; and &lt;code&gt;PEXPIREAT&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;将内容追加至 &lt;code&gt;server.aof_buf&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;如此时有子进程正在执行 AOF rewrite，则会将内容追加之 AOF rewrite buff &lt;code&gt;server.aof_rewrite_buf_blocks&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;写入-aof-文件&#34;&gt;写入 AOF 文件&lt;/h3&gt;
+&lt;p&gt;AOF 缓冲区的数据会在以下几种情况下调用 &lt;code&gt;flushAppendOnlyFile&lt;/code&gt; 写入 AOF 文件，同时可选择是否启用强制模式：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;使用 &lt;code&gt;CONFIG&lt;/code&gt; 命令&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/aof.c#L238&#34;&gt;关闭 AOF 功能时&lt;/a&gt;，模式为&lt;strong&gt;强制模式&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;在服务器定期执行 &lt;code&gt;serverCron&lt;/code&gt; 时，发现&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2026&#34;&gt;此前有被推迟执行的写入 AOF 文件操作时&lt;/a&gt;，模式为非强制模式，执行频率为 &lt;code&gt;server.hz&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;在服务器定期执行 &lt;code&gt;serverCron&lt;/code&gt; 时，发现&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2034&#34;&gt;此前写入 AOF 文件有错误发生时&lt;/a&gt;，模式为非强制模式，执行频率为 $1$&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L3826&#34;&gt;关闭服务器&lt;/a&gt;之前，模式为&lt;strong&gt;强制模式&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;因为要求在返回客户端响应之前将内容写入 AOF 文件，因此我们需在进入 event loop 之前的 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2187&#34;&gt;beforeSleep&lt;/a&gt; 函数中调用 &lt;code&gt;flushAppendOnlyFile&lt;/code&gt; 写入 AOF 文件，模式为非强制模式。 (&lt;strong&gt;主要情形&lt;/strong&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;函数 &lt;code&gt;flushAppendOnlyFile&lt;/code&gt; 的接口如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;flushAppendOnlyFile&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;force&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;阅读 &lt;a href=&#34;http://oldblog.antirez.com/post/redis-persistence-demystified.html&#34;&gt;Redis persistence demystified&lt;/a&gt; 后我们知道，简单来说：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;当调用 &lt;code&gt;write()&lt;/code&gt; 后，此时数据在 kernel&amp;rsquo;s buffer&lt;/li&gt;
+&lt;li&gt;继续调用 &lt;code&gt;fsync()&lt;/code&gt; 后，数据在 disk cache (也可选择让 OS 自行控制何时 flush)&lt;/li&gt;
+&lt;li&gt;随后由  disk controller 将数据写入物理介质&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;其中 1 2 可控，而 &lt;code&gt;flushAppendOnlyFile&lt;/code&gt; 主要也可分为这两部分。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;write&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在使用强制模式时，如果此时 AOF 缓冲区非空，则一定会调用 &lt;code&gt;write()&lt;/code&gt;，即使可能阻塞 Redis，因此使用 &lt;code&gt;CONFIG&lt;/code&gt; 命令关闭 AOF 功能可能会阻塞 Redis&lt;/li&gt;
+&lt;li&gt;只有当 &lt;code&gt;fsync&lt;/code&gt; 的策略为 &lt;code&gt;everysec&lt;/code&gt; 时，非强制模式才会在下述情况下阻止调用 &lt;code&gt;write()&lt;/code&gt;:
+&lt;ul&gt;
+&lt;li&gt;当前有 background fsync 进程在运行，且此前无推迟的 &lt;code&gt;write&lt;/code&gt; 调用，记录本次推迟的 &lt;code&gt;write&lt;/code&gt; 调用时间并返回&lt;/li&gt;
+&lt;li&gt;当前有 background fsync 进程在运行，且此前推迟的 &lt;code&gt;write&lt;/code&gt; 调用在 $2s$ 内，则直接返回
+&lt;blockquote&gt;
+&lt;p&gt;若超过 2s，则不会阻止调用 &lt;code&gt;write&lt;/code&gt;，此时可能会阻塞 Redis&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;fsync&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;AOF 调用 &lt;code&gt;fsync()&lt;/code&gt; 的频率可通过配置 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L1118&#34;&gt;appendfsync&lt;/a&gt; 进行控制，可选项有三：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;no&lt;/code&gt;: don&amp;rsquo;t fsync, just let the OS flush the data when it wants. Faster.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;always&lt;/code&gt;: fsync after every write to the append only log. Slow, Safest.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;everysec&lt;/code&gt;: fsync only one time every second. Compromise.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;通过在 &lt;code&gt;write&lt;/code&gt; 阶段的介绍可知，当使用 &lt;code&gt;everysec&lt;/code&gt; 策略时，事实上可能会丢失 $2s$ 的写入，而不是 $1s$。&lt;/p&gt;
+&lt;p&gt;如果有 RDB saving 或 AOF rewriting 子进程，可能会消耗 IO 资源，导致 &lt;code&gt;fsync&lt;/code&gt; 操作耗时过长阻塞 Redis，因此为性能考虑可以通过配置 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L1140&#34;&gt;no-appendfsync-on-rewrite&lt;/a&gt; 为 &lt;code&gt;yes&lt;/code&gt; 阻止调用 &lt;code&gt;fsync&lt;/code&gt;。&lt;/p&gt;
+&lt;h3 id=&#34;aof-rewrite&#34;&gt;AOF Rewrite&lt;/h3&gt;
+&lt;p&gt;由于 AOF 文件的 Append Only 要求，会使得该文件大小单调递增，因此 Redis 提供了 AOF rewrite 的功能，使用 rewrite 生成的 AOF 文件替换旧的 AOF 文件，以减小 AOF 文件所占用的磁盘空间大小。既可以主动发起 &lt;a href=&#34;https://redis.io/commands/bgrewriteaof&#34;&gt;BGREWRITEAOF&lt;/a&gt; 请求要求进行 AOF rewrite，亦可以通过配置 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L1159&#34;&gt;auto-aof-rewrite-percentage&lt;/a&gt; 和 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L1160&#34;&gt;auto-aof-rewrite-min-size&lt;/a&gt; 调整自发进行 AOF rewrite 的条件。当当前 AOF 文件大小 &lt;code&gt;server.aof_current_size&lt;/code&gt; 大于 &lt;code&gt;auto-aof-rewrite-min-size&lt;/code&gt; 且与上次 rewrite 之后 AOF 文件大小 &lt;code&gt;server.aof_rewrite_base_size&lt;/code&gt; 相比增长率超过 &lt;code&gt;auto-aof-rewrite-percentage&lt;/code&gt; 时，Redis 会自动触发 AOF rewrite 操作 —— 调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2018&#34;&gt;rewriteAppendOnlyFileBackground&lt;/a&gt;，其接口如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* This is how rewriting of the append only file in background works:
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * 1) The user calls BGREWRITEAOF
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * 2) Redis calls this function, that forks():
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *    2a) the child rewrite the append only file in a temp file.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *    2b) the parent accumulates differences in server.aof_rewrite_buf_blocks.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * 3) When the child finished &amp;#39;2a&amp;#39; exists.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * 4) The parent will trap the exit code, if it&amp;#39;s OK, will append the
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *    data accumulated into server.aof_rewrite_buf_blocks into the temp file, and
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *    finally will rename(2) the temp file in the actual file name.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *    The the new file is reopened as the new append only file. Profit! */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;rewriteAppendOnlyFileBackground&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h4 id=&#34;aof-rewrite-buffer&#34;&gt;AOF Rewrite Buffer&lt;/h4&gt;
+&lt;p&gt;由于在 AOF rewrite 执行过程中，Redis 不会停止服务，因此需要记录这期间数据库的变化。Redis 使用双端链表 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.h#L1215&#34;&gt;aof_rewrite_buf_blocks&lt;/a&gt; 实现 AOF Rewirte buffer，每个 listNode 指向一个大小为 $10MB$ 的内存块 &lt;code&gt;aofrwblock&lt;/code&gt;：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#define AOF_RW_BUF_BLOCK_SIZE (1024*1024*10)    &lt;/span&gt;&lt;span class=&#34;cm&#34;&gt;/* 10 MB per block */&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;typedef&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;aofrwblock&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;used&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;free&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;char&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;buf&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;AOF_RW_BUF_BLOCK_SIZE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;aofrwblock&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;如果此时正在进行 AOF rewrite，则 Redis 主进程除了将写请求写入 AOF 缓冲区之外，还会通过调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/aof.c#L650&#34;&gt;aofRewriteBufferAppend&lt;/a&gt;将数据写入 AOF rewrite buffer。在 &lt;code&gt;aofRewriteBufferAppend&lt;/code&gt; 中，以 append 的形式写入数据，同时会创建 &lt;code&gt;aofChildWriteDiffData&lt;/code&gt; file event，以将 AOF rewrite buffer 中的内容从前往后遍历写入管道 &lt;code&gt;server.aof_pipe_write_data_to_child&lt;/code&gt;，以供子进程读取，写入管道成功后会释放该节点所占用的内存块。因此，AOF rewrite buffer 如同一个先进先出的队列，在 append 时(链表尾部)申请内存，在写入管道后(链表头部)释放内存。&lt;/p&gt;
+&lt;h4 id=&#34;use-rdb-preamble&#34;&gt;Use RDB preamble&lt;/h4&gt;
+&lt;p&gt;因为 RDB 文件小，加载速度快，因此在 AOF rewrite 时，可使用 RDB 保存当前数据库状态。如果配置项 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L1195&#34;&gt;aof-use-rdb-preamble&lt;/a&gt; 为 &lt;code&gt;yes&lt;/code&gt;，则会调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/aof.c#L1432&#34;&gt;rdbSaveRio&lt;/a&gt; 保存数据库状态，此时 AOF rewrite 结束之后的文件组织形式如下：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-fallback&#34; data-lang=&#34;fallback&#34;&gt;+----------+----------+
+| RDB file | AOF tail |
++----------+----------+
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;h4 id=&#34;rewrite-objects&#34;&gt;Rewrite Objects&lt;/h4&gt;
+&lt;p&gt;当不启用 &lt;code&gt;aof-use-rdb-preamble&lt;/code&gt; 时，会调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/aof.c#L1437&#34;&gt;rewriteAppendOnlyFileRio&lt;/a&gt; 函数将各个数据对象转换为请求的格式存储。&lt;/p&gt;</description>
+      
+    </item>
     
     <item>
       <title>Redis 源码阅读 --- Database</title>
@@ -13044,162 +13571,6 @@ c_i^{k-1} \cup {u_i^k(a)} &amp;amp; f = u_i^k(a)
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;</description>
-      
-    </item>
-    
-    <item>
-      <title>CRDT-notes</title>
-      <link>https://k-on.me/post/crdt-notes/</link>
-      <pubDate>Tue, 21 Apr 2020 11:02:30 +0000</pubDate>
-      
-      <guid>https://k-on.me/post/crdt-notes/</guid>
-      
-        <description>&lt;p&gt;CRDT 学习笔记。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;crdt-相关资源&#34;&gt;CRDT 相关资源&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type&#34;&gt;CRDT wiki&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/ept/crdt-website&#34;&gt;CRDT Website&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/ipfs/notes/tree/master/CRDT&#34;&gt;CRDT Research&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;https://github.com/alangibson/awesome-crdt&#34;&gt;Awesome CRDT&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;背景知识&#34;&gt;背景知识&lt;/h2&gt;
-&lt;h3 id=&#34;a-crdt-primer-part-i-defanging-order-theoryhttpjtfmummcomblog20151117crdt-primer-1-defanging-order-theory&#34;&gt;&lt;a href=&#34;http://jtfmumm.com/blog/2015/11/17/crdt-primer-1-defanging-order-theory/&#34;&gt;A CRDT Primer Part I: Defanging Order Theory&lt;/a&gt;&lt;/h3&gt;
-&lt;h4 id=&#34;order&#34;&gt;Order&lt;/h4&gt;
-&lt;p&gt;&lt;strong&gt;Definition&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;An &lt;strong&gt;Order&lt;/strong&gt; set is a binary relation $\le$ on a set $\mathcal{S}$, written $(\mathcal{S},\le)$.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Core concepts&lt;/strong&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;If we can say that $a \le b$ or $b \le a$, then we know that $a$ is &lt;strong&gt;comparable&lt;/strong&gt; to $b$.&lt;/li&gt;
-&lt;li&gt;In order theory, if $a$ and $b$ are &lt;strong&gt;incomparable&lt;/strong&gt;, we write $a \parallel b$.&lt;/li&gt;
-&lt;li&gt;A &lt;strong&gt;join&lt;/strong&gt; between two elements, written $a \vee b$.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;Type of order&lt;/strong&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;An order is &lt;strong&gt;total&lt;/strong&gt; if for any $a$ and $b$ in the set, either $a \le b$ or $b \le a$.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;例: 集合是自然数，二元关系为小于等于&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;A &lt;a href=&#34;https://en.wikipedia.org/wiki/Partially_ordered_set#Formal_definition&#34;&gt;partial order&lt;/a&gt; is weaker than a total. It does not require that every pair $a$ and $b$ in a set can be compared.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;例: 集合是地理位置，二元关系为&amp;quot;位于&amp;quot;&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h4 id=&#34;join&#34;&gt;Join&lt;/h4&gt;
-&lt;p&gt;&lt;strong&gt;Upper bound&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;For a set $\mathcal{S}$, an order $(\mathcal{S},\le)$, and $\mathcal{A} \subseteq \mathcal{S}$ is an aibitrary subset, then an element $u \in \mathcal{S}$ is said to be an &lt;strong&gt;upper bound&lt;/strong&gt; of $\mathcal{A}$ if $a \le u, \forall a \in \mathcal{A}$.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Definition&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;For a set $\mathcal{S}$, an order $(\mathcal{S},\le)$, and two elements $a,b \in \mathcal{S}$, then &lt;strong&gt;join&lt;/strong&gt; of $a$ and $b$ (written $a \vee b$) is a least upper bound of ${a, b}$ according to our order $(\mathcal{S},\le)$.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;In total order, a join of two elelments is always equals to one of those two elements. However, if we&amp;rsquo;re talking about partial orders, this is not guaranteed.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;&lt;strong&gt;Properties&lt;/strong&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;Commutativity: $a \vee b = b \vee a$&lt;/li&gt;
-&lt;li&gt;Associativity: $(a \vee b) \vee c = a \vee (b \vee c)$&lt;/li&gt;
-&lt;li&gt;Idempotence: $a \vee a = a$&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;&lt;strong&gt;Join-semilattice&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;A &lt;a href=&#34;https://en.wikipedia.org/wiki/Semilattice&#34;&gt;join-semilattice&lt;/a&gt;  is a order set $(\mathcal{S},\le)$ that has a join(a least upper bound) for any nonempty finite subset.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Dually, a meet-semilattice (or lower semilattice) is a ordered set which has a meet (or greatest lower bound) for any nonempty finite subset.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h3 id=&#34;扩展阅读&#34;&gt;扩展阅读&lt;/h3&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Order_theory&#34;&gt;Order theory&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://www.tac.mta.ca/tac/reprints/articles/22/tr22abs.html&#34;&gt;Category Theory for Computing Science&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;crdt-相关论文&#34;&gt;CRDT 相关论文&lt;/h2&gt;
-&lt;h3 id=&#34;conflict-free-replicated-data-typeshttpshalinriafrinria-00609399v2document&#34;&gt;&lt;a href=&#34;https://hal.inria.fr/inria-00609399v2/document&#34;&gt;Conflict-free Replicated Data Types&lt;/a&gt;&lt;/h3&gt;
-&lt;p&gt;在这篇文章中，作者主要提出了两种本质上等价的 CRDT：CvRDT 和 CmRDT。为了保证强最终一致性，作者表示在 CvRDT 中需定义合适的操作，使得状态集合在给定的偏序关系下构成 Join-semilattice；而在 CmRDT 中，操作需满足要么可比较，不可比的便可交换的条件，除此之外，还需要消息传输提供 &lt;code&gt;exactly once&lt;/code&gt; 的保证。详细内容&lt;a href=&#34;http://k-on.me/posts/fa8423b1/#more&#34;&gt;请点击&lt;/a&gt;。&lt;/p&gt;
-&lt;h3 id=&#34;a-comprehensive-study-of-convergent-and-commutative-replicated-data-typeshttpshalinriafrinria-00555588document&#34;&gt;&lt;a href=&#34;https://hal.inria.fr/inria-00555588/document&#34;&gt;A comprehensive study of Convergent and Commutative Replicated Data Types&lt;/a&gt;&lt;/h3&gt;
-&lt;p&gt;理论内容和上一篇相比几乎相同，新增了一些 CRDT 数据结构示例、垃圾回收和简单应用的内容。&lt;/p&gt;
-&lt;h3 id=&#34;an-optimized-conflict-free-replicated-sethttpsarxivorgpdf12103368pdf&#34;&gt;&lt;a href=&#34;https://arxiv.org/pdf/1210.3368.pdf&#34;&gt;An Optimized Conflict-free Replicated Set&lt;/a&gt;&lt;/h3&gt;
-&lt;p&gt;利用 Causal order 进行空间上的优化，和 $\delta$-CRDT 中的 &lt;code&gt;Optimized Add-Wins OR-Set&lt;/code&gt; 类似。&lt;/p&gt;
-&lt;h3 id=&#34;efficient-state-based-crdts-by-delta-mutationhttpsarxivorgpdf14102803pdf&#34;&gt;&lt;a href=&#34;https://arxiv.org/pdf/1410.2803.pdf&#34;&gt;Efficient State-based CRDTs by Delta-Mutation&lt;/a&gt;&lt;/h3&gt;
-&lt;p&gt;本文正式定义了 $\delta$-CRDT， 其通过传递状态增量而不是传递整个状态，有效地改善了 &lt;code&gt;CvRDT&lt;/code&gt; 通信消耗过大的不足，最后给出了 &lt;code&gt;PN-Counter&lt;/code&gt;、&lt;code&gt;OR-Set&lt;/code&gt; 和 &lt;code&gt;Multi-value Register&lt;/code&gt; 基于 $\delta$-CRDT 的实现。详细内容&lt;a href=&#34;http://k-on.me/posts/82db3c39/#more&#34;&gt;请点击&lt;/a&gt;。&lt;/p&gt;
-&lt;h3 id=&#34;delta-state-replicated-data-typeshttpsarxivorgpdf160301529pdf&#34;&gt;&lt;a href=&#34;https://arxiv.org/pdf/1603.01529.pdf&#34;&gt;Delta state replicated data types&lt;/a&gt;&lt;/h3&gt;
-&lt;p&gt;本文在 &lt;code&gt;Efficient State-based CRDTs by Delta-Mutation&lt;/code&gt; 基础之上补充了一些数学证明，添加了更丰富的示例，包括 &lt;code&gt;PN-Counter&lt;/code&gt;、&lt;code&gt;GSet&lt;/code&gt;、&lt;code&gt;2PSet&lt;/code&gt;、&lt;code&gt;Add-Wins Last-Writer-Wins Set&lt;/code&gt;、&lt;code&gt;Lexicographic Counter&lt;/code&gt;、&lt;code&gt;Multi-Value Register&lt;/code&gt;、&lt;code&gt;Add-Wins Set&lt;/code&gt;、&lt;code&gt;Remove-Wins Set&lt;/code&gt; 和 &lt;code&gt;A Map Embedding Causal -CRDTs&lt;/code&gt;。&lt;/p&gt;
-&lt;h3 id=&#34;efficient-synchronization-of-state-based-crdtshttpsvitorenesorgpublicationenes-efficient-synchronizationenes-efficient-synchronizationpdf&#34;&gt;&lt;a href=&#34;https://vitorenes.org/publication/enes-efficient-synchronization/enes-efficient-synchronization.pdf&#34;&gt;Efficient Synchronization of State-Based CRDTs&lt;/a&gt;&lt;/h3&gt;
-&lt;p&gt;本文在 $\delta$-CRDT 的基础上，通过以下两步优化，以减小消息通信冗余带来的多余开销：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Avoiding back-propagation of $\delta$-groups&lt;/li&gt;
-&lt;li&gt;Removing reundant state in received $\delta$-groups&lt;/li&gt;
-&lt;/ul&gt;
-&lt;blockquote&gt;
-&lt;p&gt;私认为，完全可以通过使用适宜的网络拓扑结构，以防止消息回源带来的通信冗余开销。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h3 id=&#34;conflict-free-replicated-data-types-crdtshttpslinkspringercomreferenceworkentry1010072f978-3-319-63962-8_185-1&#34;&gt;&lt;a href=&#34;https://link.springer.com/referenceworkentry/10.1007%2F978-3-319-63962-8_185-1&#34;&gt;Conflict-Free Replicated Data Types CRDTs&lt;/a&gt;&lt;/h3&gt;
-&lt;p&gt;一篇关于 &lt;code&gt;CRDT&lt;/code&gt; 的 survey，作者首先给出了 &lt;code&gt;CRDT&lt;/code&gt; 的定义；然后从 Concurrency Semanitics 和 Synchronization Model 两个方面介绍了 &lt;code&gt;CRDT&lt;/code&gt; 的具体内容；之后，又介绍了一些研究发现与 &lt;code&gt;CRDT&lt;/code&gt; 的具体应用示例；最后，从 Scalability、Reversible Computation、Security、Nonuniform Replicas 和 Verification 五个方面总结并展望了未来的研究方向。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;PS：Nonuniform Replicas 和 Verification 看起来比较有趣一些。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h2 id=&#34;conclusions&#34;&gt;Conclusions&lt;/h2&gt;
-&lt;p&gt;在分布式数据库中，想让各个副本保持一致，大致有两种方案：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;阻止分歧产生：写入时，各个副本通过 py 交易保持一致 (耗时)&lt;/li&gt;
-&lt;li&gt;允许分歧产生：存储分区恢复所需的必要信息，使得分区恢复后各个副本保持一致 (消耗空间)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;假设现有两个副本：A 和 B，我们很容易想到，在 A 上回放 B 的操作记录，使得 B 上发生的更改能同步至 A（对 B 同样操作，下述以 A 为主角）。但是，若想 A 和 B 收敛至同一确定状态，需要满足以下条件：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;接收到的 B 的操作记录要么可交换顺序，要么可明确顺序&lt;/li&gt;
-&lt;li&gt;接收到的 B 的操作记录要么满足 &lt;code&gt;exactly once&lt;/code&gt;，要么操作幂等&lt;/li&gt;
-&lt;li&gt;来自客户端的请求和来自 B 的操作记录要么可交换顺序，要么可明确顺序&lt;/li&gt;
-&lt;/ol&gt;
-&lt;ul&gt;
-&lt;li&gt;条件 &lt;code&gt;1&lt;/code&gt; 使用消息队列可达成，但单线程通信效率较低，此时可将消息按 &lt;code&gt;key&lt;/code&gt; 哈希多线程发送，保证因果一致性即可。&lt;/li&gt;
-&lt;li&gt;条件 &lt;code&gt;2&lt;/code&gt; 中 &lt;code&gt;exactly once&lt;/code&gt; 的要求有点难以实现，还是从操作幂等入手较为现实，这也是 &lt;code&gt;CRDT&lt;/code&gt; 存在的意义之一（通过设计合适的数据结构和操作转换使得操作幂等）&lt;/li&gt;
-&lt;li&gt;条件 &lt;code&gt;3&lt;/code&gt; 其含义即为并发操作无分歧，这是 &lt;code&gt;CRDT&lt;/code&gt; 存在的意义之二&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;综上所述，我们知道了 &lt;code&gt;CRDT&lt;/code&gt; 主要作用在两方面：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;使得同步更新操作幂等&lt;/li&gt;
-&lt;li&gt;使得同步更新操作和本地更新操作要么可交换顺序，要么可明确顺序。一般而言明确操作顺序会产生额外的依赖，比如人为设定的规则（add-wins）或全局时钟，所以在设计策略时应尽量使得并发操作可交换顺序，以较少依赖。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;我们回过头来看 &lt;code&gt;CvRDT&lt;/code&gt; 和 &lt;code&gt;CmRDT&lt;/code&gt;。在 &lt;code&gt;CmRDT&lt;/code&gt; 中，需要满足以下约束：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;更新操作要么可明确因果顺序，要么可交换 (条件 &lt;code&gt;1&lt;/code&gt; 和 条件 &lt;code&gt;3&lt;/code&gt;)&lt;/li&gt;
-&lt;li&gt;消息传输提供 &lt;code&gt;exactly once&lt;/code&gt; 的保证 (条件 &lt;code&gt;2&lt;/code&gt;)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;而在 &lt;code&gt;CvRDT&lt;/code&gt; 中，需满足以下约束：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;状态满足单调性，消息最终可达&lt;/li&gt;
-&lt;li&gt;状态更新操作需满足交换律，结合律，幂等 (条件 &lt;code&gt;1&lt;/code&gt; &lt;code&gt;2&lt;/code&gt; &lt;code&gt;3&lt;/code&gt;)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;其中，状态的单调性即保证了最终所有副本会收敛至同一状态，也便于设计满足要求的更新操作。&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;CRDT 动态规划说&lt;/code&gt;&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th style=&#34;text-align:left&#34;&gt;DP&lt;/th&gt;
-&lt;th style=&#34;text-align:left&#34;&gt;CRDT&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;最终获得的结果与依次遍历获取更新的结果相同&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;最终所有的节点会收敛至相同的状态&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;通过缓存历史信息降低时间复杂度，以空间换时间&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;通过存储额外 meta 信息保证最终收敛至相同状态，操作都是 local 的，延时低，以空间换时间&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;状态与操作顺序无关，即操作需满足交换律，结合律&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;并发更新操作需满足交换律、结合律，通过定义状态的结构获取，也即状态与并发操纵顺序无关&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;又由 &lt;a href=&#34;https://en.wikipedia.org/wiki/ASCII&#34;&gt;ASCII 表&lt;/a&gt; 可知，$D \mapsto 68, P \mapsto 80, C \mapsto 67, R \mapsto 82, T \mapsto 84$&lt;/p&gt;
-&lt;p&gt;In &lt;code&gt;DP&lt;/code&gt;:&lt;/p&gt;
-&lt;p&gt;$68 + 80 = 148 = 1 \times (145 - 1 + 4)$&lt;/p&gt;
-&lt;p&gt;In &lt;code&gt;CRDT&lt;/code&gt;:&lt;/p&gt;
-&lt;p&gt;$67 + 82 + 68 + 84 = 301 = -11 \times (4! - 51) + 4$&lt;/p&gt;
-&lt;p&gt;Q.E.D&lt;/p&gt;</description>
       
     </item>
     
