@@ -6,7 +6,16 @@
     <description>Recent content in Posts on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 20 Oct 2020 20:43:16 +0800</lastBuildDate><atom:link href="https://k-on.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 27 Oct 2020 20:01:48 +0800</lastBuildDate><atom:link href="https://k-on.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Redis 源码阅读 --- Server</title>
+      <link>https://k-on.me/post/redis-sourcecode-server/</link>
+      <pubDate>Tue, 27 Oct 2020 20:01:48 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/redis-sourcecode-server/</guid>
+      <description>&lt;p&gt;Redis Server 相关源码阅读笔记。&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>Redis 源码阅读 --- 持久化</title>
       <link>https://k-on.me/post/redis-sourcecode-persistence/</link>
@@ -176,15 +185,6 @@
       
       <guid>https://k-on.me/post/crdts-in-redis/</guid>
       <description>&lt;p&gt;Redis 全球多活调研笔记。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Conflict free replicated data types</title>
-      <link>https://k-on.me/post/conflict-free-replicated-data-types/</link>
-      <pubDate>Wed, 22 Apr 2020 18:09:55 +0000</pubDate>
-      
-      <guid>https://k-on.me/post/conflict-free-replicated-data-types/</guid>
-      <description>&lt;p&gt;Conflict free replicated data types 阅读笔记。&lt;/p&gt;</description>
     </item>
     
   </channel>

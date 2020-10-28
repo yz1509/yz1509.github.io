@@ -3,48 +3,55 @@
   
   <url>
     <loc>https://k-on.me/categories/</loc>
-    <lastmod>2020-10-20T20:43:16+08:00</lastmod>
+    <lastmod>2020-10-27T20:01:48+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://k-on.me/</loc>
-    <lastmod>2020-10-20T20:43:16+08:00</lastmod>
+    <lastmod>2020-10-27T20:01:48+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://k-on.me/post/</loc>
-    <lastmod>2020-10-20T20:43:16+08:00</lastmod>
+    <lastmod>2020-10-27T20:01:48+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://k-on.me/tags/redis/</loc>
-    <lastmod>2020-10-20T20:43:16+08:00</lastmod>
+    <lastmod>2020-10-27T20:01:48+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://k-on.me/post/redis-sourcecode-persistence/</loc>
-    <lastmod>2020-10-20T20:43:16+08:00</lastmod>
+    <loc>https://k-on.me/post/redis-sourcecode-server/</loc>
+    <lastmod>2020-10-27T20:01:48+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://k-on.me/tags/</loc>
-    <lastmod>2020-10-20T20:43:16+08:00</lastmod>
+    <lastmod>2020-10-27T20:01:48+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/</loc>
+    <lastmod>2020-10-27T20:01:48+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://k-on.me/post/redis-sourcecode-persistence/</loc>
     <lastmod>2020-10-20T20:43:16+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>

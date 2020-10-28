@@ -6,10 +6,104 @@
     <description>Recent content on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 20 Oct 2020 20:43:16 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 27 Oct 2020 20:01:48 +0800</lastBuildDate>
     
         <atom:link href="https://k-on.me/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Redis 源码阅读 --- Server</title>
+      <link>https://k-on.me/post/redis-sourcecode-server/</link>
+      <pubDate>Tue, 27 Oct 2020 20:01:48 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/redis-sourcecode-server/</guid>
+      
+        <description>&lt;p&gt;Redis Server 相关源码阅读笔记。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;从 Redis 的 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L5097&#34;&gt;main&lt;/a&gt; 函数中，可以发现在 Redis 启动时主要做了以下几个工作：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;加载配置：先调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L5142&#34;&gt;initServerConfig&lt;/a&gt; 使用默认配置，再调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L5233&#34;&gt;loadServerConfig&lt;/a&gt; 使用配置文件中的配置项覆盖默认配置&lt;/li&gt;
+&lt;li&gt;调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L5233&#34;&gt;initServer&lt;/a&gt; 和 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L5271&#34;&gt;InitServerLast&lt;/a&gt; 初始化服务器&lt;/li&gt;
+&lt;li&gt;调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L5272&#34;&gt;loadDataFromDisk&lt;/a&gt; 加载先前可能存在的数据集&lt;/li&gt;
+&lt;li&gt;调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L5310&#34;&gt;aeMain&lt;/a&gt; 启动 event loop&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;initserver&#34;&gt;initServer&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;设置信号处理函数：&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2808&#34;&gt;setupSignalHandlers&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;初始化 &lt;code&gt;server&lt;/code&gt; 结构体中相应 fields&lt;/li&gt;
+&lt;li&gt;初始化共享的 Redis 数据对象列表 &lt;code&gt;shared&lt;/code&gt;: &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2844&#34;&gt;createSharedObjects&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;根据 open file limit 设置真实的最大客户端连接数 &lt;code&gt;server.maxclients&lt;/code&gt;：&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2845&#34;&gt;adjustOpenFilesLimit&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;初始化服务器的 event loop &lt;code&gt;server.el&lt;/code&gt;：&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2846&#34;&gt;aeCreateEventLoop&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;初始化 &lt;code&gt;server.db&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;监听配置的 socket，接收来自用户的请求&lt;/li&gt;
+&lt;li&gt;初始化 eviction pool：&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2894&#34;&gt;evictionPoolAlloc&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;重置 AOF rewrite buffer: &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2914&#34;&gt;aofRewriteBufferReset&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;重置服务器状态：&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2921&#34;&gt;resetServerStats&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;添加事件至服务器 event loop：
+&lt;ul&gt;
+&lt;li&gt;添加 time event &lt;code&gt;serverCron&lt;/code&gt; 至服务器 event loop &lt;code&gt;server.el&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Create an event handler for accepting new connections in TCP and Unix domain sockets&lt;/li&gt;
+&lt;li&gt;Register a readable event for the pipe used to awake the event loop when a blocked client in a module needs attention.&lt;/li&gt;
+&lt;li&gt;Register before and after sleep handlers (note this needs to be done before loading persistence since it is used by processEventsWhileBlocked.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Open the AOF file if needed.&lt;/li&gt;
+&lt;li&gt;如为 cluster 模式，则调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L3005&#34;&gt;clusterInit&lt;/a&gt; 进行相应的初始化操作&lt;/li&gt;
+&lt;li&gt;Initialize the script cache: &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L3006&#34;&gt;replicationScriptCacheInit&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Initialize the scripting environment: &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L3007&#34;&gt;scriptingInit&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Initialize the slow log: &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L3008&#34;&gt;slowlogInit&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Latency monitor initialization: &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L3009&#34;&gt;latencyMonitorInit&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;event&#34;&gt;event&lt;/h2&gt;
+&lt;h3 id=&#34;servercron&#34;&gt;serverCron&lt;/h3&gt;
+&lt;p&gt;Redis 在初始化时，会添加一个 time event &lt;code&gt;serverCron&lt;/code&gt; 至 event loop，其运行频率为 &lt;code&gt;server.hz&lt;/code&gt;。如果配置项 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L1705&#34;&gt;dynamic_hz&lt;/a&gt; 设置为 &lt;code&gt;yes&lt;/code&gt;，则该频率会随着当前客户端连接数的增加而增加，上限为 &lt;code&gt;CONFIG_MAX_HZ&lt;/code&gt; (500)。不过该函数内实际工作的运行频率由 &lt;code&gt;run_with_period(milliseconds){...}&lt;/code&gt; 中的 &lt;code&gt;milliseconds&lt;/code&gt; 和 &lt;code&gt;server.hz&lt;/code&gt; 共同确定。&lt;/p&gt;
+&lt;p&gt;在该定期执行的任务中，主要做了以下工作：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;更新服务器状态，可通过 &lt;code&gt;INFO&lt;/code&gt; 命令查看这些状态&lt;/li&gt;
+&lt;li&gt;如收到 &lt;code&gt;SIGTERM&lt;/code&gt; 则会调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L1933&#34;&gt;prepareForShutdown&lt;/a&gt; 后关闭服务器&lt;/li&gt;
+&lt;li&gt;执行客户端相关定期任务：&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L1965&#34;&gt;clientsCron&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;执行数据库相关定期任务：&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L1968&#34;&gt;databasesCron&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;当前子进程无任务且有 AOF rewrite 需求时，调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L1975&#34;&gt;rewriteAppendOnlyFileBackground&lt;/a&gt; 在后台执行 AOF rewrite&lt;/li&gt;
+&lt;li&gt;检查后台 RDB saving 或 AOF rewrite 进程是否已结束&lt;/li&gt;
+&lt;li&gt;当前子进程无任务时：
+&lt;ul&gt;
+&lt;li&gt;根据 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L307&#34;&gt;save&lt;/a&gt; 相关配置项决定是否要调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2002&#34;&gt;rdbSaveBackground&lt;/a&gt; 保存当前数据集状态&lt;/li&gt;
+&lt;li&gt;根据配置项 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L1159&#34;&gt;auto-aof-rewrite-percentage&lt;/a&gt; 和 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L1160&#34;&gt;auto-aof-rewrite-min-size&lt;/a&gt; 决定是否要调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2018&#34;&gt;rewriteAppendOnlyFileBackground&lt;/a&gt; 开始 AOF rewrite 以减少 AOF 文件磁盘空间占用&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;如此前有推迟的 AOF 落盘任务或 AOF 写入发生错误，则调用 &lt;code&gt;flushAppendOnlyFile&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Clear the paused clients flag if needed: &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2038&#34;&gt;clientsArePaused&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;执行主从同步相关定期任务：&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2042&#34;&gt;replicationCron&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;执行集群相关定期任务：&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2046&#34;&gt;clusterCron&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Run the Sentinel timer if we are in sentinel mode: &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2050&#34;&gt;sentinelTimer&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Cleanup expired MIGRATE cached sockets: &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2054&#34;&gt;migrateCloseTimedoutSockets&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Stop the I/O threads if we don&amp;rsquo;t have enough pending work: &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2058&#34;&gt;stopThreadedIOIfNeeded&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Resize tracking keys table if needed: &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2064&#34;&gt;trackingLimitUsedSlots&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;当前子进程无任务且有 BGSAVE 需求时，调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2080&#34;&gt;rdbSaveBackground&lt;/a&gt; 在后台执行 BGSAVE&lt;/li&gt;
+&lt;li&gt;Fire the cron loop modules event: &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2086&#34;&gt;moduleFireServerEvent&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;clientscron&#34;&gt;clientsCron&lt;/h4&gt;
+&lt;p&gt;TODO&lt;/p&gt;
+&lt;h4 id=&#34;databasescron&#34;&gt;databasesCron&lt;/h4&gt;
+&lt;p&gt;在此定期执行的任务中，主要做了以下工作：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;清理过期 key: &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L1698&#34;&gt;activeExpireCycle&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;碎片整理: &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L1705&#34;&gt;activeDefragCycle&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;当前子进程无任务时：
+&lt;ul&gt;
+&lt;li&gt;Resize：若当前 keyspace &lt;code&gt;redisDb-&amp;gt;dict&lt;/code&gt; 中 slot 数量大于 &lt;code&gt;DICT_HT_INITIAL_SIZE&lt;/code&gt; (4)，且哈希表元素个数低于 slot 数量的 $10\%$，则调整 slot 数量 (&lt;code&gt;redisDb-&amp;gt;expires&lt;/code&gt; 同理)&lt;/li&gt;
+&lt;li&gt;渐进式 Rehash：若配置项 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L1621&#34;&gt;activerehashing&lt;/a&gt; 为 &lt;code&gt;yes&lt;/code&gt;，且当前数据库正在进行 Rehash，则尝试进行时长为 $1ms$ 的 Rehash 操作&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;replicationcron&#34;&gt;replicationCron&lt;/h4&gt;
+&lt;p&gt;TODO&lt;/p&gt;
+&lt;h4 id=&#34;clustercron&#34;&gt;clusterCron&lt;/h4&gt;
+&lt;p&gt;TODO&lt;/p&gt;
+&lt;h3 id=&#34;beforesleep&#34;&gt;beforeSleep&lt;/h3&gt;
+&lt;p&gt;TODO&lt;/p&gt;</description>
+      
+    </item>
     
     <item>
       <title>Redis 源码阅读 --- 持久化</title>
@@ -13390,187 +13484,6 @@ Normally when you call this function from the callback implementing a module com
 &lt;/ul&gt;
 &lt;h3 id=&#34;list&#34;&gt;List&lt;/h3&gt;
 &lt;p&gt;尚未发现确切的情报，可能有参考 &lt;a href=&#34;https://dl.acm.org/doi/pdf/10.1145/2933057.2933090&#34;&gt;Specification and Complexity of Collaborative Text Editing&lt;/a&gt;。&lt;/p&gt;</description>
-      
-    </item>
-    
-    <item>
-      <title>Conflict free replicated data types</title>
-      <link>https://k-on.me/post/conflict-free-replicated-data-types/</link>
-      <pubDate>Wed, 22 Apr 2020 18:09:55 +0000</pubDate>
-      
-      <guid>https://k-on.me/post/conflict-free-replicated-data-types/</guid>
-      
-        <description>&lt;p&gt;Conflict free replicated data types 阅读笔记。&lt;/p&gt;
-&lt;hr&gt;
-&lt;p&gt;&lt;a href=&#34;https://hal.inria.fr/inria-00609399v2/document&#34;&gt;论文地址&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&#34;最终一致性&#34;&gt;最终一致性&lt;/h2&gt;
-&lt;h3 id=&#34;eventual-consistencyhttpsenwikipediaorgwikieventual_consistency&#34;&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Eventual_consistency&#34;&gt;Eventual Consistency&lt;/a&gt;&lt;/h3&gt;
-&lt;p&gt;一个分布式系统是最终一致的，需满足以下条件：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Eventual delivery&lt;/strong&gt;: 在健康节点上执行的更新操作最终会被传递至所有健康节点，也就是说 $f \in c_i \Rightarrow \lozenge f \in c_j, \forall i, j \in [1, \dots, n]$，其中 $c_i$ 是节点 $p_i$ 的 causal history&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Convergence&lt;/strong&gt;: 执行相同操作集合的健康节点&lt;strong&gt;最终&lt;/strong&gt;会收敛至相同的状态，也就是说 $\square c_i = c_j \Rightarrow \lozenge \square s_i \equiv s_j, \forall i, j \in [1, \dots, n]$&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;Termination&lt;/strong&gt;: 所有操作会终止&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;在上述说明中，$\lozenge$ 表示可能性，$\square$ 表示必然性，详见 &lt;a href=&#34;https://en.wikipedia.org/wiki/Modal_logic&#34;&gt;Modal logic&lt;/a&gt; 和 &lt;a href=&#34;https://en.wikipedia.org/wiki/S5_(modal_logic)&#34;&gt;S5 modal logic&lt;/a&gt;。至于 causal history，可以简单理解为操作的集合。&lt;/p&gt;
-&lt;h3 id=&#34;strong-eventual-consistency&#34;&gt;Strong Eventual Consistency&lt;/h3&gt;
-&lt;p&gt;一个分布式系统是强最终一致的，需在满足最终一致的条件下，额外满足以下约束：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;strong&gt;Strong Convergence&lt;/strong&gt;: 执行相同操作集合的健康节点具有相同的状态，也就是说 $c_i = c_j \Rightarrow s_i \equiv s_j, \forall i, j \in [1, \dots, n]$&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;系统模型&#34;&gt;系统模型&lt;/h2&gt;
-&lt;h3 id=&#34;符号说明&#34;&gt;符号说明&lt;/h3&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th style=&#34;text-align:left&#34;&gt;符号&lt;/th&gt;
-&lt;th style=&#34;text-align:left&#34;&gt;含义&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;$p_i$&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;process $i$&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;$s_i$&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;process $p_i$ has state $s_i \in \mathcal{S}$, called its &lt;em&gt;payload&lt;/em&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;$s^0$&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;初始状态&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;$q$&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;query&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;$t$&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;prepare-update&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;$u$&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;update&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;$m$&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;merge&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;$\mathcal{P}$&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;communication protocol&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;$f_i^k(a)$&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;在节点 $p_i$ 上执行的 $k^{th}$ 操作, $f$ 是 $q$, $u$ 或 $m$, $a$ 是参数&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;$K_i(f)$&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;在节点 $p_i$ 上操作 $f$ 执行的序数&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;h3 id=&#34;state-based-convergent-replicated-data-typecvrdt&#34;&gt;State-based Convergent Replicated Data Type(CvRDT)&lt;/h3&gt;
-&lt;p&gt;&lt;strong&gt;Causal History&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;我们定义一个对象的 &lt;em&gt;causal hisatory(stated-based)&lt;/em&gt; 为 $\mathcal{C} = [c_1, \dots, c_n]$，其中 $c_i$ 经历了一系列中间态 $c_i^0, \dots, c_i^k, \dots$。初始时，$c_i^0 = \emptyset, \forall i \in [1, \dots, n]$，在节点 $p_i$ 上执行的 $k^{th}$ 操作分为以下三种情况：&lt;/p&gt;
-&lt;p&gt;$$c_i^k = \begin{cases}&lt;br&gt;
-c_i^{k-1} &amp;amp; f = q \&lt;br&gt;
-c_i^{k-1} \cup {u_i^k(a)} &amp;amp; f = u_i^k(a) \&lt;br&gt;
-c_i^{k-1} \cup c_{i&#39;}^{k&#39;} &amp;amp; f = m_i^k(s_{i&#39;}^{k&#39;})
-\end{cases}$$&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Monotonic semilattice object&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;我们用 $(\mathcal{S}, \le, s^0, q, u, m)$ 表示基于状态的对象，其中 $\le$ 表示 &lt;em&gt;partial order&lt;/em&gt;。若其满足以下约束，我们称其为 &lt;em&gt;monotonic semilattice object&lt;/em&gt;:&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Partially_ordered_set&#34;&gt;Poset&lt;/a&gt; $(\mathcal{S}, \le)$ 构成一个 Join-semilattice&lt;/li&gt;
-&lt;li&gt;Merge 操作满足: $s \cdot m(s&#39;) = s \vee s&#39;$&lt;/li&gt;
-&lt;li&gt;在更新操作下状态 $s$ 满足单调性，即 $s \le s \cdot u$&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;回顾&lt;a href=&#34;http://k-on.me/posts/cce5fbef/#more&#34;&gt;之前的知识&lt;/a&gt;，可以知道第 1 条约束的意思是集合 $\mathcal{S}$ 中任意非空子集都有 &lt;code&gt;join&lt;/code&gt;，第 2 条约束说明 merge 即为 &lt;code&gt;join&lt;/code&gt;。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;CvRDT&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;Assuming eventual delivery and termination, any state-based object that satisfies the monotonic semilattice property is SEC.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;CvRDT 使用 $(\mathcal{S}, \le, s^0, q, u, m)$ 表示。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;从上可以看出，在 &lt;code&gt;CvRDT&lt;/code&gt; 中， 需要满足以下条件：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;状态满足单调性，消息最终可达&lt;/li&gt;
-&lt;li&gt;状态更改操作为 Merge 需满足交换律，结合律，幂等&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3 id=&#34;op-based-commutative-replicated-data-typecmrdt&#34;&gt;Op-based Commutative Replicated Data Type(CmRDT)&lt;/h3&gt;
-&lt;p&gt;&lt;strong&gt;Causal History&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;我们定义一个对象的 &lt;em&gt;causal hisatory(op-based)&lt;/em&gt; 为 $\mathcal{C} = [c_1, \dots, c_n]$，其中 $c_i$ 经历了一系列中间态 $c_i^0, \dots, c_i^k, \dots$。初始时，$c_i^0 = \emptyset, \forall i \in [1, \dots, n]$，在节点 $p_i$ 上执行的 $k^{th}$ 操作分为以下两种情况：&lt;/p&gt;
-&lt;p&gt;$$c_i^k = \begin{cases}&lt;br&gt;
-c_i^{k-1} &amp;amp; f = q, t \&lt;br&gt;
-c_i^{k-1} \cup {u_i^k(a)} &amp;amp; f = u_i^k(a)
-\end{cases}$$&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Happened-before&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;Update $(t, u)$ happended-before $(t&#39;, u&#39;)$ iff the former is delivered when the latter executes: $(t, u) \rightarrow (t&#39;, u&#39;) \Leftrightarrow u \in c_j^{k-1}$, where $t&#39;$ executeds at $p_j$ and $k = K_j(t&#39;)$.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Commutativity&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;Updates $(t, u)$ and $(t&#39;, u&#39;)$ commute, iff for any reachable replica state $s$ where both $u$ and $u&#39;$ are enabled, $u$ (resp. $u&#39;$) remains enabled in state $s \cdot u&#39;$(resp. $s \cdot u$), and $s \cdot u \cdot u&#39; \equiv s \cdot u&#39; \cdot u$.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;CmRDT&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;Assuming causal delivery of updates and method termination, any op-based object that satisfies the commutativity property for all concurrent updates, and whose delivery precondition is satisfied by causal delivery, is SEC.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;CmRDT 使用 $(\mathcal{S}, s^0, q, t, u, \mathcal{P})$ 表示。&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;从上可以看出，在 &lt;code&gt;CmRDT&lt;/code&gt; 中， 需要满足以下条件：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Update 操作要么可确定明确的因果顺序，要么满足可交换&lt;/li&gt;
-&lt;li&gt;消息传输提供 &lt;code&gt;exactly once&lt;/code&gt; 的保证&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;一些结论&#34;&gt;一些结论&lt;/h2&gt;
-&lt;ul&gt;
-&lt;li&gt;CvRDTs and CmRDTs are equivalent&lt;/li&gt;
-&lt;li&gt;SEC is incomparable to sequential consistency&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;crdt-示例&#34;&gt;CRDT 示例&lt;/h2&gt;
-&lt;h3 id=&#34;counters&#34;&gt;Counters&lt;/h3&gt;
-&lt;p&gt;我们使用 CvRDT 的框架来构造一个分布式计数器 $(\mathcal{S}, \le^n, s^0, value, inc, max^n)$:&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th style=&#34;text-align:left&#34;&gt;符号&lt;/th&gt;
-&lt;th style=&#34;text-align:left&#34;&gt;含义&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;$\mathcal{S}$&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;状态集合，其中 $s = \vec{v} = [v_1, \dots, v_n]$ 表示计数器的状态&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;$\le^n$&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;$\vec{v} \le^n \vec{v&#39;} \Leftrightarrow v_i \le v&#39;_i, \forall i \in [1, \dots, n]$&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;$s^0$&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;$[0, \dots, 0]$&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;$value$&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;$value(\vec{v}) = \sum_{i}v_i$&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;$inc$&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;在节点 $p_i$ 上 $inc(\vec{v}) = \vec{v&#39;}$，其中 $v&#39;&lt;em&gt;i = v_i + 1 \cdot \mathbb{I}&lt;/em&gt;{{j}}(i), \forall i \in [1, \dots, n]$&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;$max^n$&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;$s \cdot max^n(s&#39;) = [max(v_1, v&#39;_1), \dots, max(v_n, v&#39;_n)]$&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;可以发现上述定义的是一个只增计数器，如果想可增可减的话，可以使用两个只增计数器构成。&lt;/p&gt;
-&lt;h3 id=&#34;set&#34;&gt;Set&lt;/h3&gt;
-&lt;p&gt;一个 add-only 的集合可以构造为 $(\mathcal{S}, \subseteq, \emptyset, value, add(e), \cup)$，其中 $s \cdot add(e) = s \cup {e}$，很明显这也是一个 CRDT。&lt;/p&gt;
-&lt;p&gt;在 &lt;a href=&#34;https://hal.inria.fr/inria-00555588/document&#34;&gt;A comprehensive study of Convergent and Commutative Replicated Data Types&lt;/a&gt; 中作者定义了可增可减的两种 Set，但是也有较强的 assumption&amp;hellip;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;2P-Set：维护两个集合：add-only 和 remove-only。只能适用于集合中的元素只会被 add/remove 一次的情况&lt;/li&gt;
-&lt;li&gt;U-Set: 维护一个支持 add/remove 的集合。需要满足两个条件:
-&lt;ul&gt;
-&lt;li&gt;remove 过的元素不会再 add&lt;/li&gt;
-&lt;li&gt;add 操作确保在 remove 前&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;</description>
       
     </item>
     
