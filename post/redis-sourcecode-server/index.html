@@ -23,7 +23,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <meta name="author" content="765PRO.P" />
-  <meta name="description" content="Redis Server 相关源码阅读笔记。
+  <meta name="description" content="Redis Server 相关源码阅读笔记，源码文件 server.h &amp;amp; server.c。
 " />
 
   <meta name="keywords" content="K-ON, KyoAni" />
@@ -61,23 +61,23 @@
 
 
 <meta property="og:title" content="Redis 源码阅读 --- Server" />
-<meta property="og:description" content="Redis Server 相关源码阅读笔记。" />
+<meta property="og:description" content="Redis Server 相关源码阅读笔记，源码文件 server.h &amp; server.c。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://k-on.me/post/redis-sourcecode-server/" />
 <meta property="article:published_time" content="2020-10-27T20:01:48+08:00" />
 <meta property="article:modified_time" content="2020-10-27T20:01:48+08:00" />
 <meta itemprop="name" content="Redis 源码阅读 --- Server">
-<meta itemprop="description" content="Redis Server 相关源码阅读笔记。">
+<meta itemprop="description" content="Redis Server 相关源码阅读笔记，源码文件 server.h &amp; server.c。">
 <meta itemprop="datePublished" content="2020-10-27T20:01:48+08:00" />
 <meta itemprop="dateModified" content="2020-10-27T20:01:48+08:00" />
-<meta itemprop="wordCount" content="1094">
+<meta itemprop="wordCount" content="1158">
 
 
 
 <meta itemprop="keywords" content="Redis," />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Redis 源码阅读 --- Server"/>
-<meta name="twitter:description" content="Redis Server 相关源码阅读笔记。"/>
+<meta name="twitter:description" content="Redis Server 相关源码阅读笔记，源码文件 server.h &amp; server.c。"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 1094 words </span>
+        <span class="more-meta"> 1158 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -345,7 +345,7 @@
 
     
     <div class="post-content">
-      <p>Redis Server 相关源码阅读笔记。</p>
+      <p>Redis Server 相关源码阅读笔记，源码文件 <code>server.h</code> &amp; <code>server.c</code>。</p>
 <hr>
 <p>从 Redis 的 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L5097">main</a> 函数中，可以发现在 Redis 启动时主要做了以下几个工作：</p>
 <ul>
@@ -368,10 +368,10 @@
 <li>重置服务器状态：<a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L2921">resetServerStats</a></li>
 <li>添加事件至服务器 event loop：
 <ul>
-<li>添加 time event <code>serverCron</code> 至服务器 event loop <code>server.el</code></li>
-<li>Create an event handler for accepting new connections in TCP and Unix domain sockets</li>
+<li>添加 time event <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L1849">serverCron</a> 至服务器 event loop <code>server.el</code></li>
+<li>添加 file event (<a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L986">acceptTcpHandler</a> or <a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L1006">acceptTLSHandler</a> or <a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L1026">acceptUnixHandler</a>) 处理客户端连接及请求</li>
 <li>Register a readable event for the pipe used to awake the event loop when a blocked client in a module needs attention.</li>
-<li>Register before and after sleep handlers (note this needs to be done before loading persistence since it is used by processEventsWhileBlocked.</li>
+<li>Register before (<a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L2110">beforeSleep</a>) and after (<a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L2204">afterSleep</a>) sleep handlers (note this needs to be done before loading persistence since it is used by processEventsWhileBlocked)</li>
 </ul>
 </li>
 <li>Open the AOF file if needed.</li>
@@ -382,6 +382,7 @@
 <li>Latency monitor initialization: <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L3009">latencyMonitorInit</a></li>
 </ul>
 <h2 id="event">event</h2>
+<p>有关 File event <code>acceptTcpHandler</code>(<code>acceptTLSHandler</code>/<code>acceptUnixHandler</code>) 的内容会在客户端相关笔记中介绍，本次仅介绍 Time event <code>serverCron</code> 和 <code>beforeSleep</code>。</p>
 <h3 id="servercron">serverCron</h3>
 <p>Redis 在初始化时，会添加一个 time event <code>serverCron</code> 至 event loop，其运行频率为 <code>server.hz</code>。如果配置项 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L1705">dynamic_hz</a> 设置为 <code>yes</code>，则该频率会随着当前客户端连接数的增加而增加，上限为 <code>CONFIG_MAX_HZ</code> (500)。不过该函数内实际工作的运行频率由 <code>run_with_period(milliseconds){...}</code> 中的 <code>milliseconds</code> 和 <code>server.hz</code> 共同确定。</p>
 <p>在该定期执行的任务中，主要做了以下工作：</p>

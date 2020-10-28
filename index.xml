@@ -18,7 +18,7 @@
       
       <guid>https://k-on.me/post/redis-sourcecode-server/</guid>
       
-        <description>&lt;p&gt;Redis Server 相关源码阅读笔记。&lt;/p&gt;
+        <description>&lt;p&gt;Redis Server 相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; &amp;amp; &lt;code&gt;server.c&lt;/code&gt;。&lt;/p&gt;
 &lt;hr&gt;
 &lt;p&gt;从 Redis 的 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L5097&#34;&gt;main&lt;/a&gt; 函数中，可以发现在 Redis 启动时主要做了以下几个工作：&lt;/p&gt;
 &lt;ul&gt;
@@ -41,10 +41,10 @@
 &lt;li&gt;重置服务器状态：&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2921&#34;&gt;resetServerStats&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;添加事件至服务器 event loop：
 &lt;ul&gt;
-&lt;li&gt;添加 time event &lt;code&gt;serverCron&lt;/code&gt; 至服务器 event loop &lt;code&gt;server.el&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;Create an event handler for accepting new connections in TCP and Unix domain sockets&lt;/li&gt;
+&lt;li&gt;添加 time event &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L1849&#34;&gt;serverCron&lt;/a&gt; 至服务器 event loop &lt;code&gt;server.el&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;添加 file event (&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/networking.c#L986&#34;&gt;acceptTcpHandler&lt;/a&gt; or &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/networking.c#L1006&#34;&gt;acceptTLSHandler&lt;/a&gt; or &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/networking.c#L1026&#34;&gt;acceptUnixHandler&lt;/a&gt;) 处理客户端连接及请求&lt;/li&gt;
 &lt;li&gt;Register a readable event for the pipe used to awake the event loop when a blocked client in a module needs attention.&lt;/li&gt;
-&lt;li&gt;Register before and after sleep handlers (note this needs to be done before loading persistence since it is used by processEventsWhileBlocked.&lt;/li&gt;
+&lt;li&gt;Register before (&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2110&#34;&gt;beforeSleep&lt;/a&gt;) and after (&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2204&#34;&gt;afterSleep&lt;/a&gt;) sleep handlers (note this needs to be done before loading persistence since it is used by processEventsWhileBlocked)&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;li&gt;Open the AOF file if needed.&lt;/li&gt;
@@ -55,6 +55,7 @@
 &lt;li&gt;Latency monitor initialization: &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L3009&#34;&gt;latencyMonitorInit&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;event&#34;&gt;event&lt;/h2&gt;
+&lt;p&gt;有关 File event &lt;code&gt;acceptTcpHandler&lt;/code&gt;(&lt;code&gt;acceptTLSHandler&lt;/code&gt;/&lt;code&gt;acceptUnixHandler&lt;/code&gt;) 的内容会在客户端相关笔记中介绍，本次仅介绍 Time event &lt;code&gt;serverCron&lt;/code&gt; 和 &lt;code&gt;beforeSleep&lt;/code&gt;。&lt;/p&gt;
 &lt;h3 id=&#34;servercron&#34;&gt;serverCron&lt;/h3&gt;
 &lt;p&gt;Redis 在初始化时，会添加一个 time event &lt;code&gt;serverCron&lt;/code&gt; 至 event loop，其运行频率为 &lt;code&gt;server.hz&lt;/code&gt;。如果配置项 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L1705&#34;&gt;dynamic_hz&lt;/a&gt; 设置为 &lt;code&gt;yes&lt;/code&gt;，则该频率会随着当前客户端连接数的增加而增加，上限为 &lt;code&gt;CONFIG_MAX_HZ&lt;/code&gt; (500)。不过该函数内实际工作的运行频率由 &lt;code&gt;run_with_period(milliseconds){...}&lt;/code&gt; 中的 &lt;code&gt;milliseconds&lt;/code&gt; 和 &lt;code&gt;server.hz&lt;/code&gt; 共同确定。&lt;/p&gt;
 &lt;p&gt;在该定期执行的任务中，主要做了以下工作：&lt;/p&gt;
@@ -6900,7 +6901,7 @@ s-hdrlen          s-1       s
 &lt;td style=&#34;text-align:left&#34;&gt;Redis 的事务实现&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Y&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;networking.c&lt;/code&gt;&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;Redis 的客户端网络操作库, 用于实现命令请求接收、发送命令回复等工作，文件中的函数大多为 write, read,close 等函数的包装，以及各种协议的分析和构建函数。&lt;/td&gt;
 &lt;/tr&gt;
