@@ -35,7 +35,13 @@
 &lt;li&gt;根据 open file limit 设置真实的最大客户端连接数 &lt;code&gt;server.maxclients&lt;/code&gt;：&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2845&#34;&gt;adjustOpenFilesLimit&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;初始化服务器的 event loop &lt;code&gt;server.el&lt;/code&gt;：&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2846&#34;&gt;aeCreateEventLoop&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;初始化 &lt;code&gt;server.db&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;监听配置的 socket，接收来自用户的请求&lt;/li&gt;
+&lt;li&gt;监听配置的地址，接收来自用户的请求
+&lt;ul&gt;
+&lt;li&gt;TCP port: &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2857&#34;&gt;listenToPort&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;TCP port with TLS: &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2860&#34;&gt;listenToPort&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Unix domain socket: &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2866&#34;&gt;anetUnixServer&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
 &lt;li&gt;初始化 eviction pool：&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2894&#34;&gt;evictionPoolAlloc&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;重置 AOF rewrite buffer: &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2914&#34;&gt;aofRewriteBufferReset&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;重置服务器状态：&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.c#L2921&#34;&gt;resetServerStats&lt;/a&gt;&lt;/li&gt;

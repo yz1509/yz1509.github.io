@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis Server 相关源码阅读笔记，源码文件 server.h &amp; server.c。">
 <meta itemprop="datePublished" content="2020-10-27T20:01:48+08:00" />
 <meta itemprop="dateModified" content="2020-10-27T20:01:48+08:00" />
-<meta itemprop="wordCount" content="1158">
+<meta itemprop="wordCount" content="1166">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 1158 words </span>
+        <span class="more-meta"> 1166 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -362,7 +362,13 @@
 <li>根据 open file limit 设置真实的最大客户端连接数 <code>server.maxclients</code>：<a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L2845">adjustOpenFilesLimit</a></li>
 <li>初始化服务器的 event loop <code>server.el</code>：<a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L2846">aeCreateEventLoop</a></li>
 <li>初始化 <code>server.db</code></li>
-<li>监听配置的 socket，接收来自用户的请求</li>
+<li>监听配置的地址，接收来自用户的请求
+<ul>
+<li>TCP port: <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L2857">listenToPort</a></li>
+<li>TCP port with TLS: <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L2860">listenToPort</a></li>
+<li>Unix domain socket: <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L2866">anetUnixServer</a></li>
+</ul>
+</li>
 <li>初始化 eviction pool：<a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L2894">evictionPoolAlloc</a></li>
 <li>重置 AOF rewrite buffer: <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L2914">aofRewriteBufferReset</a></li>
 <li>重置服务器状态：<a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L2921">resetServerStats</a></li>
