@@ -6,7 +6,16 @@
     <description>Recent content in Posts on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 27 Oct 2020 20:01:48 +0800</lastBuildDate><atom:link href="https://k-on.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 29 Oct 2020 15:20:48 +0800</lastBuildDate><atom:link href="https://k-on.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Redis 源码阅读 --- Client</title>
+      <link>https://k-on.me/post/redis-sourcecode-client/</link>
+      <pubDate>Thu, 29 Oct 2020 15:20:48 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/redis-sourcecode-client/</guid>
+      <description>&lt;p&gt;Redis client 相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; &amp;amp; &lt;code&gt;server.c&lt;/code&gt; &amp;amp; &lt;code&gt;networking.c&lt;/code&gt;。&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>Redis 源码阅读 --- Server</title>
       <link>https://k-on.me/post/redis-sourcecode-server/</link>
@@ -176,15 +185,6 @@
       
       <guid>https://k-on.me/post/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%85%B3%E7%AC%94%E8%AE%B0/</guid>
       <description>&lt;p&gt;分布式系统相关资源汇总及简要笔记。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>CRDTs in Redis</title>
-      <link>https://k-on.me/post/crdts-in-redis/</link>
-      <pubDate>Wed, 17 Jun 2020 11:15:10 +0000</pubDate>
-      
-      <guid>https://k-on.me/post/crdts-in-redis/</guid>
-      <description>&lt;p&gt;Redis 全球多活调研笔记。&lt;/p&gt;</description>
     </item>
     
   </channel>
