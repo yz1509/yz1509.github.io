@@ -441,7 +441,7 @@ c_i^{k-1} \cup c_{i'}^{k'} &amp; f = m_i^k(s_{i'}^{k'})
 <li>Merge 操作满足: $s \cdot m(s') = s \vee s'$</li>
 <li>在更新操作下状态 $s$ 满足单调性，即 $s \le s \cdot u$</li>
 </ol>
-<p>回顾<a href="http://k-on.me/posts/cce5fbef/#more">之前的知识</a>，可以知道第 1 条约束的意思是集合 $\mathcal{S}$ 中任意非空子集都有 <code>join</code>，第 2 条约束说明 merge 即为 <code>join</code>。</p>
+<p>回顾<a href="https://k-on.me/post/crdt-notes/#join">之前的知识</a>，可以知道第 1 条约束的意思是集合 $\mathcal{S}$ 中任意非空子集都有 <code>join</code>，第 2 条约束说明 merge 即为 <code>join</code>。</p>
 <p><strong>CvRDT</strong></p>
 <p>Assuming eventual delivery and termination, any state-based object that satisfies the monotonic semilattice property is SEC.</p>
 <blockquote>

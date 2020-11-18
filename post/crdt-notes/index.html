@@ -418,13 +418,13 @@
 </ul>
 <h2 id="crdt-相关论文">CRDT 相关论文</h2>
 <h3 id="conflict-free-replicated-data-typeshttpshalinriafrinria-00609399v2document"><a href="https://hal.inria.fr/inria-00609399v2/document">Conflict-free Replicated Data Types</a></h3>
-<p>在这篇文章中，作者主要提出了两种本质上等价的 CRDT：CvRDT 和 CmRDT。为了保证强最终一致性，作者表示在 CvRDT 中需定义合适的操作，使得状态集合在给定的偏序关系下构成 Join-semilattice；而在 CmRDT 中，操作需满足要么可比较，不可比的便可交换的条件，除此之外，还需要消息传输提供 <code>exactly once</code> 的保证。详细内容<a href="http://k-on.me/posts/fa8423b1/#more">请点击</a>。</p>
+<p>在这篇文章中，作者主要提出了两种本质上等价的 CRDT：CvRDT 和 CmRDT。为了保证强最终一致性，作者表示在 CvRDT 中需定义合适的操作，使得状态集合在给定的偏序关系下构成 Join-semilattice；而在 CmRDT 中，操作需满足要么可比较，不可比的便可交换的条件，除此之外，还需要消息传输提供 <code>exactly once</code> 的保证。详细内容<a href="https://k-on.me/post/conflict-free-replicated-data-types/">请点击</a>。</p>
 <h3 id="a-comprehensive-study-of-convergent-and-commutative-replicated-data-typeshttpshalinriafrinria-00555588document"><a href="https://hal.inria.fr/inria-00555588/document">A comprehensive study of Convergent and Commutative Replicated Data Types</a></h3>
 <p>理论内容和上一篇相比几乎相同，新增了一些 CRDT 数据结构示例、垃圾回收和简单应用的内容。</p>
 <h3 id="an-optimized-conflict-free-replicated-sethttpsarxivorgpdf12103368pdf"><a href="https://arxiv.org/pdf/1210.3368.pdf">An Optimized Conflict-free Replicated Set</a></h3>
 <p>利用 Causal order 进行空间上的优化，和 $\delta$-CRDT 中的 <code>Optimized Add-Wins OR-Set</code> 类似。</p>
 <h3 id="efficient-state-based-crdts-by-delta-mutationhttpsarxivorgpdf14102803pdf"><a href="https://arxiv.org/pdf/1410.2803.pdf">Efficient State-based CRDTs by Delta-Mutation</a></h3>
-<p>本文正式定义了 $\delta$-CRDT， 其通过传递状态增量而不是传递整个状态，有效地改善了 <code>CvRDT</code> 通信消耗过大的不足，最后给出了 <code>PN-Counter</code>、<code>OR-Set</code> 和 <code>Multi-value Register</code> 基于 $\delta$-CRDT 的实现。详细内容<a href="http://k-on.me/posts/82db3c39/#more">请点击</a>。</p>
+<p>本文正式定义了 $\delta$-CRDT， 其通过传递状态增量而不是传递整个状态，有效地改善了 <code>CvRDT</code> 通信消耗过大的不足，最后给出了 <code>PN-Counter</code>、<code>OR-Set</code> 和 <code>Multi-value Register</code> 基于 $\delta$-CRDT 的实现。详细内容<a href="https://k-on.me/post/efficient-state-based-crdts-by-delta-mutation/">请点击</a>。</p>
 <h3 id="delta-state-replicated-data-typeshttpsarxivorgpdf160301529pdf"><a href="https://arxiv.org/pdf/1603.01529.pdf">Delta state replicated data types</a></h3>
 <p>本文在 <code>Efficient State-based CRDTs by Delta-Mutation</code> 基础之上补充了一些数学证明，添加了更丰富的示例，包括 <code>PN-Counter</code>、<code>GSet</code>、<code>2PSet</code>、<code>Add-Wins Last-Writer-Wins Set</code>、<code>Lexicographic Counter</code>、<code>Multi-Value Register</code>、<code>Add-Wins Set</code>、<code>Remove-Wins Set</code> 和 <code>A Map Embedding Causal -CRDTs</code>。</p>
 <h3 id="efficient-synchronization-of-state-based-crdtshttpsvitorenesorgpublicationenes-efficient-synchronizationenes-efficient-synchronizationpdf"><a href="https://vitorenes.org/publication/enes-efficient-synchronization/enes-efficient-synchronization.pdf">Efficient Synchronization of State-Based CRDTs</a></h3>

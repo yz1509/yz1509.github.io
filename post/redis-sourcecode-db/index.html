@@ -910,7 +910,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><h2 id="expire">expire</h2>
-<p>设置了过期时间的 <code>key</code>，会将 &lt;key, expire-time&gt; 映射加入到 <code>redisDb-&gt;expires</code> 字典中，以支持后续的键过期行为。Redis 的键过期以被动的方式进行，只会在访问到该 <code>key</code> 的时候触发。访问的方式大致可以分为两种：</p>
+<p>设置了过期时间的 <code>key</code>，会将 &lt;key, absolute-expire-time&gt; 映射加入到 <code>redisDb-&gt;expires</code> 字典中，以支持后续的键过期行为。Redis 的键过期以被动的方式进行，只会在访问到该 <code>key</code> 的时候触发。访问的方式大致可以分为两种：</p>
 <ul>
 <li>
 <p>在客户端访问到该 <code>key</code> 时调用 <code>expireIfNeeded</code> 触发过期删除操作，例如查找、删除、<a href="https://github.com/redis/redis/blob/6.0.8/src/db.c#L296">随机返回 key</a>和 <a href="https://github.com/redis/redis/blob/6.0.8/src/db.c#L867">Scan</a>操作时</p>

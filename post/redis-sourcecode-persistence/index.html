@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 持久化相关源码阅读笔记，源码文件 rdb.h &amp; rdb.c &amp; aof.c。">
 <meta itemprop="datePublished" content="2020-10-20T20:43:16+08:00" />
 <meta itemprop="dateModified" content="2020-10-20T20:43:16+08:00" />
-<meta itemprop="wordCount" content="4309">
+<meta itemprop="wordCount" content="4317">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 4309 words </span>
+        <span class="more-meta"> 4317 words </span>
           <span class="more-meta"> 9 min read </span>
 
         
@@ -698,6 +698,9 @@
 <ul>
 <li>
 <p>如有过期时间，则存储 <code>&lt;RDB_OPCODE_EXPIRETIME_MS&gt; &lt;expiretime&gt;</code></p>
+<ul>
+<li><code>expiretime</code> is the absolute unix time in milliseconds</li>
+</ul>
 </li>
 <li>
 <p>按照内存管理策略存储 LRU/LFU 信息:</p>

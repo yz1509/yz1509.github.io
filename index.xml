@@ -980,6 +980,9 @@
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;如有过期时间，则存储 &lt;code&gt;&amp;lt;RDB_OPCODE_EXPIRETIME_MS&amp;gt; &amp;lt;expiretime&amp;gt;&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;expiretime&lt;/code&gt; is the absolute unix time in milliseconds&lt;/li&gt;
+&lt;/ul&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;按照内存管理策略存储 LRU/LFU 信息:&lt;/p&gt;
@@ -1708,7 +1711,7 @@
 &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;h2 id=&#34;expire&#34;&gt;expire&lt;/h2&gt;
-&lt;p&gt;设置了过期时间的 &lt;code&gt;key&lt;/code&gt;，会将 &amp;lt;key, expire-time&amp;gt; 映射加入到 &lt;code&gt;redisDb-&amp;gt;expires&lt;/code&gt; 字典中，以支持后续的键过期行为。Redis 的键过期以被动的方式进行，只会在访问到该 &lt;code&gt;key&lt;/code&gt; 的时候触发。访问的方式大致可以分为两种：&lt;/p&gt;
+&lt;p&gt;设置了过期时间的 &lt;code&gt;key&lt;/code&gt;，会将 &amp;lt;key, absolute-expire-time&amp;gt; 映射加入到 &lt;code&gt;redisDb-&amp;gt;expires&lt;/code&gt; 字典中，以支持后续的键过期行为。Redis 的键过期以被动的方式进行，只会在访问到该 &lt;code&gt;key&lt;/code&gt; 的时候触发。访问的方式大致可以分为两种：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;在客户端访问到该 &lt;code&gt;key&lt;/code&gt; 时调用 &lt;code&gt;expireIfNeeded&lt;/code&gt; 触发过期删除操作，例如查找、删除、&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/db.c#L296&#34;&gt;随机返回 key&lt;/a&gt;和 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/db.c#L867&#34;&gt;Scan&lt;/a&gt;操作时&lt;/p&gt;
@@ -7498,9 +7501,9 @@ s-hdrlen          s-1       s
 &lt;td style=&#34;text-align:left&#34;&gt;记录和生成 Redis 的发行版本信息&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Y&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;replication.c&lt;/code&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;复制功能的实现&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;异步复制功能的实现&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
