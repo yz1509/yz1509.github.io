@@ -6,10 +6,477 @@
     <description>Recent content on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 29 Oct 2020 15:20:48 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 08 Dec 2020 10:23:40 +0800</lastBuildDate>
     
         <atom:link href="https://k-on.me/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Specifying Systems Notes</title>
+      <link>https://k-on.me/post/specifying-systems-notes/</link>
+      <pubDate>Tue, 08 Dec 2020 10:23:40 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/specifying-systems-notes/</guid>
+      
+        <description>&lt;p&gt;&lt;a href=&#34;http://lamport.azurewebsites.net/tla/book-02-08-08.pdf&#34;&gt;《Specifying Systems》&lt;/a&gt; 阅读笔记。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;chapter-1-a-little-simple-math&#34;&gt;Chapter 1: A Little Simple Math&lt;/h2&gt;
+&lt;h3 id=&#34;propositional-logic&#34;&gt;Propositional Logic&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Propositional_calculus&#34;&gt;Propositional Logic&lt;/a&gt; (命题逻辑) is the mathematics of the two Boolean values &lt;code&gt;TRUE&lt;/code&gt; and &lt;code&gt;FALSE&lt;/code&gt; and the five operators whose names are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$\land$ conjunction (and)&lt;/li&gt;
+&lt;li&gt;$\lor$ disjunction (or)&lt;/li&gt;
+&lt;li&gt;$\lnot$ negation (not)&lt;/li&gt;
+&lt;li&gt;$\Rightarrow$ implication (implies)&lt;/li&gt;
+&lt;li&gt;$\equiv$ equivalence (is equivalent to)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Tautology_(logic)&#34;&gt;Tautology&lt;/a&gt; (恒真式) is a formula or assertion that is ture in every possible interpretation. 比如 $F \Rightarrow G \equiv \lnot F \lor G$ 是一个 tautology。&lt;/p&gt;
+&lt;h3 id=&#34;predicate-logic&#34;&gt;Predicate Logic&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/First-order_logic&#34;&gt;Predicate Logic&lt;/a&gt; (谓词逻辑) extends propositional logic with the two quantifiers:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$\forall$ universal quantification (for all)&lt;/li&gt;
+&lt;li&gt;$\exists$ existential quantification (there exists)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;其中，&lt;a href=&#34;https://en.wikipedia.org/wiki/Predicate_(mathematical_logic)&#34;&gt;Predicate&lt;/a&gt; 可以看作为一个布尔值函数，而 &lt;a href=&#34;https://en.wikipedia.org/wiki/Quantifier_(logic)&#34;&gt;quantifiers&lt;/a&gt; 指定了该 predicate 成立的程度。&lt;/p&gt;
+&lt;h2 id=&#34;chapter-2-specifying-a-simple-clock&#34;&gt;Chapter 2: Specifying a Simple Clock&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;state&lt;/strong&gt;: an assignment of values to varibles.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;behavior&lt;/strong&gt; is an infinite sequence of states.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;step&lt;/strong&gt;: a pair of successive states.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;action&lt;/strong&gt;: an action is a formula, is true or false of a step.
+&lt;ul&gt;
+&lt;li&gt;A step is satisfies the action $A$ is called an $A$ step&lt;/li&gt;
+&lt;li&gt;An action is a formula, and formulas aren&amp;rsquo;t executed&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;stuttering steps&lt;/strong&gt;: steps that leave specified state unchanged.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;theorem&lt;/strong&gt;: a temporal formula satisfied by every behavior is called a theorem.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;小结&#34;&gt;小结&lt;/h3&gt;
+&lt;p&gt;在本章中作者通过简单的 Clock 例子展示了使用 TLA+ 描述一个系统时的大致流程：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;先给出系统初始状态 $Init$&lt;/li&gt;
+&lt;li&gt;再描述系统状态变化的行为 $Next$&lt;/li&gt;
+&lt;li&gt;然后，得到 $Spec \triangleq Init \land \Box [Next]_{vars}$&lt;/li&gt;
+&lt;li&gt;最后给出系统应满足的条件：$\mathrm{THEOREM} \enspace Spec \Rightarrow \mathrm{Temporal \enspace formula}$&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;chapter-3-an-asynchronous-interface&#34;&gt;Chapter 3: An Asynchronous Interface&lt;/h2&gt;
+&lt;h3 id=&#34;invariant--type&#34;&gt;Invariant &amp;amp; Type&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;A &lt;strong&gt;state function&lt;/strong&gt; is an ordinary expression (one with no prime or $\Box$) that can contain variables and constants.&lt;/li&gt;
+&lt;li&gt;A &lt;strong&gt;state predicate&lt;/strong&gt; is a Boolean-valued state function. (one with no prime or $\Box$)&lt;/li&gt;
+&lt;li&gt;An &lt;strong&gt;invariant&lt;/strong&gt; $Inv$ of a specification $Spec$ is a state predicate such that $Spec \Rightarrow \Box Inv$ is a theorem.&lt;/li&gt;
+&lt;li&gt;A variable $v$ has &lt;strong&gt;type&lt;/strong&gt; $T$ in a specification $Spec$ iff $v \in T$ is an invariant of $Spec$.&lt;/li&gt;
+&lt;li&gt;PS: TLA+ is an untyped language. Type correctness is just a name for a certain invariance property.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;record&#34;&gt;Record&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;A &lt;strong&gt;record&lt;/strong&gt; is a function whose domain is a finite set of strings.&lt;/p&gt;
+&lt;p&gt;eg. $[val \mapsto d, ack \mapsto 1, rdy \mapsto 0]$ can be written&lt;/p&gt;
+&lt;p&gt;$[i \in \lbrace &amp;ldquo;val&amp;rdquo;, &amp;ldquo;ack&amp;rdquo;, &amp;ldquo;rdy&amp;rdquo;\rbrace \mapsto $
+$$\mathrm{IF} \enspace i = &amp;ldquo;val&amp;rdquo; \enspace \mathrm{THEN} \enspace  42 \enspace  \mathrm{ELSE \enspace IF} \enspace i = &amp;ldquo;ack&amp;rdquo; \enspace \mathrm{THEN} \enspace 1 \enspace \mathrm{ELSE} \enspace 0]$$&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;In general, for any record $r$, the expression $[r \enspace \mathrm{EXCEPT} \enspace !.c_1 = e_1, \cdots , !.c_n = e_n]$ is the record obtained from $r$ by replacing $r.c_i$ with $e_i$, for each $i$ in $1 .. n$.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;!&lt;/code&gt; as standing for the new record $r&#39;$&lt;/li&gt;
+&lt;li&gt;an &lt;code&gt;@&lt;/code&gt; in the expression $e_i$ stands for $r.c_i$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;definitions&#34;&gt;Definitions&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;operators&lt;/strong&gt;: We define operators that take &lt;em&gt;more than one argument&lt;/em&gt; in the obvious way, the general form being&lt;/p&gt;
+&lt;p&gt;$$Id(p_1, \dots, p_n) \triangleq exp$$&lt;/p&gt;
+&lt;p&gt;where the $p_i$ are distinct identifiers and $exp$ is an expression.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;symbol&lt;/strong&gt;: mean an identifier or an operator.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Every symbol declaration or definition has a &lt;strong&gt;scope&lt;/strong&gt; within the symbol may bes used.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The statement $\mathrm{EXTENDS}$ extends the scope of symbols&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;A symbol cannot be declared or defined if it already has a meaning.&lt;/p&gt;
+&lt;p&gt;eg. $\exists v \in S : (exp1 \land \exists v \in T : exp2)$ is illegal.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;comments&#34;&gt;Comments&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;单行注释：&lt;code&gt;\*&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;多行注释：&lt;code&gt;(*....*)&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;小结-1&#34;&gt;小结&lt;/h3&gt;
+&lt;p&gt;在本章中，作者通过示例展示了在描述一个系统时：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;可以通过定义 &lt;code&gt;invariant&lt;/code&gt; 描述系统该满足的条件，以便于理解，比如 type-correctness invariant&lt;/li&gt;
+&lt;li&gt;可以使用 &lt;code&gt;record&lt;/code&gt; 将多个变量整合为单个变量&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;chapter-4-a-fifo&#34;&gt;Chapter 4: A FIFO&lt;/h2&gt;
+&lt;h3 id=&#34;instantiation-examined&#34;&gt;Instantiation Examined&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Instantiation Is Substitution&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Let&amp;rsquo;s now consider an arbitrary $\mathrm{INSTANCE}$ statement&lt;/p&gt;
+&lt;p&gt;$$IM \triangleq \mathrm{INTANCE} \enspace M \enspace \mathrm{WITH} \enspace p_1 \leftarrow e_1, \dots, p_n \leftarrow e_n$$&lt;/p&gt;
+&lt;p&gt;Let $\Sigma$ be a symbol defined in module $M$ and let $d$ be its &amp;ldquo;real&amp;rdquo; definition.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The $\mathrm{INSTANCE}$ statement defines $IM!\Sigma$ to have as its real definition the expression obtained from $d$ by replacing all instances of $p_i$ by the expression $e_i$, for each $i$.&lt;/li&gt;
+&lt;li&gt;The definition of $IM!\Sigma$ must contain only the parameters (declared constants and variables) of the current module, not the ones of module $M$.
+&lt;ul&gt;
+&lt;li&gt;Hence, the $p_i$ must consist of all the parameters of module $M$.&lt;/li&gt;
+&lt;li&gt;The $e_i$ must be expressions that are meaningful in the current module.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Parametrized Instantiation&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;$$InChan \triangleq \mathrm{INTSANCE} \enspace Channel \enspace \mathrm{WITH} \enspace Data \leftarrow Message, chan \leftarrow in$$
+$$OutChan \triangleq \mathrm{INTSANCE} \enspace Channel \enspace \mathrm{WITH} \enspace Data \leftarrow Message, chan \leftarrow out$$&lt;/p&gt;
+&lt;p&gt;可以使用参数实例化，将上述两个实例化语句合为一条语句：&lt;/p&gt;
+&lt;p&gt;$$Chan(ch) \triangleq \mathrm{INTSANCE} \enspace Channel \enspace \mathrm{WITH} \enspace Data \leftarrow Message, chan \leftarrow ch$$&lt;/p&gt;
+&lt;p&gt;其中 $ch \in \lbrace in, out \rbrace$。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Implicit Substitutions&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;我们也可以使用当前 module 中的参数替代将要实例化的 module 中同名参数，例如:&lt;/p&gt;
+&lt;p&gt;$$InChan \triangleq \mathrm{INTSANCE} \enspace Channel \enspace \mathrm{WITH} \enspace Data \leftarrow Data, chan \leftarrow in$$&lt;/p&gt;
+&lt;p&gt;TLA+ allows us to drop any substiotution of the form $\Sigma \leftarrow \Sigma$, for a symbol $\Sigma$. So, the statement above can be written as&lt;/p&gt;
+&lt;p&gt;$$InChan \triangleq \mathrm{INTSANCE} \enspace Channel \enspace \mathrm{WITH} \enspace chan \leftarrow in$$&lt;/p&gt;
+&lt;p&gt;其中，$Data$ 参数会被当前 module 中的 $Data$ 参数隐式替代。特别地，当所有参数都使用隐式替代时，$\mathrm{WITH}$ 语句可以省略。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Instantiation Without Renaming&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;当同一 module 有多个实例或使用参数实例化时，我们需要使用 $IM!\Sigma$ 重命名 $\Sigma$ 以区分不同的实例。但当该 module 只有一个实例时，我们可以省略重命名，此时，实例化语句可以使用如下格式：&lt;/p&gt;
+&lt;p&gt;$$\mathrm{INTSANCE} \enspace Channel \enspace \mathrm{WITH} \enspace Data \leftarrow D, chan \leftarrow x$$&lt;/p&gt;
+&lt;p&gt;This instantiates $Channel$ with no renaming, but with substitution.&lt;/p&gt;
+&lt;h3 id=&#34;hiding-variables&#34;&gt;Hiding variables&lt;/h3&gt;
+&lt;p&gt;In TLA, we hide a variable with the existential quantifier &lt;strong&gt;∃&lt;/strong&gt; of temporal logic.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;In the formula &lt;strong&gt;∃&lt;/strong&gt;$x : F$, the symbol $x$ is declared to be a variable in $F$.&lt;/li&gt;
+&lt;li&gt;Unlike $\exists r : F$, which asserts the existence of a single value $r$, the formula &lt;strong&gt;∃&lt;/strong&gt;$x : F$ asserts the exitence of a value for $x$ in each state of a behavior.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;因此，我们可以通过结合量词 &lt;strong&gt;∃&lt;/strong&gt; 和参数实例化的特性达到隐藏变量的目的，例如：&lt;/p&gt;
+&lt;p&gt;$ Inner(q) \triangleq \mathrm{INSTANCE} \enspace InnerFIFO$&lt;/p&gt;
+&lt;p&gt;$Spec \triangleq$ &lt;strong&gt;∃&lt;/strong&gt; $q : Inner(q)!Spec$&lt;/p&gt;
+&lt;p&gt;The variable parameter $q$ of module $InnerFIFO$ is instantiated with the parameter $q$ of the definition of $Inner$.&lt;/p&gt;
+&lt;h3 id=&#34;assume&#34;&gt;ASSUME&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;An $\mathrm{ASSUME}$ statement should be used only to make assumptions about &lt;strong&gt;constants&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;我们不需要假定某个常量是集合类型，because in TLA+, every value is a set.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;小结-2&#34;&gt;小结&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;介绍了 Instantiation，并展示了如何利用实例化以使用其他 module&lt;/li&gt;
+&lt;li&gt;通过利用量词 &lt;strong&gt;∃&lt;/strong&gt; 和参数实例化的特性可达到隐藏变量的目的&lt;/li&gt;
+&lt;li&gt;利用 $\mathrm{ASSUME}$ 语句可以设定 $\mathrm{CONSTANT}$ 的取值范围&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;chapter-5-a-caching-memory&#34;&gt;Chapter 5: A Caching Memory&lt;/h2&gt;
+&lt;h3 id=&#34;parameters&#34;&gt;Parameters&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;The way to leave something unspecified in a specification is to make ti a parameter&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;TLA+ provides only $\mathrm{CONSTANCE}$ and $\mathrm{VARIABLE}$ parameters, not action parameters, we can declare a &lt;strong&gt;constant operator&lt;/strong&gt; to descirbe the action.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;In TLA+, we declare $Send$ to be a constant operator that takes four arguments by writing:&lt;/p&gt;
+&lt;p&gt;$$\mathrm{INSTANCE} \enspace Send(\rule[-0pt]{0.3cm}{0.5pt}， \rule[-0pt]{0.3cm}{0.5pt}， \rule[-0pt]{0.3cm}{0.5pt}， \rule[-0pt]{0.3cm}{0.5pt})$$&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The expression $\mathrm{CHOOSE} \enspace v : v \notin Val$ equals an arbitrarily chosen value $x$ that satisfies the formula. If no such $x$ exists, the expression has a completely arbitrary value.&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;functions&#34;&gt;Functions&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;A function $f$ has a domain, written $\mathrm{DOMAIN} \enspace f$, and it assigns to each element $x$ of its domain the value $f[x]$&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;For any sets $S$ and $T$, the set of all functions whose domain equals $S$ and whose range is any subset of $T$ is written $[S \rightarrow T]$&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;A record is a function whose domain is a finite set of strings&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;In general, $[f \enspace \mathrm{EXCEPT} \enspace ![c_1] = e_1, \dots, ![c_n] = e_n]$ is the function $\hat{f}$ that is the same as $f$ except with $\hat{f}[c_i]= e_i$ for each $i$. More precisely, this expression equals&lt;/p&gt;
+&lt;p&gt;$$[\dots[[f \enspace \mathrm{EXCEPT} \enspace ![c_1] = e_1]\enspace \mathrm{EXCEPT} \enspace ![c_2] = e_2]\dots \enspace \mathrm{EXCEPT} \enspace ![c_n] = e_n]$$&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Functions correspond to the arrays of programming languages. A function whose range is a set of functions corresponds to an array of arrays. eg:&lt;/p&gt;
+&lt;p&gt;$$[f \enspace \mathrm{EXCEPT} \enspace ![c][d] = e]$$&lt;/p&gt;
+&lt;p&gt;can be written as&lt;/p&gt;
+&lt;p&gt;$$[f \enspace \mathrm{EXCEPT} \enspace ![c] = [@ \enspace \mathrm{EXCEPT} \enspace ![d] = e]]$$&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;TLA+ uniformly maintains the notation that $\sigma.c$ is an abbreviation for $\sigma[&amp;ldquo;c&amp;rdquo;]$. For example, this implies&lt;/p&gt;
+&lt;p&gt;$$[f \enspace \mathrm{EXCEPT} \enspace ![c].d = e] = [f \enspace \mathrm{EXCEPT} \enspace ![c][&amp;ldquo;d&amp;rdquo;] = e]$$&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;In TLA+, as in ordinary mathematics, a function of multiple arguments is one whose domain is a set of tuples. For example, $f[5, 3, 1]$ is an abbreviation for $f[\langle 5, 3, 1 \rangle]$, the value of the function $f$ applied to the triple $\langle 5, 3, 1 \rangle$&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;TLA+ provides the Cartesian product operator $\times$ of ordinary mathematics, where $A \times B \times C$ is the set of all 3-tuples $\langle a, b, c \rangle$ such that $a \in A, b \in B$, and $c \in C$.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The $\mathrm{LET}$ clause consists of a sequence of definitions whose scope extends until the end of the $\mathrm{IN}$ clause.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;When writing specifications, we almost always want to specify the new value of a variable $f$ rather than the new values of $f[i]$ for all $i$ in some set.
+$$\text{(a)} \space f&#39; = [i \in Nat \mapsto i + 1] \qquad \surd$$
+$$\text{(b)} \space \forall i \in Nat : f&#39;[i] = i + 1 \qquad \times$$&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Formula (a) uniquely determines $f&#39;$, asserting that it&amp;rsquo;s a function with domain $Nat$&lt;/li&gt;
+&lt;li&gt;Formula (b) is satisfied by lots of different values of $f&#39;$.In fact, wo can&amp;rsquo;t even deduce that $f&#39;$ is a function.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Recursive function&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Follow definition is illegal because the occurrence of fact to the right of the $\triangleq$ is undefined
+$$fact \triangleq [n \in Nat \mapsto \mathrm{IF} \enspace n = 0 \enspace \mathrm{THEN} \enspace 1 \enspace \mathrm{ELSE} \enspace n * fact[n-1]]$$&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;In general, a definition of the form $f[x \in S] \triangleq e$ can be used to define &lt;strong&gt;recursively&lt;/strong&gt; a function $f$ with domain $S$.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;In general, $f[x \in S] \triangleq e$ is an abbreviation for
+$$f \triangleq \mathrm{CHOOSE} \enspace f : f = [x \in S \mapsto e]$$&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;TLA+ does not allow mutually recursive definition, but you can convert any mutually recursive definitions into a single recursive definition of a record-valued function whose fields are the desired functions.(P68-69, 6.3)&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;invariance&#34;&gt;Invariance&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;In general, when $P \land N \Rightarrow P&#39;$ holds, we say that predicate $P$ is an invariant of action $N$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;小结-3&#34;&gt;小结&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;当不知如何规范化描述某事物时，可先将其看作 parameter&lt;/li&gt;
+&lt;li&gt;可以利用 $\mathrm{CHOOSE}$ 表示不属于某集合的值&lt;/li&gt;
+&lt;li&gt;invariant of action $\neq$ invariant of formula&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;chapter-6-some-more-math&#34;&gt;Chapter 6: Some More Math&lt;/h2&gt;
+&lt;h3 id=&#34;sets&#34;&gt;Sets&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;built-in operators of TLA+&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;The most common operations:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;intersection $\cap$&lt;/li&gt;
+&lt;li&gt;union $\cup$&lt;/li&gt;
+&lt;li&gt;subset $\subseteq$&lt;/li&gt;
+&lt;li&gt;set difference $\setminus$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;$\mathrm{UNION} \enspace S$: The union of the elements of $S$. For example,
+$$\mathrm{UNION} \enspace \lbrace \lbrace 1, 2 \rbrace, \lbrace 2, 3 \rbrace, \lbrace 3, 4 \rbrace \rbrace = \lbrace 1, 2, 3, 4 \rbrace$$&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;$\mathrm{SUBSET} \enspace S$: The set of all subsets of $S$. For example,
+$$\mathrm{SUBSET} \enspace \lbrace 1, 2 \rbrace = \lbrace \lbrace \rbrace, \lbrace 1 \rbrace, \lbrace 2 \rbrace, \lbrace 1, 2 \rbrace \rbrace$$&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;$\{x \in S : p\}$: The subset of $S$ consisting of all elements $x$ satisfying property $p$&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;$\{e : x \in S\}$: The set of elements of the form $e$, for all $x$ in the set $S$&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;operators defined by module FiniteSets&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$Cardinality(S)$: The number of elements in set $S$, if $S$ is a finite set&lt;/li&gt;
+&lt;li&gt;$IsFiniteSet(S)$: True iff $S$ is a finite set&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Russell&amp;rsquo;s paradox&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Let $\mathcal{R}$ be the set of all sets $S$ such that $S \notin S$. The definiton of $\mathcal{R}$ implies that $\mathcal{R} \in \mathcal{R}$ is true iff $\mathcal{R} \notin \mathcal{R}$ is true.&lt;/p&gt;
+&lt;p&gt;A collection $\mathcal{C}$ is too big to be a set if it is as big as the collection of all sets &amp;mdash; meaning that we can assign to every set a different element of $\mathcal{C}$. That is, $\mathcal{C}$ is too big to be a set if we can define an operator $SMap$ such that&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$SMap(S)$ is in $\mathcal{C}$, for any set $S$&lt;/li&gt;
+&lt;li&gt;If $S$ and $T$ are two different sets, then $SMap(S) \neq SMap(T)$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;silly-expressions&#34;&gt;Silly Expressions&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;TLA+ is based on the usual formalization of mathematics by mathematicians, which doesn&amp;rsquo;t hava types.&lt;/li&gt;
+&lt;li&gt;A correct formula can contain silly expressions.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;functions-versus-operators&#34;&gt;Functions versus Operators&lt;/h3&gt;
+&lt;p&gt;$$Tail(s) \triangleq [i \in 1 .. (Len(s) - 1) \mapsto s[i+1]]$$
+$$fact[n \in Nat] \triangleq \mathrm{IF} \enspace n = 0 \enspace \mathrm{THEN} \enspace 1 \enspace \mathrm{ELSE} \enspace n*fact[n-1]$$&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A function like $fact$ by itself is a complete expression that denote a value, but an operator like $Tail$ is not.&lt;/li&gt;
+&lt;li&gt;Unlike an operator, a function must have a domain, which is a set.&lt;/li&gt;
+&lt;li&gt;Unlike a function, an operator cannot be defined recursively in TLA+.
+&lt;blockquote&gt;
+&lt;p&gt;However, we can usually transform an illegal recursive operator definition into a nonrecursive one using a recursive function definition.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;Operators also differ from functions in that an operator can take an operator as an argument.&lt;/li&gt;
+&lt;li&gt;The definition of $Tail$ defines $Tail(s)$ for all values of $s$. whatever $Tail(s)$ means, it equals $Tail(s)$. But the definition of $fact$ defines $fact[n]$ only for $n \in Nat$, it tells us nothing about the value of $fact[1/2]$.&lt;/li&gt;
+&lt;li&gt;TLA+ doesn&amp;rsquo;t permit us to define infix functions&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;chapter-7-writing-a-specification-some-advice&#34;&gt;Chapter 7: Writing a Specification: Some Advice&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Why Specify?
+&lt;ul&gt;
+&lt;li&gt;help the design process&lt;/li&gt;
+&lt;li&gt;consice way of communicating a design&lt;/li&gt;
+&lt;li&gt;find errors in the design and to help in testing the system&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;What to Specify?
+&lt;ul&gt;
+&lt;li&gt;TLA+ is particularly effective at revealing concurrency errors - ones that arise through the interraction of asynchronous components. So when writing a TLA+ specification, you will probably concentrate your efforts on the parts of the system that are most likely to have such errors.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;The level of abstraction &amp;mdash; tradeoff of precise and cost
+&lt;ul&gt;
+&lt;li&gt;The Grain of Atomicity&lt;/li&gt;
+&lt;li&gt;The Data Structures&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Writing the Specification
+&lt;ol&gt;
+&lt;li&gt;Pick the variables and define the type invariant and initial predicate&lt;/li&gt;
+&lt;li&gt;Write the next-state action, which forms the bulk of the specification&lt;/li&gt;
+&lt;li&gt;Write the temporal part of the specification&lt;/li&gt;
+&lt;li&gt;Assert theorems about the specification&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;Some Further Hints
+&lt;ul&gt;
+&lt;li&gt;Don&amp;rsquo;t be too clever, make a specification easy to read&lt;/li&gt;
+&lt;li&gt;A type invariant is not an assumption, is a property of a specification&lt;/li&gt;
+&lt;li&gt;Don&amp;rsquo;t be too abstract&lt;/li&gt;
+&lt;li&gt;Don&amp;rsquo;t assume values that look different are unequal
+&lt;ul&gt;
+&lt;li&gt;The rules of TLA+ do not imply that $1 \neq &amp;ldquo;a&amp;rdquo;$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Move quantification to the outside&lt;/li&gt;
+&lt;li&gt;Prime only what you mean to prime
+&lt;ul&gt;
+&lt;li&gt;PS: you can prime only an expression, not an operator&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Write comments as comments&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;chapter-8-liveness-and-fairness&#34;&gt;Chapter 8: Liveness and Fairness&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Safety properties: waht a system must not do&lt;/li&gt;
+&lt;li&gt;Liveness properties: something does happen&lt;/li&gt;
+&lt;li&gt;We express liveness properties as temporal formulas&lt;/li&gt;
+&lt;li&gt;Liveness properties are likely to be the least important part of your specification&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;temporal-formulas&#34;&gt;Temporal Formulas&lt;/h3&gt;
+&lt;p&gt;&lt;strong&gt;Definition&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A temporal formula is true or false of a $behavior$.&lt;/li&gt;
+&lt;li&gt;Formally, a temporal formula $F$ assigns a Boolean value, which we write $\sigma \models F$, to a behavior $\sigma$.&lt;/li&gt;
+&lt;li&gt;We say that $F$ is true of $\sigma$, or that $\sigma$ satisfies $F$, iff $\sigma \models F$ equals $\mathrm{TRUE}$.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;em&gt;PS: reviews&lt;/em&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;Term&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;A formula is true or false of this term&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;state&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;state predicate $P$&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;setp&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;action $A$&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;behavior&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;temporal formula $F$&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Unquantified temporal formuals&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;All the unquantified temporal formulas that we&amp;rsquo;ve seen have been Boolean combinations of three simple kinds of formulas:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;A $state \ predicate$ $P$, viewed as a temporal formula, is true of a behavior iff it is true in the first state of the behavior.&lt;/li&gt;
+&lt;li&gt;A formula $\Box P$, where $P$ is a $state \ predicate$, is true of a behavior iff $P$ is true in every state of the behavior&lt;/li&gt;
+&lt;li&gt;A formula $\Box [N]_v$, where $N$ is an $action$ and $v$ is a state function, is true of a behavior iff every successive pair of steps in the behavior is a $[N]_v$ step.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Since a state predicate is an action that contains no primed variables, than
+$$\{P, \Box P, \Box [N]_v\} \equiv \{A, \Box A\}$$
+where $A$ is an action.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;We interpret an arbitrary action $A$ as a temporal formula by defining $\sigma \models A$ to be true iff the first two states of $\sigma$ are an $A$ step
+&lt;ul&gt;
+&lt;li&gt;use the notation $\sigma_i$ that is the $(i+1)^{st}$ state of the behavior $\sigma$, for any natural number $i$, so $\sigma$ is the behavior $\sigma_0 \rightarrow \sigma_1 \rightarrow \sigma_2 \rightarrow \cdots$&lt;/li&gt;
+&lt;li&gt;That is, $\sigma \models A$ is true iff $\sigma_0 \rightarrow \sigma_1$ is an $A$ step&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;We defined $\sigma \models \Box A$ to be true iff $\sigma_n \rightarrow \sigma_{n+1}$ is an $A$ step for all $n$. In other words:
+$$\sigma \models \Box A \quad \equiv \quad \forall n \in Nat : \sigma^{+n} \models A$$
+where $\sigma^{+n} \triangleq \sigma_n \rightarrow \sigma_{n+1} \rightarrow \sigma_{n+2} \rightarrow \cdots$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The obvious generalization is&lt;/p&gt;
+&lt;p&gt;$$\sigma \models \Box F \quad \triangleq \quad \forall n \in Nat : \sigma^{+n} \models F$$&lt;/p&gt;
+&lt;p&gt;for any temporal formula $F$. In other words, $\sigma$ satisfies $\Box F$ iff every $\sigma^{+n}$ of $\sigma$ satisfies $F$.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;This defines the meaning of the temporal operator $\Box$. We can therefore read $\Box$ as &lt;em&gt;always&lt;/em&gt; or &lt;em&gt;henceforth&lt;/em&gt; or &lt;em&gt;from then on&lt;/em&gt;.&lt;/li&gt;
+&lt;li&gt;We say that a formula $F$ is &lt;em&gt;invariant under stuffering&lt;/em&gt; iff adding or deleting a stuffering step to a behavior $\sigma$ does not affect whether $\sigma$ satisfies $F$
+&lt;ul&gt;
+&lt;li&gt;A state predicate (viewed as a temporal formula) is invariant under stuttering&lt;/li&gt;
+&lt;li&gt;In general, the formula $\Box [A]_v$ is invariant under stuttering, for ant action $A$ and state function $v$. However, $\Box A$ is not invariant under stuttering for an arbitrary action $A$&lt;/li&gt;
+&lt;li&gt;Invariant under stuttering is preserved by $\Box$ and by Boolean operators &amp;mdash; that is, if $F$ and $G$ are invariant under stuttering, then so are $\Box F$, $\lnot F$, $F \land G$, $\forall x \in S : F$, etc.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Five especially important classes of formulas&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;$\Diamond F \quad$ is defined to equal $\lnot \Box \lnot F$. It asserts that $F$ is not always false, which means that $F$ is true at some time&lt;/p&gt;
+&lt;p&gt;$$\sigma \models \Diamond F \quad \equiv \quad \exists n \in Nat : \sigma^{+n} \models F$$&lt;/p&gt;
+&lt;p&gt;We usually read $\Diamond$ as &lt;em&gt;eventually&lt;/em&gt;, taking eventually to include now.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;$F \rightsquigarrow G \quad$ is defined to equal $\Box(F \Rightarrow \Diamond G)$. It asserts that whenever $F$ is true, $G$ is eventually true &amp;mdash; that is, $G$ is true then or at some later time.&lt;/p&gt;
+&lt;p&gt;$\sigma \models (F \rightsquigarrow G) \quad \equiv \quad $
+$$\forall n \in Nat : (\sigma^{+n} \models F) \Rightarrow (\exists m \in Nat : (\sigma^{+(n+m)} \models G))$$&lt;/p&gt;
+&lt;p&gt;We read $\rightsquigarrow$ as &lt;em&gt;leads to&lt;/em&gt;.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;$\Diamond \langle A \rangle_v \quad$ is defined to equal $\lnot \Box [\lnot A]_v$, where $A$ is an action and $v$ is a state function. It asserts that not every step is a $(\lnot A) \lor (v&#39; = v)$ step, so some step is a $A \land (v&#39; \ne v)$ &amp;mdash; that is, an $A$ step that changes $v$. We defines the action $\langle A \rangle_v$ by&lt;/p&gt;
+&lt;p&gt;$$\langle A \rangle_v \triangleq A \land (v&#39; \ne v)$$&lt;/p&gt;
+&lt;p&gt;so $\Diamond \langle A \rangle_v$ asserts that eventually $\langle A \rangle_v$ step occurs&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;$\Box \Diamond F \quad$ asserts that at all times, $F$ is true then or at some later time.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;It asserts that $F$ is &lt;em&gt;infinitely often&lt;/em&gt; true (无限但不连续)&lt;/li&gt;
+&lt;li&gt;In particular, $\Box \Diamond \langle A \rangle_v$ asserts that infinitely many $\langle A \rangle_v$ steps occur&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;$\Diamond \Box F \quad$ asserts that eventually (at some time), $F$ becomes true and remains true thereafter.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;It asserts $F$ is &lt;em&gt;eventually always&lt;/em&gt; true (连续)&lt;/li&gt;
+&lt;li&gt;In particular, $\Diamond \Box [N]_v$ asserts that, eventually, every step is a $[N]_v$ step&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;temporal-tautologies&#34;&gt;Temporal Tautologies&lt;/h3&gt;
+&lt;h3 id=&#34;temporal-proof-rules&#34;&gt;Temporal Proof Rules&lt;/h3&gt;
+&lt;h3 id=&#34;weak-fairness&#34;&gt;Weak Fairness&lt;/h3&gt;
+&lt;h3 id=&#34;小结-4&#34;&gt;小结&lt;/h3&gt;</description>
+      
+    </item>
     
     <item>
       <title>Redis 源码阅读 --- Client</title>
@@ -13766,107 +14233,6 @@ Normally when you call this function from the callback implementing a module com
 &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;</description>
-      
-    </item>
-    
-    <item>
-      <title>分布式系统相关笔记</title>
-      <link>https://k-on.me/post/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%85%B3%E7%AC%94%E8%AE%B0/</link>
-      <pubDate>Mon, 17 Aug 2020 20:08:58 +0000</pubDate>
-      
-      <guid>https://k-on.me/post/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%85%B3%E7%AC%94%E8%AE%B0/</guid>
-      
-        <description>&lt;p&gt;分布式系统相关资源汇总及简要笔记。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;基础概念&#34;&gt;基础概念&lt;/h2&gt;
-&lt;h3 id=&#34;一致性相关&#34;&gt;一致性相关&lt;/h3&gt;
-&lt;h4 id=&#34;strong-consistency-models&#34;&gt;Strong consistency models&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&#34;https://zhuanlan.zhihu.com/p/48782892&#34;&gt;中文版&lt;/a&gt; &lt;a href=&#34;https://aphyr.com/posts/313-strong-consistency-models&#34;&gt;英文版&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;正确性 (Correctness)&lt;/strong&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;我们说一个&lt;code&gt;系统&lt;/code&gt;是由&lt;code&gt;状态&lt;/code&gt;和一些导致状态转移的&lt;code&gt;操作&lt;/code&gt;组成的&lt;/li&gt;
-&lt;li&gt;系统的&lt;code&gt;正确性&lt;/code&gt;：给定一些涉及状态与操作的&lt;code&gt;规则&lt;/code&gt;，随着操作的演进，系统将一直遵循这些规则。我们把这样的规则成为&lt;code&gt;一致性模型&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;更加正式地说，一致性模型是所有被允许的操作记录的集合。如果任意可能执行的操作都在这个被允许的操作集合内，那么系统就满足一致性模型&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;光锥 (Light cones)&lt;/strong&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;读写不是一个瞬时的过程，而是一个类似 光传播(调用) -&amp;gt; 反射面(执行) -&amp;gt; 反向传播(完成) 的过程&lt;/li&gt;
-&lt;li&gt;因此，调用的先后顺序并不等于操作真实执行的先后顺序&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;线性一致性 (Linearizability)&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;每个操作会在它调用和完成之间的某个时间点原子地生效.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;对于观察者来说，所有的读和写都在一个单调递增的时间线上串行地向前推进&lt;/li&gt;
-&lt;li&gt;所有的读总能返回最近写操作的值&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;顺序一致性 (Sequential consistency)&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;如果我们允许进程在时间维度发生偏移，从而它们的操作可能会在调用之前或是完成之后生效，但仍然保证一个约束 —— 任意进程中的操作必须按照进程中定义的顺序 (即编程的定义的逻辑顺序) 发生。这样我们就得到了一个稍弱的一致性模型：顺序一致性。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;不要求操作按照真实的时间顺序发生 (可能读到过期数据)&lt;/li&gt;
-&lt;li&gt;不同进程间的操作执行先后顺序没有强制要求，但必须是原子的&lt;/li&gt;
-&lt;li&gt;单个进程内的操作顺序必须和编码时的顺序一致&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;因果一致性 (Casual consistency)&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;不对一个进程中的每个操作都施加顺序约束。只有因果相关的操作必须按顺序发生。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;串行一致性 (Serializable consistency)&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;串行一致性是事务的隔离属性，每个事务可以读写多个对象 (行，文档，记录)。它确保事务的行为，与它们按照某种顺序依次执行的结果相同 (每个事务在下一个事务开始之前运行完成)。这种执行顺序可以与事务实际执行的顺序不同，和调用时间与完成时间无关。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;串行一致性是对多操作，多对象的保证，对总体的操作顺序无要求&lt;/li&gt;
-&lt;li&gt;线性一致性是对单操作，单对象的保证，所有操作遵循真实时间序&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3 id=&#34;cap-定理相关&#34;&gt;CAP 定理相关&lt;/h3&gt;
-&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/CAP_theorem&#34;&gt;CAP 定理&lt;/a&gt;指出对于一个分布式计算系统来说，不可能同时满足以下三点：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;一致性 (Consistency): Every read receives the most recent write or an error&lt;/li&gt;
-&lt;li&gt;可用性 (Availability): Every request receives a (non-error) response, without the guarantee that it contains the most recent write&lt;/li&gt;
-&lt;li&gt;分区容错性 (Partition tolerance): The system continues to operate despite an arbitrary number of messages being dropped (or delayed) by the network between nodes&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h4 id=&#34;cap-twelve-years-later-how-the-rules-have-changed&#34;&gt;CAP Twelve Years Later: How the &amp;ldquo;Rules&amp;rdquo; Have Changed&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&#34;https://www.infoq.cn/article/cap-twelve-years-later-how-the-rules-have-changed/&#34;&gt;中文版&lt;/a&gt; &lt;a href=&#34;https://www.infoq.com/articles/cap-twelve-years-later-how-the-rules-have-changed/&#34;&gt;英文版&lt;/a&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;三选二具有误导性&lt;/li&gt;
-&lt;li&gt;ACID、BASE、CAP 的关系
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;BASE&lt;/code&gt;: Basically Available, Soft state, Eventually consistent&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;CAP 与延迟的联系&lt;/li&gt;
-&lt;li&gt;管理分区
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;检测分区开始&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;明确进入分区模式，两种可行的策略&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;限制部分触犯不变性约束的操作，因此会削弱可用性&lt;/li&gt;
-&lt;li&gt;额外记录一些有利于分区恢复的操作信息，如版本向量等&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;分区恢复，修复分区期间造成的错误&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h4 id=&#34;please-stop-calling-databases-cp-or-ap&#34;&gt;Please stop calling databases CP or AP&lt;/h4&gt;
-&lt;p&gt;&lt;a href=&#34;https://zhuanlan.zhihu.com/p/55053121&#34;&gt;中文版&lt;/a&gt; &lt;a href=&#34;http://martin.kleppmann.com/2015/05/11/please-stop-calling-databases-cp-or-ap.html&#34;&gt;英文版&lt;/a&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;CAP 定义非常狭隘&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;一致性在 CAP 中其实是指线性一致性 (linearizability)&lt;/li&gt;
-&lt;li&gt;可用性要求&lt;strong&gt;任何&lt;/strong&gt;非故障节点都能够处理请求&lt;/li&gt;
-&lt;li&gt;分区容错性基本上意味着你的通信建立在可能会延迟或丢包的异步通信网络上. 互联网和我们的数据中心都有这个属性, 所以在这个问题上其实没有任何选择.&lt;/li&gt;
-&lt;li&gt;CAP 系统模型是一个单一读写寄存器 (single, read-write register)，没有涉及多个对象的事务&lt;/li&gt;
-&lt;li&gt;CAP 定理只考虑了网络分区 (network partition) 这一故障场景&lt;/li&gt;
-&lt;li&gt;CAP 定理没考虑到延迟 (latency)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;多数系统既不线性可用 (linearizable) 也不 CAP 可用 (CAP-available)&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;</description>
       
     </item>
     

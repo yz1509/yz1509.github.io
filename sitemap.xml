@@ -3,21 +3,49 @@
   
   <url>
     <loc>https://k-on.me/categories/</loc>
-    <lastmod>2020-10-29T15:20:48+08:00</lastmod>
+    <lastmod>2020-12-08T10:23:40+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://k-on.me/</loc>
-    <lastmod>2020-10-29T15:20:48+08:00</lastmod>
+    <lastmod>2020-12-08T10:23:40+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://k-on.me/post/</loc>
-    <lastmod>2020-10-29T15:20:48+08:00</lastmod>
+    <lastmod>2020-12-08T10:23:40+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://k-on.me/post/specifying-systems-notes/</loc>
+    <lastmod>2020-12-08T10:23:40+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://k-on.me/tags/</loc>
+    <lastmod>2020-12-08T10:23:40+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://k-on.me/tags/tla&#43;/</loc>
+    <lastmod>2020-12-08T10:23:40+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://k-on.me/categories/%E5%88%86%E5%B8%83%E5%BC%8F/</loc>
+    <lastmod>2020-12-08T10:23:40+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
@@ -31,13 +59,6 @@
   
   <url>
     <loc>https://k-on.me/post/redis-sourcecode-client/</loc>
-    <lastmod>2020-10-29T15:20:48+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://k-on.me/tags/</loc>
     <lastmod>2020-10-29T15:20:48+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -255,13 +276,6 @@
   
   <url>
     <loc>https://k-on.me/tags/%E4%B8%80%E8%87%B4%E6%80%A7/</loc>
-    <lastmod>2020-08-17T20:08:58+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://k-on.me/categories/%E5%88%86%E5%B8%83%E5%BC%8F/</loc>
     <lastmod>2020-08-17T20:08:58+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
