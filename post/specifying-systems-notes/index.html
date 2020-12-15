@@ -70,7 +70,7 @@
 <meta itemprop="description" content="《Specifying Systems》 阅读笔记。">
 <meta itemprop="datePublished" content="2020-12-08T10:23:40+08:00" />
 <meta itemprop="dateModified" content="2020-12-08T10:23:40+08:00" />
-<meta itemprop="wordCount" content="3738">
+<meta itemprop="wordCount" content="4541">
 
 
 
@@ -309,8 +309,8 @@
             <a href="https://k-on.me/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"> 分布式 </a>
             
           </div>
-        <span class="more-meta"> 3738 words </span>
-          <span class="more-meta"> 8 min read </span>
+        <span class="more-meta"> 4541 words </span>
+          <span class="more-meta"> 10 min read </span>
 
         
         
@@ -805,6 +805,7 @@ where $\sigma^{+n} \triangleq \sigma_n \rightarrow \sigma_{n+1} \rightarrow \sig
 <li>This defines the meaning of the temporal operator $\Box$. We can therefore read $\Box$ as <em>always</em> or <em>henceforth</em> or <em>from then on</em>.</li>
 <li>We say that a formula $F$ is <em>invariant under stuffering</em> iff adding or deleting a stuffering step to a behavior $\sigma$ does not affect whether $\sigma$ satisfies $F$
 <ul>
+<li>TLA allows you to write only temporal formulas that are invariant under stuttering</li>
 <li>A state predicate (viewed as a temporal formula) is invariant under stuttering</li>
 <li>In general, the formula $\Box [A]_v$ is invariant under stuttering, for ant action $A$ and state function $v$. However, $\Box A$ is not invariant under stuttering for an arbitrary action $A$</li>
 <li>Invariant under stuttering is preserved by $\Box$ and by Boolean operators &mdash; that is, if $F$ and $G$ are invariant under stuttering, then so are $\Box F$, $\lnot F$, $F \land G$, $\forall x \in S : F$, etc.</li>
@@ -834,6 +835,7 @@ $$\forall n \in Nat : (\sigma^{+n} \models F) \Rightarrow (\exists m \in Nat : (
 <ul>
 <li>It asserts that $F$ is <em>infinitely often</em> true (无限但不连续)</li>
 <li>In particular, $\Box \Diamond \langle A \rangle_v$ asserts that infinitely many $\langle A \rangle_v$ steps occur</li>
+<li>$(\sigma \models \Box \Diamond F) \equiv (\exists_\infty i \in Nat : \sigma^{+i} \models F)$, where $\exists_\infty i \in Nat : P(i)$ means $P(i)$ is true for infinitely many natural numbers $i$</li>
 </ul>
 </li>
 <li>
@@ -845,8 +847,111 @@ $$\forall n \in Nat : (\sigma^{+n} \models F) \Rightarrow (\exists m \in Nat : (
 </li>
 </ul>
 <h3 id="temporal-tautologies">Temporal Tautologies</h3>
+<ul>
+<li>A <em>temporal theorem</em> is a temporal formula that is satisfied by all behaviors.</li>
+<li>A formula like $\Box F \Rightarrow F$ that is true when any formulas are substituted for its identifiers is called a tautology, tautologies containing temporal operators are sometimes called <em>temporal tautologies</em>.</li>
+</ul>
+<p><strong>some temporal tautologies</strong></p>
+<p>A genneral law: from any temporal tautology, we obtain a dual tautology by making the replacements</p>
+<p>$$\Box \leftarrow \Diamond \quad \Diamond \leftarrow \Box \quad \land \leftarrow \lor \quad \lor \leftarrow \land$$</p>
+<p>and reversing the direction of all implications. (Any $\equiv$ or $\lnot$ is left unchanged.)</p>
+<ol>
+<li>
+<p>$\lnot \Box F \equiv \Diamond \lnot F$</p>
+<ul>
+<li>$F$ is not always true iff it is eventually false.</li>
+</ul>
+</li>
+<li>
+<p>$\Box(F \land G) \equiv (\Box F) \land (\Box G) \qquad$</p>
+<ul>
+<li>$F$ and $G$ are both always true iff $F$ is always true and $G$ is always true</li>
+<li>$\Box$ distributes over $\land$</li>
+</ul>
+</li>
+<li>
+<p>$\Diamond (F \lor G) \equiv (\Diamond F) \lor (\Diamond G)$</p>
+<ul>
+<li>$F$ or $G$ is eventually true iff $F$ is eventually true or $G$ is eventually true</li>
+<li>$\Diamond$ distributes over $\lor$</li>
+</ul>
+</li>
+<li>
+<p>$(\Box F) \lor (\Box G) \Rightarrow \Box(F \lor G) \qquad \Diamond (F \land G) \Rightarrow (\Diamond F) \land (\Diamond G)$</p>
+<ul>
+<li>One can be derived from the derived from the another by substituting $\lnot F$ for $F$ and $\lnot G$ for $G$</li>
+</ul>
+</li>
+<li>
+<p>$\Box \Diamond (F \lor G) \equiv (\Box \Diamond F) \lor (\Box \Diamond G) \qquad \Diamond \Box(F \land G) \equiv (\Diamond \Box F) \land (\Diamond \Box G)$</p>
+<ul>
+<li>$\Box \Diamond$ distributes over $\lor$ and $\Diamond \Box$ distributes over $\land$ (取决于右边的符号)</li>
+</ul>
+</li>
+</ol>
+<p>In any TLA tautology, replacing a temporal formula by an action yields a tautology &mdash; a formula that is true for all behaviors &mdash; even if that formula isn&rsquo;t a legal TLA formula. For example, let&rsquo;s substitue $\langle A \rangle_v$ and $\langle B \rangle_v$ for $F$ and $G$ in $5$ to get</p>
+<p>$$\Box \Diamond (\langle A \rangle_v \lor \langle B \rangle_v) \quad \equiv \quad (\Box \Diamond \langle A \rangle_v) \lor (\Box \Diamond \langle B \rangle_v)$$</p>
+<p>but $(\langle A \rangle_v \lor \langle B \rangle_v)$ isn&rsquo;t a TLA formula (TLA allows you to write only temporal formulas that are invariant under stuttering). We can apply the following rules of logic to transform those nonTLA tautologies into TLA tautologies:</p>
+<p>$$[A \land B]_v \quad \equiv \quad [A]_v \land [B]_v \qquad \qquad \langle A \lor B \rangle_v \quad \equiv \quad \langle A \rangle_v \lor \langle B \rangle_v$$</p>
+<p>Substituting $\langle A \rangle_v \lor \langle B \rangle_v$ for $\langle A \lor B \rangle_v$, gives us the following TLA tautology:</p>
+<p>$$\Box \Diamond \langle A \lor B \rangle_v \quad \equiv \quad (\Box \Diamond \langle A \rangle_v) \lor (\Box \Diamond \langle B \rangle_v)$$</p>
 <h3 id="temporal-proof-rules">Temporal Proof Rules</h3>
+<p>A <em>proof rule</em> is a rule for deducing true formulas from other true formulas.</p>
+<p><strong>Modus Ponens Rule</strong></p>
+<ul>
+<li>for any formulas $F$ and $G$, if we have proved $F$ and $F \models G$, then we can deduce $G$</li>
+<li>the laws of propositional logic hold for temporal logic as well</li>
+</ul>
+<p><strong>Temporal Proof Rules</strong></p>
+<ul>
+<li>Modus Ponens Rule</li>
+<li>Generalization Rule: From $F$ we can infer $\Box F$, for any temporal formula $F$
+<ul>
+<li>This rule asserts that, if $F$ is true for all behaviors, then so is $\Box F$</li>
+</ul>
+</li>
+<li>Implies Generalization Rule: From $F \models G$ we can infer $\Box F \models \Box G$, for any temporal formulas $F$ and $G$.
+<ul>
+<li>The Generalization Rule can be derived from the Implies Generalization Rule.</li>
+</ul>
+</li>
+</ul>
+<p><strong>Difference between proof rule and tautology</strong></p>
+<ul>
+<li>In propositional logic, every proof rule has a corressponding tautology.</li>
+<li>In temporal logic, a proof rule need not imply a tautology</li>
+</ul>
 <h3 id="weak-fairness">Weak Fairness</h3>
+<p>When writing liveness properties, the syntax of TLA often forces us to write $\langle A \rangle_v$ instead of $A$, for some action $A$</p>
+<blockquote>
+<p>Because if $A$ does allow stuttering steps, we want to require not that an $A$ step eventually occurs, but that a nonstuttering $A$ step occurs &mdash; that is, an $\langle A \rangle_v$ step.</p>
+</blockquote>
+<ul>
+<li>
+<p>TLA+ defines $\quad \mathrm{ENABLED} \ A \quad$ to be the <em>predicate</em> that is true iff action $A$ is enabled.</p>
+</li>
+<li>
+<p>General liveness condition for an action $A$:</p>
+<p>$$\Box(\mathrm{ENABLED}\langle A \rangle_v \Rightarrow \Diamond \langle A \rangle_v)$$</p>
+</li>
+<li>
+<p>Weaker formula $WF_v(A)$, defined to equal(3 种等价描述) &mdash; weak fairness on $A$</p>
+<ul>
+<li>
+<p>If $A$ is enabled forever, then an $A$ step eventually occurs</p>
+<p>$\Box(\Box \mathrm{ENABLED}\langle A \rangle_v \Rightarrow \Diamond \langle A \rangle_v)$</p>
+</li>
+<li>
+<p>$A$ is infinitely often disabled, or infinitely many $A$ steps occur</p>
+<p>$\Box \Diamond (\lnot \mathrm{ENABLED}\langle A \rangle_v) \lor \Box \Diamond \langle A \rangle_v$</p>
+</li>
+<li>
+<p>If $A$ is eventually enabled forever, then infinitely many $A$ steps occur</p>
+<p>$\Diamond \Box (\mathrm{ENABLED} \langle A \rangle_v) \Rightarrow \Box \Diamond \langle A \rangle_v$</p>
+</li>
+</ul>
+</li>
+</ul>
 <h3 id="小结-4">小结</h3>
     </div>
 
