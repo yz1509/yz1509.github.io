@@ -16,5 +16,14 @@
       <description>&lt;p&gt;&lt;a href=&#34;http://lamport.azurewebsites.net/tla/book-02-08-08.pdf&#34;&gt;《Specifying Systems》&lt;/a&gt; 阅读笔记。&lt;/p&gt;</description>
     </item>
     
+    <item>
+      <title>TLA&#43; notes</title>
+      <link>https://k-on.me/post/tla_notes/</link>
+      <pubDate>Mon, 09 Nov 2020 17:17:41 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/tla_notes/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/TLA%2B&#34;&gt;TLA+&lt;/a&gt; 相关笔记。&lt;/p&gt;</description>
+    </item>
+    
   </channel>
 </rss>

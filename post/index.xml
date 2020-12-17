@@ -17,6 +17,15 @@
     </item>
     
     <item>
+      <title>TLA&#43; notes</title>
+      <link>https://k-on.me/post/tla_notes/</link>
+      <pubDate>Mon, 09 Nov 2020 17:17:41 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/tla_notes/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/TLA%2B&#34;&gt;TLA+&lt;/a&gt; 相关笔记。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Redis 源码阅读 --- Client</title>
       <link>https://k-on.me/post/redis-sourcecode-client/</link>
       <pubDate>Thu, 29 Oct 2020 15:20:48 +0800</pubDate>
@@ -176,15 +185,6 @@
       
       <guid>https://k-on.me/post/nvm-notes/</guid>
       <description>&lt;p&gt;NVM 相关笔记。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Introduction to Redis modules</title>
-      <link>https://k-on.me/post/introduction-to-redis-modules/</link>
-      <pubDate>Wed, 19 Aug 2020 16:52:01 +0000</pubDate>
-      
-      <guid>https://k-on.me/post/introduction-to-redis-modules/</guid>
-      <description>&lt;p&gt;Redis Modules 入门。&lt;/p&gt;</description>
     </item>
     
   </channel>
