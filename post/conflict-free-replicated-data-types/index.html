@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Conflict free replicated data types 阅读笔记。">
 <meta itemprop="datePublished" content="2020-04-22T18:09:55+00:00" />
 <meta itemprop="dateModified" content="2020-04-22T18:09:55+00:00" />
-<meta itemprop="wordCount" content="1387">
+<meta itemprop="wordCount" content="1436">
 
 
 
@@ -308,7 +308,7 @@
         <div class="post-category">
             
           </div>
-        <span class="more-meta"> 1387 words </span>
+        <span class="more-meta"> 1436 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -365,15 +365,16 @@
 <p>一个分布式系统是最终一致的，需满足以下条件：</p>
 <ul>
 <li><strong>Eventual delivery</strong>: 在健康节点上执行的更新操作最终会被传递至所有健康节点，也就是说 $f \in c_i \Rightarrow \lozenge f \in c_j, \forall i, j \in [1, \dots, n]$，其中 $c_i$ 是节点 $p_i$ 的 causal history</li>
-<li><strong>Convergence</strong>: 执行相同操作集合的健康节点<strong>最终</strong>会收敛至相同的状态，也就是说 $\square c_i = c_j \Rightarrow \lozenge \square s_i \equiv s_j, \forall i, j \in [1, \dots, n]$</li>
+<li><strong>Convergence</strong>: causal history 相同的健康节点<strong>最终</strong>会收敛至相同的状态，也就是说 $\square c_i = c_j \Rightarrow \lozenge \square s_i \equiv s_j, \forall i, j \in [1, \dots, n]$</li>
 <li><strong>Termination</strong>: 所有操作会终止</li>
 </ul>
-<p>在上述说明中，$\lozenge$ 表示可能性，$\square$ 表示必然性，详见 <a href="https://en.wikipedia.org/wiki/Modal_logic">Modal logic</a> 和 <a href="https://en.wikipedia.org/wiki/S5_(modal_logic)">S5 modal logic</a>。至于 causal history，可以简单理解为操作的集合。</p>
+<p>在上述说明中，$\lozenge$ 表示 <em>eventually</em>，$\square$ 表示 <em>always</em>，详见 <a href="https://en.wikipedia.org/wiki/Temporal_logic">Temporal logic</a>。至于 causal history，可以理解为该节点已执行操作的集合。</p>
 <h3 id="strong-eventual-consistency">Strong Eventual Consistency</h3>
-<p>一个分布式系统是强最终一致的，需在满足最终一致的条件下，额外满足以下约束：</p>
+<p>一个分布式系统是强最终一致的，需在满足<a href="https://en.wikipedia.org/wiki/Eventual_consistency">最终一致</a>的条件下，额外满足以下约束：</p>
 <ul>
 <li><strong>Strong Convergence</strong>: 执行相同操作集合的健康节点具有相同的状态，也就是说 $c_i = c_j \Rightarrow s_i \equiv s_j, \forall i, j \in [1, \dots, n]$</li>
 </ul>
+<p><em>PS</em>: 最终一致性只包含 liveness guarantee，而强最终一致对系统的中间状态进行了约束 (safety guarantee)</p>
 <h2 id="系统模型">系统模型</h2>
 <h3 id="符号说明">符号说明</h3>
 <table>
@@ -430,9 +431,9 @@
 <p><strong>Causal History</strong></p>
 <p>我们定义一个对象的 <em>causal hisatory(stated-based)</em> 为 $\mathcal{C} = [c_1, \dots, c_n]$，其中 $c_i$ 经历了一系列中间态 $c_i^0, \dots, c_i^k, \dots$。初始时，$c_i^0 = \emptyset, \forall i \in [1, \dots, n]$，在节点 $p_i$ 上执行的 $k^{th}$ 操作分为以下三种情况：</p>
 <p>$$c_i^k = \begin{cases}<br>
-c_i^{k-1} &amp; f = q \<br>
-c_i^{k-1} \cup {u_i^k(a)} &amp; f = u_i^k(a) \<br>
-c_i^{k-1} \cup c_{i'}^{k'} &amp; f = m_i^k(s_{i'}^{k'})
+c_i^{k-1}, &amp; f = q \cr
+c_i^{k-1} \cup \{u_i^k(a)\}, &amp; f = u_i^k(a) \cr
+c_i^{k-1} \cup c_{i'}^{k'}, &amp; f = m_i^k(s_{i'}^{k'})
 \end{cases}$$</p>
 <p><strong>Monotonic semilattice object</strong></p>
 <p>我们用 $(\mathcal{S}, \le, s^0, q, u, m)$ 表示基于状态的对象，其中 $\le$ 表示 <em>partial order</em>。若其满足以下约束，我们称其为 <em>monotonic semilattice object</em>:</p>
@@ -456,8 +457,8 @@ c_i^{k-1} \cup c_{i'}^{k'} &amp; f = m_i^k(s_{i'}^{k'})
 <p><strong>Causal History</strong></p>
 <p>我们定义一个对象的 <em>causal hisatory(op-based)</em> 为 $\mathcal{C} = [c_1, \dots, c_n]$，其中 $c_i$ 经历了一系列中间态 $c_i^0, \dots, c_i^k, \dots$。初始时，$c_i^0 = \emptyset, \forall i \in [1, \dots, n]$，在节点 $p_i$ 上执行的 $k^{th}$ 操作分为以下两种情况：</p>
 <p>$$c_i^k = \begin{cases}<br>
-c_i^{k-1} &amp; f = q, t \<br>
-c_i^{k-1} \cup {u_i^k(a)} &amp; f = u_i^k(a)
+c_i^{k-1}, &amp; f = q, t \cr
+c_i^{k-1} \cup \{u_i^k(a)\}, &amp; f = u_i^k(a)
 \end{cases}$$</p>
 <p><strong>Happened-before</strong></p>
 <p>Update $(t, u)$ happended-before $(t', u')$ iff the former is delivered when the latter executes: $(t, u) \rightarrow (t', u') \Leftrightarrow u \in c_j^{k-1}$, where $t'$ executeds at $p_j$ and $k = K_j(t')$.</p>
@@ -507,7 +508,7 @@ c_i^{k-1} \cup {u_i^k(a)} &amp; f = u_i^k(a)
 </tr>
 <tr>
 <td style="text-align:left">$inc$</td>
-<td style="text-align:left">在节点 $p_i$ 上 $inc(\vec{v}) = \vec{v'}$，其中 $v'<em>i = v_i + 1 \cdot \mathbb{I}</em>{{j}}(i), \forall i \in [1, \dots, n]$</td>
+<td style="text-align:left">在节点 $p_i$ 上 $inc(\vec{v}) = \vec{v'}$，其中 $v'<em>i = v_i + 1 \cdot \mathbb{I}</em>{\{j\}}(i), \forall i \in [1, \dots, n]$</td>
 </tr>
 <tr>
 <td style="text-align:left">$max^n$</td>
@@ -517,7 +518,7 @@ c_i^{k-1} \cup {u_i^k(a)} &amp; f = u_i^k(a)
 </table>
 <p>可以发现上述定义的是一个只增计数器，如果想可增可减的话，可以使用两个只增计数器构成。</p>
 <h3 id="set">Set</h3>
-<p>一个 add-only 的集合可以构造为 $(\mathcal{S}, \subseteq, \emptyset, value, add(e), \cup)$，其中 $s \cdot add(e) = s \cup {e}$，很明显这也是一个 CRDT。</p>
+<p>一个 add-only 的集合可以构造为 $(\mathcal{S}, \subseteq, \emptyset, value, add(e), \cup)$，其中 $s \cdot add(e) = s \cup \{e\}$，很明显这也是一个 CRDT。</p>
 <p>在 <a href="https://hal.inria.fr/inria-00555588/document">A comprehensive study of Convergent and Commutative Replicated Data Types</a> 中作者定义了可增可减的两种 Set，但是也有较强的 assumption&hellip;</p>
 <ul>
 <li>2P-Set：维护两个集合：add-only 和 remove-only。只能适用于集合中的元素只会被 add/remove 一次的情况</li>

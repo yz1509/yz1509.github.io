@@ -398,7 +398,7 @@
 <h2 id="causal-consistency">Causal Consistency</h2>
 <p>在 <code>CvRDT</code> 中每次传输的是 <code>full state</code>，隐式地确保了因果一致性，而在 $\delta$-CRDT 中若想提供因果一致性则需要满足某些条件。</p>
 <p><strong>Delta-interval</strong>: Given a replica $i$ progressing along the states $\mathrm{X}_i^0, \mathrm{X}_i^1, \dots$ by joining delta $d_i^k$ (either local delta-mutation or recived delta-group) into $\mathrm{X}_i^k$ to obtain $\mathrm{X}_i^{k+1}$, a delta-interval $\Delta_i^{a,b}$ is a delta-group resulting from joining deltas $d_i^a,\dots, d_i^{b-1}$:</p>
-<p>$$\Delta_i^{a,b} = \bigsqcup{d_i^k | a \le k &lt; b}$$</p>
+<p>$$\Delta_i^{a,b} = \bigsqcup\{d_i^k | a \le k &lt; b\}$$</p>
 <p><strong>Delta-interval-based anti-entropy algorithm</strong>: A given anti-entropy algorithm for $\delta$-CRDTs is delta-interval-based, if all deltas sent to other replicas are delta-intervals.</p>
 <p><strong>Causal delta-merging condition</strong>: A delta-interval based anti-entropy algorithm is said to satisfy the causal delta-merging condition if the algorithm only joins $\Delta_j^{a, b}$ from replica $j$ into state $\mathrm{X}_i$ of replica $i$ that satisfy:</p>
 <p>$$\mathrm{X}_i \sqsupseteq \mathrm{X}_j^a$$</p>
@@ -446,7 +446,7 @@
 </li>
 </ul>
 <p>Tips: When using an anti-entropy algorithm that provides causal consistency, then for each replica state $\mathrm{X}_i = (s_i, c_i)$ and replica identifier $j \in \mathbb{I}$, we have a contiguous sequence:</p>
-<p>$$1 \le n \le max({k | (j, k) \in c_i}) \Rightarrow (j, n) \in c_i$$</p>
+<p>$$1 \le n \le max(\{k | (j, k) \in c_i\}) \Rightarrow (j, n) \in c_i$$</p>
 <p>因此在消息通信时，通过保证因果一致性，可减少存储空间占用。</p>
 <h3 id="optimized-multi-value-register-delta-crdt">Optimized Multi-value Register $\delta$-CRDT</h3>
 <p><img src="/multi_value.png" alt="multi_value.png"></p>

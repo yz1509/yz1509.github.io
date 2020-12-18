@@ -70,7 +70,7 @@
 <meta itemprop="description" content="动态规划算法学习笔记。">
 <meta itemprop="datePublished" content="2018-07-18T21:28:58+00:00" />
 <meta itemprop="dateModified" content="2018-07-18T21:28:58+00:00" />
-<meta itemprop="wordCount" content="1749">
+<meta itemprop="wordCount" content="1750">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"> 数据结构与算法 </a>
             
           </div>
-        <span class="more-meta"> 1749 words </span>
+        <span class="more-meta"> 1750 words </span>
           <span class="more-meta"> 4 min read </span>
 
         
@@ -375,7 +375,10 @@
 <h3 id="确定状态转移方程">确定状态转移方程</h3>
 <p>定义出什么是<code>状态</code>，以及在该<code>状态</code>下的值后，就要找出不同的状态之间如何迁移——即如何从一个或多个值已知的<code>状态</code>，求出另一个<code>状态</code>的值 (<strong>人人为我</strong>递推型)。状态的迁移可以用递推公式表示，此递推公式也可被称作<strong>状态转移方程</strong>。</p>
 <p>数字三角形的状态转移方程:</p>
-<p>$MaxSum[r][j] = \begin{cases}D[r][j], &amp;r = N \cr Max(MaxSum[r+1][j], MaxSum[r+1][j+1]) + D[r][j], &amp;otherwise \end{cases}$</p>
+<p>$MaxSum[r][j] = \begin{cases}
+D[r][j], &amp;r = N \cr
+Max(MaxSum[r+1][j], MaxSum[r+1][j+1]) + D[r][j], &amp;otherwise
+\end{cases}$</p>
 <h2 id="条件">条件</h2>
 <p>在对状态和状态转移方程的定义过程中，需满足<strong>最优子结构</strong>，并且<strong>无后效性</strong>：</p>
 <ul>

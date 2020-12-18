@@ -600,7 +600,7 @@ $$\forall n \in Nat : (\sigma^{+n} \models F) \Rightarrow (\exists m \in Nat : (
 &lt;li&gt;&lt;a href=&#34;https://tla.msr-inria.inria.fr/tlatoolbox/doc/contents.html&#34;&gt;TLA+ Toolbox User&amp;rsquo;s Guide&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;typeset-symbols-of-tla-p273&#34;&gt;Typeset symbols of TLA+ (P273)&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&#34;https://k-on.me/tla_typeset.png&#34; alt=&#34;&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/tla_typeset.png&#34; alt=&#34;symbols&#34;&gt;&lt;/p&gt;
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -8452,7 +8452,7 @@ s-hdrlen          s-1       s
 &lt;h2 id=&#34;causal-consistency&#34;&gt;Causal Consistency&lt;/h2&gt;
 &lt;p&gt;在 &lt;code&gt;CvRDT&lt;/code&gt; 中每次传输的是 &lt;code&gt;full state&lt;/code&gt;，隐式地确保了因果一致性，而在 $\delta$-CRDT 中若想提供因果一致性则需要满足某些条件。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Delta-interval&lt;/strong&gt;: Given a replica $i$ progressing along the states $\mathrm{X}_i^0, \mathrm{X}_i^1, \dots$ by joining delta $d_i^k$ (either local delta-mutation or recived delta-group) into $\mathrm{X}_i^k$ to obtain $\mathrm{X}_i^{k+1}$, a delta-interval $\Delta_i^{a,b}$ is a delta-group resulting from joining deltas $d_i^a,\dots, d_i^{b-1}$:&lt;/p&gt;
-&lt;p&gt;$$\Delta_i^{a,b} = \bigsqcup{d_i^k | a \le k &amp;lt; b}$$&lt;/p&gt;
+&lt;p&gt;$$\Delta_i^{a,b} = \bigsqcup\{d_i^k | a \le k &amp;lt; b\}$$&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Delta-interval-based anti-entropy algorithm&lt;/strong&gt;: A given anti-entropy algorithm for $\delta$-CRDTs is delta-interval-based, if all deltas sent to other replicas are delta-intervals.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Causal delta-merging condition&lt;/strong&gt;: A delta-interval based anti-entropy algorithm is said to satisfy the causal delta-merging condition if the algorithm only joins $\Delta_j^{a, b}$ from replica $j$ into state $\mathrm{X}_i$ of replica $i$ that satisfy:&lt;/p&gt;
 &lt;p&gt;$$\mathrm{X}_i \sqsupseteq \mathrm{X}_j^a$$&lt;/p&gt;
@@ -8500,7 +8500,7 @@ s-hdrlen          s-1       s
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Tips: When using an anti-entropy algorithm that provides causal consistency, then for each replica state $\mathrm{X}_i = (s_i, c_i)$ and replica identifier $j \in \mathbb{I}$, we have a contiguous sequence:&lt;/p&gt;
-&lt;p&gt;$$1 \le n \le max({k | (j, k) \in c_i}) \Rightarrow (j, n) \in c_i$$&lt;/p&gt;
+&lt;p&gt;$$1 \le n \le max(\{k | (j, k) \in c_i\}) \Rightarrow (j, n) \in c_i$$&lt;/p&gt;
 &lt;p&gt;因此在消息通信时，通过保证因果一致性，可减少存储空间占用。&lt;/p&gt;
 &lt;h3 id=&#34;optimized-multi-value-register-delta-crdt&#34;&gt;Optimized Multi-value Register $\delta$-CRDT&lt;/h3&gt;
 &lt;p&gt;&lt;img src=&#34;https://k-on.me/multi_value.png&#34; alt=&#34;multi_value.png&#34;&gt;&lt;/p&gt;</description>
