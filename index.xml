@@ -8430,12 +8430,12 @@ s-hdrlen          s-1       s
 &lt;h3 id=&#34;definition&#34;&gt;Definition&lt;/h3&gt;
 &lt;p&gt;&lt;strong&gt;Delta-mutator&lt;/strong&gt;: A delta-mutator $m^\delta$ is a function, corresponding to an update operation, which takes a state $\mathrm{X}$ in a join-semilattice $\mathrm{S}$ as parameter and returns a delta-mutation $m^\delta(\mathrm{X})$, also in $\mathrm{S}$.&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Delta-group&lt;/strong&gt;: A delta-group is inductively defined as either a delta-mutation or a join of several delta-group.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;$\delta$-CRDT&lt;/strong&gt;: A $\delta$-CRDT consists of a triple $(\mathrm{S}, \mathrm{M}^\delta, \mathrm{Q})$, where $\mathrm{S}$ is a join-semilattice, $\mathrm{M}^\delta$ is a set of delta-mutators, and $\mathrm{S}$ is a set of query functions, where the state transition at each replica is given by either joining the current state $\mathrm{X} \in \mathrm{S}$ with a delta-mutation:&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;$\delta$-CRDT&lt;/strong&gt;: A $\delta$-CRDT consists of a triple $(\mathrm{S}, \mathrm{M}^\delta, \mathrm{Q})$, where $\mathrm{S}$ is a join-semilattice, $\mathrm{M}^\delta$ is a set of delta-mutators, and $\mathrm{Q}$ is a set of query functions, where the state transition at each replica is given by either joining the current state $\mathrm{X} \in \mathrm{S}$ with a delta-mutation:&lt;/p&gt;
 &lt;p&gt;$$\mathrm{X&#39;} = \mathrm{X} \sqcup m^\delta(\mathrm{X})$$&lt;/p&gt;
 &lt;p&gt;or joining the current state with some received delta-group $\mathrm{D}$:&lt;/p&gt;
 &lt;p&gt;$$\mathrm{X&#39;} = \mathrm{X} \sqcup \mathrm{D}$$&lt;/p&gt;
 &lt;h3 id=&#34;delta-state-decomposition-of-standards-crdts&#34;&gt;Delta-state decomposition of standards CRDTs&lt;/h3&gt;
-&lt;p&gt;A $\delta$-CRDT $(\mathrm{S}, \mathrm{M}^\delta, \mathrm{Q})$ is a delta-state decomposition of s state-based CRDT $(\mathrm{S}, \mathrm{M}, \mathrm{Q})$, if for every mutator $m \in \mathrm{M}$, we have a corresponding mutator $m^\delta \in \mathrm{M}^\delta$ such that, for every state $\mathrm{X} \in \mathrm{S}$:&lt;/p&gt;
+&lt;p&gt;A $\delta$-CRDT $(\mathrm{S}, \mathrm{M}^\delta, \mathrm{Q})$ is a delta-state decomposition of a state-based CRDT $(\mathrm{S}, \mathrm{M}, \mathrm{Q})$, if for every mutator $m \in \mathrm{M}$, we have a corresponding mutator $m^\delta \in \mathrm{M}^\delta$ such that, for every state $\mathrm{X} \in \mathrm{S}$:&lt;/p&gt;
 &lt;p&gt;$$m(\mathrm{X}) = \mathrm{X} \sqcup m^\delta(\mathrm{X})$$&lt;/p&gt;
 &lt;p&gt;因此我们的目标便是寻找满足上式的 $m^\delta(\mathrm{X})$，很明显 $m(\mathrm{X})$ 是一个解，因此 &lt;code&gt;CvRDT&lt;/code&gt; 是 $\delta$-CRDT 的一种特殊形式。为了克服 &lt;code&gt;CvRDT&lt;/code&gt; 通信消耗大的缺点，很明显我们想得到的解需满足以下条件：&lt;/p&gt;
 &lt;p&gt;$$size(m^\delta(\mathrm{X})) \ll size(m(\mathrm{X}))$$&lt;/p&gt;
