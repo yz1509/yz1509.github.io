@@ -73,9 +73,19 @@
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;A &lt;strong&gt;record&lt;/strong&gt; is a function whose domain is a finite set of strings.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
 &lt;p&gt;eg. $[val \mapsto d, ack \mapsto 1, rdy \mapsto 0]$ can be written&lt;/p&gt;
 &lt;p&gt;$[i \in \lbrace &amp;ldquo;val&amp;rdquo;, &amp;ldquo;ack&amp;rdquo;, &amp;ldquo;rdy&amp;rdquo;\rbrace \mapsto $
-$$\mathrm{IF} \enspace i = &amp;ldquo;val&amp;rdquo; \enspace \mathrm{THEN} \enspace  42 \enspace  \mathrm{ELSE \enspace IF} \enspace i = &amp;ldquo;ack&amp;rdquo; \enspace \mathrm{THEN} \enspace 1 \enspace \mathrm{ELSE} \enspace 0]$$&lt;/p&gt;
+$$\mathrm{IF} \enspace i = &amp;ldquo;val&amp;rdquo; \enspace \mathrm{THEN} \enspace  d \enspace  \mathrm{ELSE \enspace IF} \enspace i = &amp;ldquo;ack&amp;rdquo; \enspace \mathrm{THEN} \enspace 1 \enspace \mathrm{ELSE} \enspace 0]$$&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The set of records is written: $[val : Data, rdy : \{0, 1\}, ack : \{0, 1\}]$&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The fields of a record are not ordered&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
 &lt;/li&gt;
 &lt;li&gt;
 &lt;p&gt;In general, for any record $r$, the expression $[r \enspace \mathrm{EXCEPT} \enspace !.c_1 = e_1, \cdots , !.c_n = e_n]$ is the record obtained from $r$ by replacing $r.c_i$ with $e_i$, for each $i$ in $1 .. n$.&lt;/p&gt;

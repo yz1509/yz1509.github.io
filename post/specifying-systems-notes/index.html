@@ -70,7 +70,7 @@
 <meta itemprop="description" content="《Specifying Systems》 阅读笔记。">
 <meta itemprop="datePublished" content="2020-12-08T10:23:40+08:00" />
 <meta itemprop="dateModified" content="2020-12-08T10:23:40+08:00" />
-<meta itemprop="wordCount" content="5161">
+<meta itemprop="wordCount" content="5186">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"> 分布式 </a>
             
           </div>
-        <span class="more-meta"> 5161 words </span>
+        <span class="more-meta"> 5186 words </span>
           <span class="more-meta"> 11 min read </span>
 
         
@@ -455,9 +455,19 @@
 <ul>
 <li>
 <p>A <strong>record</strong> is a function whose domain is a finite set of strings.</p>
+<ul>
+<li>
 <p>eg. $[val \mapsto d, ack \mapsto 1, rdy \mapsto 0]$ can be written</p>
 <p>$[i \in \lbrace &ldquo;val&rdquo;, &ldquo;ack&rdquo;, &ldquo;rdy&rdquo;\rbrace \mapsto $
-$$\mathrm{IF} \enspace i = &ldquo;val&rdquo; \enspace \mathrm{THEN} \enspace  42 \enspace  \mathrm{ELSE \enspace IF} \enspace i = &ldquo;ack&rdquo; \enspace \mathrm{THEN} \enspace 1 \enspace \mathrm{ELSE} \enspace 0]$$</p>
+$$\mathrm{IF} \enspace i = &ldquo;val&rdquo; \enspace \mathrm{THEN} \enspace  d \enspace  \mathrm{ELSE \enspace IF} \enspace i = &ldquo;ack&rdquo; \enspace \mathrm{THEN} \enspace 1 \enspace \mathrm{ELSE} \enspace 0]$$</p>
+</li>
+<li>
+<p>The set of records is written: $[val : Data, rdy : \{0, 1\}, ack : \{0, 1\}]$</p>
+</li>
+<li>
+<p>The fields of a record are not ordered</p>
+</li>
+</ul>
 </li>
 <li>
 <p>In general, for any record $r$, the expression $[r \enspace \mathrm{EXCEPT} \enspace !.c_1 = e_1, \cdots , !.c_n = e_n]$ is the record obtained from $r$ by replacing $r.c_i$ with $e_i$, for each $i$ in $1 .. n$.</p>
