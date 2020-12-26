@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Efficient State-based CRDTs by Delta-Mutation 阅读笔记。">
 <meta itemprop="datePublished" content="2020-09-07T12:02:54+00:00" />
 <meta itemprop="dateModified" content="2020-09-07T12:02:54+00:00" />
-<meta itemprop="wordCount" content="1353">
+<meta itemprop="wordCount" content="1391">
 
 
 
@@ -308,7 +308,7 @@
         <div class="post-category">
             
           </div>
-        <span class="more-meta"> 1353 words </span>
+        <span class="more-meta"> 1391 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -402,7 +402,7 @@
 <p><strong>Delta-interval-based anti-entropy algorithm</strong>: A given anti-entropy algorithm for $\delta$-CRDTs is delta-interval-based, if all deltas sent to other replicas are delta-intervals.</p>
 <p><strong>Causal delta-merging condition</strong>: A delta-interval based anti-entropy algorithm is said to satisfy the causal delta-merging condition if the algorithm only joins $\Delta_j^{a, b}$ from replica $j$ into state $\mathrm{X}_i$ of replica $i$ that satisfy:</p>
 <p>$$\mathrm{X}_i \sqsupseteq \mathrm{X}_j^a$$</p>
-<p>容易看出上述约束就是通过对消息排序，从而显示地保证因果一致性。</p>
+<p>容易看出上述约束就是通过对消息排序，从而显示地保证因果一致性。也就是说，节点 $j$ 在发送 $\Delta_j^{a,b}$ 之前所 merge 的来自其他节点的 delta-interval 都已被节点 $i$ 所 merge。</p>
 <p><strong>$\delta$-CRDT causal consistency</strong>: Any $\delta$-CRDT in which states are propagated and joined using a <code>delta-interval-based anti-entropy algorithm</code> satisfying the <code>causal delta-merging condition</code> ensures causal consistency.</p>
 <p>也即想要提供因果一致性的保证，<code>basic anti-entropy algorithm</code> 需满足以下约束：</p>
 <ul>

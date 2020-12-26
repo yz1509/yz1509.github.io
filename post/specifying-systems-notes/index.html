@@ -70,7 +70,7 @@
 <meta itemprop="description" content="《Specifying Systems》 阅读笔记。">
 <meta itemprop="datePublished" content="2020-12-08T10:23:40+08:00" />
 <meta itemprop="dateModified" content="2020-12-08T10:23:40+08:00" />
-<meta itemprop="wordCount" content="4541">
+<meta itemprop="wordCount" content="5161">
 
 
 
@@ -309,8 +309,8 @@
             <a href="https://k-on.me/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"> 分布式 </a>
             
           </div>
-        <span class="more-meta"> 4541 words </span>
-          <span class="more-meta"> 10 min read </span>
+        <span class="more-meta"> 5161 words </span>
+          <span class="more-meta"> 11 min read </span>
 
         
         
@@ -381,7 +381,16 @@
         <li><a href="#temporal-tautologies">Temporal Tautologies</a></li>
         <li><a href="#temporal-proof-rules">Temporal Proof Rules</a></li>
         <li><a href="#weak-fairness">Weak Fairness</a></li>
-        <li><a href="#小结-4">小结</a></li>
+      </ul>
+    </li>
+    <li><a href="#chapter-x-the-standard-modules">Chapter X: The Standard Modules</a>
+      <ul>
+        <li><a href="#sequences-module">Sequences Module</a></li>
+        <li><a href="#finitesets-module">FiniteSets Module</a></li>
+        <li><a href="#bags-module">Bags Module</a></li>
+        <li><a href="#the-numbers-modules">The Numbers Modules</a></li>
+        <li><a href="#realtime-module">RealTime Module</a></li>
+        <li><a href="#tlc-module">TLC Module</a></li>
       </ul>
     </li>
   </ul>
@@ -659,11 +668,6 @@ $$\mathrm{SUBSET} \enspace \lbrace 1, 2 \rbrace = \lbrace \lbrace \rbrace, \lbra
 <li>
 <p>$\{e : x \in S\}$: The set of elements of the form $e$, for all $x$ in the set $S$</p>
 </li>
-</ul>
-<p><strong>operators defined by module FiniteSets</strong></p>
-<ul>
-<li>$Cardinality(S)$: The number of elements in set $S$, if $S$ is a finite set</li>
-<li>$IsFiniteSet(S)$: True iff $S$ is a finite set</li>
 </ul>
 <p><strong>Russell&rsquo;s paradox</strong></p>
 <p>Let $\mathcal{R}$ be the set of all sets $S$ such that $S \notin S$. The definiton of $\mathcal{R}$ implies that $\mathcal{R} \in \mathcal{R}$ is true iff $\mathcal{R} \notin \mathcal{R}$ is true.</p>
@@ -952,7 +956,186 @@ $$\forall n \in Nat : (\sigma^{+n} \models F) \Rightarrow (\exists m \in Nat : (
 </ul>
 </li>
 </ul>
-<h3 id="小结-4">小结</h3>
+<h2 id="chapter-x-the-standard-modules">Chapter X: The Standard Modules</h2>
+<h3 id="sequences-module">Sequences Module</h3>
+<p>The Sequences module defines the following operators on sequences:</p>
+<ul>
+<li>
+<p>$Seq(S)$</p>
+<ul>
+<li>The set of all sequence of elements of the set $S$</li>
+<li>For example, $\langle 3, 7 \rangle$ is an element of $Seq(Nat)$</li>
+</ul>
+</li>
+<li>
+<p>$Head(S)$</p>
+<ul>
+<li>The first element of sequence $s$</li>
+<li>For example, $Head(\langle 3, 7 \rangle)$ equals $3$</li>
+</ul>
+</li>
+<li>
+<p>$Tail(s)$</p>
+<ul>
+<li>The tail of sequence $s$, which consists of $s$ with its head removed</li>
+<li>For example, $Tail(\langle 3, 7 \rangle)$ equals $\langle 7 \rangle$</li>
+</ul>
+</li>
+<li>
+<p>$Append(s, e)$</p>
+<ul>
+<li>The sequence obtained by appending element $e$ to the tail of sequence $s$</li>
+<li>For example, $Append(\langle 3, 7 \rangle, 3)$ equals $\langle 3, 7, 3 \rangle$</li>
+</ul>
+</li>
+<li>
+<p>$s \circ t$</p>
+<ul>
+<li>The sequence obtained by concatenating the sequences $s$ and $t$</li>
+<li>For example, $\langle 3, 7 \rangle \circ \langle 3 \rangle$ euqals $\langle 3, 7, 3 \rangle$</li>
+</ul>
+</li>
+<li>
+<p>$Len(s)$</p>
+<ul>
+<li>The length og sequence $s$.</li>
+</ul>
+</li>
+<li>
+<p>$SubSeq(s, m, n)$</p>
+<ul>
+<li>The subsequence $\langle s[m], s[m+1], \dots, s[n] \rangle$ consisting of the $m^{th}$ through $n^{th}$ elements of $s$</li>
+<li>It is underfined if $m &lt; 1$ or $n &gt; Len(s)$, except that it equals the empty sequence if $m &gt; n$</li>
+</ul>
+</li>
+<li>
+<p>$SelectSeq(s, Test)$</p>
+<ul>
+<li>The subsequence of $s$ consisting of the elements $s[i]$ such that $Test(s[i])$ equals $\mathrm{TRUE}$</li>
+</ul>
+</li>
+</ul>
+<p><img src="/tla_sequence_module.png" alt="tla_sequence_module"></p>
+<h3 id="finitesets-module">FiniteSets Module</h3>
+<p>The FiniteSets module defines the following operators on set:</p>
+<ul>
+<li>
+<p>$Cardinality(S)$</p>
+<ul>
+<li>The number of elements in set $S$, if $S$ is a finite set</li>
+</ul>
+</li>
+<li>
+<p>$IsFiniteSet(S)$</p>
+<ul>
+<li>True iff $S$ is a finite set</li>
+</ul>
+</li>
+</ul>
+<p><img src="/tla_finitesets_module.png" alt="tla_finitesets_module"></p>
+<h3 id="bags-module">Bags Module</h3>
+<p>A bag, also called a multiset, is a set that can contain multiple copies of the same element. A bag can have infinitely many elements, but only the finitely many copies of any single element.</p>
+<p>The Bags module defines a bag to be a function whose range is a subset of the positive integers. The module defines the following operators:</p>
+<ul>
+<li>
+<p>$IsABag(B)$</p>
+<ul>
+<li>True iff $B$ is a bag</li>
+</ul>
+</li>
+<li>
+<p>$BagToSet(B)$</p>
+<ul>
+<li>The set of elements of which bag $B$ contains at least one copy</li>
+</ul>
+</li>
+<li>
+<p>$SetToBag(S)$</p>
+<ul>
+<li>The bag that contains one copy of every element i nthe set $S$</li>
+</ul>
+</li>
+<li>
+<p>$BagIn(e, B)$</p>
+<ul>
+<li>True iff bag $B$ contains at least one copy of $e$.</li>
+<li>$BagIn$ is the $\in$ operator for bags</li>
+</ul>
+</li>
+<li>
+<p>$EmptyBag$</p>
+<ul>
+<li>The bag containing no elements</li>
+</ul>
+</li>
+<li>
+<p>$CopiesIn(e, B)$</p>
+<ul>
+<li>The number of copies of $e$ in bag $B</li>
+<li>it is equal to $0$ iff $BagIn(e, B)$ is false</li>
+</ul>
+</li>
+<li>
+<p>$B1 \oplus B2$</p>
+<ul>
+<li>The union of bags $B1$ and $B2$</li>
+<li>The operator $\oplus$ satifies
+$$CopiesIn(e, B1 \oplus B2) = CopiesIn(e, B1) + CopiesIn(e, B2)$$
+for any $e$ and any bags $B1$ and $B2$</li>
+</ul>
+</li>
+<li>
+<p>$B1 \ominus B2$</p>
+<ul>
+<li>The bag $B1$ with the elements of $B2$ removed &mdash; that is, with one copy of an element removed from $B1$ for each copy of the same element in $B2$</li>
+<li>If $B2$ has at least as many copies of $e$ as $B1$, then $B1 \ominus B2$ has no copies of $e$</li>
+</ul>
+</li>
+<li>
+<p>$BagUnion(S)$</p>
+<ul>
+<li>The bag union of all elements of the set $S$ of bags.</li>
+<li>$BagUnion$ is the analog of $\mathrm{UNION}$ for bags.</li>
+<li>For example, $BagUnion(\{B1, B2, B3\})$ equals $B1 \oplus B2 \oplus B3$</li>
+</ul>
+</li>
+<li>
+<p>$B1 \sqsubseteq B2$</p>
+<ul>
+<li>True iff, for all $e$, bag $B2$ has at least as many copies of $e$ as bag $B1$ does</li>
+<li>$\sqsubseteq$ is the analog for bags of $\subseteq$</li>
+</ul>
+</li>
+<li>
+<p>$SubBag(B)$</p>
+<ul>
+<li>The set of all subbags of bag $B$</li>
+<li>$SubBag$ is the analog of $\mathrm{SUBSET}$ for bags</li>
+</ul>
+</li>
+<li>
+<p>$BagOfAll(F, B)$</p>
+<ul>
+<li>It is thg bag that contains, for each element $e$ of bag $B$, one copy of $F(e)$ for every copy of $e$ in $B$</li>
+<li>This defines a bag iff, for any value $v$, the set of $e$ in $B$ such that $F(e) = v$ is finite</li>
+<li>The bag analog of the construct $\{F(x) : x \in B\}$</li>
+</ul>
+</li>
+<li>
+<p>$BagCardinality(B)$</p>
+<ul>
+<li>If $B$ is a finite bag (one such that $BagToSet(B)$ is a finite set), then this is its cardinality &mdash; the total number of copies of elements in $B$.</li>
+<li>Its value is unspecified if $B$ is not a finite bag</li>
+</ul>
+</li>
+</ul>
+<p><img src="/tla_bags_module.png" alt="tal_bags_module"></p>
+<h3 id="the-numbers-modules">The Numbers Modules</h3>
+<p><img src="/tla_numbers_modules.png" alt="tla_numbers_module"></p>
+<h3 id="realtime-module">RealTime Module</h3>
+<p><img src="/tla_realtime_module.png" alt="tla_realtime_module"></p>
+<h3 id="tlc-module">TLC Module</h3>
+<p><img src="/tla_tlc_module.png" alt="tla_tlc_module"></p>
     </div>
 
     
