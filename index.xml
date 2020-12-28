@@ -783,6 +783,8 @@ for any $e$ and any bags $B1$ and $B2$&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://github.com/tlaplus/tlaplus&#34;&gt;TLA+ IDE&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://tla.msr-inria.inria.fr/tlatoolbox/doc/contents.html&#34;&gt;TLA+ Toolbox User&amp;rsquo;s Guide&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
+&lt;h2 id=&#34;operators-of-standard-modules-p272&#34;&gt;Operators of standard modules (P272)&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/tla_module_operators.png&#34; alt=&#34;module_operators&#34;&gt;&lt;/p&gt;
 &lt;h2 id=&#34;typeset-symbols-of-tla-p273&#34;&gt;Typeset symbols of TLA+ (P273)&lt;/h2&gt;
 &lt;p&gt;&lt;img src=&#34;https://k-on.me/tla_typeset.png&#34; alt=&#34;symbols&#34;&gt;&lt;/p&gt;
 &lt;table&gt;
