@@ -389,7 +389,7 @@
 <p><strong>$\delta$-CRDT convergence</strong>: Consider a set of replicas of a $\delta$-CRDT object, replica $i$ evolving along a sequence of state $\mathrm{X}^0_i = \perp, \mathrm{X}^1_i$&hellip;, each replica performing delta-mutations of the form $m^\delta_{i,k}(\mathrm{X}^k_i)$ at some subset of its sequnece of states, and evolving by joining the current state either with self-generated deltas or with delta-groups received from others. If each delta-mutation $m^\delta(\mathrm{X}^k_i)_{i,k}$ produced at each replica is joined (directly or as part of a delta-group) at least once with every other replica, all replica states become equal.</p>
 <p>由 <code>join</code> 操作满足结合律、交换律和幂等易得此结论。</p>
 <h3 id="basic-anti-entropy-algorithm">Basic anti-entropy algorithm</h3>
-<p><img src="/basic_anti_entropy_algo.png" alt="basic_anti_entropy_algo.png"></p>
+<p><img src="/delta_crdt_basic_anti_entropy_algo.png" alt="basic_anti_entropy_algo.png"></p>
 <p>The basic algorithm operators in two modes:</p>
 <ul>
 <li><code>transitive</code> mode: deltas received at node $i$ from node $j$ can later be sent to some other node $k$ (line 21)</li>
@@ -411,7 +411,7 @@
 </ul>
 <p><strong>CRDT and $\delta$-CRDT correspondence</strong>: Let $(\mathrm{S}, \mathrm{M}, \mathrm{Q})$ be sa standard state-based CRDT and $(\mathrm{S}, \mathrm{M}^\delta, \mathrm{Q})$ a corresponding delta-state decomposition. Any $\delta$-CRDT state reachable by an execution $\mathrm{E}^\delta$ over $(\mathrm{S}, \mathrm{M}^\delta, \mathrm{Q})$, by a <code>delta-interval based anto-entropy algorithm</code> $\mathrm{A}^\delta$ satisfying the <code>causal delta-merging condition</code>, is equal to a state resulting from an execution $\mathrm{E}$ over $(\mathrm{S}, \mathrm{M}, \mathrm{Q})$, having the corresponding data-type operations, by an anti-entropy algorithm $A$ for state-based CRDTs.</p>
 <h3 id="anti-entropy-algorithm-ensuring-causal-consistency-of-delta-crdt">Anti-entropy algorithm ensuring causal consistency of $\delta$-CRDT</h3>
-<p><img src="/causal_anti_entropy_algo.png" alt="causal_anti_entropy_algo.png"></p>
+<p><img src="/delta_crdt_causal_anti_entropy_algo.png" alt="causal_anti_entropy_algo.png"></p>
 <ul>
 <li>Each node $i$ keeps a contiguous sequence of deltas $d_i^l, \dots, d_i^u$ in map $\mathrm{D}$ from integers to deltas, with $l = min(dom(\mathrm{D})), u = max(dom(\mathrm{D}))$.</li>
 <li>Each node $i$ keeps an acknowledgments map $\mathrm{A}$ that stores, for each neighbor $j$, the largest index $b$ for all delta-intervals $\Delta_i^{a,b}$ acknowledged by $j$ (after $j$ receives $\Delta_i^{a,b}$ from $i$ and joins it into $\mathrm{X}_j$)</li>
@@ -420,13 +420,13 @@
 <p>推论：<code>Algorithm 2</code> produces the same reachable states as a standard algorithm over a CRDT for which the $\delta$-CRDT is a decomposition.</p>
 <h2 id="examples">Examples</h2>
 <h3 id="delta-crdt-counter">$\delta$-CRDT Counter</h3>
-<p><img src="/counter.png" alt="counter.png"></p>
+<p><img src="/delta_crdt_counter.png" alt="counter.png"></p>
 <ul>
 <li>The CRDT state $\Sigma$ is a map from replica identifiers to positive integers</li>
 <li>$inc_i^\delta$ increments the map entry correspondingto the local replica and only returns that entry, instead of the full map as <code>inc</code> in the state-based CRDT counter does.</li>
 </ul>
 <h3 id="delta-crdts-for-add-wins-or-sets">$\delta$-CRDTs for Add-Wins OR-Sets</h3>
-<p><img src="/or_set.png" alt="or_set.png"></p>
+<p><img src="/delta_crdt_add_wins_orset.png" alt="or_set.png"></p>
 <p><strong>Add-Wins OR-Set with tombstones</strong></p>
 <ul>
 <li>The state $\Sigma$ consists of a set of tagged elements and a set of tags, acting as tombstones</li>
@@ -449,7 +449,7 @@
 <p>$$1 \le n \le max(\{k | (j, k) \in c_i\}) \Rightarrow (j, n) \in c_i$$</p>
 <p>因此在消息通信时，通过保证因果一致性，可减少存储空间占用。</p>
 <h3 id="optimized-multi-value-register-delta-crdt">Optimized Multi-value Register $\delta$-CRDT</h3>
-<p><img src="/multi_value.png" alt="multi_value.png"></p>
+<p><img src="/delta_crdt_multi_value_register.png" alt="multi_value.png"></p>
     </div>
 
     

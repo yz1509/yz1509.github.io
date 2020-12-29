@@ -8629,7 +8629,7 @@ s-hdrlen          s-1       s
 &lt;p&gt;&lt;strong&gt;$\delta$-CRDT convergence&lt;/strong&gt;: Consider a set of replicas of a $\delta$-CRDT object, replica $i$ evolving along a sequence of state $\mathrm{X}^0_i = \perp, \mathrm{X}^1_i$&amp;hellip;, each replica performing delta-mutations of the form $m^\delta_{i,k}(\mathrm{X}^k_i)$ at some subset of its sequnece of states, and evolving by joining the current state either with self-generated deltas or with delta-groups received from others. If each delta-mutation $m^\delta(\mathrm{X}^k_i)_{i,k}$ produced at each replica is joined (directly or as part of a delta-group) at least once with every other replica, all replica states become equal.&lt;/p&gt;
 &lt;p&gt;由 &lt;code&gt;join&lt;/code&gt; 操作满足结合律、交换律和幂等易得此结论。&lt;/p&gt;
 &lt;h3 id=&#34;basic-anti-entropy-algorithm&#34;&gt;Basic anti-entropy algorithm&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;https://k-on.me/basic_anti_entropy_algo.png&#34; alt=&#34;basic_anti_entropy_algo.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/delta_crdt_basic_anti_entropy_algo.png&#34; alt=&#34;basic_anti_entropy_algo.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;The basic algorithm operators in two modes:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;transitive&lt;/code&gt; mode: deltas received at node $i$ from node $j$ can later be sent to some other node $k$ (line 21)&lt;/li&gt;
@@ -8651,7 +8651,7 @@ s-hdrlen          s-1       s
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;CRDT and $\delta$-CRDT correspondence&lt;/strong&gt;: Let $(\mathrm{S}, \mathrm{M}, \mathrm{Q})$ be sa standard state-based CRDT and $(\mathrm{S}, \mathrm{M}^\delta, \mathrm{Q})$ a corresponding delta-state decomposition. Any $\delta$-CRDT state reachable by an execution $\mathrm{E}^\delta$ over $(\mathrm{S}, \mathrm{M}^\delta, \mathrm{Q})$, by a &lt;code&gt;delta-interval based anto-entropy algorithm&lt;/code&gt; $\mathrm{A}^\delta$ satisfying the &lt;code&gt;causal delta-merging condition&lt;/code&gt;, is equal to a state resulting from an execution $\mathrm{E}$ over $(\mathrm{S}, \mathrm{M}, \mathrm{Q})$, having the corresponding data-type operations, by an anti-entropy algorithm $A$ for state-based CRDTs.&lt;/p&gt;
 &lt;h3 id=&#34;anti-entropy-algorithm-ensuring-causal-consistency-of-delta-crdt&#34;&gt;Anti-entropy algorithm ensuring causal consistency of $\delta$-CRDT&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;https://k-on.me/causal_anti_entropy_algo.png&#34; alt=&#34;causal_anti_entropy_algo.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/delta_crdt_causal_anti_entropy_algo.png&#34; alt=&#34;causal_anti_entropy_algo.png&#34;&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;Each node $i$ keeps a contiguous sequence of deltas $d_i^l, \dots, d_i^u$ in map $\mathrm{D}$ from integers to deltas, with $l = min(dom(\mathrm{D})), u = max(dom(\mathrm{D}))$.&lt;/li&gt;
 &lt;li&gt;Each node $i$ keeps an acknowledgments map $\mathrm{A}$ that stores, for each neighbor $j$, the largest index $b$ for all delta-intervals $\Delta_i^{a,b}$ acknowledged by $j$ (after $j$ receives $\Delta_i^{a,b}$ from $i$ and joins it into $\mathrm{X}_j$)&lt;/li&gt;
@@ -8660,13 +8660,13 @@ s-hdrlen          s-1       s
 &lt;p&gt;推论：&lt;code&gt;Algorithm 2&lt;/code&gt; produces the same reachable states as a standard algorithm over a CRDT for which the $\delta$-CRDT is a decomposition.&lt;/p&gt;
 &lt;h2 id=&#34;examples&#34;&gt;Examples&lt;/h2&gt;
 &lt;h3 id=&#34;delta-crdt-counter&#34;&gt;$\delta$-CRDT Counter&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;https://k-on.me/counter.png&#34; alt=&#34;counter.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/delta_crdt_counter.png&#34; alt=&#34;counter.png&#34;&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;The CRDT state $\Sigma$ is a map from replica identifiers to positive integers&lt;/li&gt;
 &lt;li&gt;$inc_i^\delta$ increments the map entry correspondingto the local replica and only returns that entry, instead of the full map as &lt;code&gt;inc&lt;/code&gt; in the state-based CRDT counter does.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id=&#34;delta-crdts-for-add-wins-or-sets&#34;&gt;$\delta$-CRDTs for Add-Wins OR-Sets&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;https://k-on.me/or_set.png&#34; alt=&#34;or_set.png&#34;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/delta_crdt_add_wins_orset.png&#34; alt=&#34;or_set.png&#34;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;Add-Wins OR-Set with tombstones&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;The state $\Sigma$ consists of a set of tagged elements and a set of tags, acting as tombstones&lt;/li&gt;
@@ -8689,7 +8689,7 @@ s-hdrlen          s-1       s
 &lt;p&gt;$$1 \le n \le max(\{k | (j, k) \in c_i\}) \Rightarrow (j, n) \in c_i$$&lt;/p&gt;
 &lt;p&gt;因此在消息通信时，通过保证因果一致性，可减少存储空间占用。&lt;/p&gt;
 &lt;h3 id=&#34;optimized-multi-value-register-delta-crdt&#34;&gt;Optimized Multi-value Register $\delta$-CRDT&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;https://k-on.me/multi_value.png&#34; alt=&#34;multi_value.png&#34;&gt;&lt;/p&gt;</description>
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/delta_crdt_multi_value_register.png&#34; alt=&#34;multi_value.png&#34;&gt;&lt;/p&gt;</description>
       
     </item>
     
