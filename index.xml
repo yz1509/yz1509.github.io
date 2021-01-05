@@ -6,10 +6,91 @@
     <description>Recent content on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 08 Dec 2020 10:23:40 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 31 Dec 2020 17:09:00 +0800</lastBuildDate>
     
         <atom:link href="https://k-on.me/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>The Problem With Embedded CRDT Counters and a Solution</title>
+      <link>https://k-on.me/post/the-problem-with-embedded-crdt-counters-and-a-solution/</link>
+      <pubDate>Thu, 31 Dec 2020 17:09:00 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/the-problem-with-embedded-crdt-counters-and-a-solution/</guid>
+      
+        <description>&lt;p&gt;The Problem With Embedded CRDT Counters and a Solution 阅读笔记。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;a href=&#34;https://dl.acm.org/doi/pdf/10.1145/2911151.2911159&#34;&gt;论文地址&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;目前存在的问题&#34;&gt;目前存在的问题&lt;/h2&gt;
+&lt;p&gt;当直接使用 &lt;code&gt;OR-Set&lt;/code&gt; 记录 Map 的 field ，&lt;code&gt;PN-Counter&lt;/code&gt; 存储对应的 value 时，可能存在以下问题：利用 &lt;code&gt;OR-Set&lt;/code&gt; 虽可确定某 field 是否存在，但其对应的 value 并未包含所有历史操作信息，仅记录了当前状态值。因此，对于该 field 的删除操作在同步至对端时，并不能撤消所观察到的历史操作的影响。&lt;/p&gt;
+&lt;p&gt;例如，在经历以下操作序列之后&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;time&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;replica 1&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;replica 2&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;$t_1$&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;m[&amp;lsquo;a&amp;rsquo;].inc(2)&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;$t_2$&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash; sync &amp;ndash;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash; sync &amp;ndash;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;$t_3$&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;m[&amp;lsquo;a&amp;rsquo;].inc(3)&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;m.remove(&amp;lsquo;a&amp;rsquo;)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;$t_4$&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash; sync &amp;ndash;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;ndash; sync &amp;ndash;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;我们期望的结果是最终收敛至 $3$：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/embedded_crdt_counters_anomaly_desired.png&#34; alt=&#34;embedded_crdt_counters_anomaly_desired&#34;&gt;&lt;/p&gt;
+&lt;p&gt;但事实上，会收敛至 $5$，因为在 $t_4$ 同步时，$t_3$ 的 &lt;code&gt;m.remove(&#39;a&#39;)&lt;/code&gt; 并未撤销在 $t_2$ 已同步的 &lt;code&gt;m[&#39;a&#39;].inc(2)&lt;/code&gt; 操作：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/embedded_crdt_counters_anomaly_fact.png&#34; alt=&#34;embedded_crdt_counters_anomaly_fact&#34;&gt;&lt;/p&gt;
+&lt;p&gt;当使用 &lt;code&gt;remove-wins set&lt;/code&gt; 作为 field 时，虽然可以撤销所观察的操作，但同时也会丢弃未观察到的并发操作，收敛至 $0$：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/embedded_crdt_counters_anomaly_remove_win.png&#34; alt=&#34;embedded_crdt_counters_anomaly_remove_win&#34;&gt;&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;add-wins 在每次 &lt;code&gt;inc&lt;/code&gt; 操作时更新 tag，remove-wins 则会复用已存在的 tag&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;可行解&#34;&gt;可行解&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;每个 field 在删除时，存储 tombstone。虽然可行，但是 GC 较为麻烦，希望可以将 GC 控制在 key 维度，如此 GC 的实现便可借鉴 key 的主动过期机制。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;remove-wins set&lt;/code&gt; 加 fresh 机制&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;remove-wins set&lt;/code&gt; 记录 Map 的 field&lt;/li&gt;
+&lt;li&gt;在将状态传输至其他 replicas 之后调用 fresh 生成新的 tag，以防止本地后续更新被其他 replicas 并行的 reset 操作覆盖&lt;/li&gt;
+&lt;li&gt;该方法的缺点是 tag 的数量较多，与调用 fresh 的次数成正比&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/embedded_crdt_counters_remove_win_fresh.png&#34; alt=&#34;embedded_crdt_counters_remove_win_fresh&#34;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;resettable-counter&#34;&gt;Resettable Counter&lt;/h2&gt;
+&lt;p&gt;基于之前的讨论，作者提出了 &lt;code&gt;Resettable Counter&lt;/code&gt;，其描述如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/embedded_crdt_counters_resettable_counter.png&#34; alt=&#34;embedded_crdt_counters_resettable_counter&#34;&gt;&lt;/p&gt;
+&lt;p&gt;将 &lt;code&gt;Resettable Counter&lt;/code&gt; 和 &lt;code&gt;OR-Set&lt;/code&gt; 有效结合便可实现我们想要的数据结构(如，&lt;code&gt;ZSET&lt;/code&gt;)。但需要注意的是：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;上述数学描述给出的 &lt;code&gt;Resettable Counter&lt;/code&gt; 是 reset-wins 的，因此需要手动调用 fresh 接口防止更新操作被并行的 reset 所覆盖&lt;/li&gt;
+&lt;li&gt;只有在计数器状态被发送到其他 replicas 后调用 fresh 可适当减少 tag 数量&lt;/li&gt;
+&lt;li&gt;上述数学描述是 state-CRDT，在与 &lt;a href=&#34;https://k-on.me/post/efficient-state-based-crdts-by-delta-mutation/#delta-crdts-for-add-wins-or-sets&#34;&gt;Optimized Add-Wins OR-Set&lt;/a&gt; 结合时，需要进行适当修改&lt;/li&gt;
+&lt;li&gt;事实上，当 &lt;code&gt;Resettable Counter&lt;/code&gt; 和 &lt;code&gt;Optimized Add-Wins OR-Set&lt;/code&gt; 结合后，在集合 $s$ 中存储的即为操作历史(四元组 &lt;code&gt;&amp;lt;id, seq, ele, value&amp;gt;&lt;/code&gt;)，利用 tag(&lt;code&gt;&amp;lt;id, seq&amp;gt;&lt;/code&gt;) 的唯一性、集合的互异性以及加减操作满足结合律和交换律的性质使得集合 $s$ 的 join 满足交换律、结合律和幂等的性质，故最后所有副本收敛至同一状态&lt;/li&gt;
+&lt;/ul&gt;</description>
+      
+    </item>
     
     <item>
       <title>Specifying Systems Notes</title>
@@ -13303,39 +13384,6 @@ Normally when you call this function from the callback implementing a module com
 &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;</description>
-      
-    </item>
-    
-    <item>
-      <title>NVM-notes</title>
-      <link>https://k-on.me/post/nvm-notes/</link>
-      <pubDate>Wed, 26 Aug 2020 20:38:59 +0000</pubDate>
-      
-      <guid>https://k-on.me/post/nvm-notes/</guid>
-      
-        <description>&lt;p&gt;NVM 相关笔记。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;intel-optane-dc-persistent-memory-overview&#34;&gt;Intel Optane DC Persistent Memory Overview&lt;/h2&gt;
-&lt;p&gt;&lt;a href=&#34;https://software.intel.com/content/www/us/en/develop/videos/overview-of-the-new-intel-optane-dc-memory.html&#34;&gt;原文地址&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;Intel Optane DC Persistent Memory has two main properties:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;It is &lt;strong&gt;persistent&lt;/strong&gt;. Data is maintained even when the system power is off.&lt;/li&gt;
-&lt;li&gt;This memory is &lt;strong&gt;byte-addressable&lt;/strong&gt;. Like in regular DRAM, programs can access data structures in place at cache line granularity, avoiding the need to access data in large blocks as it currently happens in traditional I/O.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Persistent memory available modes:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Memory Mode&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://k-on.me/memory_mode.png&#34; alt=&#34;memory_mode&#34;&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Application Direct (App-Direct) Mode&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;https://k-on.me/app_direct_mode.png&#34; alt=&#34;app_direct_mode&#34;&gt;&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;Mixed Mode (combination of the two)&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ul&gt;</description>
       
     </item>
     
