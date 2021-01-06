@@ -409,7 +409,7 @@
 <li>上述数学描述给出的 <code>Resettable Counter</code> 是 reset-wins 的，因此需要手动调用 fresh 接口防止更新操作被并行的 reset 所覆盖</li>
 <li>只有在计数器状态被发送到其他 replicas 后调用 fresh 可适当减少 tag 数量</li>
 <li>上述数学描述是 state-CRDT，在与 <a href="https://k-on.me/post/efficient-state-based-crdts-by-delta-mutation/#delta-crdts-for-add-wins-or-sets">Optimized Add-Wins OR-Set</a> 结合时，需要进行适当修改</li>
-<li>事实上，当 <code>Resettable Counter</code> 和 <code>Optimized Add-Wins OR-Set</code> 结合后，在集合 $s$ 中存储的即为操作历史(四元组 <code>&lt;id, seq, ele, value&gt;</code>)，利用 tag(<code>&lt;id, seq&gt;</code>) 的唯一性、集合的互异性以及加减操作满足结合律和交换律的性质使得集合 $s$ 的 join 满足交换律、结合律和幂等的性质，故最后所有副本收敛至同一状态</li>
+<li>事实上，当 <code>Resettable Counter</code> 和 <code>Optimized Add-Wins OR-Set</code> 结合后，在集合 $s$ 中存储的即为操作历史(五元组 <code>&lt;id, seq, ele, pcnt, ncnt&gt;</code>)，利用 tag(<code>&lt;id, seq&gt;</code>) 的唯一性、集合的互异性以及加减操作满足结合律和交换律的性质使得集合 $s$ 的 join 满足交换律、结合律和幂等的性质，故最后所有副本收敛至同一状态</li>
 </ul>
     </div>
 
