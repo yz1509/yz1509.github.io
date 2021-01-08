@@ -276,7 +276,11 @@ $$OutChan \triangleq \mathrm{INTSANCE} \enspace Channel \enspace \mathrm{WITH} \
 &lt;p&gt;$$\mathrm{INSTANCE} \enspace Send(\rule[-0pt]{0.3cm}{0.5pt}， \rule[-0pt]{0.3cm}{0.5pt}， \rule[-0pt]{0.3cm}{0.5pt}， \rule[-0pt]{0.3cm}{0.5pt})$$&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;The expression $\mathrm{CHOOSE} \enspace v : v \notin Val$ equals an arbitrarily chosen value $x$ that satisfies the formula. If no such $x$ exists, the expression has a completely arbitrary value.&lt;/p&gt;
+&lt;p&gt;The expression $\mathrm{CHOOSE} \enspace x : F$ equals an arbitrarily chosen value $x$ that satisfies the formula $F$. If no such $x$ exists, the expression has a completely arbitrary value.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;The follow statement defines $NoVal$ to be some value this is not an element of $Val$.
+$$NoVal \triangleq \mathrm{CHOOSE} \enspace v : v \notin Val$$&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id=&#34;functions&#34;&gt;Functions&lt;/h3&gt;

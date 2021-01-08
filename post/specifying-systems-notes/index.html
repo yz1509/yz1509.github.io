@@ -70,7 +70,7 @@
 <meta itemprop="description" content="《Specifying Systems》 阅读笔记。">
 <meta itemprop="datePublished" content="2020-12-08T10:23:40+08:00" />
 <meta itemprop="dateModified" content="2020-12-08T10:23:40+08:00" />
-<meta itemprop="wordCount" content="5186">
+<meta itemprop="wordCount" content="5210">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"> 分布式 </a>
             
           </div>
-        <span class="more-meta"> 5186 words </span>
+        <span class="more-meta"> 5210 words </span>
           <span class="more-meta"> 11 min read </span>
 
         
@@ -577,7 +577,11 @@ $$OutChan \triangleq \mathrm{INTSANCE} \enspace Channel \enspace \mathrm{WITH} \
 <p>$$\mathrm{INSTANCE} \enspace Send(\rule[-0pt]{0.3cm}{0.5pt}， \rule[-0pt]{0.3cm}{0.5pt}， \rule[-0pt]{0.3cm}{0.5pt}， \rule[-0pt]{0.3cm}{0.5pt})$$</p>
 </li>
 <li>
-<p>The expression $\mathrm{CHOOSE} \enspace v : v \notin Val$ equals an arbitrarily chosen value $x$ that satisfies the formula. If no such $x$ exists, the expression has a completely arbitrary value.</p>
+<p>The expression $\mathrm{CHOOSE} \enspace x : F$ equals an arbitrarily chosen value $x$ that satisfies the formula $F$. If no such $x$ exists, the expression has a completely arbitrary value.</p>
+</li>
+<li>
+<p>The follow statement defines $NoVal$ to be some value this is not an element of $Val$.
+$$NoVal \triangleq \mathrm{CHOOSE} \enspace v : v \notin Val$$</p>
 </li>
 </ul>
 <h3 id="functions">Functions</h3>
