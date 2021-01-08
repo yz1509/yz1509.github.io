@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Efficient State-based CRDTs by Delta-Mutation 阅读笔记。">
 <meta itemprop="datePublished" content="2020-09-07T12:02:54+00:00" />
 <meta itemprop="dateModified" content="2020-09-07T12:02:54+00:00" />
-<meta itemprop="wordCount" content="1391">
+<meta itemprop="wordCount" content="1410">
 
 
 
@@ -308,7 +308,7 @@
         <div class="post-category">
             
           </div>
-        <span class="more-meta"> 1391 words </span>
+        <span class="more-meta"> 1410 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -443,6 +443,9 @@
 <li>the tripls present in both sets (therefore, not removed in either)</li>
 <li>any triple present in one of the sets and whose tag is not present in the causal context of the other state.</li>
 </ul>
+<blockquote>
+<p>$s \cap s'$ 的存在兼容了传递的信息为 full-state 的情况</p>
+</blockquote>
 </li>
 </ul>
 <p>Tips: When using an anti-entropy algorithm that provides causal consistency, then for each replica state $\mathrm{X}_i = (s_i, c_i)$ and replica identifier $j \in \mathbb{I}$, we have a contiguous sequence:</p>

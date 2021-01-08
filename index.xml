@@ -8768,6 +8768,9 @@ s-hdrlen          s-1       s
 &lt;li&gt;the tripls present in both sets (therefore, not removed in either)&lt;/li&gt;
 &lt;li&gt;any triple present in one of the sets and whose tag is not present in the causal context of the other state.&lt;/li&gt;
 &lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;$s \cap s&#39;$ 的存在兼容了传递的信息为 full-state 的情况&lt;/p&gt;
+&lt;/blockquote&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;Tips: When using an anti-entropy algorithm that provides causal consistency, then for each replica state $\mathrm{X}_i = (s_i, c_i)$ and replica identifier $j \in \mathbb{I}$, we have a contiguous sequence:&lt;/p&gt;
