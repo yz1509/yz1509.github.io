@@ -6,7 +6,16 @@
     <description>Recent content in 分布式 on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 08 Dec 2020 10:23:40 +0800</lastBuildDate><atom:link href="https://k-on.me/categories/%E5%88%86%E5%B8%83%E5%BC%8F/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 14 Jan 2021 16:33:37 +0800</lastBuildDate><atom:link href="https://k-on.me/categories/%E5%88%86%E5%B8%83%E5%BC%8F/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>TLC Model Checker</title>
+      <link>https://k-on.me/post/tlc-model-checker/</link>
+      <pubDate>Thu, 14 Jan 2021 16:33:37 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/tlc-model-checker/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://tla.msr-inria.inria.fr/tlatoolbox/doc/model/model.html&#34;&gt;TLC moder checker&lt;/a&gt; 相关文档阅读笔记，专注于相关概念内容，省略 IDE 界面介绍部分。&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>Specifying Systems Notes</title>
       <link>https://k-on.me/post/specifying-systems-notes/</link>
