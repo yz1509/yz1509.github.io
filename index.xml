@@ -79,9 +79,16 @@
 &lt;li&gt;
 &lt;p&gt;Ordinary Model Values&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;A model value is an unspecified value that TLC considers to be unequal to any value that youcan express in TLA+.&lt;/li&gt;
-&lt;li&gt;Since TLC cannot evaluate the unbounded $CHOOSE$ expression, to allow TLC to handle the follow spec, you need to substitute a model value for $NotANat$.
-$$NotANat = CHOOSE \enspace n : n \notin Nat$$&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;A model value is an unspecified value that TLC considers to be unequal to any value that youcan express in TLA+.&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Since TLC cannot evaluate the unbounded $CHOOSE$ expression, to allow TLC to handle the follow spec, you need to substitute a model value for $NotANat$.
+$$NotANat = CHOOSE \enspace n : n \notin Nat$$&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这条要注意！！！&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;li&gt;
@@ -354,7 +361,11 @@ $$NotANat = CHOOSE \enspace n : n \notin Nat$$&lt;/li&gt;
 &lt;li&gt;An action is a formula, and formulas aren&amp;rsquo;t executed&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;stuttering steps&lt;/strong&gt;: steps that leave specified state unchanged.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;stuttering steps&lt;/strong&gt;: steps that leave specified state(vars) unchanged.
+&lt;ul&gt;
+&lt;li&gt;In TLA, we let $[Next]_{vars}$ stand for $Next \lor (vars&#39; = vars)$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;theorem&lt;/strong&gt;: a temporal formula satisfied by every behavior is called a theorem.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id=&#34;小结&#34;&gt;小结&lt;/h3&gt;
@@ -1095,7 +1106,7 @@ for any $e$ and any bags $B1$ and $B2$&lt;/li&gt;
 &lt;h2 id=&#34;个人笔记&#34;&gt;个人笔记&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;a href=&#34;https://k-on.me/post/specifying-systems-notes/&#34;&gt;Specifying Systems Notes&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&#34;http://k-on.me/post/tlc-model-checker/&#34;&gt;TLC Model Checking&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;http://k-on.me/post/tlc-model-checker/&#34;&gt;TLC Model Checker&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;&lt;strong&gt;Tips&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;在生成 PDF 文件时，个人比较喜欢将 documentclass 设置为 &lt;code&gt;standalone&lt;/code&gt;，如下：&lt;/p&gt;

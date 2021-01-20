@@ -70,7 +70,7 @@
 <meta itemprop="description" content="TLC moder checker 相关文档阅读笔记，专注于相关概念内容，省略 IDE 界面介绍部分。">
 <meta itemprop="datePublished" content="2021-01-14T16:33:37+08:00" />
 <meta itemprop="dateModified" content="2021-01-14T16:33:37+08:00" />
-<meta itemprop="wordCount" content="1454">
+<meta itemprop="wordCount" content="1462">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"> 分布式 </a>
             
           </div>
-        <span class="more-meta"> 1454 words </span>
+        <span class="more-meta"> 1462 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -412,9 +412,16 @@
 <li>
 <p>Ordinary Model Values</p>
 <ul>
-<li>A model value is an unspecified value that TLC considers to be unequal to any value that youcan express in TLA+.</li>
-<li>Since TLC cannot evaluate the unbounded $CHOOSE$ expression, to allow TLC to handle the follow spec, you need to substitute a model value for $NotANat$.
-$$NotANat = CHOOSE \enspace n : n \notin Nat$$</li>
+<li>
+<p>A model value is an unspecified value that TLC considers to be unequal to any value that youcan express in TLA+.</p>
+</li>
+<li>
+<p>Since TLC cannot evaluate the unbounded $CHOOSE$ expression, to allow TLC to handle the follow spec, you need to substitute a model value for $NotANat$.
+$$NotANat = CHOOSE \enspace n : n \notin Nat$$</p>
+<blockquote>
+<p>这条要注意！！！</p>
+</blockquote>
+</li>
 </ul>
 </li>
 <li>

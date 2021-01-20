@@ -70,7 +70,7 @@
 <meta itemprop="description" content="《Specifying Systems》 阅读笔记。">
 <meta itemprop="datePublished" content="2020-12-08T10:23:40+08:00" />
 <meta itemprop="dateModified" content="2020-12-08T10:23:40+08:00" />
-<meta itemprop="wordCount" content="5210">
+<meta itemprop="wordCount" content="5222">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E5%88%86%E5%B8%83%E5%BC%8F/"> 分布式 </a>
             
           </div>
-        <span class="more-meta"> 5210 words </span>
+        <span class="more-meta"> 5222 words </span>
           <span class="more-meta"> 11 min read </span>
 
         
@@ -431,7 +431,11 @@
 <li>An action is a formula, and formulas aren&rsquo;t executed</li>
 </ul>
 </li>
-<li><strong>stuttering steps</strong>: steps that leave specified state unchanged.</li>
+<li><strong>stuttering steps</strong>: steps that leave specified state(vars) unchanged.
+<ul>
+<li>In TLA, we let $[Next]_{vars}$ stand for $Next \lor (vars' = vars)$</li>
+</ul>
+</li>
 <li><strong>theorem</strong>: a temporal formula satisfied by every behavior is called a theorem.</li>
 </ul>
 <h3 id="小结">小结</h3>
