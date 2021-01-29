@@ -70,7 +70,7 @@
 <meta itemprop="description" content="这个人明明遇到过很多问题，却总是忘了记录。">
 <meta itemprop="datePublished" content="2019-10-12T20:00:38+00:00" />
 <meta itemprop="dateModified" content="2019-10-12T20:00:38+00:00" />
-<meta itemprop="wordCount" content="343">
+<meta itemprop="wordCount" content="359">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/linux/"> Linux </a>
             
           </div>
-        <span class="more-meta"> 343 words </span>
+        <span class="more-meta"> 359 words </span>
           <span class="more-meta"> 1 min read </span>
 
         
@@ -333,6 +333,7 @@
   <ul>
     <li><a href="#手动卸载旧版本软件安装完新版本之后提示-no-such-file-or-directory-怎么办">手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？</a></li>
     <li><a href="#gccg-版本切换">gcc/g++ 版本切换</a></li>
+    <li><a href="#查看-cpu-是否开启节能模式">查看 CPU 是否开启节能模式</a></li>
   </ul>
 </nav>
   </div>
@@ -409,6 +410,17 @@ update-alternatives --config g++
 </code></pre></td></tr></table>
 </div>
 </div><p>注意保持 gcc 和 g++ 的版本一致。</p>
+<h2 id="查看-cpu-是否开启节能模式">查看 CPU 是否开启节能模式</h2>
+<p><a href="https://gist.github.com/wmealing/2dd2b543c4d3cff6cab7">参考</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">cat /sys/module/intel_idle/parameters/max_cstate
+</code></pre></td></tr></table>
+</div>
+</div>
     </div>
 
     
