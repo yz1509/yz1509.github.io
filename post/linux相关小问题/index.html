@@ -359,8 +359,8 @@
 </ol>
 <h2 id="gccg-版本切换">gcc/g++ 版本切换</h2>
 <ol>
-<li>查看所安装的各个版本</li>
-</ol>
+<li>
+<p>查看所安装的各个版本</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -371,9 +371,9 @@
 ls /usr/bin/g++*
 </code></pre></td></tr></table>
 </div>
-</div><ol start="2">
-<li>设置候选优先级</li>
-</ol>
+</div></li>
+<li>
+<p>设置候选优先级</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -394,9 +394,9 @@ update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-5 <span class="m">10
 update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 <span class="m">80</span>
 </code></pre></td></tr></table>
 </div>
-</div><ol start="3">
-<li>切换版本</li>
-</ol>
+</div></li>
+<li>
+<p>切换版本</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -409,7 +409,9 @@ update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-7 <span class="m">80
 update-alternatives --config g++
 </code></pre></td></tr></table>
 </div>
-</div><p>注意保持 gcc 和 g++ 的版本一致。</p>
+</div></li>
+</ol>
+<p>注意保持 gcc 和 g++ 的版本一致。</p>
 <h2 id="查看-cpu-是否开启节能模式">查看 CPU 是否开启节能模式</h2>
 <p><a href="https://gist.github.com/wmealing/2dd2b543c4d3cff6cab7">参考</a></p>
 <div class="highlight"><div class="chroma">
