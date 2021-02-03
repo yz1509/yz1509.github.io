@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>c/c&#43;&#43; on HTT - ふわふわ時間</title>
+    <link>https://k-on.me/categories/c/c&#43;&#43;/</link>
+    <description>Recent content in c/c&#43;&#43; on HTT - ふわふわ時間</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language><atom:link href="https://k-on.me/categories/c/c++/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>我的 C 语言基础果然有问题</title>
+      <link>https://k-on.me/post/c-notes/</link>
+      <pubDate>Tue, 22 Sep 2020 14:44:15 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/c-notes/</guid>
+      <description>&lt;p&gt;记录 C 语言相关小知识。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>CCIA-线程间同步</title>
+      <link>https://k-on.me/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%90%8C%E6%AD%A5/</link>
+      <pubDate>Wed, 11 Dec 2019 19:45:55 +0000</pubDate>
+      
+      <guid>https://k-on.me/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%90%8C%E6%AD%A5/</guid>
+      <description>&lt;p&gt;《C++ Concurrentcy in Action 2nd》 第四章阅读笔记。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>CCIA-线程间共享数据</title>
+      <link>https://k-on.me/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%85%B1%E4%BA%AB%E6%95%B0%E6%8D%AE/</link>
+      <pubDate>Fri, 15 Nov 2019 17:15:13 +0000</pubDate>
+      
+      <guid>https://k-on.me/post/ccia-%E7%BA%BF%E7%A8%8B%E9%97%B4%E5%85%B1%E4%BA%AB%E6%95%B0%E6%8D%AE/</guid>
+      <description>&lt;p&gt;《C++ Concurrentcy in Action 2nd》 第三章阅读笔记。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>CCIA-线程管理</title>
+      <link>https://k-on.me/post/ccia-%E7%BA%BF%E7%A8%8B%E7%AE%A1%E7%90%86/</link>
+      <pubDate>Thu, 14 Nov 2019 14:20:01 +0000</pubDate>
+      
+      <guid>https://k-on.me/post/ccia-%E7%BA%BF%E7%A8%8B%E7%AE%A1%E7%90%86/</guid>
+      <description>&lt;p&gt;《C++ Concurrentcy in Action 2nd》 第二章阅读笔记。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
