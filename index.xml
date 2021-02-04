@@ -268,7 +268,7 @@ $$NotANat = CHOOSE \enspace n : n \notin Nat$$&lt;/p&gt;
       
       <guid>https://k-on.me/post/the-problem-with-embedded-crdt-counters-and-a-solution/</guid>
       
-        <description>&lt;p&gt;The Problem With Embedded CRDT Counters and a Solution 阅读笔记。&lt;/p&gt;
+        <description>&lt;p&gt;《The Problem With Embedded CRDT Counters and a Solution》 阅读笔记。&lt;/p&gt;
 &lt;hr&gt;
 &lt;p&gt;&lt;a href=&#34;https://dl.acm.org/doi/pdf/10.1145/2911151.2911159&#34;&gt;论文地址&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&#34;目前存在的问题&#34;&gt;目前存在的问题&lt;/h2&gt;
@@ -8971,7 +8971,7 @@ s-hdrlen          s-1       s
       
       <guid>https://k-on.me/post/efficient-state-based-crdts-by-delta-mutation/</guid>
       
-        <description>&lt;p&gt;Efficient State-based CRDTs by Delta-Mutation 阅读笔记。&lt;/p&gt;
+        <description>&lt;p&gt;《Efficient State-based CRDTs by Delta-Mutation》 阅读笔记。&lt;/p&gt;
 &lt;hr&gt;
 &lt;p&gt;&lt;a href=&#34;https://arxiv.org/pdf/1410.2803.pdf&#34;&gt;论文地址&lt;/a&gt; &lt;a href=&#34;https://github.com/CBaquero/delta-enabled-crdts&#34;&gt;代码地址&lt;/a&gt;&lt;/p&gt;
 &lt;h2 id=&#34;cmrdt-和-cvrdt-的不足&#34;&gt;CmRDT 和 CvRDT 的不足&lt;/h2&gt;
