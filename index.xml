@@ -6,10 +6,133 @@
     <description>Recent content on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 14 Jan 2021 16:33:37 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 04 Feb 2021 18:14:47 +0800</lastBuildDate>
     
         <atom:link href="https://k-on.me/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Time, Clocks, and the Ordering of Events in a Distributed System</title>
+      <link>https://k-on.me/post/time-clocks-and-the-ordering-of-events-in-a-distributed-system/</link>
+      <pubDate>Thu, 04 Feb 2021 18:14:47 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/time-clocks-and-the-ordering-of-events-in-a-distributed-system/</guid>
+      
+        <description>&lt;p&gt;《Time, Clocks, and the Ordering of Events in a Distributed System》 阅读笔记。&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;a href=&#34;https://citemaster.net/get/10b50274-7bc5-11e5-8aa1-00163e009cc7/p558-lamport.pdf&#34;&gt;论文地址&lt;/a&gt;&lt;/p&gt;
+&lt;h2 id=&#34;the-partial-ordering&#34;&gt;The Partial Ordering&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;System model&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;The system is composed of a collection of processes&lt;/li&gt;
+&lt;li&gt;Each process consists of a sequence of events&lt;/li&gt;
+&lt;li&gt;Sending or receiving a message is an event in a process&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Happened before&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;The relation &amp;ldquo;happened before&amp;rdquo; (denoted by $\rightarrow$) on the set of events of a system is the smallest relation satisfying the following three conditions:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;if $a$ and $b$ are events in the same process, and $a$ comes before $b$, then $a \rightarrow b$&lt;/li&gt;
+&lt;li&gt;if $a$ is the sending of a message by one process and $b$ is the receipt of the same message by another process, then $a \rightarrow b$&lt;/li&gt;
+&lt;li&gt;if $a \rightarrow b$ and $b \rightarrow c$ then $a \rightarrow c$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Two distinct events $a$ and $b$ are said to be &lt;em&gt;concurrent&lt;/em&gt; if $a \nrightarrow b$ and $b \nrightarrow a$. We assume that $a \nrightarrow a$ for any event $a$.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Causally affect&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Another way of viewing the definition is to say that $a \to b$ means that it is possible for event $a$ to causally affect event $b$.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Compare to special relativity&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;In relativity, the ordering of events is defined in terms of messages that &lt;em&gt;could&lt;/em&gt; be sent.&lt;/li&gt;
+&lt;li&gt;In &amp;ldquo;happened before&amp;rdquo; relation, only considering messages that &lt;em&gt;actually&lt;/em&gt; are send.
+&lt;blockquote&gt;
+&lt;p&gt;也就是说，在分布式系统的 &amp;ldquo;happened before&amp;rdquo; 中不考虑隐式因果关系.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;logical-clocks&#34;&gt;Logical Clocks&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;Definition&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;We define a clock $C_i$ for each process $P_i$ to be a function which assigns a number $C_i(a)$ to any event $a$ in that process.&lt;/li&gt;
+&lt;li&gt;The entire system of clocks is represented by the function $C$ which assigns to any event $b$ the number $C(b)$, where $C(b) = C_j(b)$ if $b$ is an event in process $P_j$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Clock Condition&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Clock Condition&lt;/code&gt;: For any event $a, b$: if $a \to b$ then $C(a) &amp;lt; C(b)$.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;based on the order in which events occur.&lt;/li&gt;
+&lt;li&gt;$C(a) &amp;lt; C(b) \nRightarrow a \to b$, since that would imply that any two concurrent events must occur at the same time.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It is easy to see from our definition of the relation $\to$ that the Clock Condition is satisfied if the following two conditions hold:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;C1&lt;/code&gt;: If $a$ and $b$ are events in process $P_i$, and $a$ comes before $b$, then $C_i(a) &amp;lt; C_i(b)$&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;C2&lt;/code&gt;: If $a$ is the sending of a message by process $P_i$ and $b$ is the receipt of that message by pocess $P_j$, then $C_i(a) &amp;lt; C_j(b)$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Implementation Rule of Clock Condition&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;IR1&lt;/code&gt; (meet condition &lt;code&gt;C1&lt;/code&gt;): Each process $P_i$ increments $C_i$ between any two successive events&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;IR2&lt;/code&gt; (meet condition &lt;code&gt;C2&lt;/code&gt;)
+&lt;ul&gt;
+&lt;li&gt;If event $a$ is the sending of a message $m$ by process $P_i$, then the message $m$ contains a timestamp $T_m = C_i(a)$&lt;/li&gt;
+&lt;li&gt;Upon receiving a message $m$, process $P_j$ sets $C_j$ greater than or equal to its present value and greater than $T_m$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;ordering-the-events-totally&#34;&gt;Ordering the Events Totally&lt;/h2&gt;
+&lt;p&gt;至今为止，我们只能得到事件的偏序关系，为了得到事件的全局顺序，我们可通过附加一个 processes 之间的比较关系 $\prec$ 达成目的。&lt;/p&gt;
+&lt;p&gt;More precisely, we define a relation $\Rightarrow$ as follows: if $a$ is an event in process $P_i$ and $b$ is an event in process $P_j$, then $a \Rightarrow b$ if and only if either&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$C_i(a) &amp;lt; C_i(b)$
+&lt;blockquote&gt;
+&lt;p&gt;Implies that if $a \to b$ then $a \Rightarrow b$&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;$C_i(a) = C_j(b)$ and $P_i \prec P_j$
+&lt;blockquote&gt;
+&lt;p&gt;The oridering $\Rightarrow$ depends upon the system of clocks $C_i$, and is not unique.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;strong-clock-condition&#34;&gt;Strong Clock Condition&lt;/h2&gt;
+&lt;p&gt;因为所构建的系统可能没有包含所有的因果关系，因此可能所构建系统内的事件顺序和实际上的事件顺序不符。因此，为了和实际相符，逻辑时钟需满足以下约束：&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;Strong Clock Condition&lt;/code&gt;: For any events $a, b$ in $\varphi$, if $a \leadsto b$ then $C(a) &amp;lt; C(b)$.&lt;/p&gt;
+&lt;p&gt;where,&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;$\varphi$ denote the set of all system events.&lt;/li&gt;
+&lt;li&gt;$\leadsto$ denote the &amp;ldquo;happened before&amp;rdquo; relation for $\bar{\varphi}$
+&lt;ul&gt;
+&lt;li&gt;$\bar{\varphi}$ denote the set of events which contains the events in $\varphi$ together with all other relevant external events&lt;/li&gt;
+&lt;li&gt;$a \leadsto b \nRightarrow a \to b$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;physical-clocks&#34;&gt;Physical Clocks&lt;/h2&gt;
+&lt;p&gt;For mathematical convenience, we assume that $C_i(t)$ is a continuous, differentiable function of $t$ except for isolated jump discontinuities where the clock is reset.&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;Physical Clock Condition&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;PC1&lt;/code&gt;(correct): There exists a constant $\kappa \ll 1$, such that for all $i$: $|\frac{dC_i(t)}{dt} - 1| &amp;lt; \kappa$&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;PC2&lt;/code&gt;(synchronized): There must be a sufficiently small constant $\epsilon$, such that for all $i, j$: $|C_i(t) - C_j(t)| &amp;lt; \epsilon$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Implementation Rule&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Let $m$ be a message which is sent at physical time $t$ and received at time $t&#39;$. We define $v_m = t&#39; - t$ to be the total delay of the message $m$. This delay will, of course, not be known to the process which receives $m$. However, we assume that the receiving process knows some minimum delay $\mu_m &amp;gt; 0$ such that $\mu_m \le v_m$. We call $\xi_m = v_m - \mu_m$ the unpredictable delay of the message.&lt;/p&gt;
+&lt;p&gt;We now specialize rules &lt;code&gt;IR1&lt;/code&gt; and &lt;code&gt;IR2&lt;/code&gt; for our physical clocks as follows:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;PCIR1&lt;/code&gt;: For each $i$, if $P_i$ does not receive a message at physical time $t$, then $C_i$ is differentiable at $t$ and $\frac{dC_i(t)}{dt} &amp;gt; 0$.&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;PCIR2&lt;/code&gt;:
+&lt;ul&gt;
+&lt;li&gt;If $P_i$ sends a message $m$ at physical time $t$, then $m$ contains a timestamp $T_m = C_i(t)$&lt;/li&gt;
+&lt;li&gt;Upon receiving a message $m$ at time $t&#39;$, process $P_j$ sets $C_j(t&#39;)$ equal to maximum $(C_j(t&#39; - 0), T_m + \mu_m)$
+&lt;blockquote&gt;
+&lt;p&gt;$C_j(t&#39; - 0) = lim_{\delta \to 0} C_j(t&#39; - |\delta|)$&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;THEOREM&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Assume a strongly connected graph of processs with diameter $d$ which always obeys rules &lt;code&gt;PCIR1&lt;/code&gt; and &lt;code&gt;PCIR2&lt;/code&gt;. Assume that for any message $m$, $\mu_m \le \mu$ for some constant $\mu$, and that for all $t \ge t_0$:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;PC1&lt;/code&gt; holds&lt;/li&gt;
+&lt;li&gt;There are constants $\tau$ and $\xi$ such that every $\tau$ seconds a message with an unpredictable delay less than $\xi$ is sent over every arc. Then &lt;code&gt;PC2&lt;/code&gt; is satisfied with $\epsilon \approx d(2\kappa \tau + \xi)$ for all $t \gtrsim t_0 + \tau d$, where the approximations assume $\mu + \xi \ll \tau$&lt;/li&gt;
+&lt;/ul&gt;</description>
+      
+    </item>
     
     <item>
       <title>TLC Model Checker</title>
@@ -8961,108 +9084,6 @@ s-hdrlen          s-1       s
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;</description>
-      
-    </item>
-    
-    <item>
-      <title>Efficient State-based CRDTs by Delta-Mutation</title>
-      <link>https://k-on.me/post/efficient-state-based-crdts-by-delta-mutation/</link>
-      <pubDate>Mon, 07 Sep 2020 12:02:54 +0000</pubDate>
-      
-      <guid>https://k-on.me/post/efficient-state-based-crdts-by-delta-mutation/</guid>
-      
-        <description>&lt;p&gt;《Efficient State-based CRDTs by Delta-Mutation》 阅读笔记。&lt;/p&gt;
-&lt;hr&gt;
-&lt;p&gt;&lt;a href=&#34;https://arxiv.org/pdf/1410.2803.pdf&#34;&gt;论文地址&lt;/a&gt; &lt;a href=&#34;https://github.com/CBaquero/delta-enabled-crdts&#34;&gt;代码地址&lt;/a&gt;&lt;/p&gt;
-&lt;h2 id=&#34;cmrdt-和-cvrdt-的不足&#34;&gt;CmRDT 和 CvRDT 的不足&lt;/h2&gt;
-&lt;p&gt;本文作者认为 &lt;code&gt;CmRDT&lt;/code&gt; 的不足之处有三：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;为确保幂等性：要求消息传输提供 &lt;code&gt;exactly once&lt;/code&gt; 的保证 (本身幂等的操作无需此约束)&lt;/li&gt;
-&lt;li&gt;因为两两节点之间都需通信以协调，故动态维护节点之间拓扑结构较为麻烦&lt;/li&gt;
-&lt;li&gt;要求操作在所有节点上单独执行（即使是批量操作）&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;而 &lt;code&gt;CvRDT&lt;/code&gt; 的不足之处则主要在于每次需要传递当前状态，通信消耗过大。&lt;/p&gt;
-&lt;h2 id=&#34;delta-state-crdts&#34;&gt;Delta-state CRDTs&lt;/h2&gt;
-&lt;h3 id=&#34;definition&#34;&gt;Definition&lt;/h3&gt;
-&lt;p&gt;&lt;strong&gt;Delta-mutator&lt;/strong&gt;: A delta-mutator $m^\delta$ is a function, corresponding to an update operation, which takes a state $\mathrm{X}$ in a join-semilattice $\mathrm{S}$ as parameter and returns a delta-mutation $m^\delta(\mathrm{X})$, also in $\mathrm{S}$.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Delta-group&lt;/strong&gt;: A delta-group is inductively defined as either a delta-mutation or a join of several delta-group.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;$\delta$-CRDT&lt;/strong&gt;: A $\delta$-CRDT consists of a triple $(\mathrm{S}, \mathrm{M}^\delta, \mathrm{Q})$, where $\mathrm{S}$ is a join-semilattice, $\mathrm{M}^\delta$ is a set of delta-mutators, and $\mathrm{Q}$ is a set of query functions, where the state transition at each replica is given by either joining the current state $\mathrm{X} \in \mathrm{S}$ with a delta-mutation:&lt;/p&gt;
-&lt;p&gt;$$\mathrm{X&#39;} = \mathrm{X} \sqcup m^\delta(\mathrm{X})$$&lt;/p&gt;
-&lt;p&gt;or joining the current state with some received delta-group $\mathrm{D}$:&lt;/p&gt;
-&lt;p&gt;$$\mathrm{X&#39;} = \mathrm{X} \sqcup \mathrm{D}$$&lt;/p&gt;
-&lt;h3 id=&#34;delta-state-decomposition-of-standards-crdts&#34;&gt;Delta-state decomposition of standards CRDTs&lt;/h3&gt;
-&lt;p&gt;A $\delta$-CRDT $(\mathrm{S}, \mathrm{M}^\delta, \mathrm{Q})$ is a delta-state decomposition of a state-based CRDT $(\mathrm{S}, \mathrm{M}, \mathrm{Q})$, if for every mutator $m \in \mathrm{M}$, we have a corresponding mutator $m^\delta \in \mathrm{M}^\delta$ such that, for every state $\mathrm{X} \in \mathrm{S}$:&lt;/p&gt;
-&lt;p&gt;$$m(\mathrm{X}) = \mathrm{X} \sqcup m^\delta(\mathrm{X})$$&lt;/p&gt;
-&lt;p&gt;因此我们的目标便是寻找满足上式的 $m^\delta(\mathrm{X})$，很明显 $m(\mathrm{X})$ 是一个解，因此 &lt;code&gt;CvRDT&lt;/code&gt; 是 $\delta$-CRDT 的一种特殊形式。为了克服 &lt;code&gt;CvRDT&lt;/code&gt; 通信消耗大的缺点，很明显我们想得到的解需满足以下条件：&lt;/p&gt;
-&lt;p&gt;$$size(m^\delta(\mathrm{X})) \ll size(m(\mathrm{X}))$$&lt;/p&gt;
-&lt;h2 id=&#34;state-convergence&#34;&gt;State Convergence&lt;/h2&gt;
-&lt;p&gt;&lt;strong&gt;$\delta$-CRDT convergence&lt;/strong&gt;: Consider a set of replicas of a $\delta$-CRDT object, replica $i$ evolving along a sequence of state $\mathrm{X}^0_i = \perp, \mathrm{X}^1_i$&amp;hellip;, each replica performing delta-mutations of the form $m^\delta_{i,k}(\mathrm{X}^k_i)$ at some subset of its sequnece of states, and evolving by joining the current state either with self-generated deltas or with delta-groups received from others. If each delta-mutation $m^\delta(\mathrm{X}^k_i)_{i,k}$ produced at each replica is joined (directly or as part of a delta-group) at least once with every other replica, all replica states become equal.&lt;/p&gt;
-&lt;p&gt;由 &lt;code&gt;join&lt;/code&gt; 操作满足结合律、交换律和幂等易得此结论。&lt;/p&gt;
-&lt;h3 id=&#34;basic-anti-entropy-algorithm&#34;&gt;Basic anti-entropy algorithm&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;https://k-on.me/delta_crdt_basic_anti_entropy_algo.png&#34; alt=&#34;basic_anti_entropy_algo.png&#34;&gt;&lt;/p&gt;
-&lt;p&gt;The basic algorithm operators in two modes:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;code&gt;transitive&lt;/code&gt; mode: deltas received at node $i$ from node $j$ can later be sent to some other node $k$ (line 21)&lt;/li&gt;
-&lt;li&gt;&lt;code&gt;direct&lt;/code&gt; mode: a delta-group is exclusively the join of local delta-mutations (line 23)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;causal-consistency&#34;&gt;Causal Consistency&lt;/h2&gt;
-&lt;p&gt;在 &lt;code&gt;CvRDT&lt;/code&gt; 中每次传输的是 &lt;code&gt;full state&lt;/code&gt;，隐式地确保了因果一致性，而在 $\delta$-CRDT 中若想提供因果一致性则需要满足某些条件。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Delta-interval&lt;/strong&gt;: Given a replica $i$ progressing along the states $\mathrm{X}_i^0, \mathrm{X}_i^1, \dots$ by joining delta $d_i^k$ (either local delta-mutation or recived delta-group) into $\mathrm{X}_i^k$ to obtain $\mathrm{X}_i^{k+1}$, a delta-interval $\Delta_i^{a,b}$ is a delta-group resulting from joining deltas $d_i^a,\dots, d_i^{b-1}$:&lt;/p&gt;
-&lt;p&gt;$$\Delta_i^{a,b} = \bigsqcup\{d_i^k | a \le k &amp;lt; b\}$$&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Delta-interval-based anti-entropy algorithm&lt;/strong&gt;: A given anti-entropy algorithm for $\delta$-CRDTs is delta-interval-based, if all deltas sent to other replicas are delta-intervals.&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Causal delta-merging condition&lt;/strong&gt;: A delta-interval based anti-entropy algorithm is said to satisfy the causal delta-merging condition if the algorithm only joins $\Delta_j^{a, b}$ from replica $j$ into state $\mathrm{X}_i$ of replica $i$ that satisfy:&lt;/p&gt;
-&lt;p&gt;$$\mathrm{X}_i \sqsupseteq \mathrm{X}_j^a$$&lt;/p&gt;
-&lt;p&gt;容易看出上述约束就是通过对消息排序，从而显示地保证因果一致性。也就是说，节点 $j$ 在发送 $\Delta_j^{a,b}$ 之前所 merge 的来自其他节点的 delta-interval 都已被节点 $i$ 所 merge。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;$\delta$-CRDT causal consistency&lt;/strong&gt;: Any $\delta$-CRDT in which states are propagated and joined using a &lt;code&gt;delta-interval-based anti-entropy algorithm&lt;/code&gt; satisfying the &lt;code&gt;causal delta-merging condition&lt;/code&gt; ensures causal consistency.&lt;/p&gt;
-&lt;p&gt;也即想要提供因果一致性的保证，&lt;code&gt;basic anti-entropy algorithm&lt;/code&gt; 需满足以下约束：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;是 &lt;code&gt;Delta-interval-based anti-entropy algorithm&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;满足 &lt;code&gt;Causal delta-merging condition&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;CRDT and $\delta$-CRDT correspondence&lt;/strong&gt;: Let $(\mathrm{S}, \mathrm{M}, \mathrm{Q})$ be sa standard state-based CRDT and $(\mathrm{S}, \mathrm{M}^\delta, \mathrm{Q})$ a corresponding delta-state decomposition. Any $\delta$-CRDT state reachable by an execution $\mathrm{E}^\delta$ over $(\mathrm{S}, \mathrm{M}^\delta, \mathrm{Q})$, by a &lt;code&gt;delta-interval based anto-entropy algorithm&lt;/code&gt; $\mathrm{A}^\delta$ satisfying the &lt;code&gt;causal delta-merging condition&lt;/code&gt;, is equal to a state resulting from an execution $\mathrm{E}$ over $(\mathrm{S}, \mathrm{M}, \mathrm{Q})$, having the corresponding data-type operations, by an anti-entropy algorithm $A$ for state-based CRDTs.&lt;/p&gt;
-&lt;h3 id=&#34;anti-entropy-algorithm-ensuring-causal-consistency-of-delta-crdt&#34;&gt;Anti-entropy algorithm ensuring causal consistency of $\delta$-CRDT&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;https://k-on.me/delta_crdt_causal_anti_entropy_algo.png&#34; alt=&#34;causal_anti_entropy_algo.png&#34;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Each node $i$ keeps a contiguous sequence of deltas $d_i^l, \dots, d_i^u$ in map $\mathrm{D}$ from integers to deltas, with $l = min(dom(\mathrm{D})), u = max(dom(\mathrm{D}))$.&lt;/li&gt;
-&lt;li&gt;Each node $i$ keeps an acknowledgments map $\mathrm{A}$ that stores, for each neighbor $j$, the largest index $b$ for all delta-intervals $\Delta_i^{a,b}$ acknowledged by $j$ (after $j$ receives $\Delta_i^{a,b}$ from $i$ and joins it into $\mathrm{X}_j$)&lt;/li&gt;
-&lt;li&gt;可以看出，在 &lt;code&gt;Algorithm 2&lt;/code&gt; 中，确保 &lt;code&gt;Causal delta-merging condition&lt;/code&gt; 由发送方完成&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;推论：&lt;code&gt;Algorithm 2&lt;/code&gt; produces the same reachable states as a standard algorithm over a CRDT for which the $\delta$-CRDT is a decomposition.&lt;/p&gt;
-&lt;h2 id=&#34;examples&#34;&gt;Examples&lt;/h2&gt;
-&lt;h3 id=&#34;delta-crdt-counter&#34;&gt;$\delta$-CRDT Counter&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;https://k-on.me/delta_crdt_counter.png&#34; alt=&#34;counter.png&#34;&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;The CRDT state $\Sigma$ is a map from replica identifiers to positive integers&lt;/li&gt;
-&lt;li&gt;$inc_i^\delta$ increments the map entry correspondingto the local replica and only returns that entry, instead of the full map as &lt;code&gt;inc&lt;/code&gt; in the state-based CRDT counter does.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3 id=&#34;delta-crdts-for-add-wins-or-sets&#34;&gt;$\delta$-CRDTs for Add-Wins OR-Sets&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;https://k-on.me/delta_crdt_add_wins_orset.png&#34; alt=&#34;or_set.png&#34;&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;Add-Wins OR-Set with tombstones&lt;/strong&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;The state $\Sigma$ consists of a set of tagged elements and a set of tags, acting as tombstones&lt;/li&gt;
-&lt;li&gt;Globally unique tags of the form $\mathbb{I} \times \mathbb{N}$ are used and ensured by pairing a replica identifier in $\mathbb{I}$ with a monotonically increasing natural counter.&lt;/li&gt;
-&lt;li&gt;在 &lt;code&gt;s&lt;/code&gt; 中记录添加操作的结果，在 &lt;code&gt;t&lt;/code&gt; 中记录删除操作的结果，两个集合保持单调递增&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;strong&gt;Optimized Add-Wins OR-Set&lt;/strong&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;符号含义和 &lt;code&gt;With Tombstones&lt;/code&gt; 版本相同&lt;/li&gt;
-&lt;li&gt;维护 causal context set &lt;code&gt;c&lt;/code&gt; 而不是 tombstones set &lt;code&gt;t&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;在 &lt;code&gt;s&lt;/code&gt; 中记录此时存在的元素，在 &lt;code&gt;c&lt;/code&gt; 中记录操作历史信息&lt;/li&gt;
-&lt;li&gt;合并操作中，&lt;code&gt;c&lt;/code&gt; 可直接 &lt;code&gt;join&lt;/code&gt;；&lt;code&gt;s&lt;/code&gt; 在合并之后，保存的是满足以下条件之一的元素
-&lt;ul&gt;
-&lt;li&gt;the tripls present in both sets (therefore, not removed in either)&lt;/li&gt;
-&lt;li&gt;any triple present in one of the sets and whose tag is not present in the causal context of the other state.&lt;/li&gt;
-&lt;/ul&gt;
-&lt;blockquote&gt;
-&lt;p&gt;$s \cap s&#39;$ 的存在兼容了传递的信息为 full-state 的情况&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;Tips: When using an anti-entropy algorithm that provides causal consistency, then for each replica state $\mathrm{X}_i = (s_i, c_i)$ and replica identifier $j \in \mathbb{I}$, we have a contiguous sequence:&lt;/p&gt;
-&lt;p&gt;$$1 \le n \le max(\{k | (j, k) \in c_i\}) \Rightarrow (j, n) \in c_i$$&lt;/p&gt;
-&lt;p&gt;因此在消息通信时，通过保证因果一致性，可减少存储空间占用。&lt;/p&gt;
-&lt;h3 id=&#34;optimized-multi-value-register-delta-crdt&#34;&gt;Optimized Multi-value Register $\delta$-CRDT&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&#34;https://k-on.me/delta_crdt_multi_value_register.png&#34; alt=&#34;multi_value.png&#34;&gt;&lt;/p&gt;</description>
       
     </item>
     
