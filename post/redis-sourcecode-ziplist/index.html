@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 压缩列表相关源码阅读笔记，源码文件 ziplist.h &amp; ziplist.c。">
 <meta itemprop="datePublished" content="2020-09-24T14:42:15+08:00" />
 <meta itemprop="dateModified" content="2020-09-24T14:42:15+08:00" />
-<meta itemprop="wordCount" content="1364">
+<meta itemprop="wordCount" content="1366">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 1364 words </span>
+        <span class="more-meta"> 1366 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -331,6 +331,7 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
+    <li><a href="#小结">小结</a></li>
     <li><a href="#ziplist-数据结构">ziplist 数据结构</a></li>
     <li><a href="#ziplist-apis">ziplist APIs</a>
       <ul>
@@ -360,8 +361,9 @@
     <div class="post-content">
       <p>Redis 压缩列表相关源码阅读笔记，源码文件 <code>ziplist.h</code> &amp; <code>ziplist.c</code>。</p>
 <hr>
-<h2 id="ziplist-数据结构">ziplist 数据结构</h2>
+<h2 id="小结">小结</h2>
 <p><code>ziplist</code> 是为了节省内存而设计的压缩双向链表，支持 <code>push</code> 和 <code>pop</code> 操作，由于 <code>ziplist</code> 存储在连续的内存中，因此每次修改都需要 <code>realloc</code> 和 <code>memmove</code> 操作，因此具体的时间复杂度取决于 <code>ziplist</code> 占用内存的大小。</p>
+<h2 id="ziplist-数据结构">ziplist 数据结构</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1

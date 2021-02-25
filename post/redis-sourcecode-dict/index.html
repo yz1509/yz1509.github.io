@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis dict 实现相关源码阅读笔记，源码文件 dict.h &amp; dict.c。">
 <meta itemprop="datePublished" content="2020-09-27T10:15:20+08:00" />
 <meta itemprop="dateModified" content="2020-09-27T10:15:20+08:00" />
-<meta itemprop="wordCount" content="2269">
+<meta itemprop="wordCount" content="2324">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 2269 words </span>
+        <span class="more-meta"> 2324 words </span>
           <span class="more-meta"> 5 min read </span>
 
         
@@ -331,6 +331,7 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
+    <li><a href="#小结">小结</a></li>
     <li><a href="#数据结构">数据结构</a></li>
     <li><a href="#dict-apis">dict APIs</a>
       <ul>
@@ -371,8 +372,14 @@
     <div class="post-content">
       <p>Redis dict 实现相关源码阅读笔记，源码文件 <code>dict.h</code> &amp; <code>dict.c</code>。</p>
 <hr>
+<h2 id="小结">小结</h2>
+<p>在 Redis 中，<code>dict</code> 不仅用于实现不同的对象类型，还用于数据库的实现。</p>
+<ul>
+<li>可通过自定义哈希、复制、比较和析构函数实现不同的 <code>dictType</code></li>
+<li>每个 <code>dict</code> 中含有两个哈希表 <code>dictht</code>，以便于实现渐进式 Rehash</li>
+</ul>
 <h2 id="数据结构">数据结构</h2>
-<p>在 Redis 中，<code>dict</code> 不仅用于实现不同的对象类型，还用于数据库的实现，其数据结构如下所示。</p>
+<p><code>dict</code> 的数据结构如下所示：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1

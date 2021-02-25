@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 快速链表相关源码阅读笔记，源码文件 quicklist.h &amp; quicklist.c。">
 <meta itemprop="datePublished" content="2020-09-24T18:35:10+08:00" />
 <meta itemprop="dateModified" content="2020-09-24T18:35:10+08:00" />
-<meta itemprop="wordCount" content="2900">
+<meta itemprop="wordCount" content="2989">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 2900 words </span>
+        <span class="more-meta"> 2989 words </span>
           <span class="more-meta"> 6 min read </span>
 
         
@@ -331,6 +331,7 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
+    <li><a href="#小结">小结</a></li>
     <li><a href="#quicklist-相关数据结构">quicklist 相关数据结构</a></li>
     <li><a href="#quicklist-apis">quicklist APIs</a>
       <ul>
@@ -360,8 +361,14 @@
     <div class="post-content">
       <p>Redis 快速链表相关源码阅读笔记，源码文件 <code>quicklist.h</code> &amp; <code>quicklist.c</code>。</p>
 <hr>
+<h2 id="小结">小结</h2>
+<p><code>quicklist</code> 是由 <code>ziplist</code> 组成的双向链表，兼顾节省内存空间和提高查询效率的需求。</p>
+<ul>
+<li>每个 <code>quicklistNode</code> 中包含一个 <code>ziplist</code>，此 <code>ziplist</code> 的长度受到 <a href="https://github.com/redis/redis/blob/6.0.11/redis.conf#L1556">list-max-ziplist-size</a> 的限制</li>
+<li>考虑到链表的读写操作通常集中于两端，故 <code>quicklist</code> 中间部分的 <code>quicklistNode</code> 中的 <code>ziplist</code> 可能会使用 LZF 算法进行压缩以进一步节省内存空间，压缩程度由 <a href="https://github.com/redis/redis/blob/6.0.11/redis.conf#L1572">list-compress-depth</a> 控制</li>
+</ul>
 <h2 id="quicklist-相关数据结构">quicklist 相关数据结构</h2>
-<p><code>quicklist</code> 是由 <code>ziplist</code> 组成的双向链表，兼顾节省内存空间和提高查询效率的需求，其结构定义如下：</p>
+<p><code>quicklist</code> 结构定义如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1

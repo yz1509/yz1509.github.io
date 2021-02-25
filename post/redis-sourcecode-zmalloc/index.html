@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 内存分配及释放相关源码阅读笔记，源码文件 zmalloc.h &amp; zmalloc.c。">
 <meta itemprop="datePublished" content="2020-09-23T17:14:57+08:00" />
 <meta itemprop="dateModified" content="2020-09-23T17:14:57+08:00" />
-<meta itemprop="wordCount" content="1195">
+<meta itemprop="wordCount" content="1230">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 1195 words </span>
+        <span class="more-meta"> 1230 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -331,6 +331,7 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
+    <li><a href="#小结">小结</a></li>
     <li><a href="#分配内存">分配内存</a>
       <ul>
         <li><a href="#zmalloc">zmalloc</a></li>
@@ -359,8 +360,9 @@
     <div class="post-content">
       <p>Redis 内存分配及释放相关源码阅读笔记，源码文件 <code>zmalloc.h</code> &amp; <code>zmalloc.c</code>。</p>
 <hr>
+<h2 id="小结">小结</h2>
 <ul>
-<li>封装 <code>tcmalloc</code>, <code>jemalloc</code>, <code>libmalloc</code>, <code>ptmalloc</code> 或自定义内存管理，增加内存使用量统计</li>
+<li>封装 <code>tcmalloc</code>, <code>jemalloc</code>, <code>libmalloc</code>, <code>ptmalloc</code> 或自定义内存管理，增加内存使用量统计，但由于并未计算内存补齐的原因，全局变量 <code>used_memory</code> 一般小于实际分配内存大小</li>
 <li>在使用针对 Redis 修改的特殊 <code>jemalloc</code> 时，才能启用 Redis 内存碎片整理功能</li>
 </ul>
 <h2 id="分配内存">分配内存</h2>

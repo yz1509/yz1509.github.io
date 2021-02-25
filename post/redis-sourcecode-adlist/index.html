@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 双向链表相关源码阅读笔记，源码文件 adlist.h &amp; adlist.c。">
 <meta itemprop="datePublished" content="2020-09-24T14:39:37+08:00" />
 <meta itemprop="dateModified" content="2020-09-24T14:39:37+08:00" />
-<meta itemprop="wordCount" content="1297">
+<meta itemprop="wordCount" content="1351">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 1297 words </span>
+        <span class="more-meta"> 1351 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -331,6 +331,7 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
+    <li><a href="#小结">小结</a></li>
     <li><a href="#adlist-数据结构">adlist 数据结构</a></li>
     <li><a href="#adlist-构造函数">adlist 构造函数</a></li>
     <li><a href="#adlist-析构函数">adlist 析构函数</a>
@@ -374,6 +375,8 @@
     <div class="post-content">
       <p>Redis 双向链表相关源码阅读笔记，源码文件 <code>adlist.h</code> &amp; <code>adlist.c</code>。</p>
 <hr>
+<h2 id="小结">小结</h2>
+<p><code>list</code> 是随处可见的普通双向链表。但值得注意的是，如果想释放链表节点 <code>value</code> 所占用的内存空间，需要提供相应的 <code>free</code> 函数。</p>
 <h2 id="adlist-数据结构">adlist 数据结构</h2>
 <p><code>adlist</code> 就是普通的双向链表，其结构如下：</p>
 <div class="highlight"><div class="chroma">

@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 简单字符串相关源码阅读笔记，源码文件 sdsalloc.h &amp; sds.h &amp; sds.c。">
 <meta itemprop="datePublished" content="2020-09-24T10:42:57+08:00" />
 <meta itemprop="dateModified" content="2020-09-24T10:42:57+08:00" />
-<meta itemprop="wordCount" content="4736">
+<meta itemprop="wordCount" content="4892">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 4736 words </span>
+        <span class="more-meta"> 4892 words </span>
           <span class="more-meta"> 10 min read </span>
 
         
@@ -331,6 +331,7 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
+    <li><a href="#小结">小结</a></li>
     <li><a href="#sdsalloc">sdsalloc</a></li>
     <li><a href="#sds-数据结构">sds 数据结构</a></li>
     <li><a href="#sds-构造函数">sds 构造函数</a>
@@ -418,6 +419,42 @@
     <div class="post-content">
       <p>Redis 简单字符串相关源码阅读笔记，源码文件 <code>sdsalloc.h</code> &amp; <code>sds.h</code> &amp; <code>sds.c</code>。</p>
 <hr>
+<h2 id="小结">小结</h2>
+<p>sds 结构如下所示 (sdshdr5 的 len 字段包含在 flags 字段中)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">+-- sizeof(struct sdshdr) --+
+|                           |
+|                           |
++--------+---------+--------+------------+
+| len    | alloc   | flags  | char buf[] |
++--------+---------+--------+------------+
+^                  ^        ^
+|                  |        |
+s-hdrlen          s-1       s
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>len</code>：sds 已使用字节数
+<ul>
+<li>由于使用 <code>len</code> 表示长度而不用 <code>\0</code> 作为结尾标识，所以 sds 是二进制安全的</li>
+<li>但为了兼容 C 风格字符串，sds 也以 <code>\0</code> 结尾，所以 sds 可以重用一部分 C 字符串函数库</li>
+</ul>
+</li>
+<li><code>alloc</code>: sds 所占用内存空间大小</li>
+<li><code>flags</code>: sds 类型</li>
+</ul>
 <h2 id="sdsalloc">sdsalloc</h2>
 <p>在 <code>sdsalloc.h</code> 中重命名内存管理相关 API。</p>
 <div class="highlight"><div class="chroma">
