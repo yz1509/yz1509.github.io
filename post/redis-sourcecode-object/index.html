@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Redis 源码阅读 --- object - HTT - ふわふわ時間</title>
+  <title>Redis 源码阅读 --- Object - HTT - ふわふわ時間</title>
   
 
 <meta name="renderer" content="webkit" />
@@ -60,23 +60,23 @@
 
 
 
-<meta property="og:title" content="Redis 源码阅读 --- object" />
+<meta property="og:title" content="Redis 源码阅读 --- Object" />
 <meta property="og:description" content="Redis Object 相关源码阅读笔记，源码文件 server.h 和 object.c。" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="https://k-on.me/post/redis-sourcecode-object/" />
 <meta property="article:published_time" content="2020-10-09T10:44:07+08:00" />
 <meta property="article:modified_time" content="2020-10-09T10:44:07+08:00" />
-<meta itemprop="name" content="Redis 源码阅读 --- object">
+<meta itemprop="name" content="Redis 源码阅读 --- Object">
 <meta itemprop="description" content="Redis Object 相关源码阅读笔记，源码文件 server.h 和 object.c。">
 <meta itemprop="datePublished" content="2020-10-09T10:44:07+08:00" />
 <meta itemprop="dateModified" content="2020-10-09T10:44:07+08:00" />
-<meta itemprop="wordCount" content="2653">
+<meta itemprop="wordCount" content="2768">
 
 
 
 <meta itemprop="keywords" content="Redis," />
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Redis 源码阅读 --- object"/>
+<meta name="twitter:title" content="Redis 源码阅读 --- Object"/>
 <meta name="twitter:description" content="Redis Object 相关源码阅读笔记，源码文件 server.h 和 object.c。"/>
 
 <!--[if lte IE 9]>
@@ -299,7 +299,7 @@
           <article class="post bg-white">
     
     <header class="post-header">
-      <h1 class="post-title">Redis 源码阅读 --- object</h1>
+      <h1 class="post-title">Redis 源码阅读 --- Object</h1>
       
       <div class="post-meta">
         <time datetime="2020-10-09" class="post-time">
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 2653 words </span>
+        <span class="more-meta"> 2768 words </span>
           <span class="more-meta"> 6 min read </span>
 
         
@@ -331,6 +331,7 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
+    <li><a href="#小结">小结</a></li>
     <li><a href="#object-数据结构">Object 数据结构</a></li>
     <li><a href="#object-apis">Object APIs</a>
       <ul>
@@ -351,6 +352,15 @@
     <div class="post-content">
       <p>Redis Object 相关源码阅读笔记，源码文件 <code>server.h</code> 和 <code>object.c</code>。</p>
 <hr>
+<h2 id="小结">小结</h2>
+<p><code>redisObject</code> 主要由以下几个部分组成：</p>
+<ul>
+<li><code>type</code>：数据对象的类型</li>
+<li><code>encoding</code>：数据对象的编码格式，同一类型具有多个编码格式的目的是为了节省内存</li>
+<li><code>lru</code>：内存策略相关统计值</li>
+<li><code>refcount</code>：引用计数，共享对象以节省内存</li>
+<li><code>ptr</code>：数据对象的内容</li>
+</ul>
 <h2 id="object-数据结构">Object 数据结构</h2>
 <p>在 Redis 中，各个数据类型，均使用 <code>redisObject</code> 表示，其定义如下：</p>
 <div class="highlight"><div class="chroma">

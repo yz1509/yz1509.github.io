@@ -2609,6 +2609,31 @@ for any $e$ and any bags $B1$ and $B2$&lt;/li&gt;
       
         <description>&lt;p&gt;Redis 数据库实现相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; &amp;amp; &lt;code&gt;server.c&lt;/code&gt; &amp;amp; &lt;code&gt;db.c&lt;/code&gt; &amp;amp; &lt;code&gt;evict.c&lt;/code&gt; &amp;amp; &lt;code&gt;expire.c&lt;/code&gt; &amp;amp; &lt;code&gt;blocked.c&lt;/code&gt;。&lt;/p&gt;
 &lt;hr&gt;
+&lt;h2 id=&#34;小结&#34;&gt;小结&lt;/h2&gt;
+&lt;p&gt;Redis 数据库对象主要由以下几部分组成：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;id&lt;/code&gt;: Database ID，值域为 $0$ 至 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.11/redis.conf#L275&#34;&gt;databases&lt;/a&gt; $- 1$&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;dict&lt;/code&gt;：数据库具体内容 —— key-value pair
+&lt;ul&gt;
+&lt;li&gt;key 为 sds strings，不使用 redis object 是为了节省内存&lt;/li&gt;
+&lt;li&gt;value 为 redis object&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;expires&lt;/code&gt;：记录数据对象过期时间的 key-ttl pair
+&lt;ul&gt;
+&lt;li&gt;key 为 sds strings，会复用 &lt;code&gt;dict&lt;/code&gt; 中的键值以节省内存&lt;/li&gt;
+&lt;li&gt;value 为long long 整型，记录了该 key 将于何时 (absolute unix time in milliseconds) 过期&lt;/li&gt;
+&lt;li&gt;被动清理过期键：一般地，在查找 key 是否在 &lt;code&gt;dict&lt;/code&gt; 中时，会先判断该 key 是否已过期，若为主库，则会删除已过期键&lt;/li&gt;
+&lt;li&gt;主动清理过期键：调用 &lt;code&gt;activeExpireCycle&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;avg_ttl&lt;/code&gt;：统计过期时间平均值&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;expires_cursor&lt;/code&gt;：用于渐进式主动过期&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;blocking_keys&lt;/code&gt; &amp;amp; &lt;code&gt;ready_keys&lt;/code&gt;：用于实现带阻塞的命令&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;watched_keys&lt;/code&gt;：用于实现事务&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;defrag_later&lt;/code&gt;：用于内存碎片整理&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;em&gt;Tips&lt;/em&gt;: 为性能考虑，应尽量避免调用 &lt;code&gt;gettimeofday&lt;/code&gt; 来获取时间，可使用 Redis 缓存的时间值。&lt;/p&gt;
 &lt;h2 id=&#34;redisdb&#34;&gt;redisDb&lt;/h2&gt;
 &lt;p&gt;Redis 数据库由多个 &lt;a href=&#34;https://k-on.me/post/redis-sourcecode-dict/&#34;&gt;dict&lt;/a&gt; 组成，其结构定义如下：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -2717,7 +2742,7 @@ for any $e$ and any bags $B1$ and $B2$&lt;/li&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;&lt;strong&gt;keyptrDictType&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;键类型为 &lt;code&gt;sds&lt;/code&gt;，会复用 &lt;code&gt;redisDb-&amp;gt;dict&lt;/code&gt; 中的键值，值类型为 &lt;code&gt;long long&lt;/code&gt;，记录了该对象何时 (absolute unix time in milliseconds) 会失效。&lt;/p&gt;
+&lt;p&gt;键类型为 &lt;code&gt;sds&lt;/code&gt;，会复用 &lt;code&gt;redisDb-&amp;gt;dict&lt;/code&gt; 中的键值，值类型为 &lt;code&gt;long long&lt;/code&gt;，记录了该对象何时 (absolute unix time in milliseconds) 会过期。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
@@ -3268,7 +3293,7 @@ for any $e$ and any bags $B1$ and $B2$&lt;/li&gt;
 &lt;li&gt;在 Redis 主库中，如果此时 &lt;code&gt;key&lt;/code&gt; 已过期，会触发删除 &lt;code&gt;key&lt;/code&gt; 操作，并将删除操作同步至 salves 和 AOF&lt;/li&gt;
 &lt;li&gt;在 Redis 从库中，如果此时 &lt;code&gt;key&lt;/code&gt; 已过期，则只会立马返回 1 表示该 &lt;code&gt;key&lt;/code&gt; 已过期，但不会执行删除操作，这是因为从库为了和主库的数据保持一致，其过期 &lt;code&gt;key&lt;/code&gt; 的清理由同步主库的 del 消息完成&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h3 id=&#34;主库清理过期键&#34;&gt;主库清理过期键&lt;/h3&gt;
+&lt;h3 id=&#34;主动清理过期键&#34;&gt;主动清理过期键&lt;/h3&gt;
 &lt;p&gt;之前我们介绍过 Redis 主库除了在访问 key 时触发过期操作，还会定期调用 &lt;code&gt;activeExpireCycle&lt;/code&gt; 清理过期 key，其接口如下：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -3459,7 +3484,7 @@ NewC =
 \begin{cases}
 255, &amp;amp; curC = 255 \cr
 curC + 1, &amp;amp; curC \le \text{LFU_INIT_VAL} \cr
-curC_{1 - p} | (curC + 1)_p, &amp;amp; curC &amp;gt; \text{LFU_INIT_VAL} \cr
+curC_{1 - p} \enspace | \enspace (curC + 1)_p, &amp;amp; curC &amp;gt; \text{LFU_INIT_VAL} \cr
 \end{cases}
 $$&lt;/p&gt;
 &lt;p&gt;其中当目前计数值大于 &lt;code&gt;LFU_INIT_VAL&lt;/code&gt; 时，会以概率 $p$ 加 1，从代码中可以看出 $p$ 的大小和当前计数值大小反相关。代码中出现的常量 &lt;code&gt;lfu_log_factor&lt;/code&gt; 可通过 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L1768&#34;&gt;redis.conf&lt;/a&gt; 配置，其值越大，计数器加 1 的概率就越小，可参考如下表格(表格中 counter 数值非数学期望值)：&lt;/p&gt;
@@ -3739,7 +3764,7 @@ $$&lt;/p&gt;
     </item>
     
     <item>
-      <title>Redis 源码阅读 --- object</title>
+      <title>Redis 源码阅读 --- Object</title>
       <link>https://k-on.me/post/redis-sourcecode-object/</link>
       <pubDate>Fri, 09 Oct 2020 10:44:07 +0800</pubDate>
       
@@ -3747,6 +3772,15 @@ $$&lt;/p&gt;
       
         <description>&lt;p&gt;Redis Object 相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; 和 &lt;code&gt;object.c&lt;/code&gt;。&lt;/p&gt;
 &lt;hr&gt;
+&lt;h2 id=&#34;小结&#34;&gt;小结&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;redisObject&lt;/code&gt; 主要由以下几个部分组成：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;type&lt;/code&gt;：数据对象的类型&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;encoding&lt;/code&gt;：数据对象的编码格式，同一类型具有多个编码格式的目的是为了节省内存&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;lru&lt;/code&gt;：内存策略相关统计值&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;refcount&lt;/code&gt;：引用计数，共享对象以节省内存&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;ptr&lt;/code&gt;：数据对象的内容&lt;/li&gt;
+&lt;/ul&gt;
 &lt;h2 id=&#34;object-数据结构&#34;&gt;Object 数据结构&lt;/h2&gt;
 &lt;p&gt;在 Redis 中，各个数据类型，均使用 &lt;code&gt;redisObject&lt;/code&gt; 表示，其定义如下：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
@@ -4396,12 +4430,19 @@ $$&lt;/p&gt;
       
       <guid>https://k-on.me/post/redis-sourcecode-skiplist/</guid>
       
-        <description>&lt;p&gt;Redis 跳跃表相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; &amp;amp; &lt;code&gt;t_set.c&lt;/code&gt;。&lt;/p&gt;
+        <description>&lt;p&gt;Redis 跳跃表相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; &amp;amp; &lt;code&gt;t_zset.c&lt;/code&gt;。&lt;/p&gt;
 &lt;hr&gt;
+&lt;h2 id=&#34;小结&#34;&gt;小结&lt;/h2&gt;
+&lt;p&gt;在 Redis 中实现的跳跃表：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;最大层数为 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.11/src/server.h#L358&#34;&gt;ZSKIPLIST_MAXLEVEL&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;允许相同的 &lt;code&gt;score&lt;/code&gt;，按 &lt;code&gt;&amp;lt;score, member&amp;gt;&lt;/code&gt; pair 进行排序&lt;/li&gt;
+&lt;li&gt;增加 &lt;code&gt;backward&lt;/code&gt; 指针，可反向遍历跳跃表&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;跳跃表相关数据结构&#34;&gt;跳跃表相关数据结构&lt;/h2&gt;
 &lt;p&gt;跳跃表之于普通链表，如同增加快速通道的地铁线路之于单一地铁线路，从&lt;strong&gt;普通&lt;/strong&gt;到&lt;strong&gt;特急&lt;/strong&gt;停靠站越来越少，因此到达目的地所需时间也越短。跳跃表也是利用“快速通道”使得查找、插入和删除等操作更高效，可通过阅读&lt;a href=&#34;https://en.wikipedia.org/wiki/Skip_list&#34;&gt;维基百科&lt;/a&gt;了解详情。&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://pic.pimg.tw/kevin760515/1458824287-246944453.png&#34; alt=&#34;地铁路线图&#34;&gt;&lt;/p&gt;
-&lt;h2 id=&#34;跳跃表相关数据结构&#34;&gt;跳跃表相关数据结构&lt;/h2&gt;
-&lt;p&gt;Redis 中跳跃表大致基于论文&lt;a href=&#34;https://15721.courses.cs.cmu.edu/spring2018/papers/08-oltpindexes1/pugh-skiplists-cacm1990.pdf&#34;&gt;Skip Lists: A Probabilistic Alternative to Balanced Trees&lt;/a&gt;实现，有三处改动：&lt;/p&gt;
+&lt;p&gt;Redis 中跳跃表大致基于论文&lt;a href=&#34;https://15721.courses.cs.cmu.edu/spring2018/papers/08-oltpindexes1/pugh-skiplists-cacm1990.pdf&#34;&gt;Skip Lists: A Probabilistic Alternative to Balanced Trees&lt;/a&gt;实现，但有三处改动：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;允许相同的 &lt;code&gt;score&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;比较不仅仅是基于 &lt;code&gt;score&lt;/code&gt; 的大小&lt;/li&gt;
@@ -4978,6 +5019,8 @@ $$&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;可通过自定义哈希、复制、比较和析构函数实现不同的 &lt;code&gt;dictType&lt;/code&gt;&lt;/li&gt;
 &lt;li&gt;每个 &lt;code&gt;dict&lt;/code&gt; 中含有两个哈希表 &lt;code&gt;dictht&lt;/code&gt;，以便于实现渐进式 Rehash&lt;/li&gt;
+&lt;li&gt;哈希表使用链表处理哈希冲突，在缩容时确保载荷因子小于 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.11/src/dict.c#L135&#34;&gt;$1$&lt;/a&gt;，当载荷因子大于 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.11/src/dict.c#L63&#34;&gt;$5$&lt;/a&gt; 时会触发扩容&lt;/li&gt;
+&lt;li&gt;可通过改变 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.11/src/dict.c#L62&#34;&gt;dict_can_resize&lt;/a&gt; 变量以控制 &lt;code&gt;dict&lt;/code&gt; 是否可以扩缩容，当禁止扩缩容时，载荷因子的大小可能超过 $5$&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;数据结构&#34;&gt;数据结构&lt;/h2&gt;
 &lt;p&gt;&lt;code&gt;dict&lt;/code&gt; 的数据结构如下所示：&lt;/p&gt;

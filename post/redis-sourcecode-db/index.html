@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 数据库实现相关源码阅读笔记，源码文件 server.h &amp; server.c &amp; db.c &amp; evict.c &amp; expire.c &amp; blocked.c。">
 <meta itemprop="datePublished" content="2020-10-13T17:11:09+08:00" />
 <meta itemprop="dateModified" content="2020-10-13T17:11:09+08:00" />
-<meta itemprop="wordCount" content="7424">
+<meta itemprop="wordCount" content="7767">
 
 
 
@@ -309,8 +309,8 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 7424 words </span>
-          <span class="more-meta"> 15 min read </span>
+        <span class="more-meta"> 7767 words </span>
+          <span class="more-meta"> 16 min read </span>
 
         
         
@@ -331,6 +331,7 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
+    <li><a href="#小结">小结</a></li>
     <li><a href="#redisdb">redisDb</a></li>
     <li><a href="#redisdb-apis">redisDb APIs</a>
       <ul>
@@ -343,7 +344,7 @@
     <li><a href="#expire">expire</a>
       <ul>
         <li><a href="#expire-apis">Expire APIs</a></li>
-        <li><a href="#主库清理过期键">主库清理过期键</a></li>
+        <li><a href="#主动清理过期键">主动清理过期键</a></li>
         <li><a href="#处于可写模式下的从库清理过期键">处于可写模式下的从库清理过期键</a></li>
         <li><a href="#expire-commands">Expire Commands</a></li>
       </ul>
@@ -366,6 +367,31 @@
     <div class="post-content">
       <p>Redis 数据库实现相关源码阅读笔记，源码文件 <code>server.h</code> &amp; <code>server.c</code> &amp; <code>db.c</code> &amp; <code>evict.c</code> &amp; <code>expire.c</code> &amp; <code>blocked.c</code>。</p>
 <hr>
+<h2 id="小结">小结</h2>
+<p>Redis 数据库对象主要由以下几部分组成：</p>
+<ul>
+<li><code>id</code>: Database ID，值域为 $0$ 至 <a href="https://github.com/redis/redis/blob/6.0.11/redis.conf#L275">databases</a> $- 1$</li>
+<li><code>dict</code>：数据库具体内容 —— key-value pair
+<ul>
+<li>key 为 sds strings，不使用 redis object 是为了节省内存</li>
+<li>value 为 redis object</li>
+</ul>
+</li>
+<li><code>expires</code>：记录数据对象过期时间的 key-ttl pair
+<ul>
+<li>key 为 sds strings，会复用 <code>dict</code> 中的键值以节省内存</li>
+<li>value 为long long 整型，记录了该 key 将于何时 (absolute unix time in milliseconds) 过期</li>
+<li>被动清理过期键：一般地，在查找 key 是否在 <code>dict</code> 中时，会先判断该 key 是否已过期，若为主库，则会删除已过期键</li>
+<li>主动清理过期键：调用 <code>activeExpireCycle</code></li>
+</ul>
+</li>
+<li><code>avg_ttl</code>：统计过期时间平均值</li>
+<li><code>expires_cursor</code>：用于渐进式主动过期</li>
+<li><code>blocking_keys</code> &amp; <code>ready_keys</code>：用于实现带阻塞的命令</li>
+<li><code>watched_keys</code>：用于实现事务</li>
+<li><code>defrag_later</code>：用于内存碎片整理</li>
+</ul>
+<p><em>Tips</em>: 为性能考虑，应尽量避免调用 <code>gettimeofday</code> 来获取时间，可使用 Redis 缓存的时间值。</p>
 <h2 id="redisdb">redisDb</h2>
 <p>Redis 数据库由多个 <a href="https://k-on.me/post/redis-sourcecode-dict/">dict</a> 组成，其结构定义如下：</p>
 <div class="highlight"><div class="chroma">
@@ -474,7 +500,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p><strong>keyptrDictType</strong></p>
-<p>键类型为 <code>sds</code>，会复用 <code>redisDb-&gt;dict</code> 中的键值，值类型为 <code>long long</code>，记录了该对象何时 (absolute unix time in milliseconds) 会失效。</p>
+<p>键类型为 <code>sds</code>，会复用 <code>redisDb-&gt;dict</code> 中的键值，值类型为 <code>long long</code>，记录了该对象何时 (absolute unix time in milliseconds) 会过期。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -1025,7 +1051,7 @@
 <li>在 Redis 主库中，如果此时 <code>key</code> 已过期，会触发删除 <code>key</code> 操作，并将删除操作同步至 salves 和 AOF</li>
 <li>在 Redis 从库中，如果此时 <code>key</code> 已过期，则只会立马返回 1 表示该 <code>key</code> 已过期，但不会执行删除操作，这是因为从库为了和主库的数据保持一致，其过期 <code>key</code> 的清理由同步主库的 del 消息完成</li>
 </ul>
-<h3 id="主库清理过期键">主库清理过期键</h3>
+<h3 id="主动清理过期键">主动清理过期键</h3>
 <p>之前我们介绍过 Redis 主库除了在访问 key 时触发过期操作，还会定期调用 <code>activeExpireCycle</code> 清理过期 key，其接口如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1216,7 +1242,7 @@ NewC =
 \begin{cases}
 255, &amp; curC = 255 \cr
 curC + 1, &amp; curC \le \text{LFU_INIT_VAL} \cr
-curC_{1 - p} | (curC + 1)_p, &amp; curC &gt; \text{LFU_INIT_VAL} \cr
+curC_{1 - p} \enspace | \enspace (curC + 1)_p, &amp; curC &gt; \text{LFU_INIT_VAL} \cr
 \end{cases}
 $$</p>
 <p>其中当目前计数值大于 <code>LFU_INIT_VAL</code> 时，会以概率 $p$ 加 1，从代码中可以看出 $p$ 的大小和当前计数值大小反相关。代码中出现的常量 <code>lfu_log_factor</code> 可通过 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L1768">redis.conf</a> 配置，其值越大，计数器加 1 的概率就越小，可参考如下表格(表格中 counter 数值非数学期望值)：</p>
@@ -1543,7 +1569,7 @@ $$</p>
           </a>
         
           <a class="next" href="/post/redis-sourcecode-object/">
-            <span class="next-text nav-default">Redis 源码阅读 --- object</span>
+            <span class="next-text nav-default">Redis 源码阅读 --- Object</span>
             <span class="prev-text nav-mobile">Next</span>
             
             <i class="iconfont">

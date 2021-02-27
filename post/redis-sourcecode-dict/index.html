@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis dict 实现相关源码阅读笔记，源码文件 dict.h &amp; dict.c。">
 <meta itemprop="datePublished" content="2020-09-27T10:15:20+08:00" />
 <meta itemprop="dateModified" content="2020-09-27T10:15:20+08:00" />
-<meta itemprop="wordCount" content="2324">
+<meta itemprop="wordCount" content="2408">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 2324 words </span>
+        <span class="more-meta"> 2408 words </span>
           <span class="more-meta"> 5 min read </span>
 
         
@@ -377,6 +377,8 @@
 <ul>
 <li>可通过自定义哈希、复制、比较和析构函数实现不同的 <code>dictType</code></li>
 <li>每个 <code>dict</code> 中含有两个哈希表 <code>dictht</code>，以便于实现渐进式 Rehash</li>
+<li>哈希表使用链表处理哈希冲突，在缩容时确保载荷因子小于 <a href="https://github.com/redis/redis/blob/6.0.11/src/dict.c#L135">$1$</a>，当载荷因子大于 <a href="https://github.com/redis/redis/blob/6.0.11/src/dict.c#L63">$5$</a> 时会触发扩容</li>
+<li>可通过改变 <a href="https://github.com/redis/redis/blob/6.0.11/src/dict.c#L62">dict_can_resize</a> 变量以控制 <code>dict</code> 是否可以扩缩容，当禁止扩缩容时，载荷因子的大小可能超过 $5$</li>
 </ul>
 <h2 id="数据结构">数据结构</h2>
 <p><code>dict</code> 的数据结构如下所示：</p>

@@ -13,7 +13,7 @@
       <pubDate>Tue, 06 Oct 2020 11:10:35 +0800</pubDate>
       
       <guid>https://k-on.me/post/redis-sourcecode-skiplist/</guid>
-      <description>&lt;p&gt;Redis 跳跃表相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; &amp;amp; &lt;code&gt;t_set.c&lt;/code&gt;。&lt;/p&gt;</description>
+      <description>&lt;p&gt;Redis 跳跃表相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; &amp;amp; &lt;code&gt;t_zset.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
   </channel>
