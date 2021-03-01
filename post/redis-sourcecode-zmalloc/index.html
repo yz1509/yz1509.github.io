@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 内存分配及释放相关源码阅读笔记，源码文件 zmalloc.h &amp; zmalloc.c。">
 <meta itemprop="datePublished" content="2020-09-23T17:14:57+08:00" />
 <meta itemprop="dateModified" content="2020-09-23T17:14:57+08:00" />
-<meta itemprop="wordCount" content="1230">
+<meta itemprop="wordCount" content="1262">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 1230 words </span>
+        <span class="more-meta"> 1262 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -364,6 +364,25 @@
 <ul>
 <li>封装 <code>tcmalloc</code>, <code>jemalloc</code>, <code>libmalloc</code>, <code>ptmalloc</code> 或自定义内存管理，增加内存使用量统计，但由于并未计算内存补齐的原因，全局变量 <code>used_memory</code> 一般小于实际分配内存大小</li>
 <li>在使用针对 Redis 修改的特殊 <code>jemalloc</code> 时，才能启用 Redis 内存碎片整理功能</li>
+</ul>
+<p><em>Tips</em></p>
+<ul>
+<li>
+<p><a href="http://www.spongeliu.com/415.html"><code>do {} while(0)</code> 的作用</a></p>
+</li>
+<li>
+<p>将 $a$ 调整为 $b = 2^n$ 的整数倍</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">if</span> <span class="p">(</span><span class="n">a</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">b</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> 
+    <span class="n">a</span> <span class="o">+=</span> <span class="n">b</span> <span class="o">-</span> <span class="p">(</span><span class="n">a</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">b</span><span class="o">-</span><span class="mi">1</span><span class="p">));</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
 </ul>
 <h2 id="分配内存">分配内存</h2>
 <h3 id="zmalloc">zmalloc</h3>

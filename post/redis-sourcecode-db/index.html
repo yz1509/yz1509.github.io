@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 数据库实现相关源码阅读笔记，源码文件 server.h &amp; server.c &amp; db.c &amp; evict.c &amp; expire.c &amp; blocked.c。">
 <meta itemprop="datePublished" content="2020-10-13T17:11:09+08:00" />
 <meta itemprop="dateModified" content="2020-10-13T17:11:09+08:00" />
-<meta itemprop="wordCount" content="7767">
+<meta itemprop="wordCount" content="7942">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 7767 words </span>
+        <span class="more-meta"> 7942 words </span>
           <span class="more-meta"> 16 min read </span>
 
         
@@ -357,7 +357,6 @@
         <li><a href="#free-memory">Free memory</a></li>
       </ul>
     </li>
-    <li><a href="#redisdb-相关命令">redisDb 相关命令</a></li>
   </ul>
 </nav>
   </div>
@@ -368,6 +367,8 @@
       <p>Redis 数据库实现相关源码阅读笔记，源码文件 <code>server.h</code> &amp; <code>server.c</code> &amp; <code>db.c</code> &amp; <code>evict.c</code> &amp; <code>expire.c</code> &amp; <code>blocked.c</code>。</p>
 <hr>
 <h2 id="小结">小结</h2>
+<ul>
+<li>
 <p>Redis 数据库对象主要由以下几部分组成：</p>
 <ul>
 <li><code>id</code>: Database ID，值域为 $0$ 至 <a href="https://github.com/redis/redis/blob/6.0.11/redis.conf#L275">databases</a> $- 1$</li>
@@ -391,7 +392,33 @@
 <li><code>watched_keys</code>：用于实现事务</li>
 <li><code>defrag_later</code>：用于内存碎片整理</li>
 </ul>
-<p><em>Tips</em>: 为性能考虑，应尽量避免调用 <code>gettimeofday</code> 来获取时间，可使用 Redis 缓存的时间值。</p>
+</li>
+<li>
+<p>键过期以被动的方式进行，只会在访问该 key 的时候触发：</p>
+<ul>
+<li>在客户端访问该 key 时调用 <code>expireIfNeeded</code> 触发过期删除操作
+<blockquote>
+<p>当从库处于 read-only 模式时，访问从库的 key 不会触发删除操作</p>
+</blockquote>
+</li>
+<li>Redis 服务器定时调用 <code>activeExpireCycle</code> 主动扫描键空间以清理过期 key
+<blockquote>
+<p>可使用配置项 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L938">active-expire-effort</a> 修改主动清理操作单次执行时间上限</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li>
+<p>过期 <code>key</code> 的删除分为同步和异步两种方式，由配置项 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L985">lazyfree-lazy-expire</a> 决定采用何种方式。</p>
+</li>
+<li>
+<p>当设置了 <code>maxmemory</code> 限制时，Redis 会根据所设置的内存策略 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L890">maxmemory-policy</a> 决定淘汰 key 的方式。</p>
+</li>
+</ul>
+<p><em>Tips</em></p>
+<ul>
+<li>为性能考虑，应尽量避免调用 <code>gettimeofday</code> 来获取时间，可使用 Redis 缓存的时间值。</li>
+</ul>
 <h2 id="redisdb">redisDb</h2>
 <p>Redis 数据库由多个 <a href="https://k-on.me/post/redis-sourcecode-dict/">dict</a> 组成，其结构定义如下：</p>
 <div class="highlight"><div class="chroma">
@@ -1516,8 +1543,6 @@ $$</p>
 </ul>
 </li>
 </ul>
-<h2 id="redisdb-相关命令">redisDb 相关命令</h2>
-<p>TODO</p>
     </div>
 
     

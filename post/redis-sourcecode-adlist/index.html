@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 双向链表相关源码阅读笔记，源码文件 adlist.h &amp; adlist.c。">
 <meta itemprop="datePublished" content="2020-09-24T14:39:37+08:00" />
 <meta itemprop="dateModified" content="2020-09-24T14:39:37+08:00" />
-<meta itemprop="wordCount" content="1351">
+<meta itemprop="wordCount" content="1347">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 1351 words </span>
+        <span class="more-meta"> 1347 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -332,9 +332,9 @@
     <nav id="TableOfContents">
   <ul>
     <li><a href="#小结">小结</a></li>
-    <li><a href="#adlist-数据结构">adlist 数据结构</a></li>
-    <li><a href="#adlist-构造函数">adlist 构造函数</a></li>
-    <li><a href="#adlist-析构函数">adlist 析构函数</a>
+    <li><a href="#list-数据结构">list 数据结构</a></li>
+    <li><a href="#list-构造函数">list 构造函数</a></li>
+    <li><a href="#list-析构函数">list 析构函数</a>
       <ul>
         <li><a href="#lsitepmty----不健全的析构函数">lsitEpmty &ndash; 不健全的析构函数</a></li>
         <li><a href="#listrelease----析构函数完全体">listRelease &ndash; 析构函数完全体</a></li>
@@ -376,9 +376,9 @@
       <p>Redis 双向链表相关源码阅读笔记，源码文件 <code>adlist.h</code> &amp; <code>adlist.c</code>。</p>
 <hr>
 <h2 id="小结">小结</h2>
-<p><code>list</code> 是随处可见的普通双向链表。但值得注意的是，如果想释放链表节点 <code>value</code> 所占用的内存空间，需要提供相应的 <code>free</code> 函数。</p>
-<h2 id="adlist-数据结构">adlist 数据结构</h2>
-<p><code>adlist</code> 就是普通的双向链表，其结构如下：</p>
+<p>Redis 中的 <code>list</code> 是随处可见的普通双向链表。但值得注意的是，如果想释放链表节点 <code>value</code> 所占用的内存空间，需要提供相应的 <code>free</code> 函数。</p>
+<h2 id="list-数据结构">list 数据结构</h2>
+<p><code>list</code> 相关数据结构如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -423,7 +423,7 @@
 <span class="p">}</span> <span class="n">list</span><span class="p">;</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="adlist-构造函数">adlist 构造函数</h2>
+</div><h2 id="list-构造函数">list 构造函数</h2>
 <ul>
 <li>分配内存执行失败时，返回 <code>NULL</code></li>
 <li>执行成功时返回所构造空链表的指针</li>
@@ -436,7 +436,7 @@
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">list</span> <span class="o">*</span><span class="nf">listCreate</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="adlist-析构函数">adlist 析构函数</h2>
+</div><h2 id="list-析构函数">list 析构函数</h2>
 <h3 id="lsitepmty----不健全的析构函数">lsitEpmty &ndash; 不健全的析构函数</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">

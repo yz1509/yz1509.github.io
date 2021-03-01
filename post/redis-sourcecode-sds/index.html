@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 简单字符串相关源码阅读笔记，源码文件 sdsalloc.h &amp; sds.h &amp; sds.c。">
 <meta itemprop="datePublished" content="2020-09-24T10:42:57+08:00" />
 <meta itemprop="dateModified" content="2020-09-24T10:42:57+08:00" />
-<meta itemprop="wordCount" content="4892">
+<meta itemprop="wordCount" content="5079">
 
 
 
@@ -309,8 +309,8 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 4892 words </span>
-          <span class="more-meta"> 10 min read </span>
+        <span class="more-meta"> 5079 words </span>
+          <span class="more-meta"> 11 min read </span>
 
         
         
@@ -420,6 +420,8 @@
       <p>Redis 简单字符串相关源码阅读笔记，源码文件 <code>sdsalloc.h</code> &amp; <code>sds.h</code> &amp; <code>sds.c</code>。</p>
 <hr>
 <h2 id="小结">小结</h2>
+<ul>
+<li>
 <p>sds 结构如下所示 (sdshdr5 的 len 字段包含在 flags 字段中)</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -446,14 +448,27 @@ s-hdrlen          s-1       s
 </code></pre></td></tr></table>
 </div>
 </div><ul>
-<li><code>len</code>：sds 已使用字节数
-<ul>
+<li><code>len</code>：sds 已使用字节数，不包括末尾的 <code>\0</code></li>
 <li>由于使用 <code>len</code> 表示长度而不用 <code>\0</code> 作为结尾标识，所以 sds 是二进制安全的</li>
 <li>但为了兼容 C 风格字符串，sds 也以 <code>\0</code> 结尾，所以 sds 可以重用一部分 C 字符串函数库</li>
-</ul>
-</li>
 <li><code>alloc</code>: sds 所占用内存空间大小</li>
 <li><code>flags</code>: sds 类型</li>
+</ul>
+</li>
+<li>
+<p>sds 字符串在缩短时，有时不会立马释放所占用的内存空间，因此可能会造成内存碎片</p>
+</li>
+</ul>
+<p><em>Tips</em></p>
+<ul>
+<li>在 C 语言中，可利用<a href="https://en.wikipedia.org/wiki/Flexible_array_member">柔性数组成员</a> 的特性实现变长数组</li>
+<li>宏定义中的 <code>##</code> 为符号连接操作符</li>
+<li>关于 <code>static inline</code>
+<ul>
+<li><code>inline</code> 的作用仅仅是建议编译器做内联开展处理，而不是强制</li>
+<li><code>static</code> 告诉编译器其他文件看不到这个函数，因此该函数只能在当前文件中被调用</li>
+</ul>
+</li>
 </ul>
 <h2 id="sdsalloc">sdsalloc</h2>
 <p>在 <code>sdsalloc.h</code> 中重命名内存管理相关 API。</p>
@@ -859,7 +874,7 @@ s-hdrlen          s-1       s
 </code></pre></td></tr></table>
 </div>
 </div><p><em>Tips:</em> 宏定义中的 <code>##</code> 为符号连接操作符。</p>
-<p><em>Tips</em> 关于 <code>static inline</code></p>
+<p><em>Tips:</em> 关于 <code>static inline</code></p>
 <ul>
 <li><code>inline</code> 的作用仅仅是建议编译器做内联开展处理，而不是强制。内联函数 (inline) 可以减少 CPU 的系统开销，并且程序的整体速度将加快，但当内联函数很大时，会有相反的作用，因此一般比较小的函数才使用内联函数。通常，程序执行时，处理器从内存中读取代码执行。当程序中调用一个函数时，程序跳到存储器中保存函数的位置，开始读取代码执行，执行完后再返回。为了提高速度，C 语言定义了 <code>inline</code> 函数，告诉编译器把函数代码在编译时直接拷贝到程序中，这样就不用执行时另外读取函数代码。</li>
 <li><code>static</code> 告诉编译器其他文件看不到这个函数，因此该函数只能在当前文件中被调用。</li>
@@ -1493,7 +1508,8 @@ s-hdrlen          s-1       s
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="sdsrange">sdsrange</h3>
+</div><p>可以看出在移除指定的字符后，并未改变 sds 所申请的内存空间大小，可能会造成内存碎片。</p>
+<h3 id="sdsrange">sdsrange</h3>
 <p>依据 <code>start</code> 和 <code>end</code> 索引下标修剪 sds 字符串，注意：</p>
 <ul>
 <li><code>start</code> 和 <code>end</code> 可以为负数，类似数组的下标索引</li>
