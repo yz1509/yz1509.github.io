@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 双向链表相关源码阅读笔记，源码文件 adlist.h &amp; adlist.c。">
 <meta itemprop="datePublished" content="2020-09-24T14:39:37+08:00" />
 <meta itemprop="dateModified" content="2020-09-24T14:39:37+08:00" />
-<meta itemprop="wordCount" content="1347">
+<meta itemprop="wordCount" content="1391">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 1347 words </span>
+        <span class="more-meta"> 1391 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -376,7 +376,11 @@
       <p>Redis 双向链表相关源码阅读笔记，源码文件 <code>adlist.h</code> &amp; <code>adlist.c</code>。</p>
 <hr>
 <h2 id="小结">小结</h2>
-<p>Redis 中的 <code>list</code> 是随处可见的普通双向链表。但值得注意的是，如果想释放链表节点 <code>value</code> 所占用的内存空间，需要提供相应的 <code>free</code> 函数。</p>
+<p>Redis 中的 <code>list</code> 是随处可见的普通双向链表：</p>
+<ul>
+<li>链表头节点的 <code>prev</code> 指针和链表尾节点的 <code>next</code> 指针都指向 <code>NULL</code>，因此链表是无环的，遍历以 <code>NULL</code> 结尾</li>
+<li>如果想释放链表节点 <code>value</code> 所占用的内存空间，需要提供相应的 <code>free</code> 函数。</li>
+</ul>
 <h2 id="list-数据结构">list 数据结构</h2>
 <p><code>list</code> 相关数据结构如下：</p>
 <div class="highlight"><div class="chroma">
@@ -403,8 +407,8 @@
 </span></code></pre></td>
 <td class="lntd">
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">typedef</span> <span class="k">struct</span> <span class="nc">listNode</span> <span class="p">{</span>
-    <span class="k">struct</span> <span class="nc">listNode</span> <span class="o">*</span><span class="n">prev</span><span class="p">;</span>
-    <span class="k">struct</span> <span class="nc">listNode</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="nc">listNode</span> <span class="o">*</span><span class="n">prev</span><span class="p">;</span> <span class="cm">/* list-&gt;head-&gt;prev == NULL */</span>
+    <span class="k">struct</span> <span class="nc">listNode</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span> <span class="cm">/* list-&gt;tail-&gt;next == NULL */</span>
     <span class="kt">void</span> <span class="o">*</span><span class="n">value</span><span class="p">;</span>
 <span class="p">}</span> <span class="n">listNode</span><span class="p">;</span>
 

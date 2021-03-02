@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 跳跃表相关源码阅读笔记，源码文件 server.h &amp; t_zset.c。">
 <meta itemprop="datePublished" content="2020-10-06T11:10:35+08:00" />
 <meta itemprop="dateModified" content="2020-10-06T11:10:35+08:00" />
-<meta itemprop="wordCount" content="2617">
+<meta itemprop="wordCount" content="2639">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 2617 words </span>
+        <span class="more-meta"> 2639 words </span>
           <span class="more-meta"> 6 min read </span>
 
         
@@ -358,7 +358,7 @@
 <p>在 Redis 中实现的跳跃表：</p>
 <ul>
 <li>最大层数为 <a href="https://github.com/redis/redis/blob/6.0.11/src/server.h#L358">ZSKIPLIST_MAXLEVEL</a></li>
-<li>允许相同的 <code>score</code>，按 <code>&lt;score, member&gt;</code> pair 进行排序</li>
+<li>跳跃表中不允许相同的 <code>ele</code>，允许相同的 <code>score</code>，按 <code>&lt;score, ele&gt;</code> pair 进行排序</li>
 <li>增加 <code>backward</code> 指针，可反向遍历跳跃表</li>
 </ul>
 <h2 id="跳跃表相关数据结构">跳跃表相关数据结构</h2>
@@ -419,7 +419,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><ul>
-<li><code>ele</code>: <code>member</code> 的地址</li>
+<li><code>ele</code>: <code>member</code> 的地址，不允许相同的 <code>member</code></li>
 <li><code>backward</code>: 指向前一节点</li>
 <li><code>level[]</code>: 每个节点含有复数层的遍历通道，每一层包含在该层下一节点的地址 <code>forward</code>，以及此时的步长 <code>span</code>，当 <code>forward</code> 为 <code>NULL</code> 时，<code>span</code> 等于 0</li>
 </ul>

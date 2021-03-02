@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 持久化相关源码阅读笔记，源码文件 rdb.h &amp; rdb.c &amp; aof.c。">
 <meta itemprop="datePublished" content="2020-10-20T20:43:16+08:00" />
 <meta itemprop="dateModified" content="2020-10-20T20:43:16+08:00" />
-<meta itemprop="wordCount" content="4317">
+<meta itemprop="wordCount" content="4321">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 4317 words </span>
+        <span class="more-meta"> 4321 words </span>
           <span class="more-meta"> 9 min read </span>
 
         
@@ -622,13 +622,7 @@
 <p>RDB 版本号：格式为 <code>REDIS0009</code>，其中 $9$ 为Redis-6.0.8 的 <a href="https://github.com/redis/redis/blob/6.0.8/src/rdb.h#L41">RDB_VERSION</a>，直接写入二进制串无编码</p>
 </li>
 <li>
-<p>Aux Fields: 编码格式 <code>&lt;RDB_OPCODE_AUX&gt; &lt;key.len&gt; [key.data] &lt;val.len&gt; [val.data]</code>，key-val 对内容如下，其中：</p>
-<ul>
-<li>若传入的 <code>rdbSaveInfo</code>(rsi) 为空，则无须存储 <code>repl-stream-db</code>、<code>repl-id</code> 和 <code>repl-offset</code> 信息。</li>
-<li><code>aof-preamble</code> 为 1 时，表示该 rdb 文件是 AOF 重写时生成的，可通过配置项 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L1195">aof-use-rdb-preamble</a> 修改该值。</li>
-</ul>
-</li>
-</ul>
+<p>Aux Fields: 编码格式 <code>&lt;RDB_OPCODE_AUX&gt; &lt;key.len&gt; [key.data] &lt;val.len&gt; [val.data]</code>，key-val 对内容如下:</p>
 <table>
 <thead>
 <tr>
@@ -680,7 +674,12 @@
 </tr>
 </tbody>
 </table>
+<p>其中：</p>
 <ul>
+<li>若传入的 <code>rdbSaveInfo</code>(rsi) 为空，则无须存储 <code>repl-stream-db</code>、<code>repl-id</code> 和 <code>repl-offset</code> 信息。</li>
+<li><code>aof-preamble</code> 为 1 时，表示该 rdb 文件是 AOF 重写时生成的，可通过配置项 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L1195">aof-use-rdb-preamble</a> 修改该值。</li>
+</ul>
+</li>
 <li>
 <p>Module-specific aux values: Iterate over modules, and trigger rdb aux saving for the ones modules types who asked for it. (when is <code>REDISMODULE_AUX_BEFORE_RDB</code>)</p>
 </li>
@@ -753,7 +752,7 @@
 <li>Translate <code>SET [EX seconds][PX milliseconds]</code> to <code>SET</code> and <code>PEXPIREAT</code></li>
 </ul>
 </li>
-<li>将内容追加至 <code>server.aof_buf</code></li>
+<li>将内容追加至 AOF 缓冲区 <code>server.aof_buf</code></li>
 <li>如此时有子进程正在执行 AOF rewrite，则会将内容追加之 AOF rewrite buff <code>server.aof_rewrite_buf_blocks</code></li>
 </ol>
 <h3 id="写入-aof-文件">写入 AOF 文件</h3>

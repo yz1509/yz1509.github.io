@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 压缩列表相关源码阅读笔记，源码文件 ziplist.h &amp; ziplist.c。">
 <meta itemprop="datePublished" content="2020-09-24T14:42:15+08:00" />
 <meta itemprop="dateModified" content="2020-09-24T14:42:15+08:00" />
-<meta itemprop="wordCount" content="1366">
+<meta itemprop="wordCount" content="1434">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 1366 words </span>
+        <span class="more-meta"> 1434 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -362,7 +362,11 @@
       <p>Redis 压缩列表相关源码阅读笔记，源码文件 <code>ziplist.h</code> &amp; <code>ziplist.c</code>。</p>
 <hr>
 <h2 id="小结">小结</h2>
-<p><code>ziplist</code> 是为了节省内存而设计的压缩双向链表，支持 <code>push</code> 和 <code>pop</code> 操作，由于 <code>ziplist</code> 存储在连续的内存中，因此每次修改都需要 <code>realloc</code> 和 <code>memmove</code> 操作，因此具体的时间复杂度取决于 <code>ziplist</code> 占用内存的大小。</p>
+<ul>
+<li><code>ziplist</code> 是为了节省内存而设计的压缩双向链表，支持 <code>push</code> 和 <code>pop</code> 操作</li>
+<li>由于 <code>ziplist</code> 存储在连续的内存中，因此每次修改都需要 <code>realloc</code> 和 <code>memmove</code> 操作，因此具体的时间复杂度取决于 <code>ziplist</code> 占用内存的大小</li>
+<li>执行插入或删除操作时，可能会因为 <code>prevlen</code> 的变化而引发 cascade update</li>
+</ul>
 <h2 id="ziplist-数据结构">ziplist 数据结构</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -413,6 +417,9 @@
 <li>如果长度小于 254，使用 1 字节存储该长度</li>
 <li>如果长度大于 254，<code>prevlen</code> 占用 5 字节，首字节为 <code>0xFE</code> 标识，后 4 字节存储该长度</li>
 </ul>
+<blockquote>
+<p>前一 <code>entry</code> 长度由小于 254 变为大于 254 时，由于 <code>prevlen</code> 长度的变化，导致自身长度也会增长，因此可能会引发 cascade update</p>
+</blockquote>
 </li>
 <li>
 <p><code>encoding</code>: 使用首字节表示 <code>entry</code> 中存储的数据类型</p>
