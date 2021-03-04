@@ -26,6 +26,15 @@
     </item>
     
     <item>
+      <title>Redis 源码阅读 --- ae</title>
+      <link>https://k-on.me/post/redis-sourcecode-ae/</link>
+      <pubDate>Sat, 24 Oct 2020 16:01:48 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/redis-sourcecode-ae/</guid>
+      <description>&lt;p&gt;Redis event loop 相关源码阅读笔记，源码文件 &lt;code&gt;ae.h&lt;/code&gt; &amp;amp; &lt;code&gt;ae.c&lt;/code&gt; &amp;amp; &lt;code&gt;ae_epoll.c&lt;/code&gt; &amp;amp; &lt;code&gt;ae_evport.c&lt;/code&gt; &amp;amp; &lt;code&gt;ae_kqueue.c&lt;/code&gt; &amp;amp; &lt;code&gt;ae_select.c&lt;/code&gt;。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Redis 源码阅读 --- 持久化</title>
       <link>https://k-on.me/post/redis-sourcecode-persistence/</link>
       <pubDate>Tue, 20 Oct 2020 20:43:16 +0800</pubDate>
@@ -158,15 +167,6 @@
       
       <guid>https://k-on.me/post/redisstreams/</guid>
       <description>&lt;p&gt;主要介绍 Redis Streams 数据结构及部分操作，并不涉及源码部分。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Redis 源码阅读 --- ae</title>
-      <link>https://k-on.me/post/redis-sourcecode-ae/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://k-on.me/post/redis-sourcecode-ae/</guid>
-      <description>&lt;p&gt;Redis event loop 相关源码阅读笔记，源码文件 &lt;code&gt;ae.h&lt;/code&gt; &amp;amp; &lt;code&gt;ae.c&lt;/code&gt; &amp;amp; &lt;code&gt;ae_epoll.c&lt;/code&gt; &amp;amp; &lt;code&gt;ae_evport.c&lt;/code&gt; &amp;amp; &lt;code&gt;ae_kqueue.c&lt;/code&gt; &amp;amp; &lt;code&gt;ae_select.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
   </channel>
