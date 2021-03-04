@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Redis 源码阅读 --- ae - HTT - ふわふわ時間</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="765PRO.P" />
+  <meta name="description" content="Redis event loop 相关源码阅读笔记，源码文件 ae.h &amp;amp; ae.c &amp;amp; ae_epoll.c &amp;amp; ae_evport.c &amp;amp; ae_kqueue.c &amp;amp; ae_select.c。
+" />
+
+  <meta name="keywords" content="K-ON, KyoAni" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.0-DEV" />
+
+
+<link rel="canonical" href="https://k-on.me/post/redis-sourcecode-ae/" />
+
+
+
+
+
+
+
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.b3a8813c06e6d785beba22bf8264e174fa2cb3a396b22f9ba24e2c00c18aaf7f.css" integrity="sha256-s6iBPAbm14W&#43;uiK/gmThdPoss6OWsi&#43;bok4sAMGKr38=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Redis 源码阅读 --- ae" />
+<meta property="og:description" content="Redis event loop 相关源码阅读笔记，源码文件 ae.h &amp; ae.c &amp; ae_epoll.c &amp; ae_evport.c &amp; ae_kqueue.c &amp; ae_select.c。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://k-on.me/post/redis-sourcecode-ae/" />
+
+<meta itemprop="name" content="Redis 源码阅读 --- ae">
+<meta itemprop="description" content="Redis event loop 相关源码阅读笔记，源码文件 ae.h &amp; ae.c &amp; ae_epoll.c &amp; ae_evport.c &amp; ae_kqueue.c &amp; ae_select.c。">
+
+<meta itemprop="wordCount" content="2560">
+
+
+
+<meta itemprop="keywords" content="Redis," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Redis 源码阅读 --- ae"/>
+<meta name="twitter:description" content="Redis event loop 相关源码阅读笔记，源码文件 ae.h &amp; ae.c &amp; ae_epoll.c &amp; ae_evport.c &amp; ae_kqueue.c &amp; ae_select.c。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">HTT</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/about/">About</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/categories/">Categories</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      HTT
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/about/">About</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Redis 源码阅读 --- ae</h1>
+      
+      <div class="post-meta">
+        <time datetime="0001-01-01" class="post-time">
+          0001-01-01
+        </time>
+        <div class="post-category">
+            <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
+            
+          </div>
+        <span class="more-meta"> 2560 words </span>
+          <span class="more-meta"> 6 min read </span>
+
+        
+        
+          <span id="busuanzi_container_page_pv">
+            | 阅读 <span id="busuanzi_value_page_pv"></span>
+          </span>
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#小结">小结</a></li>
+    <li><a href="#数据结构">数据结构</a>
+      <ul>
+        <li><a href="#文件事件">文件事件</a></li>
+        <li><a href="#时间事件">时间事件</a></li>
+        <li><a href="#event-loop">Event loop</a></li>
+      </ul>
+    </li>
+    <li><a href="#api">API</a>
+      <ul>
+        <li><a href="#文件事件-1">文件事件</a></li>
+        <li><a href="#时间事件-1">时间事件</a></li>
+        <li><a href="#event-loop-1">Event loop</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>Redis event loop 相关源码阅读笔记，源码文件 <code>ae.h</code> &amp; <code>ae.c</code> &amp; <code>ae_epoll.c</code> &amp; <code>ae_evport.c</code> &amp; <code>ae_kqueue.c</code> &amp; <code>ae_select.c</code>。</p>
+<hr>
+<h2 id="小结">小结</h2>
+<ul>
+<li>Redis 会按序处理各个已触发的事件，无抢占</li>
+<li>因为 Redis 在处理时间事件之前，会先处理文件事件，所以时间事件的处理时间通常比设定值晚一些</li>
+<li>文件事件的 <code>AE_BARRIER</code> 和时间事件的 <code>refcount</code> 这两种特性，在 Redis 目前的实现中尚未使用</li>
+</ul>
+<p><em>Tips</em></p>
+<ul>
+<li>循环遍历链表时，如果需要删除链表节点，可以使用标记删除。</li>
+</ul>
+<h2 id="数据结构">数据结构</h2>
+<h3 id="文件事件">文件事件</h3>
+<p>Redis 的文件事件的数据结构如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* File event structure */</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="nc">aeFileEvent</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">mask</span><span class="p">;</span> <span class="cm">/* one of AE_(READABLE|WRITABLE|BARRIER) */</span>
+    <span class="n">aeFileProc</span> <span class="o">*</span><span class="n">rfileProc</span><span class="p">;</span>
+    <span class="n">aeFileProc</span> <span class="o">*</span><span class="n">wfileProc</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">clientData</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">aeFileEvent</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p><code>mask</code>: 文件事件的类型，可为以下几种叠加</p>
+<ul>
+<li><code>AE_NONE</code>: 初始值，未注册读写事件</li>
+<li><code>AE_READABLE</code>: 读事件，监听 fd 是否可读</li>
+<li><code>AE_WRITABLE</code>: 写事件，监听 fd 是否可写</li>
+<li><code>AE_BARRIER</code>: 用于 fd 同时可读写时，控制读写处理的顺序
+<ul>
+<li>同一个 fd 可同时读写时，一般我们会先处理读事件，这样利于我们在处理完一个查询操作后立马返回查询结果</li>
+<li>当 <code>AE_BARRIER</code> 被设置时，我们会先处理写事件，再处理读事件</li>
+</ul>
+<blockquote>
+<p>按照 <a href="https://github.com/redis/redis/issues/7098#issuecomment-614435928">issues/7098</a> 所述，且查看代码后，发现目前 Redis 好像没用到 <code>AE_BARRIER</code> 特性</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li>
+<p><code>rfileProc</code>: 读事件处理函数</p>
+</li>
+<li>
+<p><code>wfileProc</code>: 写事件处理函数</p>
+</li>
+<li>
+<p><code>clientData</code>: 在 <code>rfileProc</code>/<code>wfileProc</code> 中可能会用到的数据</p>
+</li>
+</ul>
+<p>Fired file event 结构如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* A fired event */</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="nc">aeFiredEvent</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">fd</span><span class="p">;</span>   <span class="cm">/* file descriptor */</span>
+    <span class="kt">int</span> <span class="n">mask</span><span class="p">;</span> <span class="cm">/* same with aeFileEvent*/</span>
+<span class="p">}</span> <span class="n">aeFiredEvent</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="时间事件">时间事件</h3>
+<p>Redis 的时间事件的数据结构如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Time event structure */</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="nc">aeTimeEvent</span> <span class="p">{</span>
+    <span class="kt">long</span> <span class="kt">long</span> <span class="n">id</span><span class="p">;</span> <span class="cm">/* time event identifier. */</span>
+    <span class="kt">long</span> <span class="n">when_sec</span><span class="p">;</span> <span class="cm">/* seconds */</span>
+    <span class="kt">long</span> <span class="n">when_ms</span><span class="p">;</span> <span class="cm">/* milliseconds */</span>
+    <span class="n">aeTimeProc</span> <span class="o">*</span><span class="n">timeProc</span><span class="p">;</span>
+    <span class="n">aeEventFinalizerProc</span> <span class="o">*</span><span class="n">finalizerProc</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">clientData</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="nc">aeTimeEvent</span> <span class="o">*</span><span class="n">prev</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="nc">aeTimeEvent</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">refcount</span><span class="p">;</span>  <span class="cm">/* refcount to prevent timer events from being
+</span><span class="cm">                    * freed in recursive time event calls. */</span>
+<span class="p">}</span> <span class="n">aeTimeEvent</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>id</code>: 时间事件的 ID，单调递增，即新产生的时间事件 ID 大于已有时间事件的 ID</li>
+<li><code>when_sec</code> + <code>when_ms</code>：时间点，记录时间事件触发的时间戳</li>
+<li><code>timeProc</code>：时间事件处理函数，当前时间不小于 &lt;<code>when_sec</code>, <code>when_ms</code>&gt; pair 时需调用 <code>timeProc</code></li>
+<li><code>finalizerProc</code>: 时间事件终结处理函数，删除时间事件时调用</li>
+<li><code>clientData</code>: 在 <code>timeProc</code>/<code>finalizerProc</code> 中可能会用到的数据</li>
+<li><code>prev</code> / <code>next</code>: 分别指向前/后一个时间事件，在 event loop 中时间事件为双向链表</li>
+<li><code>refcount</code>: 引用计数，防止递归调用 <code>processTimeEvents</code> 时，时间事件被释放
+<blockquote>
+<p>根据 <a href="https://github.com/redis/redis/pull/7253">pull/7253</a>，Redis 现有实现无递归调用 <code>processTimeEvents</code> 的 case</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="event-loop">Event loop</h3>
+<p>Redis 的 event loop 的数据结构如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* State of an event based program */</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="nc">aeEventLoop</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">maxfd</span><span class="p">;</span>   <span class="cm">/* highest file descriptor currently registered */</span>
+    <span class="kt">int</span> <span class="n">setsize</span><span class="p">;</span> <span class="cm">/* max number of file descriptors tracked */</span>
+    <span class="kt">long</span> <span class="kt">long</span> <span class="n">timeEventNextId</span><span class="p">;</span>
+    <span class="n">time_t</span> <span class="n">lastTime</span><span class="p">;</span>     <span class="cm">/* Used to detect system clock skew */</span>
+    <span class="n">aeFileEvent</span> <span class="o">*</span><span class="n">events</span><span class="p">;</span> <span class="cm">/* Registered events */</span>
+    <span class="n">aeFiredEvent</span> <span class="o">*</span><span class="n">fired</span><span class="p">;</span> <span class="cm">/* Fired events */</span>
+    <span class="n">aeTimeEvent</span> <span class="o">*</span><span class="n">timeEventHead</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">stop</span><span class="p">;</span>
+    <span class="kt">void</span> <span class="o">*</span><span class="n">apidata</span><span class="p">;</span> <span class="cm">/* This is used for polling API specific data */</span>
+    <span class="n">aeBeforeSleepProc</span> <span class="o">*</span><span class="n">beforesleep</span><span class="p">;</span>
+    <span class="n">aeBeforeSleepProc</span> <span class="o">*</span><span class="n">aftersleep</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">flags</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">aeEventLoop</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p><code>maxfd</code>: 注册至 event loop 中的文件事件的最大 fd，其值不超过 <code>setsize</code></p>
+</li>
+<li>
+<p><code>setsize</code>: event loop 中可容纳的文件事件数量上限</p>
+</li>
+<li>
+<p><code>event</code>：event loop 中文件事件按照数组形式保存，其长度为 <code>setsize</code></p>
+<ul>
+<li>未注册部分 <code>aeFileEvent-&gt;mask</code> 为 <code>AE_NONE</code></li>
+</ul>
+</li>
+<li>
+<p><code>fired</code>: Fired file event 数组，长度同样为 <code>setsize</code></p>
+</li>
+<li>
+<p><code>apidata</code>: used for polling API specific data，记录 polling API 的状态</p>
+<ul>
+<li>
+<p>Redis 的 ae 包装了不同的 I/O 多路复用函数库，在编译时会按照选择系统中性能最佳的函数库，顺序为 <code>ae_evport</code> -&gt; <code>ae_epoll</code> -&gt; <code>ae_kqueue.c</code> -&gt; <code>ae_select.c</code></p>
+</li>
+<li>
+<p>当使用 Linux 的 <code>epoll</code> 时，<code>apidata</code> 存储的内容为：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">typedef</span> <span class="k">struct</span> <span class="nc">aeApiState</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">epfd</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="nc">epoll_event</span> <span class="o">*</span><span class="n">events</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">aeApiState</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+</li>
+<li>
+<p><code>timeEventHead</code>: event loop 中时间事件头节点</p>
+</li>
+<li>
+<p><code>timeEventNextId</code>：已注册的时间事件的 ID 最大值</p>
+<ul>
+<li>每次调用 <code>aeCreateTimeEvent</code> 注册时间事件时加 1</li>
+<li>Use: Make sure we don&rsquo;t process time events created by time events in this iteration</li>
+</ul>
+<blockquote>
+<p>不过在目前的实现中这个 check 是多余的，因为新增的时间事件添加在时间事件链表头部</p>
+</blockquote>
+</li>
+<li>
+<p><code>lastTime</code>：记录 event loop 上次调用 <code>processTimeEvents</code> 的时间戳</p>
+<ul>
+<li>当发生时钟跳变时，为了不推迟时间事件的触发执行，将所有时间事件的 <code>when_sec</code> 设置为 0，即立马处理该事件</li>
+</ul>
+<blockquote>
+<p>因为在 Redis 中其实只会注册一个时间事件 <code>serverCron</code>，所以问题不大</p>
+</blockquote>
+</li>
+<li>
+<p><code>stop</code>: 值不为 0 时，停止轮询处理事件</p>
+</li>
+<li>
+<p><code>beforesleep</code>: 调用 <code>epoll_wait</code> 前可能会调用的函数</p>
+</li>
+<li>
+<p><code>aftersleep</code>: 调用 <code>epoll_wait</code> 后可能会调用的函数</p>
+</li>
+<li>
+<p><code>flags</code>: 值可以设置为 <code>AE_DONT_WAIT</code>，表示调用 <code>epoll_wait</code> 时 timeout 为 0 ，即不等待</p>
+</li>
+</ul>
+<h2 id="api">API</h2>
+<h3 id="文件事件-1">文件事件</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Create a file evet and add to event loop */</span>
+<span class="kt">int</span> <span class="nf">aeCreateFileEvent</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mask</span><span class="p">,</span>
+        <span class="n">aeFileProc</span> <span class="o">*</span><span class="n">proc</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">clientData</span><span class="p">);</span>
+
+<span class="cm">/* Delete the file event specified by fd */</span>
+<span class="kt">void</span> <span class="nf">aeDeleteFileEvent</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mask</span><span class="p">);</span>
+
+<span class="cm">/* Get the file event specified by fd */</span>
+<span class="kt">int</span> <span class="nf">aeGetFileEvents</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>当然，在添加/删除文件事件时，不仅会修改文件事件数组 <code>aeEventLoop-&gt;events</code>，而且也会修改 <code>aeEventLoop-&gt;apidata</code>，即 polling api state.</p>
+<h3 id="时间事件-1">时间事件</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Create a time event and add to event loop */</span>
+<span class="kt">long</span> <span class="kt">long</span> <span class="nf">aeCreateTimeEvent</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">,</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">milliseconds</span><span class="p">,</span>
+        <span class="n">aeTimeProc</span> <span class="o">*</span><span class="n">proc</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">clientData</span><span class="p">,</span>
+        <span class="n">aeEventFinalizerProc</span> <span class="o">*</span><span class="n">finalizerProc</span><span class="p">);</span>
+
+<span class="cm">/* Delete a time event specified by id */</span>
+<span class="kt">int</span> <span class="nf">aeDeleteTimeEvent</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">,</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">id</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>在添加时间事件时，<code>milliseconds</code> 指的是时间间隔</li>
+<li>在删除时间事件时，并不会真的从时间事件链表中删除该节点，而是将其 <code>id</code> 标记为 <code>AE_DELETED_EVENT_ID</code>
+<ul>
+<li>真正的删除操作在 <code>processTimeEvents</code> 中实现</li>
+</ul>
+</li>
+</ul>
+<h3 id="event-loop-1">Event loop</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Process time events */</span>
+<span class="k">static</span> <span class="kt">int</span> <span class="nf">processTimeEvents</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><ol>
+<li>首先依据 <code>aeEventLoop-&gt;lastTime</code> 值判断是否发生了时钟跳变，若为真，则将所有时间事件设置为立马触发执行</li>
+<li>从前往后遍历时间事件链表，执行已触发的时间事件
+<ul>
+<li>首先判断时间事件是否已被标记为删除，若为真，则从链表中删除该时间事件并释放内存空间</li>
+<li>在执行完时间事件处理函数后，依据返回值决定是否将该时间事件标记为删除
+<ul>
+<li>返回值为 <code>AE_NOMORE</code>(-1)，表示该时间事件是个定时事件，执行一次后可删除，故标记为 <code>AE_DELETED_EVENT_ID</code></li>
+<li>返回值为其他值时，表示该时间事件为定期事件，返回值为执行时间间隔，故利用返回值更新 <code>when_sec</code> &amp; <code>when_ms</code>，即下次触发事件</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>返回处理的时间事件数量</li>
+</ol>
+<p><em>Tips</em>：循环遍历链表时，如果需要删除链表节点，可以使用标记删除。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Process every pending time event, then every pending file event */</span>
+<span class="kt">int</span> <span class="nf">aeProcessEvents</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>形参 <code>flags</code> 的取值可为以下几种叠加：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Flags</th>
+<th style="text-align:left">meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">$0$</td>
+<td style="text-align:left">啥都不干，立马返回</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>AE_ALL_EVENTS</code></td>
+<td style="text-align:left">执行已触发的文件事件和时间事件</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>AE_FILE_EVENTS</code></td>
+<td style="text-align:left">执行已触发的文件事件</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>AE_TIME_EVENTS</code></td>
+<td style="text-align:left">执行已触发的时间事件</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>AE_DONT_WAIT</code></td>
+<td style="text-align:left">调用 <code>epoll_wait</code> 时，timeout 设置为 $0$，不等待</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>AE_CALL_BEFORE_SLEEP</code></td>
+<td style="text-align:left">调用 <code>epoll_wait</code> 前调用 beforesleep 函数</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>AE_CALL_AFTER_SLEEP</code></td>
+<td style="text-align:left">调用 <code>epoll_wait</code> 返回后调用 aftersleep 函数</td>
+</tr>
+</tbody>
+</table>
+<p>函数执行流程大致如下：</p>
+<ol>
+<li>根据 <code>flags</code> 的设置决定调用 <code>epoll_wait</code> 的 timeout 值
+<ul>
+<li>timeout 为 $0$：最近将触发的时间事件时间戳不大于当前时间戳或 <code>AE_DONT_WAIT</code> 被设置</li>
+<li>timeout 大于 $0$：最近将触发的时间事件时间戳大于当前时间戳且未设置 <code>AE_DONT_WAIT</code>，则 timeout 为两者差值</li>
+<li>timeout 为 $-1$：不处理时间事件或时间事件链表为空且未设置 <code>AE_DONT_WAIT</code>，则 timeout 为 $-1$，即一直等待</li>
+</ul>
+</li>
+<li>调用 <code>aeEventLoop-&gt;beforesleep</code></li>
+<li>调用 <code>epoll_wait</code> 检查已触发的文件事件</li>
+<li>调用 <code>aeEventLoop-&gt;aftersleep</code></li>
+<li>处理已触发的文件事件
+<ul>
+<li>同一个 fd 可同时读写时，一般先处理读事件，当 <code>AE_BARRIER</code> 被设置时，会先处理写事件，再处理读事件</li>
+</ul>
+</li>
+<li>调用 <code>processTimeEvents</code> 处理时间事件</li>
+<li>返回处理的文件事件和时间事件数量之和</li>
+</ol>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="nf">aeMain</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">stop</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="o">!</span><span class="n">eventLoop</span><span class="o">-&gt;</span><span class="n">stop</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">aeProcessEvents</span><span class="p">(</span><span class="n">eventLoop</span><span class="p">,</span> <span class="n">AE_ALL_EVENTS</span><span class="o">|</span>
+                                   <span class="n">AE_CALL_BEFORE_SLEEP</span><span class="o">|</span>
+                                   <span class="n">AE_CALL_AFTER_SLEEP</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>事件循环主函数，会尝试同时处理文件事件和时间事件，且在调用 <code>epoll_wait</code> 前后会分别调用已设置的 <code>aeEventLoop-&gt;beforesleep</code> 和 <code>aeEventLoop-&gt;aftersleep</code>。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Create a event loop and initialize */</span>
+<span class="n">aeEventLoop</span> <span class="o">*</span><span class="nf">aeCreateEventLoop</span><span class="p">(</span><span class="kt">int</span> <span class="n">setsize</span><span class="p">);</span>
+
+<span class="cm">/* Delete a event loop and free */</span>
+<span class="kt">void</span> <span class="nf">aeDeleteEventLoop</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">);</span>
+
+<span class="cm">/* set aeEventLoop-&gt;stop = 1 */</span>
+<span class="kt">void</span> <span class="nf">aeStop</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">);</span>
+
+<span class="cm">/* Call `poll` to wait for milliseconds until 
+</span><span class="cm"> * the given file descriptor becomes writable/readable/exception */</span>
+<span class="kt">int</span> <span class="nf">aeWait</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">mask</span><span class="p">,</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">milliseconds</span><span class="p">);</span>
+
+<span class="cm">/* Return the name of the multiplexing layer currently in use */</span>
+<span class="kt">char</span> <span class="o">*</span><span class="nf">aeGetApiName</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="cm">/* Setup the before sleep process */</span>
+<span class="kt">void</span> <span class="nf">aeSetBeforeSleepProc</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">,</span> <span class="n">aeBeforeSleepProc</span> <span class="o">*</span><span class="n">beforesleep</span><span class="p">);</span>
+
+<span class="cm">/* Setup the after sleep process */</span>
+<span class="kt">void</span> <span class="nf">aeSetAfterSleepProc</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">,</span> <span class="n">aeBeforeSleepProc</span> <span class="o">*</span><span class="n">aftersleep</span><span class="p">);</span>
+
+<span class="cm">/* Return the current set size */</span>
+<span class="kt">int</span> <span class="nf">aeGetSetSize</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">);</span>
+
+<span class="cm">/* Resize the maximum set size of the event loop. */</span>
+<span class="kt">int</span> <span class="nf">aeResizeSetSize</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">,</span> <span class="kt">int</span> <span class="n">setsize</span><span class="p">);</span>
+
+<span class="cm">/* Change aeEventLoop-&gt;flags
+</span><span class="cm"> * Tells the next iteration/s of the event processing to set timeout of 0 */</span>
+<span class="kt">void</span> <span class="nf">aeSetDontWait</span><span class="p">(</span><span class="n">aeEventLoop</span> <span class="o">*</span><span class="n">eventLoop</span><span class="p">,</span> <span class="kt">int</span> <span class="n">noWait</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">765PRO.P</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      0001-01-01
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://k-on.me/tags/redis/">Redis</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">动态规划</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="pro-765@qq.com" rel="me noopener" class="iconfont"
+      title="email"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1451 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M664.781909 681.472759 0 97.881301C0 3.997201 71.046997 0 71.046997 0L474.477909 0 961.649408 0 1361.641813 0C1361.641813 0 1432.688811 3.997201 1432.688811 97.881301L771.345323 681.472759C771.345323 681.472759 764.482731 685.154773 753.594283 688.65053L753.594283 688.664858C741.602731 693.493018 729.424896 695.068979 718.077952 694.839748 706.731093 695.068979 694.553173 693.493018 682.561621 688.664858L682.561621 688.65053C671.644501 685.140446 664.781909 681.472759 664.781909 681.472759L664.781909 681.472759ZM718.063616 811.603883C693.779541 811.016482 658.879232 802.205449 619.10784 767.734955 542.989056 701.759633 0 212.052267 0 212.052267L0 942.809523C0 942.809523 0 1024 83.726336 1024L682.532949 1024 753.579947 1024 1348.948139 1024C1432.688811 1024 1432.688811 942.809523 1432.688811 942.809523L1432.688811 212.052267C1432.688811 212.052267 893.138176 701.759633 817.019477 767.734955 777.248 802.205449 742.347691 811.03081 718.063616 811.603883L718.063616 811.603883Z"></path>
+</svg>
+
+    </a>
+  
+    <a href="https://github.com/yz1509" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://k-on.me/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2018 -
+    2021
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        765PRO.P
+        
+      </span></span>
+
+  
+  
+    <span id="busuanzi_container">
+      访客数/访问量：<span id="busuanzi_value_site_uv"></span>/<span id="busuanzi_value_site_pv"></span>
+    </span>
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
