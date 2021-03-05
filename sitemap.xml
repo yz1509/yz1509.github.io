@@ -122,34 +122,20 @@
   
   <url>
     <loc>https://k-on.me/tags/redis/</loc>
-    <lastmod>2020-10-29T15:20:48+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://k-on.me/post/redis-sourcecode-client/</loc>
-    <lastmod>2020-10-29T15:20:48+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/</loc>
-    <lastmod>2020-10-29T15:20:48+08:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://k-on.me/post/redis-sourcecode-server/</loc>
-    <lastmod>2020-10-27T20:01:48+08:00</lastmod>
+    <lastmod>2020-10-24T16:01:48+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
     <loc>https://k-on.me/post/redis-sourcecode-ae/</loc>
+    <lastmod>2020-10-24T16:01:48+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/</loc>
     <lastmod>2020-10-24T16:01:48+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
