@@ -3507,7 +3507,7 @@ $$&lt;/p&gt;
 &lt;li&gt;当 &lt;code&gt;lfu_decay_time&lt;/code&gt; 大于 0 时，每经过 &lt;code&gt;lfu_decay_time&lt;/code&gt; 分钟，计数器减 1，直至为 0&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;还可以发现在 &lt;code&gt;LFUDecrAndReturn&lt;/code&gt; 中并不会改变 &lt;code&gt;robj-&amp;gt;lru&lt;/code&gt; 的值，只是返回此时经过衰减之后的计数值。其值的更改会在每次&lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/db.c#L65&#34;&gt;真正访问该数据对象&lt;/a&gt;时发生。&lt;/p&gt;
-&lt;h3 id=&#34;evict-pool&#34;&gt;Evict pool&lt;/h3&gt;
+&lt;h3 id=&#34;eviction-pool&#34;&gt;Eviction pool&lt;/h3&gt;
 &lt;p&gt;Redis 使用淘汰候选数组 &lt;code&gt;EvictionPoolLRU&lt;/code&gt; 保存着可淘汰 key 的信息，其中每个候选 key 的相关信息由 &lt;code&gt;evictionPoolEntry&lt;/code&gt; 表示，其结构定义如下:&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
@@ -8751,7 +8751,22 @@ s-hdrlen          s-1       s
 &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;p&gt;但需要注意的是 &lt;code&gt;memcmp&lt;/code&gt; 可能不会在字符不相同时立马返回，也就是对于 &lt;code&gt;lhs&lt;/code&gt;/&lt;code&gt;rhs&lt;/code&gt; 来说，需保证字符串长度不小于 &lt;code&gt;count&lt;/code&gt; ，否则会产生未定义行为，比如 &lt;a href=&#34;https://github.com/redis/redis/pull/7443&#34;&gt;redis/pull/7443&lt;/a&gt;。&lt;/p&gt;
-&lt;p&gt;详情可阅读 &lt;a href=&#34;https://trust-in-soft.com/blog/2015/12/21/memcmp-requires-pointers-to-fully-valid-buffers/&#34;&gt;memcmp-requires-pointers-to-fully-valid-buffers&lt;/a&gt;.&lt;/p&gt;</description>
+&lt;p&gt;详情可阅读 &lt;a href=&#34;https://trust-in-soft.com/blog/2015/12/21/memcmp-requires-pointers-to-fully-valid-buffers/&#34;&gt;memcmp-requires-pointers-to-fully-valid-buffers&lt;/a&gt;.&lt;/p&gt;
+&lt;h2 id=&#34;utils&#34;&gt;Utils&lt;/h2&gt;
+&lt;h3 id=&#34;random&#34;&gt;random&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;在使用 &lt;code&gt;random&lt;/code&gt; 函数获取随机数时需注意其返回值值域 —— &lt;a href=&#34;https://en.wikipedia.org/wiki/C_data_types&#34;&gt;long int&lt;/a&gt; 为 4 字节长。&lt;/li&gt;
+&lt;li&gt;一般情况下，这不会有什么问题，但需考虑到极端情况的存在，比如 &lt;a href=&#34;https://github.com/redis/redis/pull/8133&#34;&gt;redis/pull/8133&lt;/a&gt;.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;k&#34;&gt;extern&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;random&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;__THROW&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;</description>
       
     </item>
     

@@ -353,7 +353,7 @@
       <ul>
         <li><a href="#least-recently-usedlru">Least Recently Used(LRU)</a></li>
         <li><a href="#least-frequently-usedlfu">Least Frequently Used(LFU)</a></li>
-        <li><a href="#evict-pool">Evict pool</a></li>
+        <li><a href="#eviction-pool">Eviction pool</a></li>
         <li><a href="#free-memory">Free memory</a></li>
       </ul>
     </li>
@@ -1387,7 +1387,7 @@ $$</p>
 <li>当 <code>lfu_decay_time</code> 大于 0 时，每经过 <code>lfu_decay_time</code> 分钟，计数器减 1，直至为 0</li>
 </ul>
 <p>还可以发现在 <code>LFUDecrAndReturn</code> 中并不会改变 <code>robj-&gt;lru</code> 的值，只是返回此时经过衰减之后的计数值。其值的更改会在每次<a href="https://github.com/redis/redis/blob/6.0.8/src/db.c#L65">真正访问该数据对象</a>时发生。</p>
-<h3 id="evict-pool">Evict pool</h3>
+<h3 id="eviction-pool">Eviction pool</h3>
 <p>Redis 使用淘汰候选数组 <code>EvictionPoolLRU</code> 保存着可淘汰 key 的信息，其中每个候选 key 的相关信息由 <code>evictionPoolEntry</code> 表示，其结构定义如下:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">

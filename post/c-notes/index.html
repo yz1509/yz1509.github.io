@@ -70,7 +70,7 @@
 <meta itemprop="description" content="记录 C 语言相关小知识。">
 <meta itemprop="datePublished" content="2020-09-22T14:44:15+08:00" />
 <meta itemprop="dateModified" content="2020-09-22T14:44:15+08:00" />
-<meta itemprop="wordCount" content="403">
+<meta itemprop="wordCount" content="474">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/c/c&#43;&#43;/"> c/c&#43;&#43; </a>
             
           </div>
-        <span class="more-meta"> 403 words </span>
+        <span class="more-meta"> 474 words </span>
           <span class="more-meta"> 1 min read </span>
 
         
@@ -349,6 +349,11 @@
     <li><a href="#字符串">字符串</a>
       <ul>
         <li><a href="#memcmp">memcmp</a></li>
+      </ul>
+    </li>
+    <li><a href="#utils">Utils</a>
+      <ul>
+        <li><a href="#random">random</a></li>
       </ul>
     </li>
   </ul>
@@ -431,6 +436,21 @@
 </div>
 </div><p>但需要注意的是 <code>memcmp</code> 可能不会在字符不相同时立马返回，也就是对于 <code>lhs</code>/<code>rhs</code> 来说，需保证字符串长度不小于 <code>count</code> ，否则会产生未定义行为，比如 <a href="https://github.com/redis/redis/pull/7443">redis/pull/7443</a>。</p>
 <p>详情可阅读 <a href="https://trust-in-soft.com/blog/2015/12/21/memcmp-requires-pointers-to-fully-valid-buffers/">memcmp-requires-pointers-to-fully-valid-buffers</a>.</p>
+<h2 id="utils">Utils</h2>
+<h3 id="random">random</h3>
+<ul>
+<li>在使用 <code>random</code> 函数获取随机数时需注意其返回值值域 —— <a href="https://en.wikipedia.org/wiki/C_data_types">long int</a> 为 4 字节长。</li>
+<li>一般情况下，这不会有什么问题，但需考虑到极端情况的存在，比如 <a href="https://github.com/redis/redis/pull/8133">redis/pull/8133</a>.</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">extern</span> <span class="kt">long</span> <span class="kt">int</span> <span class="nf">random</span> <span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="n">__THROW</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div>
     </div>
 
     
