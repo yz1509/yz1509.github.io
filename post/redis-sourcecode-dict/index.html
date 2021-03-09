@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis dict 实现相关源码阅读笔记，源码文件 dict.h &amp; dict.c。">
 <meta itemprop="datePublished" content="2020-09-27T10:15:20+08:00" />
 <meta itemprop="dateModified" content="2020-09-27T10:15:20+08:00" />
-<meta itemprop="wordCount" content="2860">
+<meta itemprop="wordCount" content="2879">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 2860 words </span>
+        <span class="more-meta"> 2879 words </span>
           <span class="more-meta"> 6 min read </span>
 
         
@@ -1014,7 +1014,7 @@
 <p>保证返回所有 <code>dictEntry</code>，但不保证不重复</p>
 </li>
 <li>
-<p>如下所示，<code>cursor</code> 并不是按序递增，而是按位反转之后递增，这保证了在 Rehash 时不会漏掉 bucket</p>
+<p>如下所示，<code>cursor</code> 并不是按序递增，而是按位反转之后递增，利用 <code>dictht-&gt;size</code> 是 $2$ 的整数倍的条件，这保证了在 Rehash 时不会漏掉 bucket。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
