@@ -6,7 +6,16 @@
     <description>Recent content in Posts on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Thu, 04 Feb 2021 18:14:47 +0800</lastBuildDate><atom:link href="https://k-on.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 12 Mar 2021 12:17:44 +0800</lastBuildDate><atom:link href="https://k-on.me/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>RDMA Notes</title>
+      <link>https://k-on.me/post/rdma-notes/</link>
+      <pubDate>Fri, 12 Mar 2021 12:17:44 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/rdma-notes/</guid>
+      <description>&lt;p&gt;RDMA 相关笔记。&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>Time, Clocks, and the Ordering of Events in a Distributed System</title>
       <link>https://k-on.me/post/time-clocks-and-the-ordering-of-events-in-a-distributed-system/</link>
@@ -176,15 +185,6 @@
       
       <guid>https://k-on.me/post/redis-sourcecode-overview/</guid>
       <description>&lt;p&gt;Redis 源码阅读笔记，本文主要讲述 Redis 代码组织结构。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Efficient State-based CRDTs by Delta-Mutation</title>
-      <link>https://k-on.me/post/efficient-state-based-crdts-by-delta-mutation/</link>
-      <pubDate>Mon, 07 Sep 2020 12:02:54 +0000</pubDate>
-      
-      <guid>https://k-on.me/post/efficient-state-based-crdts-by-delta-mutation/</guid>
-      <description>&lt;p&gt;《Efficient State-based CRDTs by Delta-Mutation》 阅读笔记。&lt;/p&gt;</description>
     </item>
     
   </channel>

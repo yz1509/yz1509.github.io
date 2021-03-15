@@ -6,7 +6,16 @@
     <description>Recent content in Redis on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 24 Oct 2020 16:01:48 +0800</lastBuildDate><atom:link href="https://k-on.me/tags/redis/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 12 Mar 2021 12:17:44 +0800</lastBuildDate><atom:link href="https://k-on.me/tags/redis/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>RDMA Notes</title>
+      <link>https://k-on.me/post/rdma-notes/</link>
+      <pubDate>Fri, 12 Mar 2021 12:17:44 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/rdma-notes/</guid>
+      <description>&lt;p&gt;RDMA 相关笔记。&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>Redis 源码阅读 --- ae</title>
       <link>https://k-on.me/post/redis-sourcecode-ae/</link>

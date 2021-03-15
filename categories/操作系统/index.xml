@@ -6,7 +6,16 @@
     <description>Recent content in 操作系统 on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 26 Aug 2020 20:38:59 +0000</lastBuildDate><atom:link href="https://k-on.me/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 12 Mar 2021 12:17:44 +0800</lastBuildDate><atom:link href="https://k-on.me/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>RDMA Notes</title>
+      <link>https://k-on.me/post/rdma-notes/</link>
+      <pubDate>Fri, 12 Mar 2021 12:17:44 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/rdma-notes/</guid>
+      <description>&lt;p&gt;RDMA 相关笔记。&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>NVM-notes</title>
       <link>https://k-on.me/post/nvm-notes/</link>

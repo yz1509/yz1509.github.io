@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Archive - HTT - ふわふわ時間</title>
+  <title>RDMA Notes - HTT - ふわふわ時間</title>
   
 
 <meta name="renderer" content="webkit" />
@@ -23,7 +23,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <meta name="author" content="765PRO.P" />
-  <meta name="description" content="K-ON Fans." />
+  <meta name="description" content="RDMA 相关笔记。
+" />
+
   <meta name="keywords" content="K-ON, KyoAni" />
 
 
@@ -34,8 +36,8 @@
 <meta name="generator" content="Hugo 0.76.0-DEV" />
 
 
-<link rel="canonical" href="https://k-on.me/post/" />
-<link href="/post/index.xml" rel="alternate" type="application/rss+xml" title="HTT - ふわふわ時間" />
+<link rel="canonical" href="https://k-on.me/post/rdma-notes/" />
+
 
 
 
@@ -58,16 +60,24 @@
 
 
 
-<meta property="og:title" content="Posts" />
-<meta property="og:description" content="K-ON Fans." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://k-on.me/post/" />
-<meta property="og:updated_time" content="2021-03-12T12:17:44+08:00" />
-<meta itemprop="name" content="Posts">
-<meta itemprop="description" content="K-ON Fans.">
+<meta property="og:title" content="RDMA Notes" />
+<meta property="og:description" content="RDMA 相关笔记。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://k-on.me/post/rdma-notes/" />
+<meta property="article:published_time" content="2021-03-12T12:17:44+08:00" />
+<meta property="article:modified_time" content="2021-03-12T12:17:44+08:00" />
+<meta itemprop="name" content="RDMA Notes">
+<meta itemprop="description" content="RDMA 相关笔记。">
+<meta itemprop="datePublished" content="2021-03-12T12:17:44+08:00" />
+<meta itemprop="dateModified" content="2021-03-12T12:17:44+08:00" />
+<meta itemprop="wordCount" content="750">
+
+
+
+<meta itemprop="keywords" content="RDMA,Redis,InfiniBand," />
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="Posts"/>
-<meta name="twitter:description" content="K-ON Fans."/>
+<meta name="twitter:title" content="RDMA Notes"/>
+<meta name="twitter:description" content="RDMA 相关笔记。"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -239,7 +249,7 @@
 
       </li>
     
-        <li class="menu-item active">
+        <li class="menu-item">
         
           
           
@@ -286,192 +296,333 @@
     <main id="main" class="main bg-llight">
       <div class="content-wrapper">
         <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">RDMA Notes</h1>
+      
+      <div class="post-meta">
+        <time datetime="2021-03-12" class="post-time">
+          2021-03-12
+        </time>
+        <div class="post-category">
+            <a href="https://k-on.me/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/"> 操作系统 </a>
+            
+          </div>
+        <span class="more-meta"> 750 words </span>
+          <span class="more-meta"> 2 min read </span>
+
+        
+        
+          <span id="busuanzi_container_page_pv">
+            | 阅读 <span id="busuanzi_value_page_pv"></span>
+          </span>
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#rdma-相关资源">RDMA 相关资源</a></li>
+    <li><a href="#rdma-相关术语">RDMA 相关术语</a></li>
+    <li><a href="#rdma-相关博文">RDMA 相关博文</a></li>
+    <li><a href="#rdma-相关论文">RDMA 相关论文</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>RDMA 相关笔记。</p>
+<hr>
+<h2 id="rdma-相关资源">RDMA 相关资源</h2>
+<ul>
+<li><a href="https://github.com/mellanox/libvma/">libvma</a>: VMA Source Code and Documentation</li>
+<li><a href="https://github.com/jcxue/RDMA-Tutorial">RDMA-Tutorial</a>: A tutorial on RDMA based programming using code examples</li>
+</ul>
+<h2 id="rdma-相关术语">RDMA 相关术语</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Abbr</th>
+<th style="text-align:left">Term</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">RDMA</td>
+<td style="text-align:left"><a href="https://en.wikipedia.org/wiki/Remote_direct_memory_access">Remote Direct Memory Access</a></td>
+</tr>
+<tr>
+<td style="text-align:left">HPC</td>
+<td style="text-align:left"><a href="https://en.wikipedia.org/wiki/Supercomputer">High-Performance Computing</a></td>
+</tr>
+<tr>
+<td style="text-align:left">IPC</td>
+<td style="text-align:left"><a href="https://en.wikipedia.org/wiki/Inter-process_communication">InterProcess Communication</a></td>
+</tr>
+<tr>
+<td style="text-align:left">MPI</td>
+<td style="text-align:left"><a href="https://en.wikipedia.org/wiki/Message_Passing_Interface">Message Passing Interface</a></td>
+</tr>
+<tr>
+<td style="text-align:left">HCA</td>
+<td style="text-align:left"><a href="https://en.wikipedia.org/wiki/Host_adapter">Host Channel Adapter</a>: usually used to describe InfiniBand interface cards, is the point at which an InfiniBand end node connects to the InfiniBand network</td>
+</tr>
+<tr>
+<td style="text-align:left">TCA</td>
+<td style="text-align:left">Target Channel Adapter, is a specialized version of a channel adapter intended for use in an embedded environment</td>
+</tr>
+<tr>
+<td style="text-align:left">MMIO</td>
+<td style="text-align:left"><a href="https://en.wikipedia.org/wiki/Memory-mapped_I/O">Memory Mapped I/O</a></td>
+</tr>
+<tr>
+<td style="text-align:left">VIA</td>
+<td style="text-align:left"><a href="https://en.wikipedia.org/wiki/Virtual_Interface_Architecture">Virtual Interface Architecture</a></td>
+</tr>
+<tr>
+<td style="text-align:left">RoCE</td>
+<td style="text-align:left"><a href="https://en.wikipedia.org/wiki/RDMA_over_Converged_Ethernet">RDMA over Converged ethernet</a></td>
+</tr>
+<tr>
+<td style="text-align:left">IB</td>
+<td style="text-align:left"><a href="https://en.wikipedia.org/wiki/InfiniBand">InfiniBand</a></td>
+</tr>
+<tr>
+<td style="text-align:left">iWARP</td>
+<td style="text-align:left"><a href="https://en.wikipedia.org/wiki/IWARP">internet Wide Area RDMA Protocol</a></td>
+</tr>
+<tr>
+<td style="text-align:left">NIC</td>
+<td style="text-align:left"><a href="https://en.wikipedia.org/wiki/Network_interface_controller">Network Interface Controller</a>(Cards)</td>
+</tr>
+<tr>
+<td style="text-align:left">VMA</td>
+<td style="text-align:left"><a href="https://community.mellanox.com/s/article/what-is-vma-x">Mellanox&rsquo;s Messaging Accelerator</a></td>
+</tr>
+<tr>
+<td style="text-align:left">RC</td>
+<td style="text-align:left">Reliable Connection</td>
+</tr>
+<tr>
+<td style="text-align:left">UC</td>
+<td style="text-align:left">Unreliable Connection</td>
+</tr>
+<tr>
+<td style="text-align:left">UD</td>
+<td style="text-align:left">Unreliable Datagram</td>
+</tr>
+<tr>
+<td style="text-align:left">Verb</td>
+<td style="text-align:left">Defines the types of communication operations</td>
+</tr>
+<tr>
+<td style="text-align:left">PD</td>
+<td style="text-align:left">Protection Domain</td>
+</tr>
+<tr>
+<td style="text-align:left">CQ</td>
+<td style="text-align:left">Completion Queue</td>
+</tr>
+<tr>
+<td style="text-align:left">QP</td>
+<td style="text-align:left">Queue Pair, the endpoint of the Channel I/O</td>
+</tr>
+<tr>
+<td style="text-align:left">SQ</td>
+<td style="text-align:left">Send Queue</td>
+</tr>
+<tr>
+<td style="text-align:left">RQ</td>
+<td style="text-align:left">Receive Queue</td>
+</tr>
+<tr>
+<td style="text-align:left">WR</td>
+<td style="text-align:left">Work Request, represents a single quantum of work that the application wants to perform</td>
+</tr>
+<tr>
+<td style="text-align:left">MR</td>
+<td style="text-align:left">Memory Registration</td>
+</tr>
+</tbody>
+</table>
+<h2 id="rdma-相关博文">RDMA 相关博文</h2>
+<ul>
+<li>
+<p><a href="https://zhuanlan.zhihu.com/p/55142557">RDMA技术详解（一）：RDMA概述</a></p>
+<ul>
+<li>介绍了 RDMA 相关基础概念，适合入门观看。</li>
+</ul>
+</li>
+<li>
+<p><a href="https://community.mellanox.com/s/article/vma-improves-redis-transaction-rate-and-latency--memtier-benchmark-x">VMA Improves Redis Transaction Rate and Latency (Memtier Benchmark)</a></p>
+<ul>
+<li>在这篇文章中测试了分别在 No VMA，VMA on Server 和 VMA on both 三种情况下， Redis GET/SET 请求的吞吐量和延迟</li>
+</ul>
+</li>
+<li>
+<p><a href="https://thegeekinthecorner.wordpress.com/2010/08/13/building-an-rdma-capable-application-with-ib-verbs-part-1-basics/">Building an RDMA-capable application with IB verbs</a></p>
+</li>
+<li>
+<p><a href="https://thegeekinthecorner.wordpress.com/2010/09/28/rdma-read-and-write-with-ib-verbs/">RDMA read and write with IB verbs</a></p>
+</li>
+<li>
+<p><a href="https://thegeekinthecorner.wordpress.com/2012/12/19/basic-flow-control-for-rdma-transfers/">Basic flow control for RDMA transfers</a></p>
+</li>
+</ul>
+<h2 id="rdma-相关论文">RDMA 相关论文</h2>
+<ul>
+<li>
+<p><a href="http://crad.ict.ac.cn/CN/abstract/abstract3859.shtml">基于 RDMA 的分布式存储系统研究综述</a></p>
+<ul>
+<li>RDMA 背景介绍
+<ul>
+<li>RDMA 允许本地 CPU 绕过操作系统，直接读写远端节点内存，该过程无需远端 CPU 的参与</li>
+<li>RDMA 通信链路可以被配置为 3 种模式：RC, UC 和 UD</li>
+<li>RDMA 访问远端内存依靠 2 类原语
+<ul>
+<li>消息语义：Send/Recv</li>
+<li>内存语义：Write/Read</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>RDMA 与硬件管理
+<ul>
+<li>缓存管理：网卡缓存用于暂存 CPU 发起的网络请求和相应的网络状态信息，其主要缓存 3 类数据
+<ul>
+<li>注册内存容逻辑地址到物理地址的映射表</li>
+<li>QP 状态，存放 QP 对应的元数据信息</li>
+<li>由 CPU 发起的网络请求条目</li>
+</ul>
+<blockquote>
+<p>当网卡处理能力不及 CPU 时，需控制 CPU 请求速率，避免网络吞吐下降</p>
+</blockquote>
+</li>
+<li>CPU 调度
+<ul>
+<li>多核并发</li>
+<li>负载均衡</li>
+<li>QP 共享 (会引入时序问题)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>RDMA 与软件重构
+<ul>
+<li>RDMA 在 Key-Value 系统中的应用: Pilaf, HERD, HydraDB, RFP, C-Hint, FaRM, Nessie</li>
+<li>RDMA 在文件系统中的应用: Octopus, NVFS, Crail</li>
+<li>RDMA 在分布式事务中的应用: DrTM, FaRM, FaSST</li>
+<li>RDMA 的通用性优化
+<ul>
+<li>网络负载重分派</li>
+<li>数据备份与持久化</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><a href="http://ir.nsfc.gov.cn/paperDownload/ZD2959605.pdf">Accelerating Redis with RDMA over InfiniBand</a></p>
+<ul>
+<li>Redis 客户端使用处于 UC 传输类型下的设置为 unsignaled 模式和 inlined 模式的 RDMA Write 操作来传输客户端请求至 Redis 服务器端</li>
+<li>Redis 服务器端使用处于 UD 传输类型下的设置为 inlined 模式的 Send 操作响应客户端的请求</li>
+<li>当 Redis 启动时，在 HCA 上注册 M 个 Chunk，每个 Chunk 包含 Request Buffer 和 Respond Buffer</li>
+</ul>
+</li>
+<li>
+<p><a href="http://www.smallake.kr/wp-content/uploads/2014/03/Intro_to_IB_for_End_Users.pdf">Introduction to infiniband for end users</a></p>
+</li>
+</ul>
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">765PRO.P</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2021-03-12
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://k-on.me/tags/rdma/">RDMA</a>
+          <a href="https://k-on.me/tags/redis/">Redis</a>
+          <a href="https://k-on.me/tags/infiniband/">InfiniBand</a>
           
-<section id="archive" class="archive">
-    <div class="archive-title">
-      <span class="archive-post-counter">
-          48 posts In Total
-      </span>
-    </div>
-    
-      <div class="collection-title">
-        <h2 class="archive-year">2021</h2>
-      </div>
+        </div>
 
-    <div class="archive-post">
-      <time datetime="2021-03-12" class="archive-post-time">
-        2021-03-12
-      </time>
-      <span class="archive-post-title">
-        <a href="/post/rdma-notes/" class="archive-post-link">
-          RDMA Notes
-        </a>
-      </span>
-    </div>
-    
-
-    <div class="archive-post">
-      <time datetime="2021-02-04" class="archive-post-time">
-        2021-02-04
-      </time>
-      <span class="archive-post-title">
-        <a href="/post/time-clocks-and-the-ordering-of-events-in-a-distributed-system/" class="archive-post-link">
-          Time, Clocks, and the Ordering of Events in a Distributed System
-        </a>
-      </span>
-    </div>
-    
-
-    <div class="archive-post">
-      <time datetime="2021-01-14" class="archive-post-time">
-        2021-01-14
-      </time>
-      <span class="archive-post-title">
-        <a href="/post/tlc-model-checker/" class="archive-post-link">
-          TLC Model Checker
-        </a>
-      </span>
-    </div>
-    
-      <div class="collection-title">
-        <h2 class="archive-year">2020</h2>
-      </div>
-
-    <div class="archive-post">
-      <time datetime="2020-12-31" class="archive-post-time">
-        2020-12-31
-      </time>
-      <span class="archive-post-title">
-        <a href="/post/the-problem-with-embedded-crdt-counters-and-a-solution/" class="archive-post-link">
-          The Problem With Embedded CRDT Counters and a Solution
-        </a>
-      </span>
-    </div>
-    
-
-    <div class="archive-post">
-      <time datetime="2020-12-08" class="archive-post-time">
-        2020-12-08
-      </time>
-      <span class="archive-post-title">
-        <a href="/post/specifying-systems-notes/" class="archive-post-link">
-          Specifying Systems Notes
-        </a>
-      </span>
-    </div>
-    
-
-    <div class="archive-post">
-      <time datetime="2020-11-09" class="archive-post-time">
-        2020-11-09
-      </time>
-      <span class="archive-post-title">
-        <a href="/post/tla_notes/" class="archive-post-link">
-          TLA&#43; notes
-        </a>
-      </span>
-    </div>
-    
-
-    <div class="archive-post">
-      <time datetime="2020-10-24" class="archive-post-time">
-        2020-10-24
-      </time>
-      <span class="archive-post-title">
-        <a href="/post/redis-sourcecode-ae/" class="archive-post-link">
-          Redis 源码阅读 --- ae
-        </a>
-      </span>
-    </div>
-    
-
-    <div class="archive-post">
-      <time datetime="2020-10-20" class="archive-post-time">
-        2020-10-20
-      </time>
-      <span class="archive-post-title">
-        <a href="/post/redis-sourcecode-persistence/" class="archive-post-link">
-          Redis 源码阅读 --- 持久化
-        </a>
-      </span>
-    </div>
-    
-
-    <div class="archive-post">
-      <time datetime="2020-10-13" class="archive-post-time">
-        2020-10-13
-      </time>
-      <span class="archive-post-title">
-        <a href="/post/redis-sourcecode-db/" class="archive-post-link">
-          Redis 源码阅读 --- Database
-        </a>
-      </span>
-    </div>
-    
-
-    <div class="archive-post">
-      <time datetime="2020-10-09" class="archive-post-time">
-        2020-10-09
-      </time>
-      <span class="archive-post-title">
-        <a href="/post/redis-sourcecode-object/" class="archive-post-link">
-          Redis 源码阅读 --- Object
-        </a>
-      </span>
-    </div></section>
-
-
-
-
-
-
-  
-  
-  
-
-  
-  
-
-  
-  
-
-  
-  
-
-  
-  
-  <nav class="pagination">
-    <ul>
       
-      <li  class="active" >
-        <a href="/post/">1</a>
-      </li>
-      
-      <li >
-        <a href="/post/page/2/">2</a>
-      </li>
-      
-      <li >
-        <a href="/post/page/3/">3</a>
-      </li>
-      
-      <li >
-        <a href="/post/page/4/">4</a>
-      </li>
-      
-      <li >
-        <a href="/post/page/5/">5</a>
-      </li>
-      
-    </ul>
-  </nav>
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/time-clocks-and-the-ordering-of-events-in-a-distributed-system/">
+            <span class="next-text nav-default">Time, Clocks, and the Ordering of Events in a Distributed System</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+  
+  
 
   
   
 
+  
 
+  
+  
 
+  
 
+  
+
+  
+
+    
+
+  
 
         </div>
       </div>
@@ -581,6 +732,13 @@
 
 
 
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
 
 
 
