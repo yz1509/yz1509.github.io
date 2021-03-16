@@ -51,6 +51,10 @@
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Message_Passing_Interface&#34;&gt;Message Passing Interface&lt;/a&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;HBA&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Host Bus Adapter&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;HCA&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Host_adapter&#34;&gt;Host Channel Adapter&lt;/a&gt;: usually used to describe InfiniBand interface cards, is the point at which an InfiniBand end node connects to the InfiniBand network&lt;/td&gt;
 &lt;/tr&gt;
