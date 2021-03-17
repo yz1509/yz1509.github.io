@@ -44,24 +44,6 @@
     </item>
     
     <item>
-      <title>Thrift-Protocol 概述</title>
-      <link>https://k-on.me/post/thrift-protocol%E6%A6%82%E8%BF%B0/</link>
-      <pubDate>Tue, 30 Jul 2019 22:57:40 +0000</pubDate>
-      
-      <guid>https://k-on.me/post/thrift-protocol%E6%A6%82%E8%BF%B0/</guid>
-      <description>&lt;p&gt;Thrift 协议层简单介绍。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Thrift-Transport 概述</title>
-      <link>https://k-on.me/post/thrift-transport%E6%A6%82%E8%BF%B0/</link>
-      <pubDate>Tue, 30 Jul 2019 22:57:26 +0000</pubDate>
-      
-      <guid>https://k-on.me/post/thrift-transport%E6%A6%82%E8%BF%B0/</guid>
-      <description>&lt;p&gt;Thrift 传输层简单介绍。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
       <title>Thrift 概述</title>
       <link>https://k-on.me/post/thrift%E6%A6%82%E8%BF%B0/</link>
       <pubDate>Fri, 26 Jul 2019 23:48:45 +0000</pubDate>

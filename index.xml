@@ -47,6 +47,10 @@
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Inter-process_communication&#34;&gt;InterProcess Communication&lt;/a&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;SCSI&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/SCSI&#34;&gt;Small Computer System Interface&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;MPI&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Message_Passing_Interface&#34;&gt;Message Passing Interface&lt;/a&gt;&lt;/td&gt;
 &lt;/tr&gt;
@@ -89,6 +93,10 @@
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;VMA&lt;/td&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;a href=&#34;https://community.mellanox.com/s/article/what-is-vma-x&#34;&gt;Mellanox&amp;rsquo;s Messaging Accelerator&lt;/a&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;ULPs&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Upper Layer Protocols&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;RC&lt;/td&gt;

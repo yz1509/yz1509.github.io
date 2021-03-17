@@ -521,21 +521,7 @@
   
   <url>
     <loc>https://k-on.me/tags/thrift/</loc>
-    <lastmod>2019-07-30T22:57:40+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://k-on.me/post/thrift-protocol%E6%A6%82%E8%BF%B0/</loc>
-    <lastmod>2019-07-30T22:57:40+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://k-on.me/post/thrift-transport%E6%A6%82%E8%BF%B0/</loc>
-    <lastmod>2019-07-30T22:57:26+00:00</lastmod>
+    <lastmod>2019-07-26T23:48:45+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
