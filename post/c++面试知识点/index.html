@@ -1000,7 +1000,7 @@
 <h1 id="内存管理">内存管理</h1>
 <h2 id="程序加载时的内存分布">程序加载时的内存分布</h2>
 <p>在多任务操作系统中，每个进程都运行在一个属于自己的虚拟内存中，而虚拟内存被分为许多页，并映射到物理内存中，被加载到物理内存中的文件才能够被执行。这里我们主要关注程序被装载后的内存布局，其可执行文件包含了代码段，数据段，BSS段，堆，栈等部分，其分布如下图所示。</p>
-<p><img src="/C-notes-001.png" alt="内存分布"></p>
+<p><img src="/cpp_interview_notes/Cpp-notes-001.png" alt="内存分布"></p>
 <ul>
 <li>代码段(.text)：用来存放可执行文件的机器指令。存放在只读区域，以防止被修改。</li>
 <li>只读数据段(.rodata)：用来存放常量存放在只读区域，如字符串常量、全局 const 变量等。</li>
@@ -1203,7 +1203,7 @@
 <span class="k">class</span> <span class="nc">Derived</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Base1</span><span class="p">,</span> <span class="k">public</span> <span class="n">Base2</span>
 </code></pre></td></tr></table>
 </div>
-</div><p><img src="/C-notes-002.png" alt="继承下的对象内存模型"></p>
+</div><p><img src="/cpp_interview_notes/Cpp-notes-002.png" alt="继承下的对象内存模型"></p>
 <h1 id="常见的设计模式">常见的设计模式</h1>
 <h2 id="单例模式">单例模式</h2>
 <p>当仅允许类的一个实例在应用中被创建的时候，我们使用单例模式（Singleton Pattern）。它保护类的创建过程来确保只有一个实例被创建，它通过设置类的构造方法为私有（private）来实现。要获得类的实例，单例类可以提供一个方法，如 GetInstance()，来返回类的实例。该方法是唯一可以访问类来创建实例的方法。</p>
@@ -1374,7 +1374,7 @@
 </div>
 </div><h2 id="简单工厂模式">简单工厂模式</h2>
 <p>简单工厂模式的主要特点是需要在工厂类中做判断，从而创造相应的产品。当增加新的产品时，就需要修改工厂类。
-<img src="/C-notes-003.png" alt="简单工厂模式">
+<img src="/cpp_interview_notes/Cpp-notes-003.png" alt="简单工厂模式">
 <strong>例子</strong>：有一家生产处理器核的厂家，它只有一个工厂，能够生产两种型号的处理器核。客户需要什么样的处理器核，一定要显式地告诉生产工厂。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1447,7 +1447,7 @@
 </div><p>这样设计的主要缺点之前也提到过，就是要增加新的核类型时，就需要修改工厂类。这就违反了开放封闭原则：软件实体（类、模块、函数）可以扩展，但是不可修改。于是，工厂方法模式出现了。</p>
 <h2 id="工厂方法模式">工厂方法模式</h2>
 <p>工厂方法模式是指定义一个用于创建对象的接口，让子类决定实例化哪一个类。工厂方法模式使一个类的实例化延迟到其子类。
-<img src="/C-notes-004.png" alt="工厂方法模式">
+<img src="/cpp_interview_notes/Cpp-notes-004.png" alt="工厂方法模式">
 例子：这家生产处理器核的厂家赚了不少钱，于是决定再开设一个工厂专门用来生产 B 型号的单核，而原来的工厂专门用来生产 A 型号的单核。这时，客户要做的是找好工厂，比如要 A 型号的核，就找 A 工厂要；否则找 B 工厂要，不再需要告诉工厂具体要什么型号的处理器核了。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1530,7 +1530,7 @@
 </div><p>工厂方法模式也有缺点，每增加一种产品，就需要增加一个对象的工厂。如果这家公司发展迅速，推出了很多新的处理器核，那么就要开设相应的新工厂。在 C++ 实现中，就是要定义一个个的工厂类。显然，相比简单工厂模式，工厂方法模式需要更多的类定义。</p>
 <h2 id="抽象工厂模式">抽象工厂模式</h2>
 <p>抽象工厂模式的定义为提供一个创建一系列相关或相互依赖对象的接口，而无需指定它们具体的类。
-<img src="/C-notes-005.png" alt="抽象工厂模式">
+<img src="/cpp_interview_notes/Cpp-notes-005.png" alt="抽象工厂模式">
 例子：这家公司的技术不断进步，不仅可以生产单核处理器，也能生产多核处理器。现在简单工厂模式和工厂方法模式都鞭长莫及。这家公司还是开设两个工厂，一个专门用来生产A型号的单核多核处理器，而另一个工厂专门用来生产B型号的单核多核处理器。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">

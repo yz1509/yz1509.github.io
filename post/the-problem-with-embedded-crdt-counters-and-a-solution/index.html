@@ -378,11 +378,11 @@
 </tbody>
 </table>
 <p>我们期望的结果是最终收敛至 $3$：</p>
-<p><img src="/embedded_crdt_counters_anomaly_desired.png" alt="embedded_crdt_counters_anomaly_desired"></p>
+<p><img src="/crdt/embedded_crdt_counters_anomaly_desired.png" alt="embedded_crdt_counters_anomaly_desired"></p>
 <p>但事实上，会收敛至 $5$，因为在 $t_4$ 同步时，$t_3$ 的 <code>m.remove('a')</code> 并未撤销在 $t_2$ 已同步的 <code>m['a'].inc(2)</code> 操作：</p>
-<p><img src="/embedded_crdt_counters_anomaly_fact.png" alt="embedded_crdt_counters_anomaly_fact"></p>
+<p><img src="/crdt/embedded_crdt_counters_anomaly_fact.png" alt="embedded_crdt_counters_anomaly_fact"></p>
 <p>当使用 <code>remove-wins set</code> 作为 field 时，虽然可以撤销所观察的操作，但同时也会丢弃未观察到的并发操作，收敛至 $0$：</p>
-<p><img src="/embedded_crdt_counters_anomaly_remove_win.png" alt="embedded_crdt_counters_anomaly_remove_win"></p>
+<p><img src="/crdt/embedded_crdt_counters_anomaly_remove_win.png" alt="embedded_crdt_counters_anomaly_remove_win"></p>
 <blockquote>
 <p>add-wins 在每次 <code>inc</code> 操作时更新 tag，remove-wins 则会复用已存在的 tag</p>
 </blockquote>
@@ -398,12 +398,12 @@
 <li>在将状态传输至其他 replicas 之后调用 fresh 生成新的 tag，以防止本地后续更新被其他 replicas 并行的 reset 操作覆盖</li>
 <li>该方法的缺点是 tag 的数量较多，与调用 fresh 的次数成正比</li>
 </ul>
-<p><img src="/embedded_crdt_counters_remove_win_fresh.png" alt="embedded_crdt_counters_remove_win_fresh"></p>
+<p><img src="/crdt/embedded_crdt_counters_remove_win_fresh.png" alt="embedded_crdt_counters_remove_win_fresh"></p>
 </li>
 </ol>
 <h2 id="resettable-counter">Resettable Counter</h2>
 <p>基于之前的讨论，作者提出了 <code>Resettable Counter</code>，其描述如下：</p>
-<p><img src="/embedded_crdt_counters_resettable_counter.png" alt="embedded_crdt_counters_resettable_counter"></p>
+<p><img src="/crdt/embedded_crdt_counters_resettable_counter.png" alt="embedded_crdt_counters_resettable_counter"></p>
 <p>将 <code>Resettable Counter</code> 和 <code>OR-Set</code> 有效结合便可实现我们想要的数据结构(如，<code>ZSET</code>)。但需要注意的是：</p>
 <ul>
 <li>上述数学描述给出的 <code>Resettable Counter</code> 是 reset-wins 的，因此需要手动调用 fresh 接口防止更新操作被并行的 reset 所覆盖</li>

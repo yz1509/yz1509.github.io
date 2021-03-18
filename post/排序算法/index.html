@@ -397,13 +397,13 @@
 <h2 id="前言">前言</h2>
 <p>排序算法可以分为内部排序和外部排序，内部排序是数据记录在内存中进行排序，而外部排序是因排序的数据很大，一次不能容纳全部的排序记录，在排序过程中需要访问外存。</p>
 <p>常见的八大排序算法，他们之间关系如下：</p>
-<p><img src="/sort001.png" alt="avatar"></p>
+<p><img src="/algo_sort/sort001.png" alt="avatar"></p>
 <p>它们的性能比较：</p>
-<p><img src="/sort002.png" alt="avatar"></p>
+<p><img src="/algo_sort/sort002.png" alt="avatar"></p>
 <p>下面，利用 Python 分别将他们进行实现。</p>
 <h2 id="直接插入排序">直接插入排序</h2>
 <h3 id="算法思想">算法思想</h3>
-<p><img src="/sort006.gif" alt="插入排序示意图"></p>
+<p><img src="/algo_sort/sort006.gif" alt="插入排序示意图"></p>
 <p>直接插入排序是一种最简单直观的排序算法，它的工作原理是通过构建有序序列，对于未排序数据，在已排序序列中从后向前扫描，找到相应位置并插入。</p>
 <h3 id="算法步骤">算法步骤</h3>
 <ol>
@@ -451,7 +451,7 @@
 <li>按增量序列个数 $k$，对序列进行 $k$ 趟排序；</li>
 <li>每趟排序，根据对应的增量 $t_i$，将待排序列分割成若干长度为 $m$ 的子序列，分别对各子表进行直接插入排序。仅增量因子为 1 时，整个序列作为一个表来处理，表长度即为整个序列的长度。</li>
 </ol>
-<p><img src="/sort003.png" alt="avatar"></p>
+<p><img src="/algo_sort/sort003.png" alt="avatar"></p>
 <h3 id="代码实现-1">代码实现</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -538,14 +538,14 @@
 <ol>
 <li>
 <p>首先将序列构建称为大顶堆；这样，位于根节点的元素一定是当前序列的最大值
-<img src="/sort004.png" alt="avatar"></p>
+<img src="/algo_sort/sort004.png" alt="avatar"></p>
 </li>
 <li>
 <p>取出当前大顶堆的根节点，将其与序列末尾元素进行交换；此时：序列末尾的元素为已排序的最大值；由于交换了元素，当前位于根节点的堆并不一定满足大顶堆的性质</p>
 </li>
 <li>
 <p>对交换后的前 $n-1$ 个序列元素进行调整，使其满足大顶堆的性质；
-<img src="/sort005.png" alt="avatar"></p>
+<img src="/algo_sort/sort005.png" alt="avatar"></p>
 </li>
 <li>
 <p>重复 2、3 步骤，直至堆中只有 1 个元素为止</p>

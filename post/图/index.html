@@ -377,7 +377,7 @@
 <li>邻接链表：稀疏图</li>
 <li>邻接矩阵：稠密图，或者需要快速判断任意两个结点之间是否有边的情况</li>
 </ul>
-<p><img src="/graph-001.png" alt="图的表示"></p>
+<p><img src="/algo_graph/graph-001.png" alt="图的表示"></p>
 <h2 id="广度优先搜索">广度优先搜索</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -440,7 +440,7 @@
 </div><blockquote>
 <p>BFS 的总运行时间为 O(V + E)</p>
 </blockquote>
-<p><img src="/graph-002.png" alt="BFS"></p>
+<p><img src="/algo_graph/graph-002.png" alt="BFS"></p>
 <h3 id="bfs-的性质">BFS 的性质</h3>
 <ol>
 <li>BFS 可以计算出从源结点 s 到 结点 v 的最短路径。</li>
@@ -512,7 +512,7 @@
 </div><blockquote>
 <p>DFS 的总运行时间为 O(V + E)</p>
 </blockquote>
-<p><img src="/graph-003.png" alt="DFS"></p>
+<p><img src="/algo_graph/graph-003.png" alt="DFS"></p>
 <h3 id="dfs-的性质">DFS 的性质</h3>
 <ol>
 <li>
@@ -538,7 +538,7 @@
 </blockquote>
 <h3 id="拓扑排序">拓扑排序</h3>
 <p>对于一个有向无环图 G(V, E) 来说，其拓扑排序是 G 中所有结点的一种线性次序，该次序满足如下条件：如果图 G 包含边 (u, v)，则结点 u 在拓扑排序中处于结点 v 的前面。</p>
-<p><img src="/graph-004.png" alt="拓扑排序"></p>
+<p><img src="/algo_graph/graph-004.png" alt="拓扑排序"></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -576,7 +576,7 @@
             <span class="n">in</span> <span class="n">line</span> <span class="mi">3</span> <span class="n">as</span> <span class="n">a</span> <span class="n">separate</span> <span class="n">strongly</span> <span class="n">connected</span> <span class="n">component</span>
 </code></pre></td></tr></table>
 </div>
-</div><p><img src="/graph-005.png" alt="强连通分量"></p>
+</div><p><img src="/algo_graph/graph-005.png" alt="强连通分量"></p>
 <h2 id="最小生成树">最小生成树</h2>
 <p><strong>定义：</strong> 连通加权图里的最小生成树是具有边的权值之和最小的生成树。</p>
 <div class="highlight"><div class="chroma">
@@ -633,7 +633,7 @@
 </div><blockquote>
 <p>Kruskal 算法的时间复杂度为 $O(ElgV)$。</p>
 </blockquote>
-<p><img src="/graph-006.png" alt="Kruskal 算法"></p>
+<p><img src="/algo_graph/graph-006.png" alt="Kruskal 算法"></p>
 <h3 id="prim-算法">Prim 算法</h3>
 <p>在 Prim 算法里，集合 A 则是一棵树。这棵树从一个任意的根结点 r 开始，一直长大到覆盖 V 中的所有结点时为止。每次加入到 A 中的安全边永远是连接 A 和 A 之外某个结点的边中权重最小的边。</p>
 <div class="highlight"><div class="chroma">
@@ -670,7 +670,7 @@
 <p>如果使用二叉最小优先队列来实现最小优先队列 Q，时间复杂度为 $O(ElgV)$；
 如果使用斐波那契堆来实现最小优先队列 Q，则 Prim 算法的运行时间将改进到 $O(E + VlgV)$</p>
 </blockquote>
-<p><img src="/graph-007.png" alt="Prim算法"></p>
+<p><img src="/algo_graph/graph-007.png" alt="Prim算法"></p>
 <h2 id="单源最短路径">单源最短路径</h2>
 <ol>
 <li>最短路径的子路径也是最短路径</li>
@@ -743,7 +743,7 @@
 </div><blockquote>
 <p>Bellman-Ford 算法的总运行时间为 O(VE)</p>
 </blockquote>
-<p><img src="/graph-008.png" alt="Bellman-Ford 算法"></p>
+<p><img src="/algo_graph/graph-008.png" alt="Bellman-Ford 算法"></p>
 <h3 id="有向无环图中的单源最短路径问题">有向无环图中的单源最短路径问题</h3>
 <p>根据结点的拓扑排序次序来对带权重的有向无环图 G = (V, E) 进行边的松弛操作，我们便可以在 $O(V + E)$ 时间内计算出从单个源结点到所有结点之间的最短路径。</p>
 <div class="highlight"><div class="chroma">
@@ -764,7 +764,7 @@
             <span class="n">RELAX</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
 </code></pre></td></tr></table>
 </div>
-</div><p><img src="/graph-009.png" alt="DAG"></p>
+</div><p><img src="/algo_graph/graph-009.png" alt="DAG"></p>
 <h2 id="dijkstra-算法">Dijkstra 算法</h2>
 <p>Dijkstra 算法解决的是带权重的有向图上的单源最短路径问题，该算法要求所有边的权重都为非负值。</p>
 <div class="highlight"><div class="chroma">
@@ -795,7 +795,7 @@
 <p>如果使用二叉最小优先队列来实现最小优先队列 Q，时间复杂度为 $O(ElgV)$；
 如果使用斐波那契堆来实现最小优先队列 Q，则 Dijkstra 算法的运行时间将改进到 $O(E + VlgV)$</p>
 </blockquote>
-<p><img src="/graph-010.png" alt="Dijsktra算法"></p>
+<p><img src="/algo_graph/graph-010.png" alt="Dijsktra算法"></p>
     </div>
 
     
