@@ -6,9 +6,18 @@
     <description>Recent content in InfiniBand on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 12 Mar 2021 12:17:44 +0800</lastBuildDate><atom:link href="https://k-on.me/tags/infiniband/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 13 Mar 2021 15:05:02 +0800</lastBuildDate><atom:link href="https://k-on.me/tags/infiniband/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>RDMA Notes</title>
+      <title>Introduction to Infiniband for End Users</title>
+      <link>https://k-on.me/post/introduction-to-infiniband-for-end-users/</link>
+      <pubDate>Sat, 13 Mar 2021 15:05:02 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/introduction-to-infiniband-for-end-users/</guid>
+      <description>&lt;p&gt;《Introduction to Infiniband for End Users》 阅读笔记。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>RDMA notes</title>
       <link>https://k-on.me/post/rdma-notes/</link>
       <pubDate>Fri, 12 Mar 2021 12:17:44 +0800</pubDate>
       
