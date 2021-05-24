@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/redis-sourcecode-persistence/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 持久化相关源码阅读笔记，源码文件 rdb.h &amp; rdb.c &amp; aof.c。">
 <meta itemprop="datePublished" content="2020-10-20T20:43:16+08:00" />
 <meta itemprop="dateModified" content="2020-10-20T20:43:16+08:00" />
-<meta itemprop="wordCount" content="4321">
+<meta itemprop="wordCount" content="4335">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 4321 words </span>
+        <span class="more-meta"> 4335 words </span>
           <span class="more-meta"> 9 min read </span>
 
         
@@ -331,19 +331,19 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#rdb">RDB</a>
+    <li><a href="#1-rdb">1. RDB</a>
       <ul>
-        <li><a href="#rdb-编码格式">RDB 编码格式</a></li>
-        <li><a href="#length-编码">length 编码</a></li>
-        <li><a href="#rdb-文件内容排布">RDB 文件内容排布</a></li>
-        <li><a href="#rdb-相关命令">RDB 相关命令</a></li>
+        <li><a href="#11-rdb-编码格式">1.1. RDB 编码格式</a></li>
+        <li><a href="#12-length-编码">1.2. length 编码</a></li>
+        <li><a href="#13-rdb-文件内容排布">1.3. RDB 文件内容排布</a></li>
+        <li><a href="#14-rdb-相关命令">1.4. RDB 相关命令</a></li>
       </ul>
     </li>
-    <li><a href="#aof">AOF</a>
+    <li><a href="#2-aof">2. AOF</a>
       <ul>
-        <li><a href="#写入-aof-缓冲区">写入 AOF 缓冲区</a></li>
-        <li><a href="#写入-aof-文件">写入 AOF 文件</a></li>
-        <li><a href="#aof-rewrite">AOF Rewrite</a></li>
+        <li><a href="#21-写入-aof-缓冲区">2.1. 写入 AOF 缓冲区</a></li>
+        <li><a href="#22-写入-aof-文件">2.2. 写入 AOF 文件</a></li>
+        <li><a href="#23-aof-rewrite">2.3. AOF Rewrite</a></li>
       </ul>
     </li>
   </ul>
@@ -356,11 +356,11 @@
       <p>Redis 持久化相关源码阅读笔记，源码文件 <code>rdb.h</code> &amp; <code>rdb.c</code> &amp; <code>aof.c</code>。</p>
 <hr>
 <p>Redis 提供两种持久化方式供选择：RDB 和 AOF，其详细介绍可阅读 <a href="https://redis.io/topics/persistence">Redis Persistence</a>。</p>
-<h2 id="rdb">RDB</h2>
+<h2 id="1-rdb">1. RDB</h2>
 <p>RDB 为数据集在某一时间点的 snapshot，可通过 <a href="https://redis.io/commands/bgsave">BGSAVE</a> 或 <a href="https://redis.io/commands/save">SAVE</a> 命令主动触发，也同通过配置 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L287">save</a> 相关参数<a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L1985">被动触发</a>达到备份数据的目的。除此之外，Redis 的<a href="https://github.com/redis/redis/blob/6.0.8/src/replication.c#L638">主从全量同步</a>时也会生成 rdb 文件以供同步使用。</p>
-<h3 id="rdb-编码格式">RDB 编码格式</h3>
+<h3 id="11-rdb-编码格式">1.1. RDB 编码格式</h3>
 <p>在 RDB 文件中，每种数据类型都会按照 <code>&lt;type&gt; &lt;len&gt; &lt;data&gt;</code> 的顺序编码，当 <code>type</code> 为某些类型时，会省略 <code>data</code> 字段。<code>type</code> 字段长度固定为 1 byte (0-255)，值得注意的是，其不仅涵盖不同的数据对象类型，还包含多种 RDB opcodes。这些 RDB opcodes 类型用于在编码(解码)时存储(加载)除了数据对象内容外的额外信息，以备份(恢复)数据库的完整状态。</p>
-<h4 id="object-types">Object types</h4>
+<h4 id="111-object-types">1.1.1. Object types</h4>
 <p>从 <code>rdbSaveObjectType</code> 函数中我们可以知道不同的数据对象类型与 RDB type 的对应关系如下表所示：</p>
 <table>
 <thead>
@@ -534,7 +534,7 @@
 <p>TODO</p>
 <p><strong>RDB_TYPE_MODULE_2</strong></p>
 <p>TODO</p>
-<h4 id="rdb-opcodes">RDB opcodes</h4>
+<h4 id="112-rdb-opcodes">1.1.2. RDB opcodes</h4>
 <table>
 <thead>
 <tr>
@@ -597,7 +597,7 @@
 <li>Raw 表示该字段内容定长，直接写入存储</li>
 <li>Str 表示该字段调用 <code>rdbSaveRawString</code> 写入</li>
 </ul>
-<h3 id="length-编码">length 编码</h3>
+<h3 id="12-length-编码">1.2. length 编码</h3>
 <p>Redis 为了节省存储空间，不仅会对 <code>data</code> 字段进行压缩，而且也会使用不定长空间存储 <code>len</code> 字段。通过读取 <code>len</code> 字段首个字节可知道此时的编码格式。</p>
 <p><strong>长度信息</strong></p>
 <p>通过阅读 <code>rdbSaveLen</code> 可以发现，在使用 <code>len</code> 字段存储长度信息时，其原生值为整型，根据整型值的大小可用以下四种编码方式之一进行存储：</p>
@@ -615,7 +615,7 @@
 <li><code>11|000010 &lt;32 bit integer&gt;</code>: 字符串对象可用 32 bit 整型表示</li>
 <li><code>11|000011 &lt;compress_len&gt; &lt;original_len&gt; &lt;compress_data&gt;</code>: 字符串对象可压缩</li>
 </ul>
-<h3 id="rdb-文件内容排布">RDB 文件内容排布</h3>
+<h3 id="13-rdb-文件内容排布">1.3. RDB 文件内容排布</h3>
 <p>通过阅读 <code>rdbSaveRio</code>，我们可以知道 RDB 文件内容的排布方式：</p>
 <ul>
 <li>
@@ -725,14 +725,14 @@
 <p>EOF opcode: <code>&lt;RDB_OPCODE_EOF&gt; &lt;cksum&gt;</code>，若未启用计算校验和，则 <code>cksum</code> 值为 0</p>
 </li>
 </ul>
-<h3 id="rdb-相关命令">RDB 相关命令</h3>
+<h3 id="14-rdb-相关命令">1.4. RDB 相关命令</h3>
 <p><strong>SAVE</strong></p>
 <p>TODO</p>
 <p><strong>BGSAVE</strong></p>
 <p>TODO</p>
-<h2 id="aof">AOF</h2>
+<h2 id="2-aof">2. AOF</h2>
 <p>Redis 除了使用数据集的 snapshot (RDB) 提供持久化保证之外，还会使用 Append Only Flie(AOF) 记录写请求。</p>
-<h3 id="写入-aof-缓冲区">写入 AOF 缓冲区</h3>
+<h3 id="21-写入-aof-缓冲区">2.1. 写入 AOF 缓冲区</h3>
 <p>在 Redis 调用 <code>propagate</code> 函数将请求同步至 AOF 和 replications 时，会调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L3212">feedAppendOnlyFile</a> 函数将请求写入 AOF 缓冲区，该函数的接口如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -755,7 +755,7 @@
 <li>将内容追加至 AOF 缓冲区 <code>server.aof_buf</code></li>
 <li>如此时有子进程正在执行 AOF rewrite，则会将内容追加之 AOF rewrite buff <code>server.aof_rewrite_buf_blocks</code></li>
 </ol>
-<h3 id="写入-aof-文件">写入 AOF 文件</h3>
+<h3 id="22-写入-aof-文件">2.2. 写入 AOF 文件</h3>
 <p>AOF 缓冲区的数据会在以下几种情况下调用 <code>flushAppendOnlyFile</code> 写入 AOF 文件，同时可选择是否启用强制模式：</p>
 <ul>
 <li>使用 <code>CONFIG</code> 命令<a href="https://github.com/redis/redis/blob/6.0.8/src/aof.c#L238">关闭 AOF 功能时</a>，模式为<strong>强制模式</strong></li>
@@ -803,7 +803,7 @@
 </ul>
 <p>通过在 <code>write</code> 阶段的介绍可知，当使用 <code>everysec</code> 策略时，事实上可能会丢失 $2s$ 的写入，而不是 $1s$。</p>
 <p>如果有 RDB saving 或 AOF rewriting 子进程，可能会消耗 IO 资源，导致 <code>fsync</code> 操作耗时过长阻塞 Redis，因此为性能考虑可以通过配置 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L1140">no-appendfsync-on-rewrite</a> 为 <code>yes</code> 阻止调用 <code>fsync</code>。</p>
-<h3 id="aof-rewrite">AOF Rewrite</h3>
+<h3 id="23-aof-rewrite">2.3. AOF Rewrite</h3>
 <p>由于 AOF 文件的 Append Only 要求，会使得该文件大小单调递增，因此 Redis 提供了 AOF rewrite 的功能，使用 rewrite 生成的 AOF 文件替换旧的 AOF 文件，以减小 AOF 文件所占用的磁盘空间大小。既可以主动发起 <a href="https://redis.io/commands/bgrewriteaof">BGREWRITEAOF</a> 请求要求进行 AOF rewrite，亦可以通过配置 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L1159">auto-aof-rewrite-percentage</a> 和 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L1160">auto-aof-rewrite-min-size</a> 调整自发进行 AOF rewrite 的条件。当当前 AOF 文件大小 <code>server.aof_current_size</code> 大于 <code>auto-aof-rewrite-min-size</code> 且与上次 rewrite 之后 AOF 文件大小 <code>server.aof_rewrite_base_size</code> 相比增长率超过 <code>auto-aof-rewrite-percentage</code> 时，Redis 会自动触发 AOF rewrite 操作 —— 调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L2018">rewriteAppendOnlyFileBackground</a>，其接口如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -835,7 +835,7 @@
 <span class="kt">int</span> <span class="n">rewriteAppendOnlyFileBackground</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
 </code></pre></td></tr></table>
 </div>
-</div><h4 id="aof-rewrite-buffer">AOF Rewrite Buffer</h4>
+</div><h4 id="231-aof-rewrite-buffer">2.3.1. AOF Rewrite Buffer</h4>
 <p>由于在 AOF rewrite 执行过程中，Redis 不会停止服务，因此需要记录这期间数据库的变化。Redis 使用双端链表 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.h#L1215">aof_rewrite_buf_blocks</a> 实现 AOF Rewirte buffer，每个 listNode 指向一个大小为 $10MB$ 的内存块 <code>aofrwblock</code>：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -856,7 +856,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>如果此时正在进行 AOF rewrite，则 Redis 主进程除了将写请求写入 AOF 缓冲区之外，还会通过调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/aof.c#L650">aofRewriteBufferAppend</a>将数据写入 AOF rewrite buffer。在 <code>aofRewriteBufferAppend</code> 中，以 append 的形式写入数据，同时会创建 <code>aofChildWriteDiffData</code> file event，以将 AOF rewrite buffer 中的内容从前往后遍历写入管道 <code>server.aof_pipe_write_data_to_child</code>，以供子进程读取，写入管道成功后会释放该节点所占用的内存块。因此，AOF rewrite buffer 如同一个先进先出的队列，在 append 时(链表尾部)申请内存，在写入管道后(链表头部)释放内存。</p>
-<h4 id="use-rdb-preamble">Use RDB preamble</h4>
+<h4 id="232-use-rdb-preamble">2.3.2. Use RDB preamble</h4>
 <p>因为 RDB 文件小，加载速度快，因此在 AOF rewrite 时，可使用 RDB 保存当前数据库状态。如果配置项 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L1195">aof-use-rdb-preamble</a> 为 <code>yes</code>，则会调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/aof.c#L1432">rdbSaveRio</a> 保存数据库状态，此时 AOF rewrite 结束之后的文件组织形式如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -870,7 +870,7 @@
 +----------+----------+
 </code></pre></td></tr></table>
 </div>
-</div><h4 id="rewrite-objects">Rewrite Objects</h4>
+</div><h4 id="233-rewrite-objects">2.3.3. Rewrite Objects</h4>
 <p>当不启用 <code>aof-use-rdb-preamble</code> 时，会调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/aof.c#L1437">rewriteAppendOnlyFileRio</a> 函数将各个数据对象转换为请求的格式存储。</p>
     </div>
 

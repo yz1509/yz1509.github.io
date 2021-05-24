@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/redis-sourcecode-zmalloc/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 内存分配及释放相关源码阅读笔记，源码文件 zmalloc.h &amp; zmalloc.c。">
 <meta itemprop="datePublished" content="2020-09-23T17:14:57+08:00" />
 <meta itemprop="dateModified" content="2020-09-23T17:14:57+08:00" />
-<meta itemprop="wordCount" content="1262">
+<meta itemprop="wordCount" content="1273">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 1262 words </span>
+        <span class="more-meta"> 1273 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -331,24 +331,24 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#小结">小结</a></li>
-    <li><a href="#分配内存">分配内存</a>
+    <li><a href="#1-小结">1. 小结</a></li>
+    <li><a href="#2-分配内存">2. 分配内存</a>
       <ul>
-        <li><a href="#zmalloc">zmalloc</a></li>
-        <li><a href="#zcalloc">zcalloc</a></li>
-        <li><a href="#zrealloc">zrealloc</a></li>
+        <li><a href="#21-zmalloc">2.1. zmalloc</a></li>
+        <li><a href="#22-zcalloc">2.2. zcalloc</a></li>
+        <li><a href="#23-zrealloc">2.3. zrealloc</a></li>
       </ul>
     </li>
-    <li><a href="#释放内存">释放内存</a>
+    <li><a href="#3-释放内存">3. 释放内存</a>
       <ul>
-        <li><a href="#zfree">zfree</a></li>
+        <li><a href="#31-zfree">3.1. zfree</a></li>
       </ul>
     </li>
-    <li><a href="#utils">Utils</a>
+    <li><a href="#4-utils">4. Utils</a>
       <ul>
-        <li><a href="#复制字符串">复制字符串</a></li>
-        <li><a href="#获取-used_memory">获取 <code>used_memory</code></a></li>
-        <li><a href="#设置异常处理函数">设置异常处理函数</a></li>
+        <li><a href="#41-复制字符串">4.1. 复制字符串</a></li>
+        <li><a href="#42-获取-used_memory">4.2. 获取 <code>used_memory</code></a></li>
+        <li><a href="#43-设置异常处理函数">4.3. 设置异常处理函数</a></li>
       </ul>
     </li>
   </ul>
@@ -360,7 +360,7 @@
     <div class="post-content">
       <p>Redis 内存分配及释放相关源码阅读笔记，源码文件 <code>zmalloc.h</code> &amp; <code>zmalloc.c</code>。</p>
 <hr>
-<h2 id="小结">小结</h2>
+<h2 id="1-小结">1. 小结</h2>
 <ul>
 <li>封装 <code>tcmalloc</code>, <code>jemalloc</code>, <code>libmalloc</code>, <code>ptmalloc</code> 或自定义内存管理，增加内存使用量统计，但由于并未计算内存补齐的原因，全局变量 <code>used_memory</code> 一般小于实际分配内存大小</li>
 <li>在使用针对 Redis 修改的特殊 <code>jemalloc</code> 时，才能启用 Redis 内存碎片整理功能</li>
@@ -384,8 +384,8 @@
 </div>
 </div></li>
 </ul>
-<h2 id="分配内存">分配内存</h2>
-<h3 id="zmalloc">zmalloc</h3>
+<h2 id="2-分配内存">2. 分配内存</h2>
+<h3 id="21-zmalloc">2.1. zmalloc</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -514,7 +514,7 @@
     <span class="n">a</span> <span class="o">+=</span> <span class="n">b</span> <span class="o">-</span> <span class="p">(</span><span class="n">a</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">b</span><span class="o">-</span><span class="mi">1</span><span class="p">));</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="zcalloc">zcalloc</h3>
+</div><h3 id="22-zcalloc">2.2. zcalloc</h3>
 <p>源码逻辑和 <code>zmalloc</code> 一样，此处主要介绍 <code>malloc</code> 和 <code>calloc</code> 的区别：</p>
 <table>
 <thead>
@@ -535,7 +535,7 @@
 </tbody>
 </table>
 <p>两个函数都是线程安全的，并且都满足内存对齐，当分配成功时，返回指向初始位置的指针，该指针需要调用 <code>free()</code> 或 <code>realloc()</code> 释放，当分配失败时，返回空指针。</p>
-<h3 id="zrealloc">zrealloc</h3>
+<h3 id="23-zrealloc">2.3. zrealloc</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -640,8 +640,8 @@
 </div><p>同上，根据 <a href="https://github.com/antirez/redis/pull/4770">redis #4770</a>，第 2、3 两行可以删除。</p>
 </li>
 </ul>
-<h2 id="释放内存">释放内存</h2>
-<h3 id="zfree">zfree</h3>
+<h2 id="3-释放内存">3. 释放内存</h2>
+<h3 id="31-zfree">3.1. zfree</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -684,8 +684,8 @@
 </span><span class="cp"></span><span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="utils">Utils</h2>
-<h3 id="复制字符串">复制字符串</h3>
+</div><h2 id="4-utils">4. Utils</h2>
+<h3 id="41-复制字符串">4.1. 复制字符串</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -708,7 +708,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="获取-used_memory">获取 <code>used_memory</code></h3>
+</div><h3 id="42-获取-used_memory">4.2. 获取 <code>used_memory</code></h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -727,7 +727,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="设置异常处理函数">设置异常处理函数</h3>
+</div><h3 id="43-设置异常处理函数">4.3. 设置异常处理函数</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1

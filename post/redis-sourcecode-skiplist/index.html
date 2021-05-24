@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/redis-sourcecode-skiplist/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 跳跃表相关源码阅读笔记，源码文件 server.h &amp; t_zset.c。">
 <meta itemprop="datePublished" content="2020-10-06T11:10:35+08:00" />
 <meta itemprop="dateModified" content="2020-10-06T11:10:35+08:00" />
-<meta itemprop="wordCount" content="2639">
+<meta itemprop="wordCount" content="2650">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 2639 words </span>
+        <span class="more-meta"> 2650 words </span>
           <span class="more-meta"> 6 min read </span>
 
         
@@ -331,18 +331,18 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#小结">小结</a></li>
-    <li><a href="#跳跃表相关数据结构">跳跃表相关数据结构</a></li>
-    <li><a href="#跳跃表-apis">跳跃表 APIs</a>
+    <li><a href="#1-小结">1. 小结</a></li>
+    <li><a href="#2-跳跃表相关数据结构">2. 跳跃表相关数据结构</a></li>
+    <li><a href="#3-跳跃表-apis">3. 跳跃表 APIs</a>
       <ul>
-        <li><a href="#构造函数">构造函数</a></li>
-        <li><a href="#析构函数">析构函数</a></li>
-        <li><a href="#插入节点">插入节点</a></li>
-        <li><a href="#score-range-apis">Score range APIs</a></li>
-        <li><a href="#lexicographic-range-apis">Lexicographic range APIs</a></li>
-        <li><a href="#删除节点">删除节点</a></li>
-        <li><a href="#zslupdatescore">zslUpdateScore</a></li>
-        <li><a href="#get-apis">Get APIs</a></li>
+        <li><a href="#31-构造函数">3.1. 构造函数</a></li>
+        <li><a href="#32-析构函数">3.2. 析构函数</a></li>
+        <li><a href="#33-插入节点">3.3. 插入节点</a></li>
+        <li><a href="#34-score-range-apis">3.4. Score range APIs</a></li>
+        <li><a href="#35-lexicographic-range-apis">3.5. Lexicographic range APIs</a></li>
+        <li><a href="#36-删除节点">3.6. 删除节点</a></li>
+        <li><a href="#37-zslupdatescore">3.7. zslUpdateScore</a></li>
+        <li><a href="#38-get-apis">3.8. Get APIs</a></li>
       </ul>
     </li>
   </ul>
@@ -354,14 +354,14 @@
     <div class="post-content">
       <p>Redis 跳跃表相关源码阅读笔记，源码文件 <code>server.h</code> &amp; <code>t_zset.c</code>。</p>
 <hr>
-<h2 id="小结">小结</h2>
+<h2 id="1-小结">1. 小结</h2>
 <p>在 Redis 中实现的跳跃表：</p>
 <ul>
 <li>最大层数为 <a href="https://github.com/redis/redis/blob/6.0.11/src/server.h#L358">ZSKIPLIST_MAXLEVEL</a></li>
 <li>跳跃表中不允许相同的 <code>ele</code>，允许相同的 <code>score</code>，按 <code>&lt;score, ele&gt;</code> pair 进行排序</li>
 <li>增加 <code>backward</code> 指针，可反向遍历跳跃表</li>
 </ul>
-<h2 id="跳跃表相关数据结构">跳跃表相关数据结构</h2>
+<h2 id="2-跳跃表相关数据结构">2. 跳跃表相关数据结构</h2>
 <p>跳跃表之于普通链表，如同增加快速通道的地铁线路之于单一地铁线路，从<strong>普通</strong>到<strong>特急</strong>停靠站越来越少，因此到达目的地所需时间也越短。跳跃表也是利用“快速通道”使得查找、插入和删除等操作更高效，可通过阅读<a href="https://en.wikipedia.org/wiki/Skip_list">维基百科</a>了解详情。</p>
 <p><img src="https://pic.pimg.tw/kevin760515/1458824287-246944453.png" alt="地铁路线图"></p>
 <p>Redis 中跳跃表大致基于论文<a href="https://15721.courses.cs.cmu.edu/spring2018/papers/08-oltpindexes1/pugh-skiplists-cacm1990.pdf">Skip Lists: A Probabilistic Alternative to Balanced Trees</a>实现，但有三处改动：</p>
@@ -452,8 +452,8 @@
 <span class="p">}</span> <span class="n">zlexrangespec</span><span class="p">;</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="跳跃表-apis">跳跃表 APIs</h2>
-<h3 id="构造函数">构造函数</h3>
+</div><h2 id="3-跳跃表-apis">3. 跳跃表 APIs</h2>
+<h3 id="31-构造函数">3.1. 构造函数</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -473,7 +473,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>初始化时，<code>zsl-&gt;level</code> 等于 1，头节点的 <code>level</code> 数组长度为 <code>ZSKIPLIST_MAXLEVEL</code></p>
-<h3 id="析构函数">析构函数</h3>
+<h3 id="32-析构函数">3.2. 析构函数</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -494,7 +494,7 @@
 <span class="kt">void</span> <span class="nf">zslFree</span><span class="p">(</span><span class="n">zskiplist</span> <span class="o">*</span><span class="n">zsl</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="插入节点">插入节点</h3>
+</div><h3 id="33-插入节点">3.3. 插入节点</h3>
 <p><strong>zslRandomLevel</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -562,7 +562,7 @@ $$</p>
 <li>尽可能搭乘快速列车，也即要在该层找到新节点的左极限</li>
 <li>不要坐过站，也即每次在该层新节点的左极限时跳转至下层，寻找更接近新节点的跳跃表节点，直至最底层</li>
 </ul>
-<h3 id="score-range-apis">Score range APIs</h3>
+<h3 id="34-score-range-apis">3.4. Score range APIs</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -605,7 +605,7 @@ $$</p>
 <span class="n">zskiplistNode</span> <span class="o">*</span><span class="nf">zslLastInRange</span><span class="p">(</span><span class="n">zskiplist</span> <span class="o">*</span><span class="n">zsl</span><span class="p">,</span> <span class="n">zrangespec</span> <span class="o">*</span><span class="n">range</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="lexicographic-range-apis">Lexicographic range APIs</h3>
+</div><h3 id="35-lexicographic-range-apis">3.5. Lexicographic range APIs</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -685,7 +685,7 @@ $$</p>
 </code></pre></td></tr></table>
 </div>
 </div><p>由于跳跃表是按照 <code>score</code> 排序的，因此 <code>zslFirstInLexRange</code> 返回的节点可能比 <code>zslLastInLexRange</code> 返回的节点位置靠后。</p>
-<h3 id="删除节点">删除节点</h3>
+<h3 id="36-删除节点">3.6. 删除节点</h3>
 <p><strong>zslDeleteNode</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -764,7 +764,7 @@ $$</p>
                                    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">end</span><span class="p">,</span> <span class="n">dict</span> <span class="o">*</span><span class="n">dict</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="zslupdatescore">zslUpdateScore</h3>
+</div><h3 id="37-zslupdatescore">3.7. zslUpdateScore</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -799,7 +799,7 @@ $$</p>
 <li>调用方需确保根据 <code>cursorce</code> 和 <code>ele</code> 匹配的节点必须存在在跳跃表中</li>
 <li>如果 <code>newscore</code> 不改变节点次序，该函数会就地更新指定节点的 <code>score</code> 值，否则会先从跳跃表中删除原节点，再根据 <code>ele</code> 和 <code>newsocre</code> 重新插入新节点</li>
 </ul>
-<h3 id="get-apis">Get APIs</h3>
+<h3 id="38-get-apis">3.8. Get APIs</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1

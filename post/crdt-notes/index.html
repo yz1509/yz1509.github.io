@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/crdt-notes/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="CRDT 学习笔记。">
 <meta itemprop="datePublished" content="2020-04-21T11:02:30+00:00" />
 <meta itemprop="dateModified" content="2020-04-21T11:02:30+00:00" />
-<meta itemprop="wordCount" content="2141">
+<meta itemprop="wordCount" content="2157">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"> 数据结构与算法 </a>
             
           </div>
-        <span class="more-meta"> 2141 words </span>
+        <span class="more-meta"> 2157 words </span>
           <span class="more-meta"> 5 min read </span>
 
         
@@ -331,26 +331,26 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#crdt-相关资源">CRDT 相关资源</a></li>
-    <li><a href="#背景知识">背景知识</a>
+    <li><a href="#1-crdt-相关资源">1. CRDT 相关资源</a></li>
+    <li><a href="#2-背景知识">2. 背景知识</a>
       <ul>
-        <li><a href="#a-crdt-primer-part-i-defanging-order-theoryhttpjtfmummcomblog20151117crdt-primer-1-defanging-order-theory"><a href="http://jtfmumm.com/blog/2015/11/17/crdt-primer-1-defanging-order-theory/">A CRDT Primer Part I: Defanging Order Theory</a></a></li>
-        <li><a href="#扩展阅读">扩展阅读</a></li>
+        <li><a href="#21-a-crdt-primer-part-i-defanging-order-theoryhttpjtfmummcomblog20151117crdt-primer-1-defanging-order-theory">2.1. <a href="http://jtfmumm.com/blog/2015/11/17/crdt-primer-1-defanging-order-theory/">A CRDT Primer Part I: Defanging Order Theory</a></a></li>
+        <li><a href="#22-扩展阅读">2.2. 扩展阅读</a></li>
       </ul>
     </li>
-    <li><a href="#crdt-相关论文">CRDT 相关论文</a>
+    <li><a href="#3-crdt-相关论文">3. CRDT 相关论文</a>
       <ul>
-        <li><a href="#conflict-free-replicated-data-typeshttpshalinriafrinria-00609399v2document"><a href="https://hal.inria.fr/inria-00609399v2/document">Conflict-free Replicated Data Types</a></a></li>
-        <li><a href="#a-comprehensive-study-of-convergent-and-commutative-replicated-data-typeshttpshalinriafrinria-00555588document"><a href="https://hal.inria.fr/inria-00555588/document">A comprehensive study of Convergent and Commutative Replicated Data Types</a></a></li>
-        <li><a href="#an-optimized-conflict-free-replicated-sethttpsarxivorgpdf12103368pdf"><a href="https://arxiv.org/pdf/1210.3368.pdf">An Optimized Conflict-free Replicated Set</a></a></li>
-        <li><a href="#efficient-state-based-crdts-by-delta-mutationhttpsarxivorgpdf14102803pdf"><a href="https://arxiv.org/pdf/1410.2803.pdf">Efficient State-based CRDTs by Delta-Mutation</a></a></li>
-        <li><a href="#delta-state-replicated-data-typeshttpsarxivorgpdf160301529pdf"><a href="https://arxiv.org/pdf/1603.01529.pdf">Delta state replicated data types</a></a></li>
-        <li><a href="#efficient-synchronization-of-state-based-crdtshttpsvitorenesorgpublicationenes-efficient-synchronizationenes-efficient-synchronizationpdf"><a href="https://vitorenes.org/publication/enes-efficient-synchronization/enes-efficient-synchronization.pdf">Efficient Synchronization of State-Based CRDTs</a></a></li>
-        <li><a href="#conflict-free-replicated-data-types-crdtshttpslinkspringercomreferenceworkentry1010072f978-3-319-63962-8_185-1"><a href="https://link.springer.com/referenceworkentry/10.1007%2F978-3-319-63962-8_185-1">Conflict-Free Replicated Data Types CRDTs</a></a></li>
-        <li><a href="#the-problem-with-embedded-crdt-counters-and-a-solutionhttpsdlacmorgdoipdf10114529111512911159"><a href="https://dl.acm.org/doi/pdf/10.1145/2911151.2911159">The problem with embedded CRDT counters and a solution</a></a></li>
+        <li><a href="#31-conflict-free-replicated-data-typeshttpshalinriafrinria-00609399v2document">3.1. <a href="https://hal.inria.fr/inria-00609399v2/document">Conflict-free Replicated Data Types</a></a></li>
+        <li><a href="#32-a-comprehensive-study-of-convergent-and-commutative-replicated-data-typeshttpshalinriafrinria-00555588document">3.2. <a href="https://hal.inria.fr/inria-00555588/document">A comprehensive study of Convergent and Commutative Replicated Data Types</a></a></li>
+        <li><a href="#33-an-optimized-conflict-free-replicated-sethttpsarxivorgpdf12103368pdf">3.3. <a href="https://arxiv.org/pdf/1210.3368.pdf">An Optimized Conflict-free Replicated Set</a></a></li>
+        <li><a href="#34-efficient-state-based-crdts-by-delta-mutationhttpsarxivorgpdf14102803pdf">3.4. <a href="https://arxiv.org/pdf/1410.2803.pdf">Efficient State-based CRDTs by Delta-Mutation</a></a></li>
+        <li><a href="#35-delta-state-replicated-data-typeshttpsarxivorgpdf160301529pdf">3.5. <a href="https://arxiv.org/pdf/1603.01529.pdf">Delta state replicated data types</a></a></li>
+        <li><a href="#36-efficient-synchronization-of-state-based-crdtshttpsvitorenesorgpublicationenes-efficient-synchronizationenes-efficient-synchronizationpdf">3.6. <a href="https://vitorenes.org/publication/enes-efficient-synchronization/enes-efficient-synchronization.pdf">Efficient Synchronization of State-Based CRDTs</a></a></li>
+        <li><a href="#37-conflict-free-replicated-data-types-crdtshttpslinkspringercomreferenceworkentry1010072f978-3-319-63962-8_185-1">3.7. <a href="https://link.springer.com/referenceworkentry/10.1007%2F978-3-319-63962-8_185-1">Conflict-Free Replicated Data Types CRDTs</a></a></li>
+        <li><a href="#38-the-problem-with-embedded-crdt-counters-and-a-solutionhttpsdlacmorgdoipdf10114529111512911159">3.8. <a href="https://dl.acm.org/doi/pdf/10.1145/2911151.2911159">The problem with embedded CRDT counters and a solution</a></a></li>
       </ul>
     </li>
-    <li><a href="#conclusions">Conclusions</a></li>
+    <li><a href="#4-conclusions">4. Conclusions</a></li>
   </ul>
 </nav>
   </div>
@@ -360,16 +360,16 @@
     <div class="post-content">
       <p>CRDT 学习笔记。</p>
 <hr>
-<h2 id="crdt-相关资源">CRDT 相关资源</h2>
+<h2 id="1-crdt-相关资源">1. CRDT 相关资源</h2>
 <ul>
 <li><a href="https://en.wikipedia.org/wiki/Conflict-free_replicated_data_type">CRDT wiki</a></li>
 <li><a href="https://github.com/ept/crdt-website">CRDT Website</a></li>
 <li><a href="https://github.com/ipfs/notes/tree/master/CRDT">CRDT Research</a></li>
 <li><a href="https://github.com/alangibson/awesome-crdt">Awesome CRDT</a></li>
 </ul>
-<h2 id="背景知识">背景知识</h2>
-<h3 id="a-crdt-primer-part-i-defanging-order-theoryhttpjtfmummcomblog20151117crdt-primer-1-defanging-order-theory"><a href="http://jtfmumm.com/blog/2015/11/17/crdt-primer-1-defanging-order-theory/">A CRDT Primer Part I: Defanging Order Theory</a></h3>
-<h4 id="order">Order</h4>
+<h2 id="2-背景知识">2. 背景知识</h2>
+<h3 id="21-a-crdt-primer-part-i-defanging-order-theoryhttpjtfmummcomblog20151117crdt-primer-1-defanging-order-theory">2.1. <a href="http://jtfmumm.com/blog/2015/11/17/crdt-primer-1-defanging-order-theory/">A CRDT Primer Part I: Defanging Order Theory</a></h3>
+<h4 id="211-order">2.1.1. Order</h4>
 <p><strong>Definition</strong></p>
 <p>An <strong>Order</strong> set is a binary relation $\le$ on a set $\mathcal{S}$, written $(\mathcal{S},\le)$.</p>
 <p><strong>Core concepts</strong></p>
@@ -393,7 +393,7 @@
 </blockquote>
 </li>
 </ul>
-<h4 id="join">Join</h4>
+<h4 id="212-join">2.1.2. Join</h4>
 <p><strong>Upper bound</strong></p>
 <p>For a set $\mathcal{S}$, an order $(\mathcal{S},\le)$, and $\mathcal{A} \subseteq \mathcal{S}$ is an aibitrary subset, then an element $u \in \mathcal{S}$ is said to be an <strong>upper bound</strong> of $\mathcal{A}$ if $a \le u, \forall a \in \mathcal{A}$.</p>
 <p><strong>Definition</strong></p>
@@ -412,23 +412,23 @@
 <blockquote>
 <p>Dually, a meet-semilattice (or lower semilattice) is a ordered set which has a meet (or greatest lower bound) for any nonempty finite subset.</p>
 </blockquote>
-<h3 id="扩展阅读">扩展阅读</h3>
+<h3 id="22-扩展阅读">2.2. 扩展阅读</h3>
 <ul>
 <li><a href="https://en.wikipedia.org/wiki/Order_theory">Order theory</a></li>
 <li><a href="http://www.tac.mta.ca/tac/reprints/articles/22/tr22abs.html">Category Theory for Computing Science</a></li>
 </ul>
-<h2 id="crdt-相关论文">CRDT 相关论文</h2>
-<h3 id="conflict-free-replicated-data-typeshttpshalinriafrinria-00609399v2document"><a href="https://hal.inria.fr/inria-00609399v2/document">Conflict-free Replicated Data Types</a></h3>
+<h2 id="3-crdt-相关论文">3. CRDT 相关论文</h2>
+<h3 id="31-conflict-free-replicated-data-typeshttpshalinriafrinria-00609399v2document">3.1. <a href="https://hal.inria.fr/inria-00609399v2/document">Conflict-free Replicated Data Types</a></h3>
 <p>在这篇文章中，作者主要提出了两种本质上等价的 CRDT：CvRDT 和 CmRDT。为了保证强最终一致性，作者表示在 CvRDT 中需定义合适的操作，使得状态集合在给定的偏序关系下构成 Join-semilattice；而在 CmRDT 中，操作需满足要么可比较，不可比的便可交换的条件，除此之外，还需要消息传输提供 <code>exactly once</code> 的保证。详细内容<a href="https://k-on.me/post/conflict-free-replicated-data-types/">请点击</a>。</p>
-<h3 id="a-comprehensive-study-of-convergent-and-commutative-replicated-data-typeshttpshalinriafrinria-00555588document"><a href="https://hal.inria.fr/inria-00555588/document">A comprehensive study of Convergent and Commutative Replicated Data Types</a></h3>
+<h3 id="32-a-comprehensive-study-of-convergent-and-commutative-replicated-data-typeshttpshalinriafrinria-00555588document">3.2. <a href="https://hal.inria.fr/inria-00555588/document">A comprehensive study of Convergent and Commutative Replicated Data Types</a></h3>
 <p>理论内容和上一篇相比几乎相同，新增了一些 CRDT 数据结构示例、垃圾回收和简单应用的内容。</p>
-<h3 id="an-optimized-conflict-free-replicated-sethttpsarxivorgpdf12103368pdf"><a href="https://arxiv.org/pdf/1210.3368.pdf">An Optimized Conflict-free Replicated Set</a></h3>
+<h3 id="33-an-optimized-conflict-free-replicated-sethttpsarxivorgpdf12103368pdf">3.3. <a href="https://arxiv.org/pdf/1210.3368.pdf">An Optimized Conflict-free Replicated Set</a></h3>
 <p>利用 Causal order 进行空间上的优化，和 $\delta$-CRDT 中的 <code>Optimized Add-Wins OR-Set</code> 类似。</p>
-<h3 id="efficient-state-based-crdts-by-delta-mutationhttpsarxivorgpdf14102803pdf"><a href="https://arxiv.org/pdf/1410.2803.pdf">Efficient State-based CRDTs by Delta-Mutation</a></h3>
+<h3 id="34-efficient-state-based-crdts-by-delta-mutationhttpsarxivorgpdf14102803pdf">3.4. <a href="https://arxiv.org/pdf/1410.2803.pdf">Efficient State-based CRDTs by Delta-Mutation</a></h3>
 <p>本文正式定义了 $\delta$-CRDT， 其通过传递状态增量而不是传递整个状态，有效地改善了 <code>CvRDT</code> 通信消耗过大的不足，最后给出了 <code>PN-Counter</code>、<code>OR-Set</code> 和 <code>Multi-value Register</code> 基于 $\delta$-CRDT 的实现。详细内容<a href="https://k-on.me/post/efficient-state-based-crdts-by-delta-mutation/">请点击</a>。</p>
-<h3 id="delta-state-replicated-data-typeshttpsarxivorgpdf160301529pdf"><a href="https://arxiv.org/pdf/1603.01529.pdf">Delta state replicated data types</a></h3>
+<h3 id="35-delta-state-replicated-data-typeshttpsarxivorgpdf160301529pdf">3.5. <a href="https://arxiv.org/pdf/1603.01529.pdf">Delta state replicated data types</a></h3>
 <p>本文在 <code>Efficient State-based CRDTs by Delta-Mutation</code> 基础之上补充了一些数学证明，添加了更丰富的示例，包括 <code>PN-Counter</code>、<code>GSet</code>、<code>2PSet</code>、<code>Add-Wins Last-Writer-Wins Set</code>、<code>Lexicographic Counter</code>、<code>Multi-Value Register</code>、<code>Add-Wins Set</code>、<code>Remove-Wins Set</code> 和 <code>A Map Embedding Causal -CRDTs</code>。</p>
-<h3 id="efficient-synchronization-of-state-based-crdtshttpsvitorenesorgpublicationenes-efficient-synchronizationenes-efficient-synchronizationpdf"><a href="https://vitorenes.org/publication/enes-efficient-synchronization/enes-efficient-synchronization.pdf">Efficient Synchronization of State-Based CRDTs</a></h3>
+<h3 id="36-efficient-synchronization-of-state-based-crdtshttpsvitorenesorgpublicationenes-efficient-synchronizationenes-efficient-synchronizationpdf">3.6. <a href="https://vitorenes.org/publication/enes-efficient-synchronization/enes-efficient-synchronization.pdf">Efficient Synchronization of State-Based CRDTs</a></h3>
 <p>本文在 $\delta$-CRDT 的基础上，通过以下两步优化，以减小消息通信冗余带来的多余开销：</p>
 <ul>
 <li>Avoiding back-propagation of $\delta$-groups</li>
@@ -437,14 +437,14 @@
 <blockquote>
 <p>私认为，完全可以通过使用适宜的网络拓扑结构，以防止消息回源带来的通信冗余开销。</p>
 </blockquote>
-<h3 id="conflict-free-replicated-data-types-crdtshttpslinkspringercomreferenceworkentry1010072f978-3-319-63962-8_185-1"><a href="https://link.springer.com/referenceworkentry/10.1007%2F978-3-319-63962-8_185-1">Conflict-Free Replicated Data Types CRDTs</a></h3>
+<h3 id="37-conflict-free-replicated-data-types-crdtshttpslinkspringercomreferenceworkentry1010072f978-3-319-63962-8_185-1">3.7. <a href="https://link.springer.com/referenceworkentry/10.1007%2F978-3-319-63962-8_185-1">Conflict-Free Replicated Data Types CRDTs</a></h3>
 <p>一篇关于 <code>CRDT</code> 的 survey，作者首先给出了 <code>CRDT</code> 的定义；然后从 Concurrency Semanitics 和 Synchronization Model 两个方面介绍了 <code>CRDT</code> 的具体内容；之后，又介绍了一些研究发现与 <code>CRDT</code> 的具体应用示例；最后，从 Scalability、Reversible Computation、Security、Nonuniform Replicas 和 Verification 五个方面总结并展望了未来的研究方向。</p>
 <blockquote>
 <p>PS：Nonuniform Replicas 和 Verification 看起来比较有趣一些。</p>
 </blockquote>
-<h3 id="the-problem-with-embedded-crdt-counters-and-a-solutionhttpsdlacmorgdoipdf10114529111512911159"><a href="https://dl.acm.org/doi/pdf/10.1145/2911151.2911159">The problem with embedded CRDT counters and a solution</a></h3>
+<h3 id="38-the-problem-with-embedded-crdt-counters-and-a-solutionhttpsdlacmorgdoipdf10114529111512911159">3.8. <a href="https://dl.acm.org/doi/pdf/10.1145/2911151.2911159">The problem with embedded CRDT counters and a solution</a></h3>
 <p>本文首先介绍了直接将 <code>OR-Set</code> 和 <code>PN-Counter</code> 简单组合作为 Map 时可能存在的问题，随后提出了相应的解决方案。详细内容<a href="https://k-on.me/post/the-problem-with-embedded-crdt-counters-and-a-solution/">请点击</a>.</p>
-<h2 id="conclusions">Conclusions</h2>
+<h2 id="4-conclusions">4. Conclusions</h2>
 <p>在分布式数据库中，想让各个副本保持一致，大致有两种方案：</p>
 <ul>
 <li>阻止分歧产生：写入时，各个副本通过 py 交易保持一致 (耗时)</li>

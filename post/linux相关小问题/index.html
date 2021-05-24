@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/linux%E7%9B%B8%E5%85%B3%E5%B0%8F%E9%97%AE%E9%A2%98/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="这个人明明遇到过很多问题，却总是忘了记录。">
 <meta itemprop="datePublished" content="2019-10-12T20:00:38+00:00" />
 <meta itemprop="dateModified" content="2019-10-12T20:00:38+00:00" />
-<meta itemprop="wordCount" content="359">
+<meta itemprop="wordCount" content="362">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/"> 操作系统 </a>
             
           </div>
-        <span class="more-meta"> 359 words </span>
+        <span class="more-meta"> 362 words </span>
           <span class="more-meta"> 1 min read </span>
 
         
@@ -331,9 +331,9 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#手动卸载旧版本软件安装完新版本之后提示-no-such-file-or-directory-怎么办">手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？</a></li>
-    <li><a href="#gccg-版本切换">gcc/g++ 版本切换</a></li>
-    <li><a href="#查看-cpu-是否开启节能模式">查看 CPU 是否开启节能模式</a></li>
+    <li><a href="#1-手动卸载旧版本软件安装完新版本之后提示-no-such-file-or-directory-怎么办">1. 手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？</a></li>
+    <li><a href="#2-gccg-版本切换">2. gcc/g++ 版本切换</a></li>
+    <li><a href="#3-查看-cpu-是否开启节能模式">3. 查看 CPU 是否开启节能模式</a></li>
   </ul>
 </nav>
   </div>
@@ -343,7 +343,7 @@
     <div class="post-content">
       <p>这个人明明遇到过很多问题，却总是忘了记录。</p>
 <hr>
-<h2 id="手动卸载旧版本软件安装完新版本之后提示-no-such-file-or-directory-怎么办">手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？</h2>
+<h2 id="1-手动卸载旧版本软件安装完新版本之后提示-no-such-file-or-directory-怎么办">1. 手动卸载旧版本软件，安装完新版本之后，提示 No such file or directory 怎么办？</h2>
 <ol>
 <li>使用 <code>echo $PATH</code> 命令检查环境变量，如新版本软件安装路径不在环境变量中，添加。如新版本软件安装路径已在环境变量中，转 2.
 <ul>
@@ -357,7 +357,7 @@
 </ul>
 </li>
 </ol>
-<h2 id="gccg-版本切换">gcc/g++ 版本切换</h2>
+<h2 id="2-gccg-版本切换">2. gcc/g++ 版本切换</h2>
 <ol>
 <li>
 <p>查看所安装的各个版本</p>
@@ -412,7 +412,7 @@ update-alternatives --config g++
 </div></li>
 </ol>
 <p>注意保持 gcc 和 g++ 的版本一致。</p>
-<h2 id="查看-cpu-是否开启节能模式">查看 CPU 是否开启节能模式</h2>
+<h2 id="3-查看-cpu-是否开启节能模式">3. 查看 CPU 是否开启节能模式</h2>
 <p><a href="https://gist.github.com/wmealing/2dd2b543c4d3cff6cab7">参考</a></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">

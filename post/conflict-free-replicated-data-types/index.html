@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/conflict-free-replicated-data-types/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="《Conflict free replicated data types》 阅读笔记。">
 <meta itemprop="datePublished" content="2020-04-22T18:09:55+00:00" />
 <meta itemprop="dateModified" content="2020-04-22T18:09:55+00:00" />
-<meta itemprop="wordCount" content="1449">
+<meta itemprop="wordCount" content="1460">
 
 
 
@@ -308,7 +308,7 @@
         <div class="post-category">
             
           </div>
-        <span class="more-meta"> 1449 words </span>
+        <span class="more-meta"> 1460 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -330,24 +330,24 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#最终一致性">最终一致性</a>
+    <li><a href="#1-最终一致性">1. 最终一致性</a>
       <ul>
-        <li><a href="#eventual-consistencyhttpsenwikipediaorgwikieventual_consistency"><a href="https://en.wikipedia.org/wiki/Eventual_consistency">Eventual Consistency</a></a></li>
-        <li><a href="#strong-eventual-consistency">Strong Eventual Consistency</a></li>
+        <li><a href="#11-eventual-consistencyhttpsenwikipediaorgwikieventual_consistency">1.1. <a href="https://en.wikipedia.org/wiki/Eventual_consistency">Eventual Consistency</a></a></li>
+        <li><a href="#12-strong-eventual-consistency">1.2. Strong Eventual Consistency</a></li>
       </ul>
     </li>
-    <li><a href="#系统模型">系统模型</a>
+    <li><a href="#2-系统模型">2. 系统模型</a>
       <ul>
-        <li><a href="#符号说明">符号说明</a></li>
-        <li><a href="#state-based-convergent-replicated-data-typecvrdt">State-based Convergent Replicated Data Type(CvRDT)</a></li>
-        <li><a href="#op-based-commutative-replicated-data-typecmrdt">Op-based Commutative Replicated Data Type(CmRDT)</a></li>
+        <li><a href="#21-符号说明">2.1. 符号说明</a></li>
+        <li><a href="#22-state-based-convergent-replicated-data-typecvrdt">2.2. State-based Convergent Replicated Data Type(CvRDT)</a></li>
+        <li><a href="#23-op-based-commutative-replicated-data-typecmrdt">2.3. Op-based Commutative Replicated Data Type(CmRDT)</a></li>
       </ul>
     </li>
-    <li><a href="#一些结论">一些结论</a></li>
-    <li><a href="#crdt-示例">CRDT 示例</a>
+    <li><a href="#3-一些结论">3. 一些结论</a></li>
+    <li><a href="#4-crdt-示例">4. CRDT 示例</a>
       <ul>
-        <li><a href="#counters">Counters</a></li>
-        <li><a href="#set">Set</a></li>
+        <li><a href="#41-counters">4.1. Counters</a></li>
+        <li><a href="#42-set">4.2. Set</a></li>
       </ul>
     </li>
   </ul>
@@ -360,8 +360,8 @@
       <p>《Conflict free replicated data types》 阅读笔记。</p>
 <hr>
 <p><a href="https://hal.inria.fr/inria-00609399v2/document">论文地址</a></p>
-<h2 id="最终一致性">最终一致性</h2>
-<h3 id="eventual-consistencyhttpsenwikipediaorgwikieventual_consistency"><a href="https://en.wikipedia.org/wiki/Eventual_consistency">Eventual Consistency</a></h3>
+<h2 id="1-最终一致性">1. 最终一致性</h2>
+<h3 id="11-eventual-consistencyhttpsenwikipediaorgwikieventual_consistency">1.1. <a href="https://en.wikipedia.org/wiki/Eventual_consistency">Eventual Consistency</a></h3>
 <p>一个分布式系统是最终一致的，需满足以下条件：</p>
 <ul>
 <li><strong>Eventual delivery</strong>: 在健康节点上执行的更新操作最终会被传递至所有健康节点，也就是说 $f \in c_i \Rightarrow \lozenge f \in c_j, \forall i, j \in [1, \dots, n]$，其中 $c_i$ 是节点 $p_i$ 的 causal history</li>
@@ -369,14 +369,14 @@
 <li><strong>Termination</strong>: 所有操作会终止</li>
 </ul>
 <p>在上述说明中，$\lozenge$ 表示 <em>eventually</em>，$\square$ 表示 <em>always</em>，详见 <a href="https://en.wikipedia.org/wiki/Temporal_logic">Temporal logic</a>。至于 causal history，可以理解为该节点已执行操作的集合。</p>
-<h3 id="strong-eventual-consistency">Strong Eventual Consistency</h3>
+<h3 id="12-strong-eventual-consistency">1.2. Strong Eventual Consistency</h3>
 <p>一个分布式系统是强最终一致的，需在满足<a href="https://en.wikipedia.org/wiki/Eventual_consistency">最终一致</a>的条件下，额外满足以下约束：</p>
 <ul>
 <li><strong>Strong Convergence</strong>: 执行相同操作集合的健康节点具有相同的状态，也就是说 $c_i = c_j \Rightarrow s_i \equiv s_j, \forall i, j \in [1, \dots, n]$</li>
 </ul>
 <p><em>PS</em>: 最终一致性只包含 liveness guarantee，而强最终一致对系统的中间状态进行了约束 (safety guarantee)</p>
-<h2 id="系统模型">系统模型</h2>
-<h3 id="符号说明">符号说明</h3>
+<h2 id="2-系统模型">2. 系统模型</h2>
+<h3 id="21-符号说明">2.1. 符号说明</h3>
 <table>
 <thead>
 <tr>
@@ -427,7 +427,7 @@
 </tr>
 </tbody>
 </table>
-<h3 id="state-based-convergent-replicated-data-typecvrdt">State-based Convergent Replicated Data Type(CvRDT)</h3>
+<h3 id="22-state-based-convergent-replicated-data-typecvrdt">2.2. State-based Convergent Replicated Data Type(CvRDT)</h3>
 <p><strong>Causal History</strong></p>
 <p>我们定义一个对象的 <em>causal hisatory(stated-based)</em> 为 $\mathcal{C} = [c_1, \dots, c_n]$，其中 $c_i$ 经历了一系列中间态 $c_i^0, \dots, c_i^k, \dots$。初始时，$c_i^0 = \emptyset, \forall i \in [1, \dots, n]$，在节点 $p_i$ 上执行的 $k^{th}$ 操作分为以下三种情况：</p>
 <p>$$c_i^k = \begin{cases}<br>
@@ -453,7 +453,7 @@ c_i^{k-1} \cup c_{i'}^{k'}, &amp; f = m_i^k(s_{i'}^{k'})
 <li>状态满足单调性，消息最终可达</li>
 <li>状态更改操作为 Merge 需满足交换律，结合律，幂等</li>
 </ul>
-<h3 id="op-based-commutative-replicated-data-typecmrdt">Op-based Commutative Replicated Data Type(CmRDT)</h3>
+<h3 id="23-op-based-commutative-replicated-data-typecmrdt">2.3. Op-based Commutative Replicated Data Type(CmRDT)</h3>
 <p><strong>Causal History</strong></p>
 <p>我们定义一个对象的 <em>causal hisatory(op-based)</em> 为 $\mathcal{C} = [c_1, \dots, c_n]$，其中 $c_i$ 经历了一系列中间态 $c_i^0, \dots, c_i^k, \dots$。初始时，$c_i^0 = \emptyset, \forall i \in [1, \dots, n]$，在节点 $p_i$ 上执行的 $k^{th}$ 操作分为以下两种情况：</p>
 <p>$$c_i^k = \begin{cases}<br>
@@ -474,13 +474,13 @@ c_i^{k-1} \cup \{u_i^k(a)\}, &amp; f = u_i^k(a)
 <li>Update 操作要么可确定明确的因果顺序，要么满足可交换</li>
 <li>消息传输提供 <code>exactly once</code> 的保证</li>
 </ul>
-<h2 id="一些结论">一些结论</h2>
+<h2 id="3-一些结论">3. 一些结论</h2>
 <ul>
 <li>CvRDTs and CmRDTs are equivalent</li>
 <li>SEC is incomparable to sequential consistency</li>
 </ul>
-<h2 id="crdt-示例">CRDT 示例</h2>
-<h3 id="counters">Counters</h3>
+<h2 id="4-crdt-示例">4. CRDT 示例</h2>
+<h3 id="41-counters">4.1. Counters</h3>
 <p>我们使用 CvRDT 的框架来构造一个分布式计数器 $(\mathcal{S}, \le^n, s^0, value, inc, max^n)$:</p>
 <table>
 <thead>
@@ -517,7 +517,7 @@ c_i^{k-1} \cup \{u_i^k(a)\}, &amp; f = u_i^k(a)
 </tbody>
 </table>
 <p>可以发现上述定义的是一个只增计数器，如果想可增可减的话，可以使用两个只增计数器构成。</p>
-<h3 id="set">Set</h3>
+<h3 id="42-set">4.2. Set</h3>
 <p>一个 add-only 的集合可以构造为 $(\mathcal{S}, \subseteq, \emptyset, value, add(e), \cup)$，其中 $s \cdot add(e) = s \cup \{e\}$，很明显这也是一个 CRDT。</p>
 <p>在 <a href="https://hal.inria.fr/inria-00555588/document">A comprehensive study of Convergent and Commutative Replicated Data Types</a> 中作者定义了可增可减的两种 Set，但是也有较强的 assumption&hellip;</p>
 <ul>

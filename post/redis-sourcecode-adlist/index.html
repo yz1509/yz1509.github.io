@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/redis-sourcecode-adlist/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 双向链表相关源码阅读笔记，源码文件 adlist.h &amp; adlist.c。">
 <meta itemprop="datePublished" content="2020-09-24T14:39:37+08:00" />
 <meta itemprop="dateModified" content="2020-09-24T14:39:37+08:00" />
-<meta itemprop="wordCount" content="1391">
+<meta itemprop="wordCount" content="1414">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 1391 words </span>
+        <span class="more-meta"> 1414 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -331,39 +331,39 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#小结">小结</a></li>
-    <li><a href="#list-数据结构">list 数据结构</a></li>
-    <li><a href="#list-构造函数">list 构造函数</a></li>
-    <li><a href="#list-析构函数">list 析构函数</a>
+    <li><a href="#1-小结">1. 小结</a></li>
+    <li><a href="#2-list-数据结构">2. list 数据结构</a></li>
+    <li><a href="#3-list-构造函数">3. list 构造函数</a></li>
+    <li><a href="#4-list-析构函数">4. list 析构函数</a>
       <ul>
-        <li><a href="#lsitepmty----不健全的析构函数">lsitEpmty &ndash; 不健全的析构函数</a></li>
-        <li><a href="#listrelease----析构函数完全体">listRelease &ndash; 析构函数完全体</a></li>
+        <li><a href="#41-lsitepmty----不健全的析构函数">4.1. lsitEpmty &ndash; 不健全的析构函数</a></li>
+        <li><a href="#42-listrelease----析构函数完全体">4.2. listRelease &ndash; 析构函数完全体</a></li>
       </ul>
     </li>
-    <li><a href="#增删操作">增删操作</a>
+    <li><a href="#5-增删操作">5. 增删操作</a>
       <ul>
-        <li><a href="#listaddnodehead">listAddNodeHead</a></li>
-        <li><a href="#listaddnodetail">listAddNodeTail</a></li>
-        <li><a href="#listinsertnode">listInsertNode</a></li>
-        <li><a href="#listdelnode">listDelNode</a></li>
+        <li><a href="#51-listaddnodehead">5.1. listAddNodeHead</a></li>
+        <li><a href="#52-listaddnodetail">5.2. listAddNodeTail</a></li>
+        <li><a href="#53-listinsertnode">5.3. listInsertNode</a></li>
+        <li><a href="#54-listdelnode">5.4. listDelNode</a></li>
       </ul>
     </li>
-    <li><a href="#迭代器相关">迭代器相关</a>
+    <li><a href="#6-迭代器相关">6. 迭代器相关</a>
       <ul>
-        <li><a href="#listgetiterator">listGetIterator</a></li>
-        <li><a href="#listreleaseiterator">listReleaseIterator</a></li>
-        <li><a href="#listrewind">listRewind</a></li>
-        <li><a href="#listrewindtail">listRewindTail</a></li>
-        <li><a href="#listnext">listNext</a></li>
+        <li><a href="#61-listgetiterator">6.1. listGetIterator</a></li>
+        <li><a href="#62-listreleaseiterator">6.2. listReleaseIterator</a></li>
+        <li><a href="#63-listrewind">6.3. listRewind</a></li>
+        <li><a href="#64-listrewindtail">6.4. listRewindTail</a></li>
+        <li><a href="#65-listnext">6.5. listNext</a></li>
       </ul>
     </li>
-    <li><a href="#utils">Utils</a>
+    <li><a href="#7-utils">7. Utils</a>
       <ul>
-        <li><a href="#listdup----复制">listDup &ndash; 复制</a></li>
-        <li><a href="#listsearchkey">listSearchKey</a></li>
-        <li><a href="#listindex">listIndex</a></li>
-        <li><a href="#旋转">旋转</a></li>
-        <li><a href="#listjoin----拼接">listJoin &ndash; 拼接</a></li>
+        <li><a href="#71-listdup----复制">7.1. listDup &ndash; 复制</a></li>
+        <li><a href="#72-listsearchkey">7.2. listSearchKey</a></li>
+        <li><a href="#73-listindex">7.3. listIndex</a></li>
+        <li><a href="#74-旋转">7.4. 旋转</a></li>
+        <li><a href="#75-listjoin----拼接">7.5. listJoin &ndash; 拼接</a></li>
       </ul>
     </li>
   </ul>
@@ -375,13 +375,13 @@
     <div class="post-content">
       <p>Redis 双向链表相关源码阅读笔记，源码文件 <code>adlist.h</code> &amp; <code>adlist.c</code>。</p>
 <hr>
-<h2 id="小结">小结</h2>
+<h2 id="1-小结">1. 小结</h2>
 <p>Redis 中的 <code>list</code> 是随处可见的普通双向链表：</p>
 <ul>
 <li>链表头节点的 <code>prev</code> 指针和链表尾节点的 <code>next</code> 指针都指向 <code>NULL</code>，因此链表是无环的，遍历以 <code>NULL</code> 结尾</li>
 <li>如果想释放链表节点 <code>value</code> 所占用的内存空间，需要提供相应的 <code>free</code> 函数。</li>
 </ul>
-<h2 id="list-数据结构">list 数据结构</h2>
+<h2 id="2-list-数据结构">2. list 数据结构</h2>
 <p><code>list</code> 相关数据结构如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -427,7 +427,7 @@
 <span class="p">}</span> <span class="n">list</span><span class="p">;</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="list-构造函数">list 构造函数</h2>
+</div><h2 id="3-list-构造函数">3. list 构造函数</h2>
 <ul>
 <li>分配内存执行失败时，返回 <code>NULL</code></li>
 <li>执行成功时返回所构造空链表的指针</li>
@@ -440,8 +440,8 @@
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">list</span> <span class="o">*</span><span class="nf">listCreate</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="list-析构函数">list 析构函数</h2>
-<h3 id="lsitepmty----不健全的析构函数">lsitEpmty &ndash; 不健全的析构函数</h3>
+</div><h2 id="4-list-析构函数">4. list 析构函数</h2>
+<h3 id="41-lsitepmty----不健全的析构函数">4.1. lsitEpmty &ndash; 不健全的析构函数</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -488,7 +488,7 @@
 <li><code>listEmpty</code> 函数释放了链表中的每个节点，但是并未释放指向该链表的指针本身</li>
 <li>如果节点中的 <code>value</code> 需要释放，则应该提供 <code>free</code> 函数</li>
 </ul>
-<h3 id="listrelease----析构函数完全体">listRelease &ndash; 析构函数完全体</h3>
+<h3 id="42-listrelease----析构函数完全体">4.2. listRelease &ndash; 析构函数完全体</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -505,8 +505,8 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="增删操作">增删操作</h2>
-<h3 id="listaddnodehead">listAddNodeHead</h3>
+</div><h2 id="5-增删操作">5. 增删操作</h2>
+<h3 id="51-listaddnodehead">5.1. listAddNodeHead</h3>
 <p>添加节点至链表头部，其值为 <code>value</code>，为新增节点申请内存失败时，不改变原链表，返回 <code>NULL</code>。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -516,7 +516,7 @@
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">list</span> <span class="o">*</span><span class="nf">listAddNodeHead</span><span class="p">(</span><span class="n">list</span> <span class="o">*</span><span class="n">list</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">value</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="listaddnodetail">listAddNodeTail</h3>
+</div><h3 id="52-listaddnodetail">5.2. listAddNodeTail</h3>
 <p>添加节点至链表尾部，其值为 <code>value</code>，为新增节点申请内存失败时，不改变原链表，返回 <code>NULL</code>。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -526,7 +526,7 @@
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">list</span> <span class="o">*</span><span class="nf">listAddNodeTail</span><span class="p">(</span><span class="n">list</span> <span class="o">*</span><span class="n">list</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">value</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="listinsertnode">listInsertNode</h3>
+</div><h3 id="53-listinsertnode">5.3. listInsertNode</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -546,7 +546,7 @@
 <li>申请内存成功时，返回修改好的链表指针 <code>list</code></li>
 </ul>
 <p><em>Tips:</em> 插入节点时，可以先更新插入节点的指针，然后再更新插入节点相邻节点的指针</p>
-<h3 id="listdelnode">listDelNode</h3>
+<h3 id="54-listdelnode">5.4. listDelNode</h3>
 <p>删除给定节点，并释放其所占内存空间</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -556,8 +556,8 @@
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="nf">listDelNode</span><span class="p">(</span><span class="n">list</span> <span class="o">*</span><span class="n">list</span><span class="p">,</span> <span class="n">listNode</span> <span class="o">*</span><span class="n">node</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="迭代器相关">迭代器相关</h2>
-<h3 id="listgetiterator">listGetIterator</h3>
+</div><h2 id="6-迭代器相关">6. 迭代器相关</h2>
+<h3 id="61-listgetiterator">6.1. listGetIterator</h3>
 <p>返回迭代器指针。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -599,7 +599,7 @@
 </ul>
 </li>
 </ul>
-<h3 id="listreleaseiterator">listReleaseIterator</h3>
+<h3 id="62-listreleaseiterator">6.2. listReleaseIterator</h3>
 <p>释放迭代器所占内存。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -613,7 +613,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="listrewind">listRewind</h3>
+</div><h3 id="63-listrewind">6.3. listRewind</h3>
 <p>将给定迭代器重置为正序迭代器</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -629,7 +629,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="listrewindtail">listRewindTail</h3>
+</div><h3 id="64-listrewindtail">6.4. listRewindTail</h3>
 <p>将给定迭代器重置为逆序迭代器</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -645,7 +645,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="listnext">listNext</h3>
+</div><h3 id="65-listnext">6.5. listNext</h3>
 <p>如果迭代器当前所指节点非空，则根据方向参数更新迭代器的 <code>next</code> 指针，最后返回迭代器当前所指节点。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -655,8 +655,8 @@
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">listNode</span> <span class="o">*</span><span class="nf">listNext</span><span class="p">(</span><span class="n">listIter</span> <span class="o">*</span><span class="n">iter</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="utils">Utils</h2>
-<h3 id="listdup----复制">listDup &ndash; 复制</h3>
+</div><h2 id="7-utils">7. Utils</h2>
+<h3 id="71-listdup----复制">7.1. listDup &ndash; 复制</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -671,7 +671,7 @@
 <li>执行成功时，返回复制链表指针 <code>copy</code></li>
 <li>不论该函数是否执行成功，原链表都不会被修改</li>
 </ul>
-<h3 id="listsearchkey">listSearchKey</h3>
+<h3 id="72-listsearchkey">7.2. listSearchKey</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -685,7 +685,7 @@
 <li>成功找到时，返回第一个值相等的链表节点指针 (正序)</li>
 <li>未找到时，返回 <code>NULL</code></li>
 </ul>
-<h3 id="listindex">listIndex</h3>
+<h3 id="73-listindex">7.3. listIndex</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -699,7 +699,7 @@
 <li>从 0 开始计算索引，支持负数索引</li>
 <li>当索引值 <code>index</code> $\notin[-len, len - 1]$ 时，返回 <code>NULL</code></li>
 </ul>
-<h3 id="旋转">旋转</h3>
+<h3 id="74-旋转">7.4. 旋转</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -714,7 +714,7 @@
 <span class="kt">void</span> <span class="nf">listRotateHeadToTail</span><span class="p">(</span><span class="n">list</span> <span class="o">*</span><span class="n">list</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="listjoin----拼接">listJoin &ndash; 拼接</h3>
+</div><h3 id="75-listjoin----拼接">7.5. listJoin &ndash; 拼接</h3>
 <p>将链表 <code>o</code> 拼接到链表 <code>l</code> 之后，随后将链表 <code>o</code> 置为空链表，并未释放链表指针。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">

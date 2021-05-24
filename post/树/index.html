@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/%E6%A0%91/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="主要介绍二叉树和红黑树。">
 <meta itemprop="datePublished" content="2018-07-25T15:06:19+00:00" />
 <meta itemprop="dateModified" content="2018-07-25T15:06:19+00:00" />
-<meta itemprop="wordCount" content="2190">
+<meta itemprop="wordCount" content="2207">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"> 数据结构与算法 </a>
             
           </div>
-        <span class="more-meta"> 2190 words </span>
+        <span class="more-meta"> 2207 words </span>
           <span class="more-meta"> 5 min read </span>
 
         
@@ -331,25 +331,25 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#什么是树">什么是树</a>
+    <li><a href="#1-什么是树">1. 什么是树</a>
       <ul>
-        <li><a href="#二叉树">二叉树</a></li>
-        <li><a href="#分支无限制的有根树">分支无限制的有根树</a></li>
+        <li><a href="#11-二叉树">1.1. 二叉树</a></li>
+        <li><a href="#12-分支无限制的有根树">1.2. 分支无限制的有根树</a></li>
       </ul>
     </li>
-    <li><a href="#二叉搜索树">二叉搜索树</a>
+    <li><a href="#2-二叉搜索树">2. 二叉搜索树</a>
       <ul>
-        <li><a href="#什么是二叉搜索树">什么是二叉搜索树</a></li>
-        <li><a href="#查询二叉搜索树">查询二叉搜索树</a></li>
-        <li><a href="#插入和删除">插入和删除</a></li>
+        <li><a href="#21-什么是二叉搜索树">2.1. 什么是二叉搜索树</a></li>
+        <li><a href="#22-查询二叉搜索树">2.2. 查询二叉搜索树</a></li>
+        <li><a href="#23-插入和删除">2.3. 插入和删除</a></li>
       </ul>
     </li>
-    <li><a href="#红黑树">红黑树</a>
+    <li><a href="#3-红黑树">3. 红黑树</a>
       <ul>
-        <li><a href="#红黑树的性质">红黑树的性质</a></li>
-        <li><a href="#旋转">旋转</a></li>
-        <li><a href="#插入-1">插入</a></li>
-        <li><a href="#删除-1">删除</a></li>
+        <li><a href="#31-红黑树的性质">3.1. 红黑树的性质</a></li>
+        <li><a href="#32-旋转">3.2. 旋转</a></li>
+        <li><a href="#33-插入">3.3. 插入</a></li>
+        <li><a href="#34-删除">3.4. 删除</a></li>
       </ul>
     </li>
   </ul>
@@ -361,24 +361,24 @@
     <div class="post-content">
       <p>主要介绍二叉树和红黑树。</p>
 <hr>
-<h2 id="什么是树">什么是树</h2>
+<h2 id="1-什么是树">1. 什么是树</h2>
 <p><strong>定义 1</strong> 树是没有简单回路的连通无向图。</p>
 <p><strong>定义 2</strong> 有根树是指定一个顶点作为根并且每条边的方向都离开根的树。
 <img src="/algo_tree/tree001.png" alt="树"></p>
-<h3 id="二叉树">二叉树</h3>
+<h3 id="11-二叉树">1.1. 二叉树</h3>
 <ul>
 <li>如果 $x.p = NIL$，则 $x$ 是根结点</li>
 <li>属性 $T.root$ 指向整棵树 $T$ 的根结点，如果 $T.root = NIL$，则该数为空</li>
 </ul>
 <p><img src="/algo_tree/tree002.png" alt="二叉树"></p>
-<h3 id="分支无限制的有根树">分支无限制的有根树</h3>
+<h3 id="12-分支无限制的有根树">1.2. 分支无限制的有根树</h3>
 <ul>
 <li>$x.left-child$ 指向结点 $x$ 的最左边的孩子结点</li>
 <li>$x.right-sibling$ 指向结点 $x$ 右侧相邻的兄弟结点</li>
 </ul>
 <p><img src="/algo_tree/tree003.png" alt="分支无限制"></p>
-<h2 id="二叉搜索树">二叉搜索树</h2>
-<h3 id="什么是二叉搜索树">什么是二叉搜索树</h3>
+<h2 id="2-二叉搜索树">2. 二叉搜索树</h2>
+<h3 id="21-什么是二叉搜索树">2.1. 什么是二叉搜索树</h3>
 <p>二叉搜索树（binary-search-tree，BST）性质：设 $x$ 是二叉搜索树中的一个结点。如果 $y$ 是 $x$ 左子树中的一个结点，那么 $y.key \leq x.key$；如果 $y$ 是 $x$ 右子树中的一个结点，那么 $y.key \geq x.key$。</p>
 <p>中序遍历：</p>
 <div class="highlight"><div class="chroma">
@@ -400,8 +400,8 @@
 </div><blockquote>
 <p>中序遍历时间复杂度为 O(n)，使用替换法，通过证明 $T(n) \le (c+d)n + c$，可以证得 $T(n) = O(n)$</p>
 </blockquote>
-<h3 id="查询二叉搜索树">查询二叉搜索树</h3>
-<h4 id="查找">查找</h4>
+<h3 id="22-查询二叉搜索树">2.2. 查询二叉搜索树</h3>
+<h4 id="221-查找">2.2.1. 查找</h4>
 <ul>
 <li>
 <p>递归版本</p>
@@ -446,7 +446,7 @@
 </div>
 </div></li>
 </ul>
-<h4 id="最大小关键字元素">最大（小）关键字元素</h4>
+<h4 id="222-最大小关键字元素">2.2.2. 最大（小）关键字元素</h4>
 <ul>
 <li>
 <p>最小关键字</p>
@@ -483,7 +483,7 @@
 </div>
 </div></li>
 </ul>
-<h4 id="后继和前驱">后继和前驱</h4>
+<h4 id="223-后继和前驱">2.2.3. 后继和前驱</h4>
 <p>如果所有的关键字互不相同，则一个结点 $x$ 的后继是大于 $x.key$ 的最小关键字的结点。二叉搜索树的性质允许我们没有任何关键字的比较来确定一个结点的后继。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -510,8 +510,8 @@
 </div><blockquote>
 <p>在一棵高度为 $h$ 的二叉搜索树上，动态集合上的操作 SEARCH、MINIMUM、MAXIMUM、SUCCESSOR、PREDECESSOR 可以在 $O(h)$ 时间内完成。</p>
 </blockquote>
-<h3 id="插入和删除">插入和删除</h3>
-<h4 id="插入">插入</h4>
+<h3 id="23-插入和删除">2.3. 插入和删除</h3>
+<h4 id="231-插入">2.3.1. 插入</h4>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -547,7 +547,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p><img src="/algo_tree/tree004.png" alt="插入"></p>
-<h4 id="删除">删除</h4>
+<h4 id="232-删除">2.3.2. 删除</h4>
 <p>从二叉搜索树 $T$ 中删除结点 $z$ 分为三种基本情况</p>
 <ol>
 <li>如果 $z$ 没有孩子结点，那么直接将它删除，并修改它的父结点，用 NIL 替换 $z$</li>
@@ -611,8 +611,8 @@
 <p>在一棵高度为 $h$ 的二叉搜索树上，实现动态集合的操作 INSERT 和 DELETE，可以在 $O(h)$ 时间内完成。
 一棵有 $n$ 个不同关键字的随机构建二叉搜索树的期望高度为 $O(lg n)$</p>
 </blockquote>
-<h2 id="红黑树">红黑树</h2>
-<h3 id="红黑树的性质">红黑树的性质</h3>
+<h2 id="3-红黑树">3. 红黑树</h2>
+<h3 id="31-红黑树的性质">3.1. 红黑树的性质</h3>
 <p>一棵红黑树是满足下面红黑性质的二叉搜索树：</p>
 <ol>
 <li>每个结点或是红色的，或是黑色的</li>
@@ -626,7 +626,7 @@
 <blockquote>
 <p>一棵有 $n$ 个内部结点的红黑树的高度至多为 $2lg(n+1)$。</p>
 </blockquote>
-<h3 id="旋转">旋转</h3>
+<h3 id="32-旋转">3.2. 旋转</h3>
 <p>旋转是一种能保持二叉搜索树性质的局部操作。分为两种旋转：左旋和右旋。</p>
 <p><img src="/algo_tree/tree007.png" alt="旋转"></p>
 <p>在 LEFT-ROTATION 的伪代码中，假设 $x.right \ne T.nil$ 且根结点的父结点为 $T.nil$。</p>
@@ -664,7 +664,7 @@
 </div>
 </div><p>RIGHT-ROTATION 操作的伪代码是对称的。在旋转操作中只有指针改变，其他属性都保持不变。下图给出了一个 LEFT-ROTATION 操作修改二叉搜索树的例子。</p>
 <p><img src="/algo_tree/tree008.png" alt="左旋例子"></p>
-<h3 id="插入-1">插入</h3>
+<h3 id="33-插入">3.3. 插入</h3>
 <p>有三种情况：</p>
 <ol>
 <li>
@@ -764,7 +764,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p><img src="/algo_tree/tree011.png" alt="红黑树插入"></p>
-<h3 id="删除-1">删除</h3>
+<h3 id="34-删除">3.4. 删除</h3>
 <p>有四种情况：</p>
 <ol>
 <li>$x$ 的兄弟结点 $w$ 是红色的</li>

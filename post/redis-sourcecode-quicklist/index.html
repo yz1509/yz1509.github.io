@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/redis-sourcecode-quicklist/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 快速链表相关源码阅读笔记，源码文件 quicklist.h &amp; quicklist.c。">
 <meta itemprop="datePublished" content="2020-09-24T18:35:10+08:00" />
 <meta itemprop="dateModified" content="2020-09-24T18:35:10+08:00" />
-<meta itemprop="wordCount" content="2989">
+<meta itemprop="wordCount" content="3007">
 
 
 
@@ -309,8 +309,8 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 2989 words </span>
-          <span class="more-meta"> 6 min read </span>
+        <span class="more-meta"> 3007 words </span>
+          <span class="more-meta"> 7 min read </span>
 
         
         
@@ -331,25 +331,25 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#小结">小结</a></li>
-    <li><a href="#quicklist-相关数据结构">quicklist 相关数据结构</a></li>
-    <li><a href="#quicklist-apis">quicklist APIs</a>
+    <li><a href="#1-小结">1. 小结</a></li>
+    <li><a href="#2-quicklist-相关数据结构">2. quicklist 相关数据结构</a></li>
+    <li><a href="#3-quicklist-apis">3. quicklist APIs</a>
       <ul>
-        <li><a href="#getset-interfaces">Get/Set Interfaces</a></li>
-        <li><a href="#构造函数">构造函数</a></li>
-        <li><a href="#析构函数">析构函数</a></li>
-        <li><a href="#push">Push</a></li>
-        <li><a href="#pop">Pop</a></li>
-        <li><a href="#append">Append</a></li>
-        <li><a href="#delete">Delete</a></li>
-        <li><a href="#insert">Insert</a></li>
-        <li><a href="#quicklistgetlzf">quicklistGetLzf</a></li>
-        <li><a href="#quicklistreplaceatindex">quicklistReplaceAtIndex</a></li>
-        <li><a href="#quicklistrotate">quicklistRotate</a></li>
-        <li><a href="#quicklistcompare">quicklistCompare</a></li>
-        <li><a href="#quicklistindex">quicklistIndex</a></li>
-        <li><a href="#迭代相关">迭代相关</a></li>
-        <li><a href="#bookmark-相关">bookmark 相关</a></li>
+        <li><a href="#31-getset-interfaces">3.1. Get/Set Interfaces</a></li>
+        <li><a href="#32-构造函数">3.2. 构造函数</a></li>
+        <li><a href="#33-析构函数">3.3. 析构函数</a></li>
+        <li><a href="#34-push">3.4. Push</a></li>
+        <li><a href="#35-pop">3.5. Pop</a></li>
+        <li><a href="#36-append">3.6. Append</a></li>
+        <li><a href="#37-delete">3.7. Delete</a></li>
+        <li><a href="#38-insert">3.8. Insert</a></li>
+        <li><a href="#39-quicklistgetlzf">3.9. quicklistGetLzf</a></li>
+        <li><a href="#310-quicklistreplaceatindex">3.10. quicklistReplaceAtIndex</a></li>
+        <li><a href="#311-quicklistrotate">3.11. quicklistRotate</a></li>
+        <li><a href="#312-quicklistcompare">3.12. quicklistCompare</a></li>
+        <li><a href="#313-quicklistindex">3.13. quicklistIndex</a></li>
+        <li><a href="#314-迭代相关">3.14. 迭代相关</a></li>
+        <li><a href="#315-bookmark-相关">3.15. bookmark 相关</a></li>
       </ul>
     </li>
   </ul>
@@ -361,13 +361,13 @@
     <div class="post-content">
       <p>Redis 快速链表相关源码阅读笔记，源码文件 <code>quicklist.h</code> &amp; <code>quicklist.c</code>。</p>
 <hr>
-<h2 id="小结">小结</h2>
+<h2 id="1-小结">1. 小结</h2>
 <p><code>quicklist</code> 是由 <code>ziplist</code> 组成的双向链表，兼顾节省内存空间和提高查询效率的需求。</p>
 <ul>
 <li>每个 <code>quicklistNode</code> 中包含一个 <code>ziplist</code>，此 <code>ziplist</code> 的长度受到 <a href="https://github.com/redis/redis/blob/6.0.11/redis.conf#L1556">list-max-ziplist-size</a> 的限制</li>
 <li>考虑到链表的读写操作通常集中于两端，故 <code>quicklist</code> 中间部分的 <code>quicklistNode</code> 中的 <code>ziplist</code> 可能会使用 LZF 算法进行压缩以进一步节省内存空间，压缩程度由 <a href="https://github.com/redis/redis/blob/6.0.11/redis.conf#L1572">list-compress-depth</a> 控制</li>
 </ul>
-<h2 id="quicklist-相关数据结构">quicklist 相关数据结构</h2>
+<h2 id="2-quicklist-相关数据结构">2. quicklist 相关数据结构</h2>
 <p><code>quicklist</code> 结构定义如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -619,8 +619,8 @@
 <li>当 <code>zlentry</code> 的数据类型为字符串时，<code>value</code> 和 <code>sz</code> 保存了 <code>zlentry</code> 的值</li>
 <li>当 <code>zlentry</code> 的数据类型为整型时，<code>longval</code> 保存了 <code>zlentry</code> 的值</li>
 </ul>
-<h2 id="quicklist-apis">quicklist APIs</h2>
-<h3 id="getset-interfaces">Get/Set Interfaces</h3>
+<h2 id="3-quicklist-apis">3. quicklist APIs</h2>
+<h3 id="31-getset-interfaces">3.1. Get/Set Interfaces</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -641,7 +641,7 @@
 <span class="kt">unsigned</span> <span class="kt">long</span> <span class="nf">quicklistCount</span><span class="p">(</span><span class="k">const</span> <span class="n">quicklist</span> <span class="o">*</span><span class="n">ql</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="构造函数">构造函数</h3>
+</div><h3 id="32-构造函数">3.2. 构造函数</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -684,7 +684,7 @@
 <span class="n">quicklist</span> <span class="o">*</span><span class="nf">quicklistDup</span><span class="p">(</span><span class="n">quicklist</span> <span class="o">*</span><span class="n">orig</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="析构函数">析构函数</h3>
+</div><h3 id="33-析构函数">3.3. 析构函数</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -695,7 +695,7 @@
 <span class="kt">void</span> <span class="nf">quicklistRelease</span><span class="p">(</span><span class="n">quicklist</span> <span class="o">*</span><span class="n">quicklist</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="push">Push</h3>
+</div><h3 id="34-push">3.4. Push</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -730,7 +730,7 @@
 <span class="kt">void</span> <span class="nf">quicklistPush</span><span class="p">(</span><span class="n">quicklist</span> <span class="o">*</span><span class="n">quicklist</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">value</span><span class="p">,</span> <span class="k">const</span> <span class="n">size_t</span> <span class="n">sz</span><span class="p">,</span> <span class="kt">int</span> <span class="n">where</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="pop">Pop</h3>
+</div><h3 id="35-pop">3.5. Pop</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -773,7 +773,7 @@
                  <span class="kt">unsigned</span> <span class="kt">int</span> <span class="o">*</span><span class="n">sz</span><span class="p">,</span> <span class="kt">long</span> <span class="kt">long</span> <span class="o">*</span><span class="n">slong</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="append">Append</h3>
+</div><h3 id="36-append">3.6. Append</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -806,7 +806,7 @@
                                             <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">zl</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="delete">Delete</h3>
+</div><h3 id="37-delete">3.7. Delete</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -839,7 +839,7 @@
 <span class="kt">int</span> <span class="nf">quicklistDelRange</span><span class="p">(</span><span class="n">quicklist</span> <span class="o">*</span><span class="n">quicklist</span><span class="p">,</span> <span class="k">const</span> <span class="kt">long</span> <span class="n">start</span><span class="p">,</span> <span class="k">const</span> <span class="kt">long</span> <span class="n">stop</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="insert">Insert</h3>
+</div><h3 id="38-insert">3.8. Insert</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -860,7 +860,7 @@
                            <span class="kt">void</span> <span class="o">*</span><span class="n">value</span><span class="p">,</span> <span class="k">const</span> <span class="n">size_t</span> <span class="n">sz</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="quicklistgetlzf">quicklistGetLzf</h3>
+</div><h3 id="39-quicklistgetlzf">3.9. quicklistGetLzf</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -875,7 +875,7 @@
 <span class="n">size_t</span> <span class="nf">quicklistGetLzf</span><span class="p">(</span><span class="k">const</span> <span class="n">quicklistNode</span> <span class="o">*</span><span class="n">node</span><span class="p">,</span> <span class="kt">void</span> <span class="o">**</span><span class="n">data</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="quicklistreplaceatindex">quicklistReplaceAtIndex</h3>
+</div><h3 id="310-quicklistreplaceatindex">3.10. quicklistReplaceAtIndex</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -892,7 +892,7 @@
 <span class="kt">int</span> <span class="nf">quicklistReplaceAtIndex</span><span class="p">(</span><span class="n">quicklist</span> <span class="o">*</span><span class="n">quicklist</span><span class="p">,</span> <span class="kt">long</span> <span class="n">index</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="kt">int</span> <span class="n">sz</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="quicklistrotate">quicklistRotate</h3>
+</div><h3 id="311-quicklistrotate">3.11. quicklistRotate</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -903,7 +903,7 @@
 <span class="kt">void</span> <span class="nf">quicklistRotate</span><span class="p">(</span><span class="n">quicklist</span> <span class="o">*</span><span class="n">quicklist</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="quicklistcompare">quicklistCompare</h3>
+</div><h3 id="312-quicklistcompare">3.12. quicklistCompare</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -918,7 +918,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="quicklistindex">quicklistIndex</h3>
+</div><h3 id="313-quicklistindex">3.13. quicklistIndex</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -945,7 +945,7 @@
                    <span class="n">quicklistEntry</span> <span class="o">*</span><span class="n">entry</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="迭代相关">迭代相关</h3>
+</div><h3 id="314-迭代相关">3.14. 迭代相关</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -1028,7 +1028,7 @@
 <span class="kt">void</span> <span class="nf">quicklistRewindTail</span><span class="p">(</span><span class="n">quicklist</span> <span class="o">*</span><span class="n">quicklist</span><span class="p">,</span> <span class="n">quicklistIter</span> <span class="o">*</span><span class="n">li</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="bookmark-相关">bookmark 相关</h3>
+</div><h3 id="315-bookmark-相关">3.15. bookmark 相关</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1

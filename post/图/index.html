@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/%E5%9B%BE/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="简单介绍图及其相关算法。">
 <meta itemprop="datePublished" content="2018-07-26T13:17:37+00:00" />
 <meta itemprop="dateModified" content="2018-07-26T13:17:37+00:00" />
-<meta itemprop="wordCount" content="2432">
+<meta itemprop="wordCount" content="2447">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"> 数据结构与算法 </a>
             
           </div>
-        <span class="more-meta"> 2432 words </span>
+        <span class="more-meta"> 2447 words </span>
           <span class="more-meta"> 5 min read </span>
 
         
@@ -331,36 +331,36 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#什么是图">什么是图</a>
+    <li><a href="#1-什么是图">1. 什么是图</a>
       <ul>
-        <li><a href="#图的表示">图的表示</a></li>
+        <li><a href="#11-图的表示">1.1. 图的表示</a></li>
       </ul>
     </li>
-    <li><a href="#广度优先搜索">广度优先搜索</a>
+    <li><a href="#2-广度优先搜索">2. 广度优先搜索</a>
       <ul>
-        <li><a href="#bfs-的性质">BFS 的性质</a></li>
+        <li><a href="#21-bfs-的性质">2.1. BFS 的性质</a></li>
       </ul>
     </li>
-    <li><a href="#深度优先搜索">深度优先搜索</a>
+    <li><a href="#3-深度优先搜索">3. 深度优先搜索</a>
       <ul>
-        <li><a href="#dfs-的性质">DFS 的性质</a></li>
-        <li><a href="#拓扑排序">拓扑排序</a></li>
-        <li><a href="#强连通分量">强连通分量</a></li>
+        <li><a href="#31-dfs-的性质">3.1. DFS 的性质</a></li>
+        <li><a href="#32-拓扑排序">3.2. 拓扑排序</a></li>
+        <li><a href="#33-强连通分量">3.3. 强连通分量</a></li>
       </ul>
     </li>
-    <li><a href="#最小生成树">最小生成树</a>
+    <li><a href="#4-最小生成树">4. 最小生成树</a>
       <ul>
-        <li><a href="#kruskal-算法">Kruskal 算法</a></li>
-        <li><a href="#prim-算法">Prim 算法</a></li>
+        <li><a href="#41-kruskal-算法">4.1. Kruskal 算法</a></li>
+        <li><a href="#42-prim-算法">4.2. Prim 算法</a></li>
       </ul>
     </li>
-    <li><a href="#单源最短路径">单源最短路径</a>
+    <li><a href="#5-单源最短路径">5. 单源最短路径</a>
       <ul>
-        <li><a href="#bellman-ford-算法">Bellman-Ford 算法</a></li>
-        <li><a href="#有向无环图中的单源最短路径问题">有向无环图中的单源最短路径问题</a></li>
+        <li><a href="#51-bellman-ford-算法">5.1. Bellman-Ford 算法</a></li>
+        <li><a href="#52-有向无环图中的单源最短路径问题">5.2. 有向无环图中的单源最短路径问题</a></li>
       </ul>
     </li>
-    <li><a href="#dijkstra-算法">Dijkstra 算法</a></li>
+    <li><a href="#6-dijkstra-算法">6. Dijkstra 算法</a></li>
   </ul>
 </nav>
   </div>
@@ -370,15 +370,15 @@
     <div class="post-content">
       <p>简单介绍图及其相关算法。</p>
 <hr>
-<h2 id="什么是图">什么是图</h2>
+<h2 id="1-什么是图">1. 什么是图</h2>
 <p><strong>定义</strong> 一个图 $G = (V, E)$ 由顶点（或结点）的非空集 $V$ 和边的集合 $E$ 构成，每条边有一个或两个顶点与它相连，这样的顶点称为边的端点。边连接它的端点。</p>
-<h3 id="图的表示">图的表示</h3>
+<h3 id="11-图的表示">1.1. 图的表示</h3>
 <ul>
 <li>邻接链表：稀疏图</li>
 <li>邻接矩阵：稠密图，或者需要快速判断任意两个结点之间是否有边的情况</li>
 </ul>
 <p><img src="/algo_graph/graph-001.png" alt="图的表示"></p>
-<h2 id="广度优先搜索">广度优先搜索</h2>
+<h2 id="2-广度优先搜索">2. 广度优先搜索</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -441,12 +441,12 @@
 <p>BFS 的总运行时间为 O(V + E)</p>
 </blockquote>
 <p><img src="/algo_graph/graph-002.png" alt="BFS"></p>
-<h3 id="bfs-的性质">BFS 的性质</h3>
+<h3 id="21-bfs-的性质">2.1. BFS 的性质</h3>
 <ol>
 <li>BFS 可以计算出从源结点 s 到 结点 v 的最短路径。</li>
 <li>BFS 在对图进行搜索的过程中将创建一棵广度优先树</li>
 </ol>
-<h2 id="深度优先搜索">深度优先搜索</h2>
+<h2 id="3-深度优先搜索">3. 深度优先搜索</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -513,7 +513,7 @@
 <p>DFS 的总运行时间为 O(V + E)</p>
 </blockquote>
 <p><img src="/algo_graph/graph-003.png" alt="DFS"></p>
-<h3 id="dfs-的性质">DFS 的性质</h3>
+<h3 id="31-dfs-的性质">3.1. DFS 的性质</h3>
 <ol>
 <li>
 <p>括号化定理：在对有向或无向图进行的任意 DFS 中，对于任意两个结点 u 和 v 来说，下面三种情况只有一种成立：</p>
@@ -536,7 +536,7 @@
 <blockquote>
 <p>在对无向图 G 进行深度优先搜索时，每条边要么是树边，要么是后向边。</p>
 </blockquote>
-<h3 id="拓扑排序">拓扑排序</h3>
+<h3 id="32-拓扑排序">3.2. 拓扑排序</h3>
 <p>对于一个有向无环图 G(V, E) 来说，其拓扑排序是 G 中所有结点的一种线性次序，该次序满足如下条件：如果图 G 包含边 (u, v)，则结点 u 在拓扑排序中处于结点 v 的前面。</p>
 <p><img src="/algo_graph/graph-004.png" alt="拓扑排序"></p>
 <div class="highlight"><div class="chroma">
@@ -553,7 +553,7 @@
     <span class="k">return</span> <span class="n">the</span> <span class="n">linked</span> <span class="n">of</span> <span class="n">list</span> <span class="n">of</span> <span class="n">vertices</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="强连通分量">强连通分量</h3>
+</div><h3 id="33-强连通分量">3.3. 强连通分量</h3>
 <p><strong>定义：</strong> 如果一个有向图中任意两个顶点互相可达，则该有向图是强连通的。
 图 G 的转置 $G^T = (V, E^T)$，其中 $E^T = {(u, v): (u, v) \in E}$。</p>
 <div class="highlight"><div class="chroma">
@@ -577,7 +577,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p><img src="/algo_graph/graph-005.png" alt="强连通分量"></p>
-<h2 id="最小生成树">最小生成树</h2>
+<h2 id="4-最小生成树">4. 最小生成树</h2>
 <p><strong>定义：</strong> 连通加权图里的最小生成树是具有边的权值之和最小的生成树。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -602,7 +602,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p><strong>定理：</strong> 设 G = (V, E) 是一个在边 E 上定义了实数值权重函数 w 的连通无向图。设集合 A 为 E 的一个子集，且 A 包括在图 G 的某棵最小生成树中，设 (S, V - S) 是图 G 中尊重集合 A 的任意一个切割（集合 A 中不存在横跨该切割的边），又设 (u, v) 是横跨切割 (S, V - S) 的一条轻边。那么边 (u, v) 对于集合 A 是安全的。</p>
-<h3 id="kruskal-算法">Kruskal 算法</h3>
+<h3 id="41-kruskal-算法">4.1. Kruskal 算法</h3>
 <p>在 Kurskal 算法中，集合 A 是一个森林，其结点就是给定图的结点。每次加入集合 A 中的安全边永远是权重最小的连接两个不同分量的边。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -634,7 +634,7 @@
 <p>Kruskal 算法的时间复杂度为 $O(ElgV)$。</p>
 </blockquote>
 <p><img src="/algo_graph/graph-006.png" alt="Kruskal 算法"></p>
-<h3 id="prim-算法">Prim 算法</h3>
+<h3 id="42-prim-算法">4.2. Prim 算法</h3>
 <p>在 Prim 算法里，集合 A 则是一棵树。这棵树从一个任意的根结点 r 开始，一直长大到覆盖 V 中的所有结点时为止。每次加入到 A 中的安全边永远是连接 A 和 A 之外某个结点的边中权重最小的边。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -671,7 +671,7 @@
 如果使用斐波那契堆来实现最小优先队列 Q，则 Prim 算法的运行时间将改进到 $O(E + VlgV)$</p>
 </blockquote>
 <p><img src="/algo_graph/graph-007.png" alt="Prim算法"></p>
-<h2 id="单源最短路径">单源最短路径</h2>
+<h2 id="5-单源最短路径">5. 单源最短路径</h2>
 <ol>
 <li>最短路径的子路径也是最短路径</li>
 <li>如果从结点 s 到结点 v 的某条路径上存在权重为负值的环路，我们定义 $\delta(s, v) = -\infty$</li>
@@ -714,7 +714,7 @@
 </div><blockquote>
 <p>Dijkstra 算法和用于有向无环图的最短路径算法对每条边仅松弛一次。 Bellman-Ford 算法则对每条边松弛 |V| - 1 次。</p>
 </blockquote>
-<h3 id="bellman-ford-算法">Bellman-Ford 算法</h3>
+<h3 id="51-bellman-ford-算法">5.1. Bellman-Ford 算法</h3>
 <p>Bellman-Ford 算法解决的是一般情况下的最短路径问题。该算法返回 TRUE 值当且仅当输入图不包含可以从源结点到达的权重为负值的环路。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -744,7 +744,7 @@
 <p>Bellman-Ford 算法的总运行时间为 O(VE)</p>
 </blockquote>
 <p><img src="/algo_graph/graph-008.png" alt="Bellman-Ford 算法"></p>
-<h3 id="有向无环图中的单源最短路径问题">有向无环图中的单源最短路径问题</h3>
+<h3 id="52-有向无环图中的单源最短路径问题">5.2. 有向无环图中的单源最短路径问题</h3>
 <p>根据结点的拓扑排序次序来对带权重的有向无环图 G = (V, E) 进行边的松弛操作，我们便可以在 $O(V + E)$ 时间内计算出从单个源结点到所有结点之间的最短路径。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -765,7 +765,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p><img src="/algo_graph/graph-009.png" alt="DAG"></p>
-<h2 id="dijkstra-算法">Dijkstra 算法</h2>
+<h2 id="6-dijkstra-算法">6. Dijkstra 算法</h2>
 <p>Dijkstra 算法解决的是带权重的有向图上的单源最短路径问题，该算法要求所有边的权重都为非负值。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">

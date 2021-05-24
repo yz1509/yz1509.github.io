@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="动态规划算法学习笔记。">
 <meta itemprop="datePublished" content="2018-07-18T21:28:58+00:00" />
 <meta itemprop="dateModified" content="2018-07-18T21:28:58+00:00" />
-<meta itemprop="wordCount" content="1750">
+<meta itemprop="wordCount" content="1761">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"> 数据结构与算法 </a>
             
           </div>
-        <span class="more-meta"> 1750 words </span>
+        <span class="more-meta"> 1761 words </span>
           <span class="more-meta"> 4 min read </span>
 
         
@@ -331,20 +331,20 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#定义">定义</a></li>
-    <li><a href="#解题思路">解题思路</a>
+    <li><a href="#1-定义">1. 定义</a></li>
+    <li><a href="#2-解题思路">2. 解题思路</a>
       <ul>
-        <li><a href="#将原问题分解为子问题">将原问题分解为子问题</a></li>
-        <li><a href="#确定状态">确定状态</a></li>
-        <li><a href="#确定一些初始状态边界状态的值">确定一些初始状态(边界状态)的值</a></li>
-        <li><a href="#确定状态转移方程">确定状态转移方程</a></li>
+        <li><a href="#21-将原问题分解为子问题">2.1. 将原问题分解为子问题</a></li>
+        <li><a href="#22-确定状态">2.2. 确定状态</a></li>
+        <li><a href="#23-确定一些初始状态边界状态的值">2.3. 确定一些初始状态(边界状态)的值</a></li>
+        <li><a href="#24-确定状态转移方程">2.4. 确定状态转移方程</a></li>
       </ul>
     </li>
-    <li><a href="#条件">条件</a></li>
-    <li><a href="#和其他方法的异同">和其他方法的异同</a></li>
-    <li><a href="#技巧">技巧</a></li>
-    <li><a href="#动态规划的三种形式">动态规划的三种形式</a></li>
-    <li><a href="#练习">练习</a></li>
+    <li><a href="#3-条件">3. 条件</a></li>
+    <li><a href="#4-和其他方法的异同">4. 和其他方法的异同</a></li>
+    <li><a href="#5-技巧">5. 技巧</a></li>
+    <li><a href="#6-动态规划的三种形式">6. 动态规划的三种形式</a></li>
+    <li><a href="#7-练习">7. 练习</a></li>
   </ul>
 </nav>
   </div>
@@ -354,50 +354,50 @@
     <div class="post-content">
       <p>动态规划算法学习笔记。</p>
 <hr>
-<h2 id="定义">定义</h2>
+<h2 id="1-定义">1. 定义</h2>
 <p><a href="https://en.wikipedia.org/wiki/Dynamic_programming">Dynamic Programming</a> (also known as dynamic optimization) is a method for solving a complex problem by breaking it down into a collection of simpler subproblems.</p>
 <blockquote>
 <p>本质:是对问题状态的定义和状态转移方程的定义。</p>
 </blockquote>
-<h2 id="解题思路">解题思路</h2>
-<h3 id="将原问题分解为子问题">将原问题分解为子问题</h3>
+<h2 id="2-解题思路">2. 解题思路</h2>
+<h3 id="21-将原问题分解为子问题">2.1. 将原问题分解为子问题</h3>
 <ul>
 <li>把原问题分解为若干个子问题，子问题和原问题形式相同或类似，只不过规模变小了。子问题都解决，原问题即解决。比如，<a href="http://bailian.openjudge.cn/practice/1163">POJ 1163:数字三角形</a>。</li>
 <li>子问题的解一旦求出就会被保存，所以每个子问题只需求解一次。</li>
 </ul>
-<h3 id="确定状态">确定状态</h3>
+<h3 id="22-确定状态">2.2. 确定状态</h3>
 <p>在用动态规划解题时，我们往往将和子问题相关的各个变量的一组取值，称之为一个<code>状态</code>。一个<code>状态</code>对应于一个或多个子问题，所谓某个<code>状态</code>下的值，就是这个<code>状态</code>所对应的子问题的解。</p>
 <p>所有<code>状态</code>的集合，构成问题的<code>状态空间</code>。<code>状态空间</code>的大小，与用动态规划解决问题的时间复杂度直接相关。在数字三角形的例子里，一共有 $\frac{N\times(N + 1)}{2}​$ 个数字，所以这个问题的状态空间里一共就有 $\frac{N\times(N + 1)}{2}​$ 个状态。</p>
 <p>整个问题的时间复杂度是状态数目乘以计算每个状态所需时间。在数字三角形里每个<code>状态</code>只需要经过一次，且在每个状态上作计算所花的时间都是和 $N$ 无关的常数。</p>
 <p>用动态规划解题，经常碰到的情况是，$K$ 个整型变量构成一个状态 (如数字三角形中的行号和列号这两个变量构成<code>状态</code>)。如果这 $K$ 个整型变量的取值范围分别是 $N_1, N_2, ……, N_k$，那么，我们就可以用一个 $K$ 维的数组 $array[N_1][N_2] \dots [N_k]$来存储各个状态的值。这个值未必就是一个整数或浮点数，可能是需要一个结构才能表示的，那么 <code>array</code> 就可以是一个结构数组。一个<code>状态</code>下的值通常会是一个或多个子问题的解。</p>
-<h3 id="确定一些初始状态边界状态的值">确定一些初始状态(边界状态)的值</h3>
+<h3 id="23-确定一些初始状态边界状态的值">2.3. 确定一些初始状态(边界状态)的值</h3>
 <p>以数字三角形为例，初始状态就是底边数字，值就是底边数字值。</p>
-<h3 id="确定状态转移方程">确定状态转移方程</h3>
+<h3 id="24-确定状态转移方程">2.4. 确定状态转移方程</h3>
 <p>定义出什么是<code>状态</code>，以及在该<code>状态</code>下的值后，就要找出不同的状态之间如何迁移——即如何从一个或多个值已知的<code>状态</code>，求出另一个<code>状态</code>的值 (<strong>人人为我</strong>递推型)。状态的迁移可以用递推公式表示，此递推公式也可被称作<strong>状态转移方程</strong>。</p>
 <p>数字三角形的状态转移方程:</p>
 <p>$MaxSum[r][j] = \begin{cases}
 D[r][j], &amp;r = N \cr
 Max(MaxSum[r+1][j], MaxSum[r+1][j+1]) + D[r][j], &amp;otherwise
 \end{cases}$</p>
-<h2 id="条件">条件</h2>
+<h2 id="3-条件">3. 条件</h2>
 <p>在对状态和状态转移方程的定义过程中，需满足<strong>最优子结构</strong>，并且<strong>无后效性</strong>：</p>
 <ul>
 <li>最优子结构性质：如果问题的最优解所包含的子问题的解也是最优的，我们就称该问题具有最优子结构性质。</li>
 <li>无后效性：当前的若干状态值一旦确定，则此后过程的演变就只和这若干个状态的值有关，和之前是采取哪种手段或经过哪条路径演变到当前的这若干个状态，没有关系。</li>
 </ul>
-<h2 id="和其他方法的异同">和其他方法的异同</h2>
+<h2 id="4-和其他方法的异同">4. 和其他方法的异同</h2>
 <ul>
 <li>递推：每个阶段只有一个状态</li>
 <li>贪心：每个阶段的最优状态都是由上一个阶段的最优状态得到</li>
 <li>搜索：每个阶段的最优状态是由之前<strong>所有</strong>阶段的状态的组合得到</li>
 <li>动态规划：每个阶段的最优状态可以从之前某个阶段的某个或某些状态直接得到而不管之前这个状态是如何得到的。</li>
 </ul>
-<h2 id="技巧">技巧</h2>
+<h2 id="5-技巧">5. 技巧</h2>
 <ul>
 <li>递归到动态规划的一般转化方法：递归函数有 $n$ 个参数，就定义一个 $n$ 维的数组，数组的下标是递归函数参数的取值范围，数组元素的值是递归函数的返回值，这样就可以从边界值开始，逐步填充数组，相当于计算递归函数值的逆过程。</li>
 <li><code>缓存</code>，<code>重叠子问题</code>，<code>记忆化</code>，这三个名词，都是在阐述递推式求解的技巧。以 <a href="https://en.wikipedia.org/wiki/Fibonacci_number">Fibonacci 数列</a> 为例，计算第 100 项的时候，需要计算第 99 项和 98 项；在计算第 101 项的时候，需要第 100 项和第 99 项，这时候你还需要重新计算第 99 项吗？不需要，你只需要在第一次计算的时候把它记下来就可以了。上述的需要再次计算的第 99 项，就叫<code>重叠子问题</code>。如果没有计算过，就按照递推式计算，如果计算过，直接使用，就像<code>缓存</code>一样，这种方法，叫做<code>记忆化</code>，这是递推式求解的技巧。这种技巧，其实就是<strong>花费空间来节省时间</strong>。</li>
 </ul>
-<h2 id="动态规划的三种形式">动态规划的三种形式</h2>
+<h2 id="6-动态规划的三种形式">6. 动态规划的三种形式</h2>
 <ul>
 <li>
 <p>记忆递归型</p>
@@ -415,7 +415,7 @@ Max(MaxSum[r+1][j], MaxSum[r+1][j+1]) + D[r][j], &amp;otherwise
 <p><img src="/algo_dp/DP0702.png" width = "500" height = "250" alt="人人为我" align=center /></p>
 </li>
 </ul>
-<h2 id="练习">练习</h2>
+<h2 id="7-练习">7. 练习</h2>
 <ul>
 <li><a href="http://bailian.openjudge.cn/practice/1163">POJ 1163: 数字三角形</a></li>
 <li><a href="http://bailian.openjudge.cn/practice/2757">POJ 2757: 最长上升子序列</a></li>

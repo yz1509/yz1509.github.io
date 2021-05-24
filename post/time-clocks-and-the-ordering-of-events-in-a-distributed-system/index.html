@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/time-clocks-and-the-ordering-of-events-in-a-distributed-system/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="《Time, Clocks, and the Ordering of Events in a Distributed System》 阅读笔记。">
 <meta itemprop="datePublished" content="2021-02-04T18:14:47+08:00" />
 <meta itemprop="dateModified" content="2021-02-04T18:14:47+08:00" />
-<meta itemprop="wordCount" content="1096">
+<meta itemprop="wordCount" content="1101">
 
 
 
@@ -308,7 +308,7 @@
         <div class="post-category">
             
           </div>
-        <span class="more-meta"> 1096 words </span>
+        <span class="more-meta"> 1101 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -330,11 +330,11 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#the-partial-ordering">The Partial Ordering</a></li>
-    <li><a href="#logical-clocks">Logical Clocks</a></li>
-    <li><a href="#ordering-the-events-totally">Ordering the Events Totally</a></li>
-    <li><a href="#strong-clock-condition">Strong Clock Condition</a></li>
-    <li><a href="#physical-clocks">Physical Clocks</a></li>
+    <li><a href="#1-the-partial-ordering">1. The Partial Ordering</a></li>
+    <li><a href="#2-logical-clocks">2. Logical Clocks</a></li>
+    <li><a href="#3-ordering-the-events-totally">3. Ordering the Events Totally</a></li>
+    <li><a href="#4-strong-clock-condition">4. Strong Clock Condition</a></li>
+    <li><a href="#5-physical-clocks">5. Physical Clocks</a></li>
   </ul>
 </nav>
   </div>
@@ -345,7 +345,7 @@
       <p>《Time, Clocks, and the Ordering of Events in a Distributed System》 阅读笔记。</p>
 <hr>
 <p><a href="https://citemaster.net/get/10b50274-7bc5-11e5-8aa1-00163e009cc7/p558-lamport.pdf">论文地址</a></p>
-<h2 id="the-partial-ordering">The Partial Ordering</h2>
+<h2 id="1-the-partial-ordering">1. The Partial Ordering</h2>
 <p><strong>System model</strong></p>
 <ul>
 <li>The system is composed of a collection of processes</li>
@@ -371,7 +371,7 @@
 </blockquote>
 </li>
 </ul>
-<h2 id="logical-clocks">Logical Clocks</h2>
+<h2 id="2-logical-clocks">2. Logical Clocks</h2>
 <p><strong>Definition</strong></p>
 <ul>
 <li>We define a clock $C_i$ for each process $P_i$ to be a function which assigns a number $C_i(a)$ to any event $a$ in that process.</li>
@@ -398,7 +398,7 @@
 </ul>
 </li>
 </ul>
-<h2 id="ordering-the-events-totally">Ordering the Events Totally</h2>
+<h2 id="3-ordering-the-events-totally">3. Ordering the Events Totally</h2>
 <p>至今为止，我们只能得到事件的偏序关系，为了得到事件的全局顺序，我们可通过附加一个 processes 之间的比较关系 $\prec$ 达成目的。</p>
 <p>More precisely, we define a relation $\Rightarrow$ as follows: if $a$ is an event in process $P_i$ and $b$ is an event in process $P_j$, then $a \Rightarrow b$ if and only if either</p>
 <ul>
@@ -413,7 +413,7 @@
 </blockquote>
 </li>
 </ul>
-<h2 id="strong-clock-condition">Strong Clock Condition</h2>
+<h2 id="4-strong-clock-condition">4. Strong Clock Condition</h2>
 <p>因为所构建的系统可能没有包含所有的因果关系，因此可能所构建系统内的事件顺序和实际上的事件顺序不符。因此，为了和实际相符，逻辑时钟需满足以下约束：</p>
 <p><code>Strong Clock Condition</code>: For any events $a, b$ in $\varphi$, if $a \leadsto b$ then $C(a) &lt; C(b)$.</p>
 <p>where,</p>
@@ -426,7 +426,7 @@
 </ul>
 </li>
 </ul>
-<h2 id="physical-clocks">Physical Clocks</h2>
+<h2 id="5-physical-clocks">5. Physical Clocks</h2>
 <p>For mathematical convenience, we assume that $C_i(t)$ is a continuous, differentiable function of $t$ except for isolated jump discontinuities where the clock is reset.</p>
 <p><strong>Physical Clock Condition</strong></p>
 <ul>

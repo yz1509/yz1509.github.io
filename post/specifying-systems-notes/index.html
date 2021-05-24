@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/specifying-systems-notes/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="《Specifying Systems》 阅读笔记。">
 <meta itemprop="datePublished" content="2020-12-08T10:23:40+08:00" />
 <meta itemprop="dateModified" content="2020-12-08T10:23:40+08:00" />
-<meta itemprop="wordCount" content="5222">
+<meta itemprop="wordCount" content="5260">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/"> 分布式系统 </a>
             
           </div>
-        <span class="more-meta"> 5222 words </span>
+        <span class="more-meta"> 5260 words </span>
           <span class="more-meta"> 11 min read </span>
 
         
@@ -331,66 +331,66 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#chapter-1-a-little-simple-math">Chapter 1: A Little Simple Math</a>
+    <li><a href="#1-chapter-1-a-little-simple-math">1. Chapter 1: A Little Simple Math</a>
       <ul>
-        <li><a href="#propositional-logic">Propositional Logic</a></li>
-        <li><a href="#predicate-logic">Predicate Logic</a></li>
+        <li><a href="#11-propositional-logic">1.1. Propositional Logic</a></li>
+        <li><a href="#12-predicate-logic">1.2. Predicate Logic</a></li>
       </ul>
     </li>
-    <li><a href="#chapter-2-specifying-a-simple-clock">Chapter 2: Specifying a Simple Clock</a>
+    <li><a href="#2-chapter-2-specifying-a-simple-clock">2. Chapter 2: Specifying a Simple Clock</a>
       <ul>
-        <li><a href="#小结">小结</a></li>
+        <li><a href="#21-小结">2.1. 小结</a></li>
       </ul>
     </li>
-    <li><a href="#chapter-3-an-asynchronous-interface">Chapter 3: An Asynchronous Interface</a>
+    <li><a href="#3-chapter-3-an-asynchronous-interface">3. Chapter 3: An Asynchronous Interface</a>
       <ul>
-        <li><a href="#invariant--type">Invariant &amp; Type</a></li>
-        <li><a href="#record">Record</a></li>
-        <li><a href="#definitions">Definitions</a></li>
-        <li><a href="#comments">Comments</a></li>
-        <li><a href="#小结-1">小结</a></li>
+        <li><a href="#31-invariant--type">3.1. Invariant &amp; Type</a></li>
+        <li><a href="#32-record">3.2. Record</a></li>
+        <li><a href="#33-definitions">3.3. Definitions</a></li>
+        <li><a href="#34-comments">3.4. Comments</a></li>
+        <li><a href="#35-小结">3.5. 小结</a></li>
       </ul>
     </li>
-    <li><a href="#chapter-4-a-fifo">Chapter 4: A FIFO</a>
+    <li><a href="#4-chapter-4-a-fifo">4. Chapter 4: A FIFO</a>
       <ul>
-        <li><a href="#instantiation-examined">Instantiation Examined</a></li>
-        <li><a href="#hiding-variables">Hiding variables</a></li>
-        <li><a href="#assume">ASSUME</a></li>
-        <li><a href="#小结-2">小结</a></li>
+        <li><a href="#41-instantiation-examined">4.1. Instantiation Examined</a></li>
+        <li><a href="#42-hiding-variables">4.2. Hiding variables</a></li>
+        <li><a href="#43-assume">4.3. ASSUME</a></li>
+        <li><a href="#44-小结">4.4. 小结</a></li>
       </ul>
     </li>
-    <li><a href="#chapter-5-a-caching-memory">Chapter 5: A Caching Memory</a>
+    <li><a href="#5-chapter-5-a-caching-memory">5. Chapter 5: A Caching Memory</a>
       <ul>
-        <li><a href="#parameters">Parameters</a></li>
-        <li><a href="#functions">Functions</a></li>
-        <li><a href="#invariance">Invariance</a></li>
-        <li><a href="#小结-3">小结</a></li>
+        <li><a href="#51-parameters">5.1. Parameters</a></li>
+        <li><a href="#52-functions">5.2. Functions</a></li>
+        <li><a href="#53-invariance">5.3. Invariance</a></li>
+        <li><a href="#54-小结">5.4. 小结</a></li>
       </ul>
     </li>
-    <li><a href="#chapter-6-some-more-math">Chapter 6: Some More Math</a>
+    <li><a href="#6-chapter-6-some-more-math">6. Chapter 6: Some More Math</a>
       <ul>
-        <li><a href="#sets">Sets</a></li>
-        <li><a href="#silly-expressions">Silly Expressions</a></li>
-        <li><a href="#functions-versus-operators">Functions versus Operators</a></li>
+        <li><a href="#61-sets">6.1. Sets</a></li>
+        <li><a href="#62-silly-expressions">6.2. Silly Expressions</a></li>
+        <li><a href="#63-functions-versus-operators">6.3. Functions versus Operators</a></li>
       </ul>
     </li>
-    <li><a href="#chapter-7-writing-a-specification-some-advice">Chapter 7: Writing a Specification: Some Advice</a></li>
-    <li><a href="#chapter-8-liveness-and-fairness">Chapter 8: Liveness and Fairness</a>
+    <li><a href="#7-chapter-7-writing-a-specification-some-advice">7. Chapter 7: Writing a Specification: Some Advice</a></li>
+    <li><a href="#8-chapter-8-liveness-and-fairness">8. Chapter 8: Liveness and Fairness</a>
       <ul>
-        <li><a href="#temporal-formulas">Temporal Formulas</a></li>
-        <li><a href="#temporal-tautologies">Temporal Tautologies</a></li>
-        <li><a href="#temporal-proof-rules">Temporal Proof Rules</a></li>
-        <li><a href="#weak-fairness">Weak Fairness</a></li>
+        <li><a href="#81-temporal-formulas">8.1. Temporal Formulas</a></li>
+        <li><a href="#82-temporal-tautologies">8.2. Temporal Tautologies</a></li>
+        <li><a href="#83-temporal-proof-rules">8.3. Temporal Proof Rules</a></li>
+        <li><a href="#84-weak-fairness">8.4. Weak Fairness</a></li>
       </ul>
     </li>
-    <li><a href="#chapter-x-the-standard-modules">Chapter X: The Standard Modules</a>
+    <li><a href="#9-chapter-x-the-standard-modules">9. Chapter X: The Standard Modules</a>
       <ul>
-        <li><a href="#sequences-module">Sequences Module</a></li>
-        <li><a href="#finitesets-module">FiniteSets Module</a></li>
-        <li><a href="#bags-module">Bags Module</a></li>
-        <li><a href="#the-numbers-modules">The Numbers Modules</a></li>
-        <li><a href="#realtime-module">RealTime Module</a></li>
-        <li><a href="#tlc-module">TLC Module</a></li>
+        <li><a href="#91-sequences-module">9.1. Sequences Module</a></li>
+        <li><a href="#92-finitesets-module">9.2. FiniteSets Module</a></li>
+        <li><a href="#93-bags-module">9.3. Bags Module</a></li>
+        <li><a href="#94-the-numbers-modules">9.4. The Numbers Modules</a></li>
+        <li><a href="#95-realtime-module">9.5. RealTime Module</a></li>
+        <li><a href="#96-tlc-module">9.6. TLC Module</a></li>
       </ul>
     </li>
   </ul>
@@ -402,8 +402,8 @@
     <div class="post-content">
       <p><a href="http://lamport.azurewebsites.net/tla/book-02-08-08.pdf">《Specifying Systems》</a> 阅读笔记。</p>
 <hr>
-<h2 id="chapter-1-a-little-simple-math">Chapter 1: A Little Simple Math</h2>
-<h3 id="propositional-logic">Propositional Logic</h3>
+<h2 id="1-chapter-1-a-little-simple-math">1. Chapter 1: A Little Simple Math</h2>
+<h3 id="11-propositional-logic">1.1. Propositional Logic</h3>
 <p><a href="https://en.wikipedia.org/wiki/Propositional_calculus">Propositional Logic</a> (命题逻辑) is the mathematics of the two Boolean values <code>TRUE</code> and <code>FALSE</code> and the five operators whose names are:</p>
 <ul>
 <li>$\land$ conjunction (and)</li>
@@ -413,14 +413,14 @@
 <li>$\equiv$ equivalence (is equivalent to)</li>
 </ul>
 <p><a href="https://en.wikipedia.org/wiki/Tautology_(logic)">Tautology</a> (恒真式) is a formula or assertion that is ture in every possible interpretation. 比如 $F \Rightarrow G \equiv \lnot F \lor G$ 是一个 tautology。</p>
-<h3 id="predicate-logic">Predicate Logic</h3>
+<h3 id="12-predicate-logic">1.2. Predicate Logic</h3>
 <p><a href="https://en.wikipedia.org/wiki/First-order_logic">Predicate Logic</a> (谓词逻辑) extends propositional logic with the two quantifiers:</p>
 <ul>
 <li>$\forall$ universal quantification (for all)</li>
 <li>$\exists$ existential quantification (there exists)</li>
 </ul>
 <p>其中，<a href="https://en.wikipedia.org/wiki/Predicate_(mathematical_logic)">Predicate</a> 可以看作为一个布尔值函数，而 <a href="https://en.wikipedia.org/wiki/Quantifier_(logic)">quantifiers</a> 指定了该 predicate 成立的程度。</p>
-<h2 id="chapter-2-specifying-a-simple-clock">Chapter 2: Specifying a Simple Clock</h2>
+<h2 id="2-chapter-2-specifying-a-simple-clock">2. Chapter 2: Specifying a Simple Clock</h2>
 <ul>
 <li><strong>state</strong>: an assignment of values to varibles.</li>
 <li><strong>behavior</strong> is an infinite sequence of states.</li>
@@ -438,7 +438,7 @@
 </li>
 <li><strong>theorem</strong>: a temporal formula satisfied by every behavior is called a theorem.</li>
 </ul>
-<h3 id="小结">小结</h3>
+<h3 id="21-小结">2.1. 小结</h3>
 <p>在本章中作者通过简单的 Clock 例子展示了使用 TLA+ 描述一个系统时的大致流程：</p>
 <ol>
 <li>先给出系统初始状态 $Init$</li>
@@ -446,8 +446,8 @@
 <li>然后，得到 $Spec \triangleq Init \land \Box [Next]_{vars}$</li>
 <li>最后给出系统应满足的条件：$\mathrm{THEOREM} \enspace Spec \Rightarrow \mathrm{Temporal \enspace formula}$</li>
 </ol>
-<h2 id="chapter-3-an-asynchronous-interface">Chapter 3: An Asynchronous Interface</h2>
-<h3 id="invariant--type">Invariant &amp; Type</h3>
+<h2 id="3-chapter-3-an-asynchronous-interface">3. Chapter 3: An Asynchronous Interface</h2>
+<h3 id="31-invariant--type">3.1. Invariant &amp; Type</h3>
 <ul>
 <li>A <strong>state function</strong> is an ordinary expression (one with no prime or $\Box$) that can contain variables and constants.</li>
 <li>A <strong>state predicate</strong> is a Boolean-valued state function. (one with no prime or $\Box$)</li>
@@ -455,7 +455,7 @@
 <li>A variable $v$ has <strong>type</strong> $T$ in a specification $Spec$ iff $v \in T$ is an invariant of $Spec$.</li>
 <li>PS: TLA+ is an untyped language. Type correctness is just a name for a certain invariance property.</li>
 </ul>
-<h3 id="record">Record</h3>
+<h3 id="32-record">3.2. Record</h3>
 <ul>
 <li>
 <p>A <strong>record</strong> is a function whose domain is a finite set of strings.</p>
@@ -481,7 +481,7 @@ $$\mathrm{IF} \enspace i = &ldquo;val&rdquo; \enspace \mathrm{THEN} \enspace  d 
 </ul>
 </li>
 </ul>
-<h3 id="definitions">Definitions</h3>
+<h3 id="33-definitions">3.3. Definitions</h3>
 <ul>
 <li>
 <p><strong>operators</strong>: We define operators that take <em>more than one argument</em> in the obvious way, the general form being</p>
@@ -504,19 +504,19 @@ $$\mathrm{IF} \enspace i = &ldquo;val&rdquo; \enspace \mathrm{THEN} \enspace  d 
 </ul>
 </li>
 </ul>
-<h3 id="comments">Comments</h3>
+<h3 id="34-comments">3.4. Comments</h3>
 <ul>
 <li>单行注释：<code>\*</code></li>
 <li>多行注释：<code>(*....*)</code></li>
 </ul>
-<h3 id="小结-1">小结</h3>
+<h3 id="35-小结">3.5. 小结</h3>
 <p>在本章中，作者通过示例展示了在描述一个系统时：</p>
 <ol>
 <li>可以通过定义 <code>invariant</code> 描述系统该满足的条件，以便于理解，比如 type-correctness invariant</li>
 <li>可以使用 <code>record</code> 将多个变量整合为单个变量</li>
 </ol>
-<h2 id="chapter-4-a-fifo">Chapter 4: A FIFO</h2>
-<h3 id="instantiation-examined">Instantiation Examined</h3>
+<h2 id="4-chapter-4-a-fifo">4. Chapter 4: A FIFO</h2>
+<h3 id="41-instantiation-examined">4.1. Instantiation Examined</h3>
 <p><strong>Instantiation Is Substitution</strong></p>
 <p>Let&rsquo;s now consider an arbitrary $\mathrm{INSTANCE}$ statement</p>
 <p>$$IM \triangleq \mathrm{INTANCE} \enspace M \enspace \mathrm{WITH} \enspace p_1 \leftarrow e_1, \dots, p_n \leftarrow e_n$$</p>
@@ -546,7 +546,7 @@ $$OutChan \triangleq \mathrm{INTSANCE} \enspace Channel \enspace \mathrm{WITH} \
 <p>当同一 module 有多个实例或使用参数实例化时，我们需要使用 $IM!\Sigma$ 重命名 $\Sigma$ 以区分不同的实例。但当该 module 只有一个实例时，我们可以省略重命名，此时，实例化语句可以使用如下格式：</p>
 <p>$$\mathrm{INTSANCE} \enspace Channel \enspace \mathrm{WITH} \enspace Data \leftarrow D, chan \leftarrow x$$</p>
 <p>This instantiates $Channel$ with no renaming, but with substitution.</p>
-<h3 id="hiding-variables">Hiding variables</h3>
+<h3 id="42-hiding-variables">4.2. Hiding variables</h3>
 <p>In TLA, we hide a variable with the existential quantifier <strong>∃</strong> of temporal logic.</p>
 <ul>
 <li>In the formula <strong>∃</strong>$x : F$, the symbol $x$ is declared to be a variable in $F$.</li>
@@ -556,19 +556,19 @@ $$OutChan \triangleq \mathrm{INTSANCE} \enspace Channel \enspace \mathrm{WITH} \
 <p>$ Inner(q) \triangleq \mathrm{INSTANCE} \enspace InnerFIFO$</p>
 <p>$Spec \triangleq$ <strong>∃</strong> $q : Inner(q)!Spec$</p>
 <p>The variable parameter $q$ of module $InnerFIFO$ is instantiated with the parameter $q$ of the definition of $Inner$.</p>
-<h3 id="assume">ASSUME</h3>
+<h3 id="43-assume">4.3. ASSUME</h3>
 <ul>
 <li>An $\mathrm{ASSUME}$ statement should be used only to make assumptions about <strong>constants</strong></li>
 <li>我们不需要假定某个常量是集合类型，because in TLA+, every value is a set.</li>
 </ul>
-<h3 id="小结-2">小结</h3>
+<h3 id="44-小结">4.4. 小结</h3>
 <ol>
 <li>介绍了 Instantiation，并展示了如何利用实例化以使用其他 module</li>
 <li>通过利用量词 <strong>∃</strong> 和参数实例化的特性可达到隐藏变量的目的</li>
 <li>利用 $\mathrm{ASSUME}$ 语句可以设定 $\mathrm{CONSTANT}$ 的取值范围</li>
 </ol>
-<h2 id="chapter-5-a-caching-memory">Chapter 5: A Caching Memory</h2>
-<h3 id="parameters">Parameters</h3>
+<h2 id="5-chapter-5-a-caching-memory">5. Chapter 5: A Caching Memory</h2>
+<h3 id="51-parameters">5.1. Parameters</h3>
 <ul>
 <li>
 <p>The way to leave something unspecified in a specification is to make ti a parameter</p>
@@ -588,7 +588,7 @@ $$OutChan \triangleq \mathrm{INTSANCE} \enspace Channel \enspace \mathrm{WITH} \
 $$NoVal \triangleq \mathrm{CHOOSE} \enspace v : v \notin Val$$</p>
 </li>
 </ul>
-<h3 id="functions">Functions</h3>
+<h3 id="52-functions">5.2. Functions</h3>
 <ul>
 <li>
 <p>A function $f$ has a domain, written $\mathrm{DOMAIN} \enspace f$, and it assigns to each element $x$ of its domain the value $f[x]$</p>
@@ -649,18 +649,18 @@ $$f \triangleq \mathrm{CHOOSE} \enspace f : f = [x \in S \mapsto e]$$</p>
 <p>TLA+ does not allow mutually recursive definition, but you can convert any mutually recursive definitions into a single recursive definition of a record-valued function whose fields are the desired functions.(P68-69, 6.3)</p>
 </li>
 </ul>
-<h3 id="invariance">Invariance</h3>
+<h3 id="53-invariance">5.3. Invariance</h3>
 <ul>
 <li>In general, when $P \land N \Rightarrow P'$ holds, we say that predicate $P$ is an invariant of action $N$</li>
 </ul>
-<h3 id="小结-3">小结</h3>
+<h3 id="54-小结">5.4. 小结</h3>
 <ol>
 <li>当不知如何规范化描述某事物时，可先将其看作 parameter</li>
 <li>可以利用 $\mathrm{CHOOSE}$ 表示不属于某集合的值</li>
 <li>invariant of action $\neq$ invariant of formula</li>
 </ol>
-<h2 id="chapter-6-some-more-math">Chapter 6: Some More Math</h2>
-<h3 id="sets">Sets</h3>
+<h2 id="6-chapter-6-some-more-math">6. Chapter 6: Some More Math</h2>
+<h3 id="61-sets">6.1. Sets</h3>
 <p><strong>built-in operators of TLA+</strong></p>
 <ul>
 <li>
@@ -694,12 +694,12 @@ $$\mathrm{SUBSET} \enspace \lbrace 1, 2 \rbrace = \lbrace \lbrace \rbrace, \lbra
 <li>$SMap(S)$ is in $\mathcal{C}$, for any set $S$</li>
 <li>If $S$ and $T$ are two different sets, then $SMap(S) \neq SMap(T)$</li>
 </ul>
-<h3 id="silly-expressions">Silly Expressions</h3>
+<h3 id="62-silly-expressions">6.2. Silly Expressions</h3>
 <ul>
 <li>TLA+ is based on the usual formalization of mathematics by mathematicians, which doesn&rsquo;t hava types.</li>
 <li>A correct formula can contain silly expressions.</li>
 </ul>
-<h3 id="functions-versus-operators">Functions versus Operators</h3>
+<h3 id="63-functions-versus-operators">6.3. Functions versus Operators</h3>
 <p>$$Tail(s) \triangleq [i \in 1 .. (Len(s) - 1) \mapsto s[i+1]]$$
 $$fact[n \in Nat] \triangleq \mathrm{IF} \enspace n = 0 \enspace \mathrm{THEN} \enspace 1 \enspace \mathrm{ELSE} \enspace n*fact[n-1]$$</p>
 <ul>
@@ -714,7 +714,7 @@ $$fact[n \in Nat] \triangleq \mathrm{IF} \enspace n = 0 \enspace \mathrm{THEN} \
 <li>The definition of $Tail$ defines $Tail(s)$ for all values of $s$. whatever $Tail(s)$ means, it equals $Tail(s)$. But the definition of $fact$ defines $fact[n]$ only for $n \in Nat$, it tells us nothing about the value of $fact[1/2]$.</li>
 <li>TLA+ doesn&rsquo;t permit us to define infix functions</li>
 </ul>
-<h2 id="chapter-7-writing-a-specification-some-advice">Chapter 7: Writing a Specification: Some Advice</h2>
+<h2 id="7-chapter-7-writing-a-specification-some-advice">7. Chapter 7: Writing a Specification: Some Advice</h2>
 <ul>
 <li>Why Specify?
 <ul>
@@ -762,14 +762,14 @@ $$fact[n \in Nat] \triangleq \mathrm{IF} \enspace n = 0 \enspace \mathrm{THEN} \
 </ul>
 </li>
 </ul>
-<h2 id="chapter-8-liveness-and-fairness">Chapter 8: Liveness and Fairness</h2>
+<h2 id="8-chapter-8-liveness-and-fairness">8. Chapter 8: Liveness and Fairness</h2>
 <ul>
 <li>Safety properties: waht a system must not do</li>
 <li>Liveness properties: something does happen</li>
 <li>We express liveness properties as temporal formulas</li>
 <li>Liveness properties are likely to be the least important part of your specification</li>
 </ul>
-<h3 id="temporal-formulas">Temporal Formulas</h3>
+<h3 id="81-temporal-formulas">8.1. Temporal Formulas</h3>
 <p><strong>Definition</strong></p>
 <ul>
 <li>A temporal formula is true or false of a $behavior$.</li>
@@ -868,7 +868,7 @@ $$\forall n \in Nat : (\sigma^{+n} \models F) \Rightarrow (\exists m \in Nat : (
 </ul>
 </li>
 </ul>
-<h3 id="temporal-tautologies">Temporal Tautologies</h3>
+<h3 id="82-temporal-tautologies">8.2. Temporal Tautologies</h3>
 <ul>
 <li>A <em>temporal theorem</em> is a temporal formula that is satisfied by all behaviors.</li>
 <li>A formula like $\Box F \Rightarrow F$ that is true when any formulas are substituted for its identifiers is called a tautology, tautologies containing temporal operators are sometimes called <em>temporal tautologies</em>.</li>
@@ -917,7 +917,7 @@ $$\forall n \in Nat : (\sigma^{+n} \models F) \Rightarrow (\exists m \in Nat : (
 <p>$$[A \land B]_v \quad \equiv \quad [A]_v \land [B]_v \qquad \qquad \langle A \lor B \rangle_v \quad \equiv \quad \langle A \rangle_v \lor \langle B \rangle_v$$</p>
 <p>Substituting $\langle A \rangle_v \lor \langle B \rangle_v$ for $\langle A \lor B \rangle_v$, gives us the following TLA tautology:</p>
 <p>$$\Box \Diamond \langle A \lor B \rangle_v \quad \equiv \quad (\Box \Diamond \langle A \rangle_v) \lor (\Box \Diamond \langle B \rangle_v)$$</p>
-<h3 id="temporal-proof-rules">Temporal Proof Rules</h3>
+<h3 id="83-temporal-proof-rules">8.3. Temporal Proof Rules</h3>
 <p>A <em>proof rule</em> is a rule for deducing true formulas from other true formulas.</p>
 <p><strong>Modus Ponens Rule</strong></p>
 <ul>
@@ -943,7 +943,7 @@ $$\forall n \in Nat : (\sigma^{+n} \models F) \Rightarrow (\exists m \in Nat : (
 <li>In propositional logic, every proof rule has a corressponding tautology.</li>
 <li>In temporal logic, a proof rule need not imply a tautology</li>
 </ul>
-<h3 id="weak-fairness">Weak Fairness</h3>
+<h3 id="84-weak-fairness">8.4. Weak Fairness</h3>
 <p>When writing liveness properties, the syntax of TLA often forces us to write $\langle A \rangle_v$ instead of $A$, for some action $A$</p>
 <blockquote>
 <p>Because if $A$ does allow stuttering steps, we want to require not that an $A$ step eventually occurs, but that a nonstuttering $A$ step occurs &mdash; that is, an $\langle A \rangle_v$ step.</p>
@@ -974,8 +974,8 @@ $$\forall n \in Nat : (\sigma^{+n} \models F) \Rightarrow (\exists m \in Nat : (
 </ul>
 </li>
 </ul>
-<h2 id="chapter-x-the-standard-modules">Chapter X: The Standard Modules</h2>
-<h3 id="sequences-module">Sequences Module</h3>
+<h2 id="9-chapter-x-the-standard-modules">9. Chapter X: The Standard Modules</h2>
+<h3 id="91-sequences-module">9.1. Sequences Module</h3>
 <p>The Sequences module defines the following operators on sequences:</p>
 <ul>
 <li>
@@ -1034,7 +1034,7 @@ $$\forall n \in Nat : (\sigma^{+n} \models F) \Rightarrow (\exists m \in Nat : (
 </li>
 </ul>
 <p><img src="/tla/tla_sequence_module.png" alt="tla_sequence_module"></p>
-<h3 id="finitesets-module">FiniteSets Module</h3>
+<h3 id="92-finitesets-module">9.2. FiniteSets Module</h3>
 <p>The FiniteSets module defines the following operators on set:</p>
 <ul>
 <li>
@@ -1051,7 +1051,7 @@ $$\forall n \in Nat : (\sigma^{+n} \models F) \Rightarrow (\exists m \in Nat : (
 </li>
 </ul>
 <p><img src="/tla/tla_finitesets_module.png" alt="tla_finitesets_module"></p>
-<h3 id="bags-module">Bags Module</h3>
+<h3 id="93-bags-module">9.3. Bags Module</h3>
 <p>A bag, also called a multiset, is a set that can contain multiple copies of the same element. A bag can have infinitely many elements, but only the finitely many copies of any single element.</p>
 <p>The Bags module defines a bag to be a function whose range is a subset of the positive integers. The module defines the following operators:</p>
 <ul>
@@ -1148,11 +1148,11 @@ for any $e$ and any bags $B1$ and $B2$</li>
 </li>
 </ul>
 <p><img src="/tla/tla_bags_module.png" alt="tal_bags_module"></p>
-<h3 id="the-numbers-modules">The Numbers Modules</h3>
+<h3 id="94-the-numbers-modules">9.4. The Numbers Modules</h3>
 <p><img src="/tla/tla_numbers_modules.png" alt="tla_numbers_module"></p>
-<h3 id="realtime-module">RealTime Module</h3>
+<h3 id="95-realtime-module">9.5. RealTime Module</h3>
 <p><img src="/tla/tla_realtime_module.png" alt="tla_realtime_module"></p>
-<h3 id="tlc-module">TLC Module</h3>
+<h3 id="96-tlc-module">9.6. TLC Module</h3>
 <p><img src="/tla/tla_tlc_module.png" alt="tla_tlc_module"></p>
     </div>
 

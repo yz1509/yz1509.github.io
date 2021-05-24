@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/redis-modules-apis/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis Modules APIs 介绍。">
 <meta itemprop="datePublished" content="2020-08-27T10:45:48+00:00" />
 <meta itemprop="dateModified" content="2020-08-27T10:45:48+00:00" />
-<meta itemprop="wordCount" content="19620">
+<meta itemprop="wordCount" content="19673">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 19620 words </span>
+        <span class="more-meta"> 19673 words </span>
           <span class="more-meta"> 40 min read </span>
 
         
@@ -331,80 +331,80 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#内存管理">内存管理</a></li>
-    <li><a href="#service-api-exported-to-modules">Service API exported to modules</a>
+    <li><a href="#1-内存管理">1. 内存管理</a></li>
+    <li><a href="#2-service-api-exported-to-modules">2. Service API exported to modules</a>
       <ul>
-        <li><a href="#注册命令">注册命令</a></li>
-        <li><a href="#其他">其他</a></li>
+        <li><a href="#21-注册命令">2.1. 注册命令</a></li>
+        <li><a href="#22-其他">2.2. 其他</a></li>
       </ul>
     </li>
-    <li><a href="#redismodulestring-objects-apis">RedisModuleString objects APIs</a>
+    <li><a href="#3-redismodulestring-objects-apis">3. RedisModuleString objects APIs</a>
       <ul>
-        <li><a href="#create">Create</a></li>
-        <li><a href="#free">Free</a></li>
-        <li><a href="#retain">Retain</a></li>
-        <li><a href="#convert">Convert</a></li>
-        <li><a href="#operators">Operators</a></li>
+        <li><a href="#31-create">3.1. Create</a></li>
+        <li><a href="#32-free">3.2. Free</a></li>
+        <li><a href="#33-retain">3.3. Retain</a></li>
+        <li><a href="#34-convert">3.4. Convert</a></li>
+        <li><a href="#35-operators">3.5. Operators</a></li>
       </ul>
     </li>
-    <li><a href="#reply-apis">Reply APIs</a>
+    <li><a href="#4-reply-apis">4. Reply APIs</a>
       <ul>
-        <li><a href="#reply-with-numeral">Reply with numeral</a></li>
-        <li><a href="#reply-with-string">Reply with string</a></li>
-        <li><a href="#reply-with-array">Reply with array</a></li>
-        <li><a href="#others">Others</a></li>
+        <li><a href="#41-reply-with-numeral">4.1. Reply with numeral</a></li>
+        <li><a href="#42-reply-with-string">4.2. Reply with string</a></li>
+        <li><a href="#43-reply-with-array">4.3. Reply with array</a></li>
+        <li><a href="#44-others">4.4. Others</a></li>
       </ul>
     </li>
-    <li><a href="#commands-replication-apis">Commands replication APIs</a></li>
-    <li><a href="#db-and-key-apis----generic-apis">DB and Key APIs &ndash; Generic APIs</a></li>
-    <li><a href="#low-level-key-apis">Low level Key APIs</a>
+    <li><a href="#5-commands-replication-apis">5. Commands replication APIs</a></li>
+    <li><a href="#6-db-and-key-apis----generic-apis">6. DB and Key APIs &ndash; Generic APIs</a></li>
+    <li><a href="#7-low-level-key-apis">7. Low level Key APIs</a>
       <ul>
-        <li><a href="#base">Base</a></li>
-        <li><a href="#string-type">String type</a></li>
-        <li><a href="#list-type">List type</a></li>
-        <li><a href="#sorted-set-type">Sorted Set type</a></li>
-        <li><a href="#hash-type">Hash type</a></li>
+        <li><a href="#71-base">7.1. Base</a></li>
+        <li><a href="#72-string-type">7.2. String type</a></li>
+        <li><a href="#73-list-type">7.3. List type</a></li>
+        <li><a href="#74-sorted-set-type">7.4. Sorted Set type</a></li>
+        <li><a href="#75-hash-type">7.5. Hash type</a></li>
       </ul>
     </li>
-    <li><a href="#high-level-key-apis----call">High level Key APIs &ndash; Call</a></li>
-    <li><a href="#自定义数据类型">自定义数据类型</a>
+    <li><a href="#8-high-level-key-apis----call">8. High level Key APIs &ndash; Call</a></li>
+    <li><a href="#9-自定义数据类型">9. 自定义数据类型</a>
       <ul>
-        <li><a href="#create-data-type">Create Data Type</a></li>
-        <li><a href="#access-to-moduletype">Access to moduleType</a></li>
-        <li><a href="#rdb-loading-and-saving-functions">RDB loading and saving functions</a></li>
-        <li><a href="#key-digest-api">Key digest API</a></li>
-        <li><a href="#aof-api-for-modules-data-types">AOF API for modules data types</a></li>
-        <li><a href="#io-context-handling">IO context handling</a></li>
+        <li><a href="#91-create-data-type">9.1. Create Data Type</a></li>
+        <li><a href="#92-access-to-moduletype">9.2. Access to moduleType</a></li>
+        <li><a href="#93-rdb-loading-and-saving-functions">9.3. RDB loading and saving functions</a></li>
+        <li><a href="#94-key-digest-api">9.4. Key digest API</a></li>
+        <li><a href="#95-aof-api-for-modules-data-types">9.5. AOF API for modules data types</a></li>
+        <li><a href="#96-io-context-handling">9.6. IO context handling</a></li>
       </ul>
     </li>
-    <li><a href="#输出日志">输出日志</a></li>
-    <li><a href="#blocking-clients-from-modules">Blocking clients from modules</a>
+    <li><a href="#10-输出日志">10. 输出日志</a></li>
+    <li><a href="#11-blocking-clients-from-modules">11. Blocking clients from modules</a>
       <ul>
-        <li><a href="#block-client">Block Client</a></li>
-        <li><a href="#block-client-on-keys">Block Client On Keys</a></li>
-        <li><a href="#utils">Utils</a></li>
+        <li><a href="#111-block-client">11.1. Block Client</a></li>
+        <li><a href="#112-block-client-on-keys">11.2. Block Client On Keys</a></li>
+        <li><a href="#113-utils">11.3. Utils</a></li>
       </ul>
     </li>
-    <li><a href="#thread-safe-contexts">Thread Safe Contexts</a></li>
-    <li><a href="#module-keyspace-notifications-api">Module Keyspace Notifications API</a></li>
-    <li><a href="#modules-cluster-api">Modules Cluster API</a></li>
-    <li><a href="#modules-timers-api">Modules Timers API</a></li>
-    <li><a href="#modules-acl-api">Modules ACL API</a></li>
-    <li><a href="#modules-dictionary-api">Modules Dictionary API</a>
+    <li><a href="#12-thread-safe-contexts">12. Thread Safe Contexts</a></li>
+    <li><a href="#13-module-keyspace-notifications-api">13. Module Keyspace Notifications API</a></li>
+    <li><a href="#14-modules-cluster-api">14. Modules Cluster API</a></li>
+    <li><a href="#15-modules-timers-api">15. Modules Timers API</a></li>
+    <li><a href="#16-modules-acl-api">16. Modules ACL API</a></li>
+    <li><a href="#17-modules-dictionary-api">17. Modules Dictionary API</a>
       <ul>
-        <li><a href="#base-1">Base</a></li>
-        <li><a href="#setgetdel">Set/Get/Del</a></li>
-        <li><a href="#iterator">Iterator</a></li>
+        <li><a href="#171-base">17.1. Base</a></li>
+        <li><a href="#172-setgetdel">17.2. Set/Get/Del</a></li>
+        <li><a href="#173-iterator">17.3. Iterator</a></li>
       </ul>
     </li>
-    <li><a href="#modules-info-fields">Modules Info fields</a></li>
-    <li><a href="#modules-utility-apis">Modules utility APIs</a></li>
-    <li><a href="#modules-api-exporting--importing">Modules API exporting / importing</a></li>
-    <li><a href="#module-command-filter-api">Module Command Filter API</a></li>
-    <li><a href="#scanning-keyspace-and-hashes">Scanning keyspace and hashes</a></li>
-    <li><a href="#module-fork-api">Module fork API</a></li>
-    <li><a href="#server-hooks-implementation">Server hooks implementation</a></li>
-    <li><a href="#modules-api-internals">Modules API internals</a></li>
+    <li><a href="#18-modules-info-fields">18. Modules Info fields</a></li>
+    <li><a href="#19-modules-utility-apis">19. Modules utility APIs</a></li>
+    <li><a href="#20-modules-api-exporting--importing">20. Modules API exporting / importing</a></li>
+    <li><a href="#21-module-command-filter-api">21. Module Command Filter API</a></li>
+    <li><a href="#22-scanning-keyspace-and-hashes">22. Scanning keyspace and hashes</a></li>
+    <li><a href="#23-module-fork-api">23. Module fork API</a></li>
+    <li><a href="#24-server-hooks-implementation">24. Server hooks implementation</a></li>
+    <li><a href="#25-modules-api-internals">25. Modules API internals</a></li>
   </ul>
 </nav>
   </div>
@@ -415,7 +415,7 @@
       <p>Redis Modules APIs 介绍。</p>
 <hr>
 <p><a href="https://github.com/redis/redis/blob/unstable/src/module.c">源码地址</a></p>
-<h2 id="内存管理">内存管理</h2>
+<h2 id="1-内存管理">1. 内存管理</h2>
 <p>虽然在模块中可以调用 <code>malloc()</code> 和 <code>free()</code> 函数，但是通过 <code>malloc()</code> 分配的内存并不会被计算到 <code>used_memory</code> 信息中去，也不会受到 <code>maxmemory</code> 限制，所以应首先考虑使用 Redis Modules 提供的 APIs。而且，使用 APIs 分配内存实现的自定义数据结构也可以被 RDB 加载函数正确地反序列化。</p>
 <p>在函数返回时就需释放的短期对象可使用内存池模式进行分配。内存对齐原则为：</p>
 <ul>
@@ -510,8 +510,8 @@
 <span class="kt">float</span> <span class="nf">RedisModule_GetUsedMemoryRatio</span><span class="p">();</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="service-api-exported-to-modules">Service API exported to modules</h2>
-<h3 id="注册命令">注册命令</h3>
+</div><h2 id="2-service-api-exported-to-modules">2. Service API exported to modules</h2>
+<h3 id="21-注册命令">2.1. 注册命令</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -566,7 +566,7 @@
 <li><code>no-auth</code>: This command can be run by an un-authenticated client. Normally this is used by a command that is used to authenticate a client.</li>
 </ul>
 <p><code>firstkey</code> 表明在执行该注册的命令之时，需要读取的首个 key，其值为 0 则视为无需读取 key，<code>lastkey</code> 亦是如此。</p>
-<h3 id="其他">其他</h3>
+<h3 id="22-其他">2.2. 其他</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -667,8 +667,8 @@
 <span class="kt">int</span> <span class="nf">RedisModule_SignalModifiedKey</span><span class="p">(</span><span class="n">RedisModuleCtx</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="n">RedisModuleString</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="redismodulestring-objects-apis">RedisModuleString objects APIs</h2>
-<h3 id="create">Create</h3>
+</div><h2 id="3-redismodulestring-objects-apis">3. RedisModuleString objects APIs</h2>
+<h3 id="31-create">3.1. Create</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -729,7 +729,7 @@
 <li>在未启用自动内存管理功能时，上述接口所返回的对象必须调用 <code>RedisModule_FreeString()</code> 进行释放</li>
 <li>当你想在上下文范围之外创建一个 <code>RedisModuleString</code> 对象时，<code>ctx</code> 可设置为 <code>NULL</code>，此时，自动内存管理功能不可用，你必须手动进行释放操作</li>
 </ul>
-<h3 id="free">Free</h3>
+<h3 id="32-free">3.2. Free</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -746,7 +746,7 @@
 <li>在启用自动内存管理的情况下，我们仍然可以调用该函数，会立即释放传入的 <code>RedisModuleString</code>，并从字符串待释放列表中移除该对象</li>
 <li>如果在创建 <code>RedisModuleString</code> 时上下文为 <code>NULL</code>，则在释放时上下文也可为 <code>NULL</code>，不过此时上下文不为 <code>NULL</code> 也没啥问题。但如果创建时上下文不为空，则在释放时也不可为空。</li>
 </ul>
-<h3 id="retain">Retain</h3>
+<h3 id="33-retain">3.3. Retain</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -785,7 +785,7 @@
 <li>在未开启自动内存管理时，需要手动调用 <code>RedisModule_FreeString()</code>。</li>
 <li>在该函数中，上下文也可以为空。</li>
 </ul>
-<h3 id="convert">Convert</h3>
+<h3 id="34-convert">3.4. Convert</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -828,7 +828,7 @@
 <span class="kt">int</span> <span class="nf">RedisModule_StringToLongDouble</span><span class="p">(</span><span class="k">const</span> <span class="n">RedisModuleString</span> <span class="o">*</span><span class="n">str</span><span class="p">,</span> <span class="kt">long</span> <span class="kt">double</span> <span class="o">*</span><span class="n">ld</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="operators">Operators</h3>
+</div><h3 id="35-operators">3.5. Operators</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -859,8 +859,8 @@
     <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">len</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="reply-apis">Reply APIs</h2>
-<h3 id="reply-with-numeral">Reply with numeral</h3>
+</div><h2 id="4-reply-apis">4. Reply APIs</h2>
+<h3 id="41-reply-with-numeral">4.1. Reply with numeral</h3>
 <p>以下函数返回值固定为 <code>REDISMODULE_OK</code>.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -900,7 +900,7 @@
 <span class="kt">int</span> <span class="nf">RedisModule_ReplyWithLongDouble</span><span class="p">(</span><span class="n">RedisModuleCtx</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="kt">long</span> <span class="kt">double</span> <span class="n">ld</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="reply-with-string">Reply with string</h3>
+</div><h3 id="42-reply-with-string">4.2. Reply with string</h3>
 <p>以下函数返回值固定为 <code>REDISMODULE_OK</code>.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -954,7 +954,7 @@
                                         <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">len</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="reply-with-array">Reply with array</h3>
+</div><h3 id="43-reply-with-array">4.3. Reply with array</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -1005,7 +1005,7 @@
 <span class="kt">int</span> <span class="nf">RedisModule_ReplyWithEmptyArray</span><span class="p">(</span><span class="n">RedisModuleCtx</span> <span class="o">*</span><span class="n">ctx</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="others">Others</h3>
+</div><h3 id="44-others">4.4. Others</h3>
 <p>以下函数返回值固定为 <code>REDISMODULE_OK</code>.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1051,7 +1051,7 @@
                                    <span class="n">RedisModuleCallReply</span> <span class="o">*</span><span class="n">reply</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="commands-replication-apis">Commands replication APIs</h2>
+</div><h2 id="5-commands-replication-apis">5. Commands replication APIs</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -1136,7 +1136,7 @@ Normally when you call this function from the callback implementing a module com
 <span class="kt">int</span> <span class="nf">RedisModule_AvoidReplicaTraffic</span><span class="p">();</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="db-and-key-apis----generic-apis">DB and Key APIs &ndash; Generic APIs</h2>
+</div><h2 id="6-db-and-key-apis----generic-apis">6. DB and Key APIs &ndash; Generic APIs</h2>
 <p><strong>GetClientId</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1382,8 +1382,8 @@ Normally when you call this function from the callback implementing a module com
 </tr>
 </tbody>
 </table>
-<h2 id="low-level-key-apis">Low level Key APIs</h2>
-<h3 id="base">Base</h3>
+<h2 id="7-low-level-key-apis">7. Low level Key APIs</h2>
+<h3 id="71-base">7.1. Base</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -1503,7 +1503,7 @@ Normally when you call this function from the callback implementing a module com
 <span class="n">RedisModuleString</span> <span class="o">*</span><span class="nf">RedisModule_RandomKey</span><span class="p">(</span><span class="n">RedisModuleCtx</span> <span class="o">*</span><span class="n">ctx</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="string-type">String type</h3>
+</div><h3 id="72-string-type">7.2. String type</h3>
 <p><strong>Set</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1580,7 +1580,7 @@ Normally when you call this function from the callback implementing a module com
 <span class="kt">int</span> <span class="nf">RedisModule_StringTruncate</span><span class="p">(</span><span class="n">RedisModuleKey</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">newlen</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="list-type">List type</h3>
+</div><h3 id="73-list-type">7.3. List type</h3>
 <p><strong>Push</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1629,7 +1629,7 @@ Normally when you call this function from the callback implementing a module com
 <span class="n">REDISMODULE_LIST_TAIL</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="sorted-set-type">Sorted Set type</h3>
+</div><h3 id="74-sorted-set-type">7.4. Sorted Set type</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -1864,7 +1864,7 @@ Normally when you call this function from the callback implementing a module com
 <li>确定字典范围的 <code>min</code> 和 <code>max</code> 格式错误</li>
 </ul>
 <p>传入的 <code>min</code> 和 <code>max</code> 格式和 <code>ZRANGEBYLEX</code> 命令参数的格式相同。<code>min</code> 和 <code>max</code> 对象可在迭代器被正确赋值之后立即释放。</p>
-<h3 id="hash-type">Hash type</h3>
+<h3 id="75-hash-type">7.5. Hash type</h3>
 <p><strong>HashSet</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -2003,7 +2003,7 @@ Normally when you call this function from the callback implementing a module com
 <span class="n">RedisModule_HashGet</span><span class="p">(</span><span class="n">mykey</span><span class="p">,</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="o">&amp;</span><span class="n">exists</span><span class="p">,</span><span class="nb">NULL</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="high-level-key-apis----call">High level Key APIs &ndash; Call</h2>
+</div><h2 id="8-high-level-key-apis----call">8. High level Key APIs &ndash; Call</h2>
 <p><strong>Call</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -2135,8 +2135,8 @@ Normally when you call this function from the callback implementing a module com
 <span class="kt">void</span> <span class="nf">RedisModule_FreeCallReply</span><span class="p">(</span><span class="n">RedisModuleCallReply</span> <span class="o">*</span><span class="n">reply</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="自定义数据类型">自定义数据类型</h2>
-<h3 id="create-data-type">Create Data Type</h3>
+</div><h2 id="9-自定义数据类型">9. 自定义数据类型</h2>
+<h3 id="91-create-data-type">9.1. Create Data Type</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -2219,7 +2219,7 @@ Normally when you call this function from the callback implementing a module com
 </blockquote>
 </li>
 </ul>
-<h3 id="access-to-moduletype">Access to moduleType</h3>
+<h3 id="92-access-to-moduletype">9.2. Access to moduleType</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -2306,7 +2306,7 @@ Normally when you call this function from the callback implementing a module com
 <span class="kt">void</span> <span class="o">*</span><span class="nf">RedisModule_ModuleTypeGetValue</span><span class="p">(</span><span class="n">RedisModuleKey</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="rdb-loading-and-saving-functions">RDB loading and saving functions</h3>
+</div><h3 id="93-rdb-loading-and-saving-functions">9.3. RDB loading and saving functions</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -2469,7 +2469,7 @@ Normally when you call this function from the callback implementing a module com
 <span class="kt">long</span> <span class="kt">double</span> <span class="nf">RedisModule_LoadLongDouble</span><span class="p">(</span><span class="n">RedisModuleIO</span> <span class="o">*</span><span class="n">io</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="key-digest-api">Key digest API</h3>
+</div><h3 id="94-key-digest-api">9.4. Key digest API</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -2622,7 +2622,7 @@ Normally when you call this function from the callback implementing a module com
     <span class="n">RedisModuleCtx</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="k">const</span> <span class="n">moduleType</span> <span class="o">*</span><span class="n">md</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="aof-api-for-modules-data-types">AOF API for modules data types</h3>
+</div><h3 id="95-aof-api-for-modules-data-types">9.5. AOF API for modules data types</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -2637,7 +2637,7 @@ Normally when you call this function from the callback implementing a module com
 <li>该函数只在 <code>aof_rewrite</code> 函数中调用</li>
 <li>执行模式和 <code>RedisModule_Call()</code> 相同，但是无返回值，异常情况由 Redis 自身处理</li>
 </ul>
-<h3 id="io-context-handling">IO context handling</h3>
+<h3 id="96-io-context-handling">9.6. IO context handling</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -2662,7 +2662,7 @@ Normally when you call this function from the callback implementing a module com
 <span class="k">const</span> <span class="n">RedisModuleString</span> <span class="o">*</span><span class="nf">RedisModule_GetKeyNameFromModuleKey</span><span class="p">(</span><span class="n">RedisModuleKey</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="输出日志">输出日志</h2>
+</div><h2 id="10-输出日志">10. 输出日志</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -2730,8 +2730,8 @@ Normally when you call this function from the callback implementing a module com
 <span class="kt">void</span> <span class="nf">RedisModule_LatencyAddSample</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">event</span><span class="p">,</span> <span class="n">mstime_t</span> <span class="n">latency</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="blocking-clients-from-modules">Blocking clients from modules</h2>
-<h3 id="block-client">Block Client</h3>
+</div><h2 id="11-blocking-clients-from-modules">11. Blocking clients from modules</h2>
+<h3 id="111-block-client">11.1. Block Client</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -2780,7 +2780,7 @@ Normally when you call this function from the callback implementing a module com
 <li>可在模块派生出的线程中调用此函数</li>
 <li>当对 <code>RedisModule_BlockClientOnKeys</code> 的返回值调用该函数时，<code>privdata</code> 指针无用，客户端被视为超时，触发 <code>timeout_callback</code>。</li>
 </ul>
-<h3 id="block-client-on-keys">Block Client On Keys</h3>
+<h3 id="112-block-client-on-keys">11.2. Block Client On Keys</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -2843,7 +2843,7 @@ Normally when you call this function from the callback implementing a module com
 <span class="n">RedisModuleString</span> <span class="o">*</span><span class="nf">RedisModule_GetBlockedClientReadyKey</span><span class="p">(</span><span class="n">RedisModuleCtx</span> <span class="o">*</span><span class="n">ctx</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="utils">Utils</h3>
+</div><h3 id="113-utils">11.3. Utils</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -2938,7 +2938,7 @@ Normally when you call this function from the callback implementing a module com
 <span class="kt">int</span> <span class="nf">RedisModule_BlockedClientDisconnected</span><span class="p">(</span><span class="n">RedisModuleCtx</span> <span class="o">*</span><span class="n">ctx</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="thread-safe-contexts">Thread Safe Contexts</h2>
+</div><h2 id="12-thread-safe-contexts">12. Thread Safe Contexts</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -3007,7 +3007,7 @@ Normally when you call this function from the callback implementing a module com
 <span class="kt">void</span> <span class="nf">RedisModule_ThreadSafeContextUnlock</span><span class="p">(</span><span class="n">RedisModuleCtx</span> <span class="o">*</span><span class="n">ctx</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="module-keyspace-notifications-api">Module Keyspace Notifications API</h2>
+</div><h2 id="13-module-keyspace-notifications-api">13. Module Keyspace Notifications API</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -3130,7 +3130,7 @@ Normally when you call this function from the callback implementing a module com
     <span class="kt">int</span> <span class="n">type</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">event</span><span class="p">,</span> <span class="n">RedisModuleString</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="modules-cluster-api">Modules Cluster API</h2>
+</div><h2 id="14-modules-cluster-api">14. Modules Cluster API</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -3329,7 +3329,7 @@ Normally when you call this function from the callback implementing a module com
 <span class="kt">void</span> <span class="nf">RedisModule_SetClusterFlags</span><span class="p">(</span><span class="n">RedisModuleCtx</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="kt">uint64_t</span> <span class="n">flags</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="modules-timers-api">Modules Timers API</h2>
+</div><h2 id="15-modules-timers-api">15. Modules Timers API</h2>
 <p>Module timers are an high precision &ldquo;green timers&rdquo; abstraction where every module can register even millions of timers without problems, even if the actual event loop will just have a single timer that is used to awake the module timers subsystem in order to process the next event.</p>
 <p>All the timers are stored into a radix tree, ordered by expire time, when the main Redis event loop timer callback is called, we try to process all the timers already expired one after the other. Then we re-enter the event loop registering a timer that will expire when the next to process module timer will expire.</p>
 <p>Every time the list of active timers drops to zero, we unregister the main event loop timer, so that there is no overhead when such feature is not used.</p>
@@ -3379,7 +3379,7 @@ Normally when you call this function from the callback implementing a module com
     <span class="n">RedisModuleTimerID</span> <span class="n">id</span><span class="p">,</span> <span class="kt">uint64_t</span> <span class="o">*</span><span class="n">remaining</span><span class="p">,</span> <span class="kt">void</span> <span class="o">**</span><span class="n">data</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="modules-acl-api">Modules ACL API</h2>
+</div><h2 id="16-modules-acl-api">16. Modules ACL API</h2>
 <p>Implements a hook into the authentication and authorization within Redis.</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -3533,9 +3533,9 @@ Normally when you call this function from the callback implementing a module com
 <span class="kt">int</span> <span class="nf">RedisModule_DeauthenticateAndCloseClient</span><span class="p">(</span><span class="n">RedisModuleCtx</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="kt">uint64_t</span> <span class="n">client_id</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="modules-dictionary-api">Modules Dictionary API</h2>
+</div><h2 id="17-modules-dictionary-api">17. Modules Dictionary API</h2>
 <p>Implements a sorted dictionary (actually backed by a radix tree) with the usual get / set / del / num-items API, together with an iterator capable of going back and forth.</p>
-<h3 id="base-1">Base</h3>
+<h3 id="171-base">17.1. Base</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -3567,7 +3567,7 @@ Normally when you call this function from the callback implementing a module com
 <span class="kt">uint64_t</span> <span class="nf">RedisModule_DictSize</span><span class="p">(</span><span class="n">RedisModuleDict</span> <span class="o">*</span><span class="n">d</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="setgetdel">Set/Get/Del</h3>
+</div><h3 id="172-setgetdel">17.2. Set/Get/Del</h3>
 <p><strong>Take key as a cstring</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -3634,7 +3634,7 @@ Normally when you call this function from the callback implementing a module com
 <span class="kt">int</span> <span class="nf">RedisModule_DictDel</span><span class="p">(</span><span class="n">RedisModuleDict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="n">RedisModuleString</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">oldval</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="iterator">Iterator</h3>
+</div><h3 id="173-iterator">17.3. Iterator</h3>
 <p><strong>Take key as a cstring</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -3805,7 +3805,7 @@ Normally when you call this function from the callback implementing a module com
 </code></pre></td></tr></table>
 </div>
 </div><p>必须调用该函数以释放 <code>RedisModuleDictIter</code> 对象。</p>
-<h2 id="modules-info-fields">Modules Info fields</h2>
+<h2 id="18-modules-info-fields">18. Modules Info fields</h2>
 <p>可以使用以下接口在 <code>INFO</code> 命令中显示我们想展示的信息。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -3967,7 +3967,7 @@ Normally when you call this function from the callback implementing a module com
     <span class="n">RedisModuleServerInfoData</span> <span class="o">*</span><span class="n">data</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">field</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">out_err</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="modules-utility-apis">Modules utility APIs</h2>
+</div><h2 id="19-modules-utility-apis">19. Modules utility APIs</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -3994,7 +3994,7 @@ Normally when you call this function from the callback implementing a module com
 <span class="kt">void</span> <span class="nf">RedisModule_GetRandomHexChars</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">dst</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">len</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="modules-api-exporting--importing">Modules API exporting / importing</h2>
+</div><h2 id="20-modules-api-exporting--importing">20. Modules API exporting / importing</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -4097,7 +4097,7 @@ Normally when you call this function from the callback implementing a module com
 <span class="kt">void</span> <span class="o">*</span><span class="nf">RedisModule_GetSharedAPI</span><span class="p">(</span><span class="n">RedisModuleCtx</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">apiname</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="module-command-filter-api">Module Command Filter API</h2>
+</div><h2 id="21-module-command-filter-api">21. Module Command Filter API</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -4268,7 +4268,7 @@ Normally when you call this function from the callback implementing a module com
 <span class="kt">int</span> <span class="nf">RedisModule_CommandFilterArgDelete</span><span class="p">(</span><span class="n">RedisModuleCommandFilterCtx</span> <span class="o">*</span><span class="n">fctx</span><span class="p">,</span> <span class="kt">int</span> <span class="n">pos</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="scanning-keyspace-and-hashes">Scanning keyspace and hashes</h2>
+</div><h2 id="22-scanning-keyspace-and-hashes">22. Scanning keyspace and hashes</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">  1
@@ -4503,7 +4503,7 @@ Normally when you call this function from the callback implementing a module com
     <span class="n">RedisModuleScanCursor</span> <span class="o">*</span><span class="n">cursor</span><span class="p">,</span> <span class="n">RedisModuleScanKeyCB</span> <span class="n">fn</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">privdata</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="module-fork-api">Module fork API</h2>
+</div><h2 id="23-module-fork-api">23. Module fork API</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -4548,7 +4548,7 @@ Normally when you call this function from the callback implementing a module com
 <span class="kt">int</span> <span class="nf">RedisModule_KillForkChild</span><span class="p">(</span><span class="kt">int</span> <span class="n">child_pid</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="server-hooks-implementation">Server hooks implementation</h2>
+</div><h2 id="24-server-hooks-implementation">24. Server hooks implementation</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">  1
@@ -4963,7 +4963,7 @@ Normally when you call this function from the callback implementing a module com
     <span class="n">RedisModuleEvent</span> <span class="n">event</span><span class="p">,</span> <span class="n">RedisModuleEventCallback</span> <span class="n">callback</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="modules-api-internals">Modules API internals</h2>
+</div><h2 id="25-modules-api-internals">25. Modules API internals</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1

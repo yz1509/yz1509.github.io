@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/redis-sourcecode-dict/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis dict 实现相关源码阅读笔记，源码文件 dict.h &amp; dict.c。">
 <meta itemprop="datePublished" content="2020-09-27T10:15:20+08:00" />
 <meta itemprop="dateModified" content="2020-09-27T10:15:20+08:00" />
-<meta itemprop="wordCount" content="2879">
+<meta itemprop="wordCount" content="2908">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 2879 words </span>
+        <span class="more-meta"> 2908 words </span>
           <span class="more-meta"> 6 min read </span>
 
         
@@ -331,36 +331,36 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#小结">小结</a></li>
-    <li><a href="#数据结构">数据结构</a></li>
-    <li><a href="#dict-apis">dict APIs</a>
+    <li><a href="#1-小结">1. 小结</a></li>
+    <li><a href="#2-数据结构">2. 数据结构</a></li>
+    <li><a href="#3-dict-apis">3. dict APIs</a>
       <ul>
-        <li><a href="#getset-interfaces">Get/Set Interfaces</a></li>
-        <li><a href="#dictcreate">dictCreate</a></li>
-        <li><a href="#dictexpand">dictExpand</a></li>
-        <li><a href="#dictresize">dictResize</a></li>
-        <li><a href="#dictrehash">dictRehash</a></li>
-        <li><a href="#dictrehashmilliseconds">dictRehashMilliseconds</a></li>
-        <li><a href="#dictaddraw">dictAddRaw</a></li>
-        <li><a href="#dictadd">dictAdd</a></li>
-        <li><a href="#dictaddorfind">dictAddOrFind</a></li>
-        <li><a href="#dictreplace">dictReplace</a></li>
-        <li><a href="#dictdelete">dictDelete</a></li>
-        <li><a href="#dictunlink">dictUnlink</a></li>
-        <li><a href="#dictfreeunlinkedentry">dictFreeUnlinkedEntry</a></li>
-        <li><a href="#dictrelease">dictRelease</a></li>
-        <li><a href="#dictempty">dictEmpty</a></li>
-        <li><a href="#dictfind">dictFind</a></li>
-        <li><a href="#dictfetchvalue">dictFetchValue</a></li>
-        <li><a href="#dictgetiterator">dictGetIterator</a></li>
-        <li><a href="#dictgetsafeiterator">dictGetSafeIterator</a></li>
-        <li><a href="#dictnext">dictNext</a></li>
-        <li><a href="#dictreleaseiterator----释放迭代器">dictReleaseIterator &ndash; 释放迭代器</a></li>
-        <li><a href="#dictgetrandomkey">dictGetRandomKey</a></li>
-        <li><a href="#dictgetsomekeys">dictGetSomeKeys</a></li>
-        <li><a href="#dictgetfairrandomkey">dictGetFairRandomKey</a></li>
-        <li><a href="#dictfindentryrefbyptrandhash">dictFindEntryRefByPtrAndHash</a></li>
-        <li><a href="#dictscan">dictScan</a></li>
+        <li><a href="#31-getset-interfaces">3.1. Get/Set Interfaces</a></li>
+        <li><a href="#32-dictcreate">3.2. dictCreate</a></li>
+        <li><a href="#33-dictexpand">3.3. dictExpand</a></li>
+        <li><a href="#34-dictresize">3.4. dictResize</a></li>
+        <li><a href="#35-dictrehash">3.5. dictRehash</a></li>
+        <li><a href="#36-dictrehashmilliseconds">3.6. dictRehashMilliseconds</a></li>
+        <li><a href="#37-dictaddraw">3.7. dictAddRaw</a></li>
+        <li><a href="#38-dictadd">3.8. dictAdd</a></li>
+        <li><a href="#39-dictaddorfind">3.9. dictAddOrFind</a></li>
+        <li><a href="#310-dictreplace">3.10. dictReplace</a></li>
+        <li><a href="#311-dictdelete">3.11. dictDelete</a></li>
+        <li><a href="#312-dictunlink">3.12. dictUnlink</a></li>
+        <li><a href="#313-dictfreeunlinkedentry">3.13. dictFreeUnlinkedEntry</a></li>
+        <li><a href="#314-dictrelease">3.14. dictRelease</a></li>
+        <li><a href="#315-dictempty">3.15. dictEmpty</a></li>
+        <li><a href="#316-dictfind">3.16. dictFind</a></li>
+        <li><a href="#317-dictfetchvalue">3.17. dictFetchValue</a></li>
+        <li><a href="#318-dictgetiterator">3.18. dictGetIterator</a></li>
+        <li><a href="#319-dictgetsafeiterator">3.19. dictGetSafeIterator</a></li>
+        <li><a href="#320-dictnext">3.20. dictNext</a></li>
+        <li><a href="#321-dictreleaseiterator----释放迭代器">3.21. dictReleaseIterator &ndash; 释放迭代器</a></li>
+        <li><a href="#322-dictgetrandomkey">3.22. dictGetRandomKey</a></li>
+        <li><a href="#323-dictgetsomekeys">3.23. dictGetSomeKeys</a></li>
+        <li><a href="#324-dictgetfairrandomkey">3.24. dictGetFairRandomKey</a></li>
+        <li><a href="#325-dictfindentryrefbyptrandhash">3.25. dictFindEntryRefByPtrAndHash</a></li>
+        <li><a href="#326-dictscan">3.26. dictScan</a></li>
       </ul>
     </li>
   </ul>
@@ -372,7 +372,7 @@
     <div class="post-content">
       <p>Redis dict 实现相关源码阅读笔记，源码文件 <code>dict.h</code> &amp; <code>dict.c</code>。</p>
 <hr>
-<h2 id="小结">小结</h2>
+<h2 id="1-小结">1. 小结</h2>
 <p>在 Redis 中，<code>dict</code> 不仅用于实现不同的对象类型，还用于数据库的实现。</p>
 <ul>
 <li>可通过自定义哈希、复制、比较和析构函数实现不同的 <code>dictType</code></li>
@@ -404,7 +404,7 @@
 </div>
 </div></li>
 </ul>
-<h2 id="数据结构">数据结构</h2>
+<h2 id="2-数据结构">2. 数据结构</h2>
 <p><code>dict</code> 的数据结构如下所示：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -551,8 +551,8 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>在 <code>dict</code> 结构中的 <code>iterators</code> 表示的是当前正在运行的安全(<code>safe=1</code>)迭代器个数，其不为 0，意味着此时不能进行 Rehash 操作。</p>
-<h2 id="dict-apis">dict APIs</h2>
-<h3 id="getset-interfaces">Get/Set Interfaces</h3>
+<h2 id="3-dict-apis">3. dict APIs</h2>
+<h3 id="31-getset-interfaces">3.1. Get/Set Interfaces</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -613,7 +613,7 @@
 <span class="kt">void</span> <span class="nf">dictGetStats</span><span class="p">(</span><span class="kt">char</span> <span class="o">*</span><span class="n">buf</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">bufsize</span><span class="p">,</span> <span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="dictcreate">dictCreate</h3>
+</div><h3 id="32-dictcreate">3.2. dictCreate</h3>
 <p>依据 <code>type</code> 和 <code>privDataPtr</code> 创建一个 <code>dict</code> 并初始化。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -625,7 +625,7 @@
 <span class="n">dict</span> <span class="o">*</span><span class="nf">dictCreate</span><span class="p">(</span><span class="n">dictType</span> <span class="o">*</span><span class="n">type</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">privDataPtr</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="dictexpand">dictExpand</h3>
+</div><h3 id="33-dictexpand">3.3. dictExpand</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -643,7 +643,7 @@
 <li>新的 <code>dictht.size</code>(大于 <code>size</code> 的最小 2 的幂次方) 和现有哈希表 size 相同</li>
 </ul>
 <p>如果当前 <code>ht[0].table == NULL</code>，表示该操作仅为初始化 <code>ht[0]</code>；否则，该操作初始化 <code>ht[1]</code> 以用于 Rehash。</p>
-<h3 id="dictresize">dictResize</h3>
+<h3 id="34-dictresize">3.4. dictResize</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -662,7 +662,7 @@
 <li>缩容后确保载荷因子小于等于 $1$</li>
 <li>从 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L1422">htNeedsResize</a> 可知，当哈希表的载荷因子小于 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.h#L162">$0.1$</a> 时会触发缩容操作</li>
 </ul>
-<h3 id="dictrehash">dictRehash</h3>
+<h3 id="35-dictrehash">3.5. dictRehash</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -677,7 +677,7 @@
 <li>在渐进式 Rehash 期间，新添加的元素会添加至 <code>ht[1]</code> 中</li>
 <li>在添加(<code>dictAddRaw</code>)、查找(<code>dictFind</code>, <code>dictGetRandomKey</code>, <code>dictGetSomeKeys</code>)、删除(<code>dictGenericDelete</code>) 时，如果此时无迭代器在遍历字典，则会调用 <code>dictRehash(d,1)</code> 执行渐进式 Rehash</li>
 </ul>
-<h3 id="dictrehashmilliseconds">dictRehashMilliseconds</h3>
+<h3 id="36-dictrehashmilliseconds">3.6. dictRehashMilliseconds</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -688,7 +688,7 @@
 <span class="kt">int</span> <span class="nf">dictRehashMilliseconds</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="kt">int</span> <span class="n">ms</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="dictaddraw">dictAddRaw</h3>
+</div><h3 id="37-dictaddraw">3.7. dictAddRaw</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -716,7 +716,7 @@
 </li>
 <li>如果正处于 Rehash 状态，欲添加的 <code>dictEntry</code> 会添加至 <code>ht[1]</code></li>
 </ul>
-<h3 id="dictadd">dictAdd</h3>
+<h3 id="38-dictadd">3.8. dictAdd</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -728,7 +728,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>先调用 <code>dictAddRaw</code> 插入 <code>key</code>，再调用 <code>dictSetVal</code> 关联 <code>key</code> 和 <code>val</code>。如果 <code>key</code> 已存在则返回 <code>DICT_ERR</code>，添加成功返回 <code>DICT_OK</code>。</p>
-<h3 id="dictaddorfind">dictAddOrFind</h3>
+<h3 id="39-dictaddorfind">3.9. dictAddOrFind</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -755,7 +755,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="dictreplace">dictReplace</h3>
+</div><h3 id="310-dictreplace">3.10. dictReplace</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -774,7 +774,7 @@
 <span class="kt">int</span> <span class="nf">dictReplace</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">val</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="dictdelete">dictDelete</h3>
+</div><h3 id="311-dictdelete">3.11. dictDelete</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -787,7 +787,7 @@
 <span class="kt">int</span> <span class="nf">dictDelete</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="dictunlink">dictUnlink</h3>
+</div><h3 id="312-dictunlink">3.12. dictUnlink</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -806,7 +806,7 @@
 <span class="n">dictEntry</span> <span class="o">*</span><span class="nf">dictUnlink</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">ht</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="dictfreeunlinkedentry">dictFreeUnlinkedEntry</h3>
+</div><h3 id="313-dictfreeunlinkedentry">3.13. dictFreeUnlinkedEntry</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -819,7 +819,7 @@
 <span class="kt">void</span> <span class="nf">dictFreeUnlinkedEntry</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="n">dictEntry</span> <span class="o">*</span><span class="n">he</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="dictrelease">dictRelease</h3>
+</div><h3 id="314-dictrelease">3.14. dictRelease</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -830,7 +830,7 @@
 <span class="kt">void</span> <span class="nf">dictRelease</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="dictempty">dictEmpty</h3>
+</div><h3 id="315-dictempty">3.15. dictEmpty</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -841,7 +841,7 @@
 <span class="kt">void</span> <span class="nf">dictEmpty</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="kt">void</span><span class="p">(</span><span class="n">callback</span><span class="p">)(</span><span class="kt">void</span><span class="o">*</span><span class="p">));</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="dictfind">dictFind</h3>
+</div><h3 id="316-dictfind">3.16. dictFind</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -852,7 +852,7 @@
 <span class="n">dictEntry</span> <span class="o">*</span> <span class="nf">dictFind</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="dictfetchvalue">dictFetchValue</h3>
+</div><h3 id="317-dictfetchvalue">3.17. dictFetchValue</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -863,7 +863,7 @@
 <span class="kt">void</span> <span class="o">*</span><span class="nf">dictFetchValue</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="dictgetiterator">dictGetIterator</h3>
+</div><h3 id="318-dictgetiterator">3.18. dictGetIterator</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -875,7 +875,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>在调用 <code>dictGetIterator</code> 后，并不会修改 <code>d-&gt;iterators</code>。</p>
-<h3 id="dictgetsafeiterator">dictGetSafeIterator</h3>
+<h3 id="319-dictgetsafeiterator">3.19. dictGetSafeIterator</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -894,7 +894,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="dictnext">dictNext</h3>
+</div><h3 id="320-dictnext">3.20. dictNext</h3>
 <p>获取下一个 <code>dictEntry</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -904,7 +904,7 @@
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">dictEntry</span> <span class="o">*</span><span class="nf">dictNext</span><span class="p">(</span><span class="n">dictIterator</span> <span class="o">*</span><span class="n">iter</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="dictreleaseiterator----释放迭代器">dictReleaseIterator &ndash; 释放迭代器</h3>
+</div><h3 id="321-dictreleaseiterator----释放迭代器">3.21. dictReleaseIterator &ndash; 释放迭代器</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -913,7 +913,7 @@
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="nf">dictReleaseIterator</span><span class="p">(</span><span class="n">dictIterator</span> <span class="o">*</span><span class="n">iter</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="dictgetrandomkey">dictGetRandomKey</h3>
+</div><h3 id="322-dictgetrandomkey">3.22. dictGetRandomKey</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -927,7 +927,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>首先随机选择一个非空的 bucket，然后从该 bucket 中随机选择一个 <code>dictEntry</code> 作为返回值。可以看出，长度越短的 bucket 中的 <code>dictEntry</code> 被选中的概率越大。</p>
-<h3 id="dictgetsomekeys">dictGetSomeKeys</h3>
+<h3 id="323-dictgetsomekeys">3.23. dictGetSomeKeys</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -945,7 +945,7 @@
 <li>函数返回值为 <code>des</code> 中包含的 <code>dictEntry</code> 个数，其可能小于 <code>count</code></li>
 <li>比调用 <code>count</code> 次 <code>dictGetRandomKey</code> 高效</li>
 </ul>
-<h3 id="dictgetfairrandomkey">dictGetFairRandomKey</h3>
+<h3 id="324-dictgetfairrandomkey">3.24. dictGetFairRandomKey</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -962,7 +962,7 @@
 <li>会先尝试调用 <code>dictGetSomeKeys</code> 获取 <code>GETFAIR_NUM_ENTRIES</code> 个 <code>dictEntry</code>，再随机挑选一个返回</li>
 <li>调用 <code>dictGetSomeKeys</code> 返回值为 0 时，直接调用 <code>dictGetRandomKey</code>，返回其结果</li>
 </ul>
-<h3 id="dictfindentryrefbyptrandhash">dictFindEntryRefByPtrAndHash</h3>
+<h3 id="325-dictfindentryrefbyptrandhash">3.25. dictFindEntryRefByPtrAndHash</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -981,7 +981,7 @@
 <span class="n">dictEntry</span> <span class="o">**</span><span class="nf">dictFindEntryRefByPtrAndHash</span><span class="p">(</span><span class="n">dict</span> <span class="o">*</span><span class="n">d</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">oldptr</span><span class="p">,</span> <span class="kt">uint64_t</span> <span class="n">hash</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="dictscan">dictScan</h3>
+</div><h3 id="326-dictscan">3.26. dictScan</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1

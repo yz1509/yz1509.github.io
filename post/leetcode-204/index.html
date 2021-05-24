@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/leetcode-204/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="简单介绍素数判断及其分布规律。">
 <meta itemprop="datePublished" content="2018-07-20T17:52:43+00:00" />
 <meta itemprop="dateModified" content="2018-07-20T17:52:43+00:00" />
-<meta itemprop="wordCount" content="993">
+<meta itemprop="wordCount" content="997">
 
 
 
@@ -306,10 +306,10 @@
           2018-07-20
         </time>
         <div class="post-category">
-            <a href="https://k-on.me/categories/%E7%A7%8B%E6%8B%9B/"> 秋招 </a>
+            <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"> 数据结构与算法 </a>
             
           </div>
-        <span class="more-meta"> 993 words </span>
+        <span class="more-meta"> 997 words </span>
           <span class="more-meta"> 2 min read </span>
 
         
@@ -331,10 +331,10 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#description">Description</a></li>
-    <li><a href="#思路分析">思路分析</a></li>
-    <li><a href="#源码">源码</a></li>
-    <li><a href="#拓展--素数判断">拓展 — 素数判断</a></li>
+    <li><a href="#1-description">1. Description</a></li>
+    <li><a href="#2-思路分析">2. 思路分析</a></li>
+    <li><a href="#3-源码">3. 源码</a></li>
+    <li><a href="#4-拓展--素数判断">4. 拓展 — 素数判断</a></li>
   </ul>
 </nav>
   </div>
@@ -344,7 +344,7 @@
     <div class="post-content">
       <p>简单介绍素数判断及其分布规律。</p>
 <hr>
-<h2 id="description">Description</h2>
+<h2 id="1-description">1. Description</h2>
 <p><a href="https://leetcode.com/problems/count-primes/description/">题目链接</a>
 Count the number of prime numbers less than a non-negative number  n.</p>
 <p><strong>Example:</strong></p>
@@ -360,12 +360,12 @@ Count the number of prime numbers less than a non-negative number  n.</p>
 <span class="nl">Explanation</span><span class="p">:</span> <span class="n">There</span> <span class="n">are</span> <span class="mi">4</span> <span class="n">prime</span> <span class="n">numbers</span> <span class="n">less</span> <span class="n">than</span> <span class="mi">10</span><span class="p">,</span> <span class="n">they</span> <span class="n">are</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">7.</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="思路分析">思路分析</h2>
+</div><h2 id="2-思路分析">2. 思路分析</h2>
 <p>使用埃拉托斯特尼筛选法，获取素数序列，从而得到小于 n 的素数个数。</p>
 <blockquote>
 <p>埃拉托斯特尼筛选法，简称埃氏筛或爱氏筛，是一种由希腊数学家埃拉托斯特尼所提出的一种简单检定素数的算法。要得到自然数 n 以内的全部素数，必须把不大于 $\sqrt{n}$ 的所有素数的倍数剔除，剩下的就是素数。</p>
 </blockquote>
-<h2 id="源码">源码</h2>
+<h2 id="3-源码">3. 源码</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -404,7 +404,7 @@ Count the number of prime numbers less than a non-negative number  n.</p>
             <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">&gt;</span> <span class="n">upper</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
             <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="n">i</span><span class="p">;</span> <span class="n">j</span> <span class="o">&lt;</span> <span class="n">n</span><span class="p">;</span> <span class="n">j</span> <span class="o">+=</span> <span class="n">i</span><span class="p">)</span>
             <span class="p">{</span> <span class="c1">// 剔除素数 i 的倍数
-</span><span class="c1"></span>            	<span class="n">NotPrime</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
+</span><span class="c1"></span>                <span class="n">NotPrime</span><span class="p">[</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">true</span><span class="p">;</span>
             <span class="p">}</span>
         <span class="p">}</span>
     <span class="p">}</span>
@@ -412,7 +412,7 @@ Count the number of prime numbers less than a non-negative number  n.</p>
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="拓展--素数判断">拓展 — 素数判断</h2>
+</div><h2 id="4-拓展--素数判断">4. 拓展 — 素数判断</h2>
 <p>质数 (Prime number)，又称素数，为只有 1 个自身两个因数的数。下面介绍两种判断素数的方法。</p>
 <ol>
 <li>

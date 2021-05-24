@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/redis-sourcecode-ziplist/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 压缩列表相关源码阅读笔记，源码文件 ziplist.h &amp; ziplist.c。">
 <meta itemprop="datePublished" content="2020-09-24T14:42:15+08:00" />
 <meta itemprop="dateModified" content="2020-09-24T14:42:15+08:00" />
-<meta itemprop="wordCount" content="1434">
+<meta itemprop="wordCount" content="1452">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 1434 words </span>
+        <span class="more-meta"> 1452 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -331,25 +331,25 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#小结">小结</a></li>
-    <li><a href="#ziplist-数据结构">ziplist 数据结构</a></li>
-    <li><a href="#ziplist-apis">ziplist APIs</a>
+    <li><a href="#1-小结">1. 小结</a></li>
+    <li><a href="#2-ziplist-数据结构">2. ziplist 数据结构</a></li>
+    <li><a href="#3-ziplist-apis">3. ziplist APIs</a>
       <ul>
-        <li><a href="#ziplistnew">ziplistNew</a></li>
-        <li><a href="#ziplistmerge">ziplistMerge</a></li>
-        <li><a href="#ziplistpush">ziplistPush</a></li>
-        <li><a href="#ziplistindex">ziplistIndex</a></li>
-        <li><a href="#ziplistnext">ziplistNext</a></li>
-        <li><a href="#ziplistprev">ziplistPrev</a></li>
-        <li><a href="#ziplistget">ziplistGet</a></li>
-        <li><a href="#ziplistinsert">ziplistInsert</a></li>
-        <li><a href="#ziplistdelete">ziplistDelete</a></li>
-        <li><a href="#ziplistdeleterange">ziplistDeleteRange</a></li>
-        <li><a href="#ziplistcompare">ziplistCompare</a></li>
-        <li><a href="#ziplistfind">ziplistFind</a></li>
-        <li><a href="#ziplistlen">ziplistLen</a></li>
-        <li><a href="#ziplistbloblen">ziplistBlobLen</a></li>
-        <li><a href="#ziplistrepr">ziplistRepr</a></li>
+        <li><a href="#31-ziplistnew">3.1. ziplistNew</a></li>
+        <li><a href="#32-ziplistmerge">3.2. ziplistMerge</a></li>
+        <li><a href="#33-ziplistpush">3.3. ziplistPush</a></li>
+        <li><a href="#34-ziplistindex">3.4. ziplistIndex</a></li>
+        <li><a href="#35-ziplistnext">3.5. ziplistNext</a></li>
+        <li><a href="#36-ziplistprev">3.6. ziplistPrev</a></li>
+        <li><a href="#37-ziplistget">3.7. ziplistGet</a></li>
+        <li><a href="#38-ziplistinsert">3.8. ziplistInsert</a></li>
+        <li><a href="#39-ziplistdelete">3.9. ziplistDelete</a></li>
+        <li><a href="#310-ziplistdeleterange">3.10. ziplistDeleteRange</a></li>
+        <li><a href="#311-ziplistcompare">3.11. ziplistCompare</a></li>
+        <li><a href="#312-ziplistfind">3.12. ziplistFind</a></li>
+        <li><a href="#313-ziplistlen">3.13. ziplistLen</a></li>
+        <li><a href="#314-ziplistbloblen">3.14. ziplistBlobLen</a></li>
+        <li><a href="#315-ziplistrepr">3.15. ziplistRepr</a></li>
       </ul>
     </li>
   </ul>
@@ -361,13 +361,13 @@
     <div class="post-content">
       <p>Redis 压缩列表相关源码阅读笔记，源码文件 <code>ziplist.h</code> &amp; <code>ziplist.c</code>。</p>
 <hr>
-<h2 id="小结">小结</h2>
+<h2 id="1-小结">1. 小结</h2>
 <ul>
 <li><code>ziplist</code> 是为了节省内存而设计的压缩双向链表，支持 <code>push</code> 和 <code>pop</code> 操作</li>
 <li>由于 <code>ziplist</code> 存储在连续的内存中，因此每次修改都需要 <code>realloc</code> 和 <code>memmove</code> 操作，因此具体的时间复杂度取决于 <code>ziplist</code> 占用内存的大小</li>
 <li>执行插入或删除操作时，可能会因为 <code>prevlen</code> 的变化而引发 cascade update</li>
 </ul>
-<h2 id="ziplist-数据结构">ziplist 数据结构</h2>
+<h2 id="2-ziplist-数据结构">2. ziplist 数据结构</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -499,8 +499,8 @@
 <li>整型使用 little endian 字节序存储。</li>
 <li>在 4 bit 无符号整数中，真实存储的值为 <code>0001</code> 至 <code>1101</code> (1 至 13)，因为 <code>11110000</code> 表示 24 bit 有符号整型，<code>11111110</code> 表示 8 bit 有符号整型，<code>11111111</code> 表示 <code>zlend</code>，因此这三个值均已被占用</li>
 </ul>
-<h2 id="ziplist-apis">ziplist APIs</h2>
-<h3 id="ziplistnew">ziplistNew</h3>
+<h2 id="3-ziplist-apis">3. ziplist APIs</h2>
+<h3 id="31-ziplistnew">3.1. ziplistNew</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -511,7 +511,7 @@
 <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">ziplistNew</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="ziplistmerge">ziplistMerge</h3>
+</div><h3 id="32-ziplistmerge">3.2. ziplistMerge</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -526,7 +526,7 @@
 <li>如果 merge 操作无法执行，返回 <code>NULL</code></li>
 <li>在 <code>first</code> 和 <code>second</code> 中，挑选长度更长的进行 <code>zrealloc</code>，另一个在 join 之后 <code>zfree</code>，函数执行后 <code>first</code> 和 <code>second</code> 指针均不可使用</li>
 </ul>
-<h3 id="ziplistpush">ziplistPush</h3>
+<h3 id="33-ziplistpush">3.3. ziplistPush</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -538,7 +538,7 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>根据 <code>where</code> 参数将长为 <code>slen</code> 的元素 <code>s</code> 插入压缩列表 <code>zl</code> 的头部或尾部。</p>
-<h3 id="ziplistindex">ziplistIndex</h3>
+<h3 id="34-ziplistindex">3.4. ziplistIndex</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -553,7 +553,7 @@
 <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">ziplistIndex</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">zl</span><span class="p">,</span> <span class="kt">int</span> <span class="n">index</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="ziplistnext">ziplistNext</h3>
+</div><h3 id="35-ziplistnext">3.5. ziplistNext</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -568,7 +568,7 @@
 <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">ziplistNext</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">zl</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">p</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="ziplistprev">ziplistPrev</h3>
+</div><h3 id="36-ziplistprev">3.6. ziplistPrev</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -579,7 +579,7 @@
 <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">ziplistPrev</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">zl</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">p</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="ziplistget">ziplistGet</h3>
+</div><h3 id="37-ziplistget">3.7. ziplistGet</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -597,7 +597,7 @@
 <li>如果 <code>p</code> 所指向的 <code>entry</code> 存储的数据类型为 <code>string</code>，则填充 <code>sstr</code> 和 <code>slen</code>，以获取字符串值</li>
 <li>如果 <code>p</code> 所指向的 <code>entry</code> 存储的数据类型为 <code>integer</code>，则填充 <code>sval</code>，以获取整型值，此时 <code>sstr = NULL</code></li>
 </ul>
-<h3 id="ziplistinsert">ziplistInsert</h3>
+<h3 id="38-ziplistinsert">3.8. ziplistInsert</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -610,7 +610,7 @@
                              <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">slen</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="ziplistdelete">ziplistDelete</h3>
+</div><h3 id="39-ziplistdelete">3.9. ziplistDelete</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -625,7 +625,7 @@
 <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">ziplistDelete</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">zl</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">**</span><span class="n">p</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="ziplistdeleterange">ziplistDeleteRange</h3>
+</div><h3 id="310-ziplistdeleterange">3.10. ziplistDeleteRange</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -636,7 +636,7 @@
 <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="nf">ziplistDeleteRange</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">zl</span><span class="p">,</span> <span class="kt">int</span> <span class="n">index</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">num</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="ziplistcompare">ziplistCompare</h3>
+</div><h3 id="311-ziplistcompare">3.11. ziplistCompare</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -649,7 +649,7 @@
 <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">ziplistCompare</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">p</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">sstr</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">slen</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="ziplistfind">ziplistFind</h3>
+</div><h3 id="312-ziplistfind">3.12. ziplistFind</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -664,7 +664,7 @@
                            <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">vlen</span><span class="p">,</span> <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">skip</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="ziplistlen">ziplistLen</h3>
+</div><h3 id="313-ziplistlen">3.13. ziplistLen</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -675,7 +675,7 @@
 <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">ziplistLen</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">zl</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="ziplistbloblen">ziplistBlobLen</h3>
+</div><h3 id="314-ziplistbloblen">3.14. ziplistBlobLen</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -686,7 +686,7 @@
 <span class="n">size_t</span> <span class="nf">ziplistBlobLen</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">zl</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="ziplistrepr">ziplistRepr</h3>
+</div><h3 id="315-ziplistrepr">3.15. ziplistRepr</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1

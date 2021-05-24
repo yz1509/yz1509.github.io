@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/redisstreams/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="主要介绍 Redis Streams 数据结构及部分操作，并不涉及源码部分。">
 <meta itemprop="datePublished" content="2019-10-16T17:50:09+00:00" />
 <meta itemprop="dateModified" content="2019-10-16T17:50:09+00:00" />
-<meta itemprop="wordCount" content="1491">
+<meta itemprop="wordCount" content="1504">
 
 
 
@@ -309,8 +309,8 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 1491 words </span>
-          <span class="more-meta"> 3 min read </span>
+        <span class="more-meta"> 1504 words </span>
+          <span class="more-meta"> 4 min read </span>
 
         
         
@@ -331,23 +331,23 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#什么是-redis-streams">什么是 Redis Streams</a></li>
-    <li><a href="#redis-streams-结构">Redis Streams 结构</a></li>
-    <li><a href="#redis-streams-api">Redis Streams API</a>
+    <li><a href="#1-什么是-redis-streams">1. 什么是 Redis Streams</a></li>
+    <li><a href="#2-redis-streams-结构">2. Redis Streams 结构</a></li>
+    <li><a href="#3-redis-streams-api">3. Redis Streams API</a>
       <ul>
-        <li><a href="#xadd">XADD</a></li>
-        <li><a href="#xrange--xrevrange">XRANGE / XREVRANGE</a></li>
-        <li><a href="#xread-blocking-for-new-data">XREAD: blocking for new data</a></li>
-        <li><a href="#xlen">XLEN</a></li>
+        <li><a href="#31-xadd">3.1. XADD</a></li>
+        <li><a href="#32-xrange--xrevrange">3.2. XRANGE / XREVRANGE</a></li>
+        <li><a href="#33-xread-blocking-for-new-data">3.3. XREAD: blocking for new data</a></li>
+        <li><a href="#34-xlen">3.4. XLEN</a></li>
       </ul>
     </li>
-    <li><a href="#consumer-groups">Consumer groups</a>
+    <li><a href="#4-consumer-groups">4. Consumer groups</a>
       <ul>
-        <li><a href="#xgroup">XGROUP</a></li>
-        <li><a href="#xreadgroup">XREADGROUP</a></li>
-        <li><a href="#xack">XACK</a></li>
-        <li><a href="#xpending">XPENDING</a></li>
-        <li><a href="#xclaim">XCLAIM</a></li>
+        <li><a href="#41-xgroup">4.1. XGROUP</a></li>
+        <li><a href="#42-xreadgroup">4.2. XREADGROUP</a></li>
+        <li><a href="#43-xack">4.3. XACK</a></li>
+        <li><a href="#44-xpending">4.4. XPENDING</a></li>
+        <li><a href="#45-xclaim">4.5. XCLAIM</a></li>
       </ul>
     </li>
   </ul>
@@ -360,7 +360,7 @@
       <p>主要介绍 Redis Streams 数据结构及部分操作，并不涉及源码部分。</p>
 <hr>
 <p>整理自 <a href="http://antirez.com/news/114">Streams: a new general purpose data structure in Redis</a>、<a href="http://antirez.com/news/116">An update on Redis Streams development</a>、<a href="http://antirez.com/news/128">Redis streams as a pure data structure</a> 和 <a href="https://redis.io/topics/streams-intro">Introduction to Redis Streams</a> 。</p>
-<h2 id="什么是-redis-streams">什么是 Redis Streams</h2>
+<h2 id="1-什么是-redis-streams">1. 什么是 Redis Streams</h2>
 <p>本质上是一个抽象日志：</p>
 <ul>
 <li>日志中的每条记录是结构化、可扩展的 <code>&lt;field, value&gt;</code> 对</li>
@@ -412,7 +412,7 @@
 </tr>
 </tbody>
 </table>
-<h2 id="redis-streams-结构">Redis Streams 结构</h2>
+<h2 id="2-redis-streams-结构">2. Redis Streams 结构</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -462,8 +462,8 @@
 </ul>
 </li>
 </ul>
-<h2 id="redis-streams-api">Redis Streams API</h2>
-<h3 id="xadd">XADD</h3>
+<h2 id="3-redis-streams-api">3. Redis Streams API</h2>
+<h3 id="31-xadd">3.1. XADD</h3>
 <p><code>XADD key [MAXLEN [~] number] ID field string [field string ...]</code></p>
 <p>Appends a new entry into the specified streams.</p>
 <ul>
@@ -472,7 +472,7 @@
 <li>可以指定 streams 的 <code>MAXLEN</code>，此时 streams 类似于一个固定大小的队列</li>
 <li>添加 <code>~</code> 表示并不严格要求 <code>MAXLEN=number</code></li>
 </ul>
-<h3 id="xrange--xrevrange">XRANGE / XREVRANGE</h3>
+<h3 id="32-xrange--xrevrange">3.2. XRANGE / XREVRANGE</h3>
 <p><code>XRANGE key start end [COUNT count]</code></p>
 <ul>
 <li>返回结果包含 start ID 和 end ID，即闭区间</li>
@@ -484,17 +484,17 @@
 <ul>
 <li>逆序返回结果，使用方法类似 <code>XRANGE</code></li>
 </ul>
-<h3 id="xread-blocking-for-new-data">XREAD: blocking for new data</h3>
+<h3 id="33-xread-blocking-for-new-data">3.3. XREAD: blocking for new data</h3>
 <p><code>XREAD [COUNT count] [BLOCK milliseconds] STREAMS key [key ...] ID [ID ...]</code></p>
 <ul>
 <li>ID为 <code>$</code> 表示指定 ID 为流中目前已存的最大 ID</li>
 <li>BLOCK 超时时间单位为 ms，超时时间为 0 时表示不会超时</li>
 <li>当有多个 client BLOCK 等待新 msg 时，排队方式为 FIFO</li>
 </ul>
-<h3 id="xlen">XLEN</h3>
+<h3 id="34-xlen">3.4. XLEN</h3>
 <p><code>XLEN key</code></p>
 <p>查看指定流中的 entry 个数，one ID one entry.</p>
-<h2 id="consumer-groups">Consumer groups</h2>
+<h2 id="4-consumer-groups">4. Consumer groups</h2>
 <p>一个 consumer group 就像一个 pseudo consumer 一样从 streams 中获取数据，它有如下特点：</p>
 <ul>
 <li>同一消息不可能传递给多个 consumer</li>
@@ -534,7 +534,7 @@
 <span class="o">+------------------------------------------+</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="xgroup">XGROUP</h3>
+</div><h3 id="41-xgroup">4.1. XGROUP</h3>
 <p>创建、销毁和管理 consumer group</p>
 <ul>
 <li><code>XGROUP CREATE key groupname id-or-$</code>
@@ -546,7 +546,7 @@
 <li><code>XGROUP DESTROY key groupname</code></li>
 <li><code>XGROUP DELCONSUMER key groupname consumername</code></li>
 </ul>
-<h3 id="xreadgroup">XREADGROUP</h3>
+<h3 id="42-xreadgroup">4.2. XREADGROUP</h3>
 <p>通过 consumer group 的方式从 streams 中读取数据</p>
 <p><code>XREADGROUP GROUP group consumer [COUNT count] [BLOCK milliseconds] [NOACK] STREAMS key [key ...] ID [ID ...]</code></p>
 <ul>
@@ -554,13 +554,13 @@
 <li>ID 为 <code>&gt;</code> 表示请求尚未分发给其他 consumer 的新消息</li>
 <li>ID 为其他有效的数字 ID 表示请求自身尚未 ACK 的 pending messages</li>
 </ul>
-<h3 id="xack">XACK</h3>
+<h3 id="43-xack">4.3. XACK</h3>
 <p>将一个未决消息标记为已处理</p>
 <p><code>XACK key group ID [ID ...]</code></p>
-<h3 id="xpending">XPENDING</h3>
+<h3 id="44-xpending">4.4. XPENDING</h3>
 <p>返回 consumer group 中的 pending messages 相关信息</p>
 <p><code>XPENDING key group [start end count] [consumer]</code></p>
-<h3 id="xclaim">XCLAIM</h3>
+<h3 id="45-xclaim">4.5. XCLAIM</h3>
 <p>将满足条件的 pending messages 重分配</p>
 <p><code>XCLAIM key group consumer min-idle-time ID [ID ...] [IDLE ms] [TIME ms-unix-time] [RETRYCOUNT count] [FORCE] [JUSTID]</code></p>
 <p>全部 consumer group 命令可查看<a href="https://redis.io/commands/xack">相关页面</a></p>

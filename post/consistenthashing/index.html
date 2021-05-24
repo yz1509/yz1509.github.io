@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/consistenthashing/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="一致性哈希的 first paper (maybe) 阅读笔记。">
 <meta itemprop="datePublished" content="2019-10-12T21:26:09+00:00" />
 <meta itemprop="dateModified" content="2019-10-12T21:26:09+00:00" />
-<meta itemprop="wordCount" content="1239">
+<meta itemprop="wordCount" content="1251">
 
 
 
@@ -308,7 +308,7 @@
         <div class="post-category">
             
           </div>
-        <span class="more-meta"> 1239 words </span>
+        <span class="more-meta"> 1251 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -330,22 +330,22 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#whydunit">Whydunit</a></li>
-    <li><a href="#whodunit">Whodunit</a>
+    <li><a href="#1-whydunit">1. Whydunit</a></li>
+    <li><a href="#2-whodunit">2. Whodunit</a>
       <ul>
-        <li><a href="#proxy-cache">Proxy cache</a></li>
-        <li><a href="#a-group-of-caches-functions-as-one">A group of caches functions as one</a></li>
-        <li><a href="#harvest-cache">Harvest Cache</a></li>
-        <li><a href="#using-randomization-and-hashing">Using randomization and hashing</a></li>
-        <li><a href="#random-cache-trees">Random cache trees</a></li>
-        <li><a href="#consistent-hashing">Consistent hashing</a></li>
+        <li><a href="#21-proxy-cache">2.1. Proxy cache</a></li>
+        <li><a href="#22-a-group-of-caches-functions-as-one">2.2. A group of caches functions as one</a></li>
+        <li><a href="#23-harvest-cache">2.3. Harvest Cache</a></li>
+        <li><a href="#24-using-randomization-and-hashing">2.4. Using randomization and hashing</a></li>
+        <li><a href="#25-random-cache-trees">2.5. Random cache trees</a></li>
+        <li><a href="#26-consistent-hashing">2.6. Consistent hashing</a></li>
       </ul>
     </li>
-    <li><a href="#howdunit">Howdunit</a>
+    <li><a href="#3-howdunit">3. Howdunit</a>
       <ul>
-        <li><a href="#符号说明">符号说明</a></li>
-        <li><a href="#一致性哈希函数应满足的性质介绍">一致性哈希函数应满足的性质介绍</a></li>
-        <li><a href="#构造一致性哈希函数">构造一致性哈希函数</a></li>
+        <li><a href="#31-符号说明">3.1. 符号说明</a></li>
+        <li><a href="#32-一致性哈希函数应满足的性质介绍">3.2. 一致性哈希函数应满足的性质介绍</a></li>
+        <li><a href="#33-构造一致性哈希函数">3.3. 构造一致性哈希函数</a></li>
       </ul>
     </li>
   </ul>
@@ -358,24 +358,24 @@
       <p>一致性哈希的 first paper (maybe) 阅读笔记。</p>
 <hr>
 <p><a href="http://david.choffnes.com/classes/cs4700sp14/papers/akamai.pdf">论文地址</a></p>
-<h2 id="whydunit">Whydunit</h2>
+<h2 id="1-whydunit">1. Whydunit</h2>
 <p>当大量的客户端同时对单个服务器发起请求时，可能会使该服务器(Hot spots) &ldquo;swamped&rdquo; （无法使用）。除此之外，还可能会阻塞该服务附近的网络通信。所以我们需要一个负载均衡算法来有效地避免 Hot spots 的出现。</p>
-<h2 id="whodunit">Whodunit</h2>
-<h3 id="proxy-cache">Proxy cache</h3>
+<h2 id="2-whodunit">2. Whodunit</h2>
+<h3 id="21-proxy-cache">2.1. Proxy cache</h3>
 <p>使用 proxy 缓存经常被请求的数据，多个客户端共享一个 proxy cache。</p>
 <ol>
 <li>所有用户的请求都发往 proxy</li>
 <li>未命中时，proxy 会把该请求转发至 home server。</li>
 </ol>
 <p><strong>缺点</strong>：proxy 本身可能会 swamped</p>
-<h3 id="a-group-of-caches-functions-as-one">A group of caches functions as one</h3>
+<h3 id="22-a-group-of-caches-functions-as-one">2.2. A group of caches functions as one</h3>
 <ol>
 <li>用户的请求发往任意一个 cache</li>
 <li>未命中时，使用 IP Multicast 将该请求转发至所有其他的 cache</li>
 <li>未命中时，将该请求转发至 heme server</li>
 </ol>
 <p><strong>缺点</strong>：cache 之间的通信消息数量不可控</p>
-<h3 id="harvest-cache">Harvest Cache</h3>
+<h3 id="23-harvest-cache">2.3. Harvest Cache</h3>
 <p>使用树型结构的 cache，root 为 home server</p>
 <ol>
 <li>用户的请求发往邻近的叶节点</li>
@@ -384,22 +384,22 @@
 </ol>
 <p><strong>优点</strong>：保证了请求只会来自于子节点或兄弟节点</p>
 <p><strong>缺点</strong>：当所有不同请求同时到来时，至少会有一个请求会到达 root，因此这只是一个缩放的结构，root 无法避免 swamped 的命运</p>
-<h3 id="using-randomization-and-hashing">Using randomization and hashing</h3>
+<h3 id="24-using-randomization-and-hashing">2.4. Using randomization and hashing</h3>
 <p><a href="http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.38.877&amp;rep=rep1&amp;type=pdf">Plaxton and Rajaraman</a></p>
 <p>新增一组 virtual cache 集合层，通过 random hash function 在现有的 Caches 和 virtual cache 集合之间建立映射，用户的请求发往任一 virtual cache 集合。如果 virtual cache 集合的负载超过阈值，则创建一个更大的 virtual cache 集合。</p>
 <p><strong>优点</strong>：请求响应快，因为每个 cache 的负载都在可控范围；负载均衡。</p>
 <p><strong>缺点</strong>：由于用户的请求发往任一 virtual cache 集合，故小规模的 virtual cache 集合可能会 swamped。</p>
-<h3 id="random-cache-trees">Random cache trees</h3>
+<h3 id="25-random-cache-trees">2.5. Random cache trees</h3>
 <p>下次一定看！</p>
-<h3 id="consistent-hashing">Consistent hashing</h3>
+<h3 id="26-consistent-hashing">2.6. Consistent hashing</h3>
 <p>传统 hashing 的局限：</p>
 <ul>
 <li>假定节点数是固定的</li>
 <li>每个节点需要知道全局信息，使用消息进行同步时，由于延时的存在，节点所保存的全局信息正确性无法保证</li>
 </ul>
 <p>Consistent hashing 如何解决这两个问题，将于下文详述。</p>
-<h2 id="howdunit">Howdunit</h2>
-<h3 id="符号说明">符号说明</h3>
+<h2 id="3-howdunit">3. Howdunit</h2>
+<h3 id="31-符号说明">3.1. 符号说明</h3>
 <ul>
 <li>$\mathcal{I}$: set of items，数据</li>
 <li>$i$: is an item</li>
@@ -415,7 +415,7 @@
 <li><em>ranged hash family</em> $\mathcal{F}$: is a family of ranged hash functions</li>
 <li><em>random ranged hash function</em>: is a function drawn at random from a particular ranged hash family</li>
 </ul>
-<h3 id="一致性哈希函数应满足的性质介绍">一致性哈希函数应满足的性质介绍</h3>
+<h3 id="32-一致性哈希函数应满足的性质介绍">3.2. 一致性哈希函数应满足的性质介绍</h3>
 <ol>
 <li>
 <p>Balance</p>
@@ -450,7 +450,7 @@
 <p>Load 大致意思是指， 一个 bucket 在不同的 view 下所包含的 items 集合的并集的大小，其具有上界保证了在不同的节点总数情况下，不会出现单个节点需要储存过多的数据的现象。</p>
 </li>
 </ol>
-<h3 id="构造一致性哈希函数">构造一致性哈希函数</h3>
+<h3 id="33-构造一致性哈希函数">3.3. 构造一致性哈希函数</h3>
 <p>//TODO</p>
     </div>
 

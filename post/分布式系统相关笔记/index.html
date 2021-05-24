@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F%E7%9B%B8%E5%85%B3%E7%AC%94%E8%AE%B0/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="分布式系统相关资源汇总及简要笔记。">
 <meta itemprop="datePublished" content="2020-08-17T20:08:58+00:00" />
 <meta itemprop="dateModified" content="2020-08-17T20:08:58+00:00" />
-<meta itemprop="wordCount" content="1253">
+<meta itemprop="wordCount" content="1296">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/"> 分布式系统 </a>
             
           </div>
-        <span class="more-meta"> 1253 words </span>
+        <span class="more-meta"> 1296 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -331,14 +331,14 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#基础概念">基础概念</a>
+    <li><a href="#1-基础概念">1. 基础概念</a>
       <ul>
-        <li><a href="#一致性相关">一致性相关</a></li>
-        <li><a href="#cap-定理相关">CAP 定理相关</a></li>
+        <li><a href="#11-一致性相关">1.1. 一致性相关</a></li>
+        <li><a href="#12-cap-定理相关">1.2. CAP 定理相关</a></li>
       </ul>
     </li>
-    <li><a href="#博文">博文</a></li>
-    <li><a href="#论文">论文</a></li>
+    <li><a href="#2-博文">2. 博文</a></li>
+    <li><a href="#3-论文">3. 论文</a></li>
   </ul>
 </nav>
   </div>
@@ -348,8 +348,8 @@
     <div class="post-content">
       <p>分布式系统相关资源汇总及简要笔记。</p>
 <hr>
-<h2 id="基础概念">基础概念</h2>
-<h3 id="一致性相关">一致性相关</h3>
+<h2 id="1-基础概念">1. 基础概念</h2>
+<h3 id="11-一致性相关">1.1. 一致性相关</h3>
 <p>参考 <code>Strong consistency models</code>，<a href="https://zhuanlan.zhihu.com/p/48782892">中文版</a> <a href="https://aphyr.com/posts/313-strong-consistency-models">英文版</a></p>
 <p><strong>正确性 (Correctness)</strong></p>
 <ul>
@@ -383,7 +383,7 @@
 <li>串行一致性是对多操作，多对象的保证，对总体的操作顺序无要求</li>
 <li>线性一致性是对单操作，单对象的保证，所有操作遵循真实时间序</li>
 </ul>
-<h3 id="cap-定理相关">CAP 定理相关</h3>
+<h3 id="12-cap-定理相关">1.2. CAP 定理相关</h3>
 <p><a href="https://en.wikipedia.org/wiki/CAP_theorem">CAP 定理</a>指出对于一个分布式计算系统来说，不可能同时满足以下三点：</p>
 <ul>
 <li>一致性 (Consistency): Every read receives the most recent write or an error</li>
@@ -434,13 +434,19 @@
 <p>多数系统既不线性可用 (linearizable) 也不 CAP 可用 (CAP-available)</p>
 </li>
 </ul>
-<h2 id="博文">博文</h2>
+<h2 id="2-博文">2. 博文</h2>
 <ul>
 <li><a href="https://github.com/oldratlee/translations/tree/master/log-what-every-software-engineer-should-know-about-real-time-datas-unifying">The Log: What every software engineer should know about real-time data&rsquo;s unifying abstraction</a></li>
 </ul>
-<h2 id="论文">论文</h2>
+<h2 id="3-论文">3. 论文</h2>
 <ul>
-<li><a href="https://citemaster.net/get/10b50274-7bc5-11e5-8aa1-00163e009cc7/p558-lamport.pdf">Time, Clocks, and the Ordering of Events in a Distributed System</a></li>
+<li>
+<p><a href="https://citemaster.net/get/10b50274-7bc5-11e5-8aa1-00163e009cc7/p558-lamport.pdf">Time, Clocks, and the Ordering of Events in a Distributed System</a></p>
+<p>在本文中通过定义逻辑时钟确定了事件之间的偏序关系，<a href="https://k-on.me/post/time-clocks-and-the-ordering-of-events-in-a-distributed-system/">笔记地址</a></p>
+</li>
+<li>
+<p><a href="https://pages.cs.wisc.edu/~remzi/Classes/739/Spring2004/Papers/raft.pdf">In search of an understandable consensus algorithm (extended version)</a></p>
+</li>
 </ul>
     </div>
 

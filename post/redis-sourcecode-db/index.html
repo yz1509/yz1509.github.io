@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/redis-sourcecode-db/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 数据库实现相关源码阅读笔记，源码文件 server.h &amp; server.c &amp; db.c &amp; evict.c &amp; expire.c &amp; blocked.c。">
 <meta itemprop="datePublished" content="2020-10-13T17:11:09+08:00" />
 <meta itemprop="dateModified" content="2020-10-13T17:11:09+08:00" />
-<meta itemprop="wordCount" content="7978">
+<meta itemprop="wordCount" content="7995">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 7978 words </span>
+        <span class="more-meta"> 7995 words </span>
           <span class="more-meta"> 16 min read </span>
 
         
@@ -331,30 +331,30 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#小结">小结</a></li>
-    <li><a href="#redisdb">redisDb</a></li>
-    <li><a href="#redisdb-apis">redisDb APIs</a>
+    <li><a href="#1-小结">1. 小结</a></li>
+    <li><a href="#2-redisdb">2. redisDb</a></li>
+    <li><a href="#3-redisdb-apis">3. redisDb APIs</a>
       <ul>
-        <li><a href="#查找">查找</a></li>
-        <li><a href="#添加">添加</a></li>
-        <li><a href="#删除">删除</a></li>
-        <li><a href="#utils">Utils</a></li>
+        <li><a href="#31-查找">3.1. 查找</a></li>
+        <li><a href="#32-添加">3.2. 添加</a></li>
+        <li><a href="#33-删除">3.3. 删除</a></li>
+        <li><a href="#34-utils">3.4. Utils</a></li>
       </ul>
     </li>
-    <li><a href="#expire">expire</a>
+    <li><a href="#4-expire">4. expire</a>
       <ul>
-        <li><a href="#expire-apis">Expire APIs</a></li>
-        <li><a href="#主动清理过期键">主动清理过期键</a></li>
-        <li><a href="#处于可写模式下的从库清理过期键">处于可写模式下的从库清理过期键</a></li>
-        <li><a href="#expire-commands">Expire Commands</a></li>
+        <li><a href="#41-expire-apis">4.1. Expire APIs</a></li>
+        <li><a href="#42-主动清理过期键">4.2. 主动清理过期键</a></li>
+        <li><a href="#43-处于可写模式下的从库清理过期键">4.3. 处于可写模式下的从库清理过期键</a></li>
+        <li><a href="#44-expire-commands">4.4. Expire Commands</a></li>
       </ul>
     </li>
-    <li><a href="#evict">evict</a>
+    <li><a href="#5-evict">5. evict</a>
       <ul>
-        <li><a href="#least-recently-usedlru">Least Recently Used(LRU)</a></li>
-        <li><a href="#least-frequently-usedlfu">Least Frequently Used(LFU)</a></li>
-        <li><a href="#eviction-pool">Eviction pool</a></li>
-        <li><a href="#free-memory">Free memory</a></li>
+        <li><a href="#51-least-recently-usedlru">5.1. Least Recently Used(LRU)</a></li>
+        <li><a href="#52-least-frequently-usedlfu">5.2. Least Frequently Used(LFU)</a></li>
+        <li><a href="#53-eviction-pool">5.3. Eviction pool</a></li>
+        <li><a href="#54-free-memory">5.4. Free memory</a></li>
       </ul>
     </li>
   </ul>
@@ -366,7 +366,7 @@
     <div class="post-content">
       <p>Redis 数据库实现相关源码阅读笔记，源码文件 <code>server.h</code> &amp; <code>server.c</code> &amp; <code>db.c</code> &amp; <code>evict.c</code> &amp; <code>expire.c</code> &amp; <code>blocked.c</code>。</p>
 <hr>
-<h2 id="小结">小结</h2>
+<h2 id="1-小结">1. 小结</h2>
 <ul>
 <li>
 <p>Redis 数据库对象主要由以下几部分组成：</p>
@@ -419,7 +419,7 @@
 <ul>
 <li>为性能考虑，应尽量避免调用 <code>gettimeofday</code> 来获取时间，可使用 Redis 缓存的时间值。</li>
 </ul>
-<h2 id="redisdb">redisDb</h2>
+<h2 id="2-redisdb">2. redisDb</h2>
 <p>Redis 数据库由多个 <a href="https://k-on.me/post/redis-sourcecode-dict/">dict</a> 组成，其结构定义如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -608,8 +608,8 @@
 <span class="p">};</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="redisdb-apis">redisDb APIs</h2>
-<h3 id="查找">查找</h3>
+</div><h2 id="3-redisdb-apis">3. redisDb APIs</h2>
+<h3 id="31-查找">3.1. 查找</h3>
 <p><strong>lookupKey</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -732,7 +732,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="添加">添加</h3>
+</div><h3 id="32-添加">3.2. 添加</h3>
 <p><strong>dbAdd</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -828,7 +828,7 @@
 <li><code>val</code> 的引用计数会增加</li>
 <li>在 <code>keepttl</code> 不为 1 时，与 <code>key</code> 关联的过期时间会被移除</li>
 </ul>
-<h3 id="删除">删除</h3>
+<h3 id="33-删除">3.3. 删除</h3>
 <p><strong>删除某个 key</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -907,7 +907,7 @@
                          <span class="kt">void</span><span class="p">(</span><span class="n">callback</span><span class="p">)(</span><span class="kt">void</span><span class="o">*</span><span class="p">));</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="utils">Utils</h3>
+</div><h3 id="34-utils">3.4. Utils</h3>
 <p><strong>dbRandomKey</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -962,7 +962,7 @@
 <span class="n">robj</span> <span class="o">*</span><span class="nf">dbUnshareStringValue</span><span class="p">(</span><span class="n">redisDb</span> <span class="o">*</span><span class="n">db</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">o</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="expire">expire</h2>
+</div><h2 id="4-expire">4. expire</h2>
 <p>设置了过期时间的 <code>key</code>，会将 &lt;key, absolute-expire-time&gt; 映射加入到 <code>redisDb-&gt;expires</code> 字典中，以支持后续的键过期行为。Redis 的键过期以被动的方式进行，只会在访问到该 <code>key</code> 的时候触发。访问的方式大致可以分为两种：</p>
 <ul>
 <li>
@@ -977,7 +977,7 @@
 </li>
 </ul>
 <p>过期 <code>key</code> 的删除分为同步和异步两种方式，由配置项 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L985">lazyfree-lazy-expire</a> 决定采用何种方式。</p>
-<h3 id="expire-apis">Expire APIs</h3>
+<h3 id="41-expire-apis">4.1. Expire APIs</h3>
 <p><strong>removeExpire</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1078,7 +1078,7 @@
 <li>在 Redis 主库中，如果此时 <code>key</code> 已过期，会触发删除 <code>key</code> 操作，并将删除操作同步至 salves 和 AOF</li>
 <li>在 Redis 从库中，如果此时 <code>key</code> 已过期，则只会立马返回 1 表示该 <code>key</code> 已过期，但不会执行删除操作，这是因为从库为了和主库的数据保持一致，其过期 <code>key</code> 的清理由同步主库的 del 消息完成</li>
 </ul>
-<h3 id="主动清理过期键">主动清理过期键</h3>
+<h3 id="42-主动清理过期键">4.2. 主动清理过期键</h3>
 <p>之前我们介绍过 Redis 主库除了在访问 key 时触发过期操作，还会定期调用 <code>activeExpireCycle</code> 清理过期 key，其接口如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1147,11 +1147,11 @@
 <li><code>server.stat_expire_cycle_time_used</code>: Expire cycles 使用总时间 (ms)</li>
 <li><code>server.stat_expired_stale_perc</code>：已过期键占比近似值，以先前值占比 $95\%$，本次调用运行值占比 $5\%$ 进行加权平均</li>
 </ul>
-<h3 id="处于可写模式下的从库清理过期键">处于可写模式下的从库清理过期键</h3>
+<h3 id="43-处于可写模式下的从库清理过期键">4.3. 处于可写模式下的从库清理过期键</h3>
 <p>TODO</p>
-<h3 id="expire-commands">Expire Commands</h3>
+<h3 id="44-expire-commands">4.4. Expire Commands</h3>
 <p>TODO</p>
-<h2 id="evict">evict</h2>
+<h2 id="5-evict">5. evict</h2>
 <p>在之前关于 redis object 的介绍中，我们知道 redis obejct 有一个 filed 为 <a href="https://github.com/redis/redis/blob/6.0.8/src/object.c#L51">lru</a>，其在创建时初始化，在<a href="https://github.com/redis/redis/blob/6.0.8/src/db.c#L63">每次查找操作时更新</a>，它的作用就是用于挑选目标 key 进行淘汰。</p>
 <p>Redis 作为内存数据库，通常会设置 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L859">maxmemory</a> 指定可用的最大内存空间大小。若设置了 <code>maxmemory</code> 值，则 Redis Server 会在每次执行命令之前调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L3612">freeMemoryIfNeededAndSafe</a> 以检查目前内存使用量是否已经达到 <code>maxmemory</code>，若为真，会根据设置的 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L890">maxmemory-policy</a> 决定淘汰 key 的方式，可选策略如下：</p>
 <ul>
@@ -1165,7 +1165,7 @@
 <li><code>noeviction</code>: Don&rsquo;t evict anything, just return an error on write operations.</li>
 </ul>
 <p>接下来我们重点介绍在 Redis 中 LRU/LFU 相关策略的实现。</p>
-<h3 id="least-recently-usedlru">Least Recently Used(LRU)</h3>
+<h3 id="51-least-recently-usedlru">5.1. Least Recently Used(LRU)</h3>
 <p><strong>获取 lruclock</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1212,7 +1212,7 @@
 <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="nf">estimateObjectIdleTime</span><span class="p">(</span><span class="n">robj</span> <span class="o">*</span><span class="n">o</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="least-frequently-usedlfu">Least Frequently Used(LFU)</h3>
+</div><h3 id="52-least-frequently-usedlfu">5.2. Least Frequently Used(LFU)</h3>
 <p>从 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.h#L623">redisObject</a> 的定义中，我们知道 LFU 和 LRU 复用同一 field <code>lru</code>，因此在 LFU 中访问频率的大小只可用 <code>LRU_BITS</code> 位来表示。Redis 使用下图所示的结构表示频率：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1387,7 +1387,7 @@ $$</p>
 <li>当 <code>lfu_decay_time</code> 大于 0 时，每经过 <code>lfu_decay_time</code> 分钟，计数器减 1，直至为 0</li>
 </ul>
 <p>还可以发现在 <code>LFUDecrAndReturn</code> 中并不会改变 <code>robj-&gt;lru</code> 的值，只是返回此时经过衰减之后的计数值。其值的更改会在每次<a href="https://github.com/redis/redis/blob/6.0.8/src/db.c#L65">真正访问该数据对象</a>时发生。</p>
-<h3 id="eviction-pool">Eviction pool</h3>
+<h3 id="53-eviction-pool">5.3. Eviction pool</h3>
 <p>Redis 使用淘汰候选数组 <code>EvictionPoolLRU</code> 保存着可淘汰 key 的信息，其中每个候选 key 的相关信息由 <code>evictionPoolEntry</code> 表示，其结构定义如下:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1467,7 +1467,7 @@ $$</p>
 <p>根据 idle 值，将该数据对象插入 <code>EvictionPoolLRU</code> 中相应的位置，维持数组的有序性(idle 从小到大)</p>
 </li>
 </ol>
-<h3 id="free-memory">Free memory</h3>
+<h3 id="54-free-memory">5.4. Free memory</h3>
 <p><strong>获得目前数据库内存使用情况</strong></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">

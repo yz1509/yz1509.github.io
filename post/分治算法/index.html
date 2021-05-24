@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/%E5%88%86%E6%B2%BB%E7%AE%97%E6%B3%95/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="分治算法学习笔记。">
 <meta itemprop="datePublished" content="2018-07-18T21:59:06+00:00" />
 <meta itemprop="dateModified" content="2018-07-18T21:59:06+00:00" />
-<meta itemprop="wordCount" content="365">
+<meta itemprop="wordCount" content="371">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"> 数据结构与算法 </a>
             
           </div>
-        <span class="more-meta"> 365 words </span>
+        <span class="more-meta"> 371 words </span>
           <span class="more-meta"> 1 min read </span>
 
         
@@ -331,15 +331,15 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#分治的基本概念">分治的基本概念</a></li>
-    <li><a href="#分治的典型应用">分治的典型应用</a>
+    <li><a href="#1-分治的基本概念">1. 分治的基本概念</a></li>
+    <li><a href="#2-分治的典型应用">2. 分治的典型应用</a>
       <ul>
-        <li><a href="#二分查找">二分查找</a></li>
-        <li><a href="#归并排序">归并排序</a></li>
-        <li><a href="#快速排序">快速排序</a></li>
+        <li><a href="#21-二分查找">2.1. 二分查找</a></li>
+        <li><a href="#22-归并排序">2.2. 归并排序</a></li>
+        <li><a href="#23-快速排序">2.3. 快速排序</a></li>
       </ul>
     </li>
-    <li><a href="#例题">例题</a></li>
+    <li><a href="#3-例题">3. 例题</a></li>
   </ul>
 </nav>
   </div>
@@ -349,31 +349,31 @@
     <div class="post-content">
       <p>分治算法学习笔记。</p>
 <hr>
-<h2 id="分治的基本概念">分治的基本概念</h2>
+<h2 id="1-分治的基本概念">1. 分治的基本概念</h2>
 <p>把一个任务，分成形式和原任务相同，但规模更小的几个部分任务 (通常是两个部分)，分别完成，或只需要选一部分完成。然后再处理完成后的这一个或几个部分的结果，实现整个任务的完成。</p>
-<h2 id="分治的典型应用">分治的典型应用</h2>
-<h3 id="二分查找">二分查找</h3>
+<h2 id="2-分治的典型应用">2. 分治的典型应用</h2>
+<h3 id="21-二分查找">2.1. 二分查找</h3>
 <p>二分查找函数中，为了防止 $L + R$ 过大溢出，建议使用 $mid = L + (R - L)/2$.</p>
 <p><strong>例题</strong></p>
 <ul>
 <li><a href="https://leetcode-cn.com/problems/he-wei-sde-liang-ge-shu-zi-lcof/">剑指 Offer 57. 和为s的两个数字</a></li>
 <li><a href="http://bailian.openjudge.cn/practice/2456">POJ 2456: Aggressive cows</a></li>
 </ul>
-<h3 id="归并排序">归并排序</h3>
+<h3 id="22-归并排序">2.2. 归并排序</h3>
 <p>数组排序任务可以如下完成：</p>
 <ul>
 <li>把前一半排序</li>
 <li>把后一半排序</li>
 <li>将两半归并到一个新的有序数组，然后再拷贝回原数组，排序完成。</li>
 </ul>
-<h3 id="快速排序">快速排序</h3>
+<h3 id="23-快速排序">2.3. 快速排序</h3>
 <p>数组排序任务可以如下完成：</p>
 <ul>
 <li>设 $k = a[0]$，将 $k$ 挪到适当位置，使得比 $k$ 小的元素都在 $k$ 左边,比 $k$ 大的元素都在 $k$ 右边，和 $k$ 相等的，不关心在 $k$ 左右出现均可 ($O(n)$ 时间完成)</li>
 <li>把 $k$ 左边的部分快速排序</li>
 <li>把 $k$ 右边的部分快速排序</li>
 </ul>
-<h2 id="例题">例题</h2>
+<h2 id="3-例题">3. 例题</h2>
 <ul>
 <li>
 <p>输出前 $m$ 大的数</p>

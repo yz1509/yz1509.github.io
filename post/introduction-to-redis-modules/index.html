@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/introduction-to-redis-modules/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis Modules 入门。">
 <meta itemprop="datePublished" content="2020-08-19T16:52:01+00:00" />
 <meta itemprop="dateModified" content="2020-08-19T16:52:01+00:00" />
-<meta itemprop="wordCount" content="4500">
+<meta itemprop="wordCount" content="4524">
 
 
 
@@ -309,8 +309,8 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 4500 words </span>
-          <span class="more-meta"> 9 min read </span>
+        <span class="more-meta"> 4524 words </span>
+          <span class="more-meta"> 10 min read </span>
 
         
         
@@ -331,37 +331,37 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#introduction-to-redis-modules">Introduction to Redis modules</a>
+    <li><a href="#1-introduction-to-redis-modules">1. Introduction to Redis modules</a>
       <ul>
-        <li><a href="#加载卸载和查看-modules">加载、卸载和查看 Modules</a></li>
-        <li><a href="#模块示例">模块示例</a></li>
-        <li><a href="#redismodulestring">RedisModuleString</a></li>
-        <li><a href="#返回响应">返回响应</a></li>
-        <li><a href="#请求有效性检测">请求有效性检测</a></li>
-        <li><a href="#low-level-access-to-keys">Low level access to keys</a></li>
-        <li><a href="#high-level-access-to-keys----calling-redis-commands">High level access to keys &ndash; Calling Redis commands</a></li>
-        <li><a href="#replicating-commands">Replicating commands</a></li>
-        <li><a href="#automatic-memory-management">Automatic memory management</a></li>
-        <li><a href="#allocating-memory-into-modules">Allocating memory into modules</a></li>
+        <li><a href="#11-加载卸载和查看-modules">1.1. 加载、卸载和查看 Modules</a></li>
+        <li><a href="#12-模块示例">1.2. 模块示例</a></li>
+        <li><a href="#13-redismodulestring">1.3. RedisModuleString</a></li>
+        <li><a href="#14-返回响应">1.4. 返回响应</a></li>
+        <li><a href="#15-请求有效性检测">1.5. 请求有效性检测</a></li>
+        <li><a href="#16-low-level-access-to-keys">1.6. Low level access to keys</a></li>
+        <li><a href="#17-high-level-access-to-keys----calling-redis-commands">1.7. High level access to keys &ndash; Calling Redis commands</a></li>
+        <li><a href="#18-replicating-commands">1.8. Replicating commands</a></li>
+        <li><a href="#19-automatic-memory-management">1.9. Automatic memory management</a></li>
+        <li><a href="#110-allocating-memory-into-modules">1.10. Allocating memory into modules</a></li>
       </ul>
     </li>
-    <li><a href="#implementing-native-data-types">Implementing native data types</a>
+    <li><a href="#2-implementing-native-data-types">2. Implementing native data types</a>
       <ul>
-        <li><a href="#registering-a-new-data-types">Registering a new data types</a></li>
-        <li><a href="#seting-and-getting-keys">Seting and getting keys</a></li>
-        <li><a href="#free-method">Free method</a></li>
-        <li><a href="#rdb-load-and-save-methods">RDB load and save methods</a></li>
-        <li><a href="#aof-rewriting">AOF rewriting</a></li>
-        <li><a href="#handling-multiple-encodings">Handling multiple encodings</a></li>
-        <li><a href="#allocating-memory">Allocating memory</a></li>
+        <li><a href="#21-registering-a-new-data-types">2.1. Registering a new data types</a></li>
+        <li><a href="#22-seting-and-getting-keys">2.2. Seting and getting keys</a></li>
+        <li><a href="#23-free-method">2.3. Free method</a></li>
+        <li><a href="#24-rdb-load-and-save-methods">2.4. RDB load and save methods</a></li>
+        <li><a href="#25-aof-rewriting">2.5. AOF rewriting</a></li>
+        <li><a href="#26-handling-multiple-encodings">2.6. Handling multiple encodings</a></li>
+        <li><a href="#27-allocating-memory">2.7. Allocating memory</a></li>
       </ul>
     </li>
-    <li><a href="#blocking-operations-with-modules">Blocking operations with modules</a>
+    <li><a href="#3-blocking-operations-with-modules">3. Blocking operations with modules</a>
       <ul>
-        <li><a href="#how-blocking-and-resuming-works">How blocking and resuming works</a></li>
-        <li><a href="#passing-reply-data-when-unblocking">Passing reply data when unblocking</a></li>
-        <li><a href="#aborting-the-blocking-of-a-client">Aborting the blocking of a client</a></li>
-        <li><a href="#implementing-the-command-reply-and-timeout-callback-using-a-single-function">Implementing the command, reply and timeout callback using a single function</a></li>
+        <li><a href="#31-how-blocking-and-resuming-works">3.1. How blocking and resuming works</a></li>
+        <li><a href="#32-passing-reply-data-when-unblocking">3.2. Passing reply data when unblocking</a></li>
+        <li><a href="#33-aborting-the-blocking-of-a-client">3.3. Aborting the blocking of a client</a></li>
+        <li><a href="#34-implementing-the-command-reply-and-timeout-callback-using-a-single-function">3.4. Implementing the command, reply and timeout callback using a single function</a></li>
       </ul>
     </li>
   </ul>
@@ -373,9 +373,9 @@
     <div class="post-content">
       <p>Redis Modules 入门。</p>
 <hr>
-<h2 id="introduction-to-redis-modules">Introduction to Redis modules</h2>
+<h2 id="1-introduction-to-redis-modules">1. Introduction to Redis modules</h2>
 <p><a href="https://redis.io/topics/modules-intro">原文地址</a></p>
-<h3 id="加载卸载和查看-modules">加载、卸载和查看 Modules</h3>
+<h3 id="11-加载卸载和查看-modules">1.1. 加载、卸载和查看 Modules</h3>
 <p><strong>加载</strong></p>
 <p>Modules 有两种加载方式：</p>
 <ul>
@@ -396,7 +396,7 @@
 </div><p>也可以通过在 <code>RedisModule_OnUnload</code> 中直接返回 <code>REDISMODULE_ERR</code> 禁止模块被卸载。</p>
 <p><strong>查看</strong></p>
 <p>列出已加载的 Modules: <code>MODULE LIST</code></p>
-<h3 id="模块示例">模块示例</h3>
+<h3 id="12-模块示例">1.2. 模块示例</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -493,7 +493,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="redismodulestring">RedisModuleString</h3>
+</div><h3 id="13-redismodulestring">1.3. RedisModuleString</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -540,7 +540,7 @@
 <li>如果不想手动 free 的话，可以开启自动内存管理</li>
 <li>通过 <code>argv</code> 数组传递的参数不要 free</li>
 </ul>
-<h3 id="返回响应">返回响应</h3>
+<h3 id="14-返回响应">1.4. 返回响应</h3>
 <p>在模块中实现的命令可以通过 <code>RedisModule_ReplyWith&lt;something&gt;</code> 接口返回响应至客户端。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -608,7 +608,7 @@
 <span class="n">RedisModuel_ReplySetArrayLength</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="mi">100</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="请求有效性检测">请求有效性检测</h3>
+</div><h3 id="15-请求有效性检测">1.5. 请求有效性检测</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -645,7 +645,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="low-level-access-to-keys">Low level access to keys</h3>
+</div><h3 id="16-low-level-access-to-keys">1.6. Low level access to keys</h3>
 <p>访问 Redis 数据库有两种 APIs:</p>
 <ul>
 <li>low level APIs: 可直接操作 Redis 数据结构，速度快</li>
@@ -828,7 +828,7 @@
 <li>字符串长度扩展时，会填充 zero bytes</li>
 </ul>
 <p>更多数据类型的 APIs 可见 Modules API reference。</p>
-<h3 id="high-level-access-to-keys----calling-redis-commands">High level access to keys &ndash; Calling Redis commands</h3>
+<h3 id="17-high-level-access-to-keys----calling-redis-commands">1.7. High level access to keys &ndash; Calling Redis commands</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -991,7 +991,7 @@
 <span class="kt">void</span> <span class="nf">RedisModule_FreeCallReply</span><span class="p">(</span><span class="n">RedisModuleCallReply</span> <span class="o">*</span><span class="n">reply</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="replicating-commands">Replicating commands</h3>
+</div><h3 id="18-replicating-commands">1.8. Replicating commands</h3>
 <p>当使用 high level APIs 访问 key，通过加 <code>!</code> 格式说明符，命令自动被复制，如：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1028,9 +1028,9 @@
 <span class="n">RedisModule_Replicate</span><span class="p">(</span><span class="n">ctx</span><span class="p">,</span> <span class="s">&#34;INCRBY&#34;</span><span class="p">,</span> <span class="s">&#34;cl&#34;</span><span class="p">,</span> <span class="s">&#34;foo&#34;</span><span class="p">,</span> <span class="n">my_increment</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="automatic-memory-management">Automatic memory management</h3>
+</div><h3 id="19-automatic-memory-management">1.9. Automatic memory management</h3>
 <p>启用自动内存管理，只需在命令实现函数的开头加上 <code>RedisModule_AutoMemory(ctx);</code> 即可，虽然会有些性能损耗，但是你可以不再需要手动 <code>close open keys</code>, <code>free replies</code> 和 <code>free RedisModuleString objects</code>。</p>
-<h3 id="allocating-memory-into-modules">Allocating memory into modules</h3>
+<h3 id="110-allocating-memory-into-modules">1.10. Allocating memory into modules</h3>
 <p>虽然在模块中可以调用 <code>malloc()</code> 和 <code>free()</code> 函数，但是通过 <code>malloc()</code> 分配的内存并不会被计算到 <code>used_memory</code> 信息中去，也不会受到 <code>maxmemory</code> 限制，所以应首先考虑使用 Redis Modules 提供的 APIs。而且，使用 APIs 分配内存实现的自定义数据结构也可以被 RDB 加载函数正确地反序列化。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1056,7 +1056,7 @@
 <span class="kt">void</span> <span class="o">*</span><span class="nf">RedisModule_PoolAlloc</span><span class="p">(</span><span class="n">RedisModuleCtx</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">bytes</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="implementing-native-data-types">Implementing native data types</h2>
+</div><h2 id="2-implementing-native-data-types">2. Implementing native data types</h2>
 <p><a href="https://redis.io/topics/modules-native-types">原文地址</a></p>
 <p>在模块中实现类似 Redis 原生的数据类型需要满足以下几点：</p>
 <ul>
@@ -1065,7 +1065,7 @@
 <li>A 9 characters name that is unique to each module native data type.</li>
 <li>An encoding version, used to persist into RDB files a module-specific data version, so that a module will be able to load older representations from RDB files.</li>
 </ul>
-<h3 id="registering-a-new-data-types">Registering a new data types</h3>
+<h3 id="21-registering-a-new-data-types">2.1. Registering a new data types</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -1186,7 +1186,7 @@
 <span class="o">------------------------------------------</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="seting-and-getting-keys">Seting and getting keys</h3>
+</div><h3 id="22-seting-and-getting-keys">2.2. Seting and getting keys</h3>
 <p>使用 low level APIs 去操作自定义的数据结构，例子如下：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1242,7 +1242,7 @@
 <span class="cm">/* Do something with data */</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="free-method">Free method</h3>
+</div><h3 id="23-free-method">2.3. Free method</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -1259,7 +1259,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="rdb-load-and-save-methods">RDB load and save methods</h3>
+</div><h3 id="24-rdb-load-and-save-methods">2.4. RDB load and save methods</h3>
 <p>当调用 RDB saving 或 loading 时，我们需要给出自定义数据类型在磁盘上的排布方式，Redis 提供了在 RDB 文件中存储以下数据类型的 high level APIs：</p>
 <ul>
 <li>Unsigned 64-bit integers</li>
@@ -1381,7 +1381,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="aof-rewriting">AOF rewriting</h3>
+</div><h3 id="25-aof-rewriting">2.5. AOF rewriting</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -1390,18 +1390,18 @@
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="nf">RedisModule_EmitAOF</span><span class="p">(</span><span class="n">RedisModuleIO</span> <span class="o">*</span><span class="n">io</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">cmdname</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="handling-multiple-encodings">Handling multiple encodings</h3>
+</div><h3 id="26-handling-multiple-encodings">2.6. Handling multiple encodings</h3>
 <p>TODO</p>
-<h3 id="allocating-memory">Allocating memory</h3>
+<h3 id="27-allocating-memory">2.7. Allocating memory</h3>
 <p>自定义数据结构的内存管理建议使用 Redis Module 提供的 APIs：</p>
 <ul>
 <li>自定义数据结构使用的内存会被计算在 <code>used_memory</code> 内，方便 Redis 进行内存管理</li>
 <li>Redis 使用的是 <code>jemalloc</code> 分配器，可以降低内存碎片率</li>
 <li>与 Redis 内存分配器相同时，从 RDB loading 函数中返回的值无需再次拷贝，可直接访问使用</li>
 </ul>
-<h2 id="blocking-operations-with-modules">Blocking operations with modules</h2>
+<h2 id="3-blocking-operations-with-modules">3. Blocking operations with modules</h2>
 <p><a href="https://redis.io/topics/modules-blocking-ops">原文地址</a></p>
-<h3 id="how-blocking-and-resuming-works">How blocking and resuming works</h3>
+<h3 id="31-how-blocking-and-resuming-works">3.1. How blocking and resuming works</h3>
 <p>可使用以下接口让客户端进入 <strong>blocked state</strong>:</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1511,7 +1511,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="passing-reply-data-when-unblocking">Passing reply data when unblocking</h3>
+</div><h3 id="32-passing-reply-data-when-unblocking">3.2. Passing reply data when unblocking</h3>
 <p>一般而言阻塞客户端的目的是为了等待某些计算的结果，并将结果回复给客户端，该结果往往是在 unblocked 时传递给 <code>reply_callback</code> 的，我们将上述示例进行简单修改，以演示传递 <code>reply</code> 的过程。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1603,7 +1603,7 @@
 <li><code>privdata</code> 的释放必须放置在 <code>free_privdata</code> callback 中，因为 <code>reply_callback</code> 可能因为客户端连接超时或断开导致无法被调用</li>
 <li>在 <code>timeout_callback</code> 中，也可通过 <code>GetBlockedClientPrivateData()</code> 访问 <code>privdata</code></li>
 </ul>
-<h3 id="aborting-the-blocking-of-a-client">Aborting the blocking of a client</h3>
+<h3 id="33-aborting-the-blocking-of-a-client">3.3. Aborting the blocking of a client</h3>
 <p>当实现 Redis Command 的函数中，当申请资源发生错误时，我们既不想 block 客户端，也不想触发 <code>reply_callback</code>，此时我们最好的选择可能是使用以下接口：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1648,7 +1648,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="implementing-the-command-reply-and-timeout-callback-using-a-single-function">Implementing the command, reply and timeout callback using a single function</h3>
+</div><h3 id="34-implementing-the-command-reply-and-timeout-callback-using-a-single-function">3.4. Implementing the command, reply and timeout callback using a single function</h3>
 <p>有人可能喜欢将所有实现放在一个函数中，通过使用以下 API 可达到此目的：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">

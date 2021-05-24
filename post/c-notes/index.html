@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/c-notes/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="记录 C 语言相关小知识。">
 <meta itemprop="datePublished" content="2020-09-22T14:44:15+08:00" />
 <meta itemprop="dateModified" content="2020-09-22T14:44:15+08:00" />
-<meta itemprop="wordCount" content="474">
+<meta itemprop="wordCount" content="484">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/c/c&#43;&#43;/"> c/c&#43;&#43; </a>
             
           </div>
-        <span class="more-meta"> 474 words </span>
+        <span class="more-meta"> 484 words </span>
           <span class="more-meta"> 1 min read </span>
 
         
@@ -331,29 +331,29 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#关键字">关键字</a>
+    <li><a href="#1-关键字">1. 关键字</a>
       <ul>
-        <li><a href="#volatile">volatile</a></li>
+        <li><a href="#11-volatile">1.1. volatile</a></li>
       </ul>
     </li>
-    <li><a href="#结构体">结构体</a>
+    <li><a href="#2-结构体">2. 结构体</a>
       <ul>
-        <li><a href="#结构体内的冒号">结构体内的冒号</a></li>
+        <li><a href="#21-结构体内的冒号">2.1. 结构体内的冒号</a></li>
       </ul>
     </li>
-    <li><a href="#编译器相关">编译器相关</a>
+    <li><a href="#3-编译器相关">3. 编译器相关</a>
       <ul>
-        <li><a href="#__builtin_expect">__builtin_expect</a></li>
+        <li><a href="#31-__builtin_expect">3.1. __builtin_expect</a></li>
       </ul>
     </li>
-    <li><a href="#字符串">字符串</a>
+    <li><a href="#4-字符串">4. 字符串</a>
       <ul>
-        <li><a href="#memcmp">memcmp</a></li>
+        <li><a href="#41-memcmp">4.1. memcmp</a></li>
       </ul>
     </li>
-    <li><a href="#utils">Utils</a>
+    <li><a href="#5-utils">5. Utils</a>
       <ul>
-        <li><a href="#random">random</a></li>
+        <li><a href="#51-random">5.1. random</a></li>
       </ul>
     </li>
   </ul>
@@ -364,8 +364,8 @@
     
     <div class="post-content">
       <p>记录 C 语言相关小知识。</p>
-<h2 id="关键字">关键字</h2>
-<h3 id="volatile">volatile</h3>
+<h2 id="1-关键字">1. 关键字</h2>
+<h3 id="11-volatile">1.1. volatile</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -375,8 +375,8 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>参考 <a href="https://en.cppreference.com/w/c/language/volatile">C 语言标准</a> 和 <a href="https://liam.page/2018/01/18/volatile-in-C-and-Cpp/">谈谈 C/C++ 中的 volatile</a> 可知：对 <code>volatile</code> 变量的访问，编译器不能做任何假设和推理，都必须按部就班地与「内存」进行交互。</p>
-<h2 id="结构体">结构体</h2>
-<h3 id="结构体内的冒号">结构体内的冒号</h3>
+<h2 id="2-结构体">2. 结构体</h2>
+<h3 id="21-结构体内的冒号">2.1. 结构体内的冒号</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -398,8 +398,8 @@
 </code></pre></td></tr></table>
 </div>
 </div><p>用冒号限定该 <code>field</code> 所占的位数。</p>
-<h2 id="编译器相关">编译器相关</h2>
-<h3 id="__builtin_expect">__builtin_expect</h3>
+<h2 id="3-编译器相关">3. 编译器相关</h2>
+<h3 id="31-__builtin_expect">3.1. __builtin_expect</h3>
 <p>GCC (version &gt;= 2.96) 提供 <code>__builtin_expect()</code> 的支持，允许程序员将最有可能执行的分支告诉编译器，这样编译器可以对代码进行优化，以减少指令跳转带来的性能下降。</p>
 <p>一般的使用方法是使用 <code>likely</code> 和 <code>unlikely</code> 封装该指令，例如：</p>
 <div class="highlight"><div class="chroma">
@@ -423,8 +423,8 @@
 </span></code></pre></td></tr></table>
 </div>
 </div><p>此处两次取非的作用是将 <code>x</code> 强转为“布尔类型”(0 or 1 in C)。</p>
-<h2 id="字符串">字符串</h2>
-<h3 id="memcmp">memcmp</h3>
+<h2 id="4-字符串">4. 字符串</h2>
+<h3 id="41-memcmp">4.1. memcmp</h3>
 <p>通常我们会使用 <a href="https://devdocs.io/c/string/byte/memcmp">memcmp</a> 比较两个字符串：</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -436,8 +436,8 @@
 </div>
 </div><p>但需要注意的是 <code>memcmp</code> 可能不会在字符不相同时立马返回，也就是对于 <code>lhs</code>/<code>rhs</code> 来说，需保证字符串长度不小于 <code>count</code> ，否则会产生未定义行为，比如 <a href="https://github.com/redis/redis/pull/7443">redis/pull/7443</a>。</p>
 <p>详情可阅读 <a href="https://trust-in-soft.com/blog/2015/12/21/memcmp-requires-pointers-to-fully-valid-buffers/">memcmp-requires-pointers-to-fully-valid-buffers</a>.</p>
-<h2 id="utils">Utils</h2>
-<h3 id="random">random</h3>
+<h2 id="5-utils">5. Utils</h2>
+<h3 id="51-random">5.1. random</h3>
 <ul>
 <li>在使用 <code>random</code> 函数获取随机数时需注意其返回值值域 —— <a href="https://en.wikipedia.org/wiki/C_data_types">long int</a> 为 4 字节长。</li>
 <li>一般情况下，这不会有什么问题，但需考虑到极端情况的存在，比如 <a href="https://github.com/redis/redis/pull/8133">redis/pull/8133</a>.</li>

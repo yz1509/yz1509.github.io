@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/introduction-to-infiniband-for-end-users/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="《Introduction to Infiniband for End Users》 阅读笔记。">
 <meta itemprop="datePublished" content="2021-03-13T15:05:02+08:00" />
 <meta itemprop="dateModified" content="2021-03-13T15:05:02+08:00" />
-<meta itemprop="wordCount" content="2190">
+<meta itemprop="wordCount" content="2204">
 
 
 
@@ -308,7 +308,7 @@
         <div class="post-category">
             
           </div>
-        <span class="more-meta"> 2190 words </span>
+        <span class="more-meta"> 2204 words </span>
           <span class="more-meta"> 5 min read </span>
 
         
@@ -330,26 +330,26 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#basic-concepts">Basic Concepts</a>
+    <li><a href="#1-basic-concepts">1. Basic Concepts</a>
       <ul>
-        <li><a href="#infiniband-vs-traditional-newworking">InfiniBand vs traditional newworking</a></li>
-        <li><a href="#infiniband-architecture">InfiniBand Architecture</a></li>
-        <li><a href="#hardware-components">Hardware Components</a></li>
+        <li><a href="#11-infiniband-vs-traditional-newworking">1.1. InfiniBand vs traditional newworking</a></li>
+        <li><a href="#12-infiniband-architecture">1.2. InfiniBand Architecture</a></li>
+        <li><a href="#13-hardware-components">1.3. Hardware Components</a></li>
       </ul>
     </li>
-    <li><a href="#infiniband-for-hpc">InfiniBand for HPC</a></li>
-    <li><a href="#infiniband-for-the-enterprise">InfiniBand for the Enterprise</a></li>
-    <li><a href="#designing-with-infiniband">Designing with InfiniBand</a></li>
-    <li><a href="#infiniband-architecture-and-features">InfiniBand Architecture and Features</a>
+    <li><a href="#2-infiniband-for-hpc">2. InfiniBand for HPC</a></li>
+    <li><a href="#3-infiniband-for-the-enterprise">3. InfiniBand for the Enterprise</a></li>
+    <li><a href="#4-designing-with-infiniband">4. Designing with InfiniBand</a></li>
+    <li><a href="#5-infiniband-architecture-and-features">5. InfiniBand Architecture and Features</a>
       <ul>
-        <li><a href="#address-translation">Address Translation</a></li>
-        <li><a href="#the-infiniband-transport">The InfiniBand Transport</a></li>
-        <li><a href="#infiniband-link-layer-considerations">InfiniBand Link Layer Considerations</a></li>
-        <li><a href="#managment-and-servcices">Managment and Servcices</a></li>
+        <li><a href="#51-address-translation">5.1. Address Translation</a></li>
+        <li><a href="#52-the-infiniband-transport">5.2. The InfiniBand Transport</a></li>
+        <li><a href="#53-infiniband-link-layer-considerations">5.3. InfiniBand Link Layer Considerations</a></li>
+        <li><a href="#54-managment-and-servcices">5.4. Managment and Servcices</a></li>
       </ul>
     </li>
-    <li><a href="#achieving-an-interoperable-solution">Achieving an Interoperable Solution</a></li>
-    <li><a href="#infiniband-performance-capabilities-and-examples">InfiniBand Performance Capabilities and Examples</a></li>
+    <li><a href="#6-achieving-an-interoperable-solution">6. Achieving an Interoperable Solution</a></li>
+    <li><a href="#7-infiniband-performance-capabilities-and-examples">7. InfiniBand Performance Capabilities and Examples</a></li>
   </ul>
 </nav>
   </div>
@@ -360,8 +360,8 @@
       <p>《Introduction to Infiniband for End Users》 阅读笔记。</p>
 <hr>
 <p><a href="http://www.smallake.kr/wp-content/uploads/2014/03/Intro_to_IB_for_End_Users.pdf">原文地址</a></p>
-<h2 id="basic-concepts">Basic Concepts</h2>
-<h3 id="infiniband-vs-traditional-newworking">InfiniBand vs traditional newworking</h3>
+<h2 id="1-basic-concepts">1. Basic Concepts</h2>
+<h3 id="11-infiniband-vs-traditional-newworking">1.1. InfiniBand vs traditional newworking</h3>
 <p><strong>传统的计算机网络</strong></p>
 <ul>
 <li>&ldquo;network centric&rdquo; view，重点关注在硬件以及其管理上</li>
@@ -397,7 +397,7 @@
 </li>
 <li>InfiniBand 会统一处理 storage, networking 和 IPC I/O，因此只需单一底层网络即可</li>
 </ul>
-<h3 id="infiniband-architecture">InfiniBand Architecture</h3>
+<h3 id="12-infiniband-architecture">1.2. InfiniBand Architecture</h3>
 <p>InfiniBand 通过在应用程序之间创建 <em>channel</em> 连接 (故可称为 <code>Channel I/O</code>) 以提供 messaging service 进行通信，如下图所示：</p>
 <ul>
 <li><code>Queue Pairs(QPs)</code>: 指 channel 的端点，每个 QP 包含一个 Send Queue 和一个 Receive Queue</li>
@@ -428,7 +428,7 @@
 <li><code>Link</code> &amp; <code>Physical</code>: wires &amp; switches</li>
 </ul>
 <p><img src="/intro_to_ib_for_end/architecture.png" alt="architecture"></p>
-<h3 id="hardware-components">Hardware Components</h3>
+<h3 id="13-hardware-components">1.3. Hardware Components</h3>
 <p>为了获取 InfiniBand Architecture 所提供功能，需要以下特定硬件的支持：</p>
 <ul>
 <li>
@@ -461,7 +461,7 @@
 <p><code>Cables and Connectors</code></p>
 </li>
 </ul>
-<h2 id="infiniband-for-hpc">InfiniBand for HPC</h2>
+<h2 id="2-infiniband-for-hpc">2. InfiniBand for HPC</h2>
 <p>InfiniBand 架构的特性可为 HPC 带来以下好处：</p>
 <ul>
 <li>Ultra-low latency for
@@ -477,7 +477,7 @@
 </ul>
 </li>
 </ul>
-<h2 id="infiniband-for-the-enterprise">InfiniBand for the Enterprise</h2>
+<h2 id="3-infiniband-for-the-enterprise">3. InfiniBand for the Enterprise</h2>
 <p><strong>Devoting Server Resources to Application Processing</strong></p>
 <ul>
 <li>虚拟化只是提升了服务器资源的利用率</li>
@@ -488,7 +488,7 @@
 <li>现有服务器会将 I/O 带宽资源按照一定比例预分配给 storage fabric(HBA) 和 ethernet network(NIC)，可能并不适合应用程序所需</li>
 <li>InfiniBand 则会统一处理 storage, networking 和 IPC，无需对 I/O 带宽资源进行预分配</li>
 </ul>
-<h2 id="designing-with-infiniband">Designing with InfiniBand</h2>
+<h2 id="4-designing-with-infiniband">4. Designing with InfiniBand</h2>
 <p>如下图所示，应用程序通过使用 <code>verbs</code> 将 work request 置于 work queue (也就是 QPs) 中。</p>
 <blockquote>
 <p><code>verbs</code> 只是应用程序使用/管理 InfiniBand 服务的规范，而非具体的 APIs.</p>
@@ -517,8 +517,8 @@
 <li><code>RDS</code>: Reliable Datagram Sockets offers a Berkeley sockets API allowing messages to be sent to multiple destinations from a single socket. This ULP, originally developed by Oracle, is ideally designed to allow database systems to take full advantage of the parallelism and low latency characteristics of InfiniBand.</li>
 <li><code>MPI</code>: The MPI ULP for HPC clusters provides full support for MPI function calls.</li>
 </ul>
-<h2 id="infiniband-architecture-and-features">InfiniBand Architecture and Features</h2>
-<h3 id="address-translation">Address Translation</h3>
+<h2 id="5-infiniband-architecture-and-features">5. InfiniBand Architecture and Features</h2>
+<h3 id="51-address-translation">5.1. Address Translation</h3>
 <ul>
 <li>HCA 占有一块物理地址，应用程序可通过内存注册过程请求必要的地址转换，然后由 HCA 使用地址转换表执行所需的虚拟地址到物理地址转换</li>
 <li>I/O channel 由 HCA 创建，QP 可以理解为应用程序访问 HCA 的接口，单个 HCA 可支持最多 $2^{24}$ 个 QPs</li>
@@ -532,7 +532,7 @@
 </ul>
 </li>
 </ul>
-<h3 id="the-infiniband-transport">The InfiniBand Transport</h3>
+<h3 id="52-the-infiniband-transport">5.2. The InfiniBand Transport</h3>
 <p>InfiniBand transport 可提供以下几种 message transport services:</p>
 <ul>
 <li>Channel semantic operations: a reliable or an unreliable <code>SEND</code>/<code>RECEIVE</code> service，类似于 TCP/UDP
@@ -555,12 +555,12 @@
 <li>Atomic Operations</li>
 <li>Multicast services</li>
 </ul>
-<h3 id="infiniband-link-layer-considerations">InfiniBand Link Layer Considerations</h3>
+<h3 id="53-infiniband-link-layer-considerations">5.3. InfiniBand Link Layer Considerations</h3>
 <ul>
 <li>InfiniBand link layer <strong>lossless</strong> flow control：利用硬件检测接收端缓冲区使用量，仅在可容纳消息时才会传递消息，保证消息不会被丢失</li>
 <li>TCP <strong>lossy</strong> flow control: 并不会在发送前检测下游是否可容纳 packets，因此 packets 可能会丢失，事实上 TCP 还会利用丢包信息判断下游状态</li>
 </ul>
-<h3 id="managment-and-servcices">Managment and Servcices</h3>
+<h3 id="54-managment-and-servcices">5.4. Managment and Servcices</h3>
 <p>与 autonomous Ethernet fabric 相反，InfiniBand 为集中式管理，其管理主要分为以下几个方面：</p>
 <ul>
 <li>Subnet Management(SM) and Subnet Administration(SA): 发现、初始化和维护 InfiniBand fabric</li>
@@ -572,9 +572,9 @@
 <li>Vendor-specific class</li>
 <li>Application specific classes</li>
 </ul>
-<h2 id="achieving-an-interoperable-solution">Achieving an Interoperable Solution</h2>
+<h2 id="6-achieving-an-interoperable-solution">6. Achieving an Interoperable Solution</h2>
 <p>可以不看</p>
-<h2 id="infiniband-performance-capabilities-and-examples">InfiniBand Performance Capabilities and Examples</h2>
+<h2 id="7-infiniband-performance-capabilities-and-examples">7. InfiniBand Performance Capabilities and Examples</h2>
 <blockquote>
 <p>2010 年的文档，注意时效性</p>
 </blockquote>
@@ -626,6 +626,19 @@
       
       <nav class="post-nav">
         
+          <a class="prev" href="/post/interview-2021/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">Interview --- 2021</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
         
           <a class="next" href="/post/rdma-notes/">
             <span class="next-text nav-default">RDMA notes</span>

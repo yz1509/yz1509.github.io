@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/the-problem-with-embedded-crdt-counters-and-a-solution/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="《The Problem With Embedded CRDT Counters and a Solution》 阅读笔记。">
 <meta itemprop="datePublished" content="2020-12-31T17:09:00+08:00" />
 <meta itemprop="dateModified" content="2020-12-31T17:09:00+08:00" />
-<meta itemprop="wordCount" content="771">
+<meta itemprop="wordCount" content="774">
 
 
 
@@ -308,7 +308,7 @@
         <div class="post-category">
             
           </div>
-        <span class="more-meta"> 771 words </span>
+        <span class="more-meta"> 774 words </span>
           <span class="more-meta"> 2 min read </span>
 
         
@@ -330,9 +330,9 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#目前存在的问题">目前存在的问题</a></li>
-    <li><a href="#可行解">可行解</a></li>
-    <li><a href="#resettable-counter">Resettable Counter</a></li>
+    <li><a href="#1-目前存在的问题">1. 目前存在的问题</a></li>
+    <li><a href="#2-可行解">2. 可行解</a></li>
+    <li><a href="#3-resettable-counter">3. Resettable Counter</a></li>
   </ul>
 </nav>
   </div>
@@ -343,7 +343,7 @@
       <p>《The Problem With Embedded CRDT Counters and a Solution》 阅读笔记。</p>
 <hr>
 <p><a href="https://dl.acm.org/doi/pdf/10.1145/2911151.2911159">论文地址</a></p>
-<h2 id="目前存在的问题">目前存在的问题</h2>
+<h2 id="1-目前存在的问题">1. 目前存在的问题</h2>
 <p>当直接使用 <code>OR-Set</code> 记录 Map 的 field ，<code>PN-Counter</code> 存储对应的 value 时，可能存在以下问题：利用 <code>OR-Set</code> 虽可确定某 field 是否存在，但其对应的 value 并未包含所有历史操作信息，仅记录了当前状态值。因此，对于该 field 的删除操作在同步至对端时，并不能撤消所观察到的历史操作的影响。</p>
 <p>例如，在经历以下操作序列之后</p>
 <table>
@@ -386,7 +386,7 @@
 <blockquote>
 <p>add-wins 在每次 <code>inc</code> 操作时更新 tag，remove-wins 则会复用已存在的 tag</p>
 </blockquote>
-<h2 id="可行解">可行解</h2>
+<h2 id="2-可行解">2. 可行解</h2>
 <ol>
 <li>
 <p>每个 field 在删除时，存储 tombstone。虽然可行，但是 GC 较为麻烦，希望可以将 GC 控制在 key 维度，如此 GC 的实现便可借鉴 key 的主动过期机制。</p>
@@ -401,7 +401,7 @@
 <p><img src="/crdt/embedded_crdt_counters_remove_win_fresh.png" alt="embedded_crdt_counters_remove_win_fresh"></p>
 </li>
 </ol>
-<h2 id="resettable-counter">Resettable Counter</h2>
+<h2 id="3-resettable-counter">3. Resettable Counter</h2>
 <p>基于之前的讨论，作者提出了 <code>Resettable Counter</code>，其描述如下：</p>
 <p><img src="/crdt/embedded_crdt_counters_resettable_counter.png" alt="embedded_crdt_counters_resettable_counter"></p>
 <p>将 <code>Resettable Counter</code> 和 <code>OR-Set</code> 有效结合便可实现我们想要的数据结构(如，<code>ZSET</code>)。但需要注意的是：</p>

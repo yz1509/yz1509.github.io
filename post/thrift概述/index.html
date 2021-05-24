@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.76.0-DEV" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/thrift%E6%A6%82%E8%BF%B0/" />
@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Thrift 是一个基于静态代码生成的跨语言的RPC协议栈实现，它可以生成包括 C&#43;&#43;, Java, Python, Ruby, PHP 等主流语言的代码，这些代码实现了 RPC 的协议层和传输层功能，从而让用户可以集中精力于服务的调用和实现。">
 <meta itemprop="datePublished" content="2019-07-26T23:48:45+00:00" />
 <meta itemprop="dateModified" content="2019-07-26T23:48:45+00:00" />
-<meta itemprop="wordCount" content="2873">
+<meta itemprop="wordCount" content="2885">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/"> 分布式系统 </a>
             
           </div>
-        <span class="more-meta"> 2873 words </span>
+        <span class="more-meta"> 2885 words </span>
           <span class="more-meta"> 6 min read </span>
 
         
@@ -331,24 +331,24 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#软件栈">软件栈</a>
+    <li><a href="#1-软件栈">1. 软件栈</a>
       <ul>
-        <li><a href="#传输层transport-layer">传输层(Transport Layer)</a></li>
-        <li><a href="#协议层protocol-layer">协议层(Protocol Layer)</a></li>
-        <li><a href="#处理层processor-layer">处理层(Processor Layer)</a></li>
-        <li><a href="#服务层server-layer">服务层(Server Layer)</a></li>
+        <li><a href="#11-传输层transport-layer">1.1. 传输层(Transport Layer)</a></li>
+        <li><a href="#12-协议层protocol-layer">1.2. 协议层(Protocol Layer)</a></li>
+        <li><a href="#13-处理层processor-layer">1.3. 处理层(Processor Layer)</a></li>
+        <li><a href="#14-服务层server-layer">1.4. 服务层(Server Layer)</a></li>
       </ul>
     </li>
-    <li><a href="#特点">特点</a></li>
-    <li><a href="#数据类型">数据类型</a></li>
-    <li><a href="#其他特性">其他特性</a>
+    <li><a href="#2-特点">2. 特点</a></li>
+    <li><a href="#3-数据类型">3. 数据类型</a></li>
+    <li><a href="#4-其他特性">4. 其他特性</a>
       <ul>
-        <li><a href="#typedef">Typedef</a></li>
-        <li><a href="#enum">enum</a></li>
-        <li><a href="#constant">constant</a></li>
+        <li><a href="#41-typedef">4.1. Typedef</a></li>
+        <li><a href="#42-enum">4.2. enum</a></li>
+        <li><a href="#43-constant">4.3. constant</a></li>
       </ul>
     </li>
-    <li><a href="#generated-filesc">Generated Files(C++)</a></li>
+    <li><a href="#5-generated-filesc">5. Generated Files(C++)</a></li>
   </ul>
 </nav>
   </div>
@@ -358,7 +358,7 @@
     <div class="post-content">
       <p>Thrift 是一个基于静态代码生成的跨语言的RPC协议栈实现，它可以生成包括 C++, Java, Python, Ruby, PHP 等主流语言的代码，这些代码实现了 RPC 的协议层和传输层功能，从而让用户可以集中精力于服务的调用和实现。</p>
 <hr>
-<h2 id="软件栈">软件栈</h2>
+<h2 id="1-软件栈">1. 软件栈</h2>
 <p>Thrift 对软件栈的定义非常的清晰, 使得各个组件能够松散的耦合, 针对不同的应用场景, 选择不同的方式去搭建服务。</p>
 <div align="center"> <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/df/Apache_Thrift_architecture.png/400px-Apache_Thrift_architecture.png" alt="技术栈" width="400"/> </div><br>
 <ul>
@@ -369,14 +369,14 @@
 <li>业务逻辑层(Your code)</li>
 </ul>
 <p>接下来我们按照自底向上的顺序介绍 thrift 的各个模块。</p>
-<h3 id="传输层transport-layer">传输层(Transport Layer)</h3>
+<h3 id="11-传输层transport-layer">1.1. 传输层(Transport Layer)</h3>
 <p>Transport 与网络数据通信相关，thrift 通信协议有基于 TCP/IP 协议的实现。在现在的网络通信服务器中， TCP/IP 协议栈由 socket 来实现。Thrift 也不例外，在 thrift 源码中，是通过将 socket 包装成各种功能不同的 <code>TTransport</code> 来使用：</p>
 <ul>
 <li><code>TSocket</code>：使用阻塞式 I/O 进行传输，是常见的模式</li>
 <li><code>TNonblockingTransport</code>：使用非阻塞方式，用于构建异步客户端</li>
 <li><code>TFrameTransport</code>：使用非阻塞方式，按块的大小进行传输</li>
 </ul>
-<h3 id="协议层protocol-layer">协议层(Protocol Layer)</h3>
+<h3 id="12-协议层protocol-layer">1.2. 协议层(Protocol Layer)</h3>
 <p>Protocol 是 transport 的上一层，transport 负责数据传输，protocol 负责对数据进行解析，将数据解析成对应的数据结构代码，供程序直接调用。Thrift 支持各种语言，通过一个 <code>x.thrift</code> 的接口描述文件来通信。Thrift 的接口描述文件是各种语言通用的，其通过 thrift compiler 来生成对应的源代码，例如 C++ 对应的命令为 <code>thrift --gen cpp x.thrift</code>。</p>
 <p>Thrift 可以让用户选择客户端与服务端之间传输通信协议的类别，在传输协议上总体划分为文本(text)和二进制(binary)传输协议。为节约带宽，提高传输效率，一般情况下使用二进制类型的传输协议为多数，有时还会使用基于文本类型的协议，这需要根据项目/产品中的实际需求。常用协议有以下几种：</p>
 <ul>
@@ -385,7 +385,7 @@
 <li><code>TJSONProtocol</code>：使用 JSON 文本的数据编码协议进行数据传输</li>
 <li><code>TSimpleJSONProtocol</code>：只提供 JSON 只写的协议，适用于通过脚本语言解析</li>
 </ul>
-<h3 id="处理层processor-layer">处理层(Processor Layer)</h3>
+<h3 id="13-处理层processor-layer">1.3. 处理层(Processor Layer)</h3>
 <p>服务调用组件。 Processor 封装了从输入流读取数据和向输出流写入数据的能力。输入和输出流由 Protocol objectss 表示。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -399,7 +399,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="服务层server-layer">服务层(Server Layer)</h3>
+</div><h3 id="14-服务层server-layer">1.4. 服务层(Server Layer)</h3>
 <p>Server 主要做以下工作:</p>
 <ul>
 <li>Create a transport</li>
@@ -415,7 +415,7 @@
 <li><code>THsHaServer</code>：半同步半异步服务器端，基于非阻塞式 I/O 读写和多线程工作任务处理</li>
 <li><code>TThreadedSelectorServer</code>：多线程选择器服务器端，对 <code>THsHaServer</code> 在异步 I/O 模型上进行增强</li>
 </ul>
-<h2 id="特点">特点</h2>
+<h2 id="2-特点">2. 特点</h2>
 <ol>
 <li>
 <p>开发速度快</p>
@@ -430,7 +430,7 @@
 <p>通过维护 Thrift 格式的 IDL（接口描述语言）文件（注意写好注释），即可作为给 Client 使用的接口文档使用，也自动生成接口代码，始终保持代码和文档的一致性。且 Thrift 协议可灵活支持接口的可扩展性。</p>
 </li>
 </ol>
-<h2 id="数据类型">数据类型</h2>
+<h2 id="3-数据类型">3. 数据类型</h2>
 <p>Thrifty 的数据类型包括预定义的基本类型，容器类型，用户自定义的结构体和异常，以及服务。</p>
 <ol>
 <li>
@@ -544,8 +544,8 @@
 </ul>
 </li>
 </ol>
-<h2 id="其他特性">其他特性</h2>
-<h3 id="typedef">Typedef</h3>
+<h2 id="4-其他特性">4. 其他特性</h2>
+<h3 id="41-typedef">4.1. Typedef</h3>
 <p>Thrift 支持 C/C++ 风格的 typedef</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -557,7 +557,7 @@
 </span><span class="c1"></span><span class="k">typedef</span> <span class="n">Tweet</span> <span class="n">ReTweet</span>   <span class="c1">// struct 也可 typedef
 </span></code></pre></td></tr></table>
 </div>
-</div><h3 id="enum">enum</h3>
+</div><h3 id="42-enum">4.2. enum</h3>
 <p>Thrift 支持 C 风格的 enum ，编译器从 0 开始分配默认值。Thrift 还不支持嵌套枚举，枚举常量大小不超过 32 位正整数。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -577,7 +577,7 @@
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="constant">constant</h3>
+</div><h3 id="43-constant">4.3. constant</h3>
 <p>Thrift 允许定义跨语言使用的常量，复杂类型和结构体使用 JSON 格式赋值。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -589,7 +589,7 @@
 <span class="k">const</span> <span class="n">map</span><span class="o">&lt;</span><span class="n">string</span><span class="p">,</span> <span class="n">string</span><span class="o">&gt;</span> <span class="n">MAP_CONST</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#34;hello&#34;</span><span class="o">:</span> <span class="s">&#34;world&#34;</span><span class="p">,</span> <span class="s">&#34;goodnight&#34;</span><span class="o">:</span> <span class="s">&#34;Kyoani&#34;</span><span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="generated-filesc">Generated Files(C++)</h2>
+</div><h2 id="5-generated-filesc">5. Generated Files(C++)</h2>
 <ul>
 <li>All constants go into a single <code>.cpp/.h</code> pair</li>
 <li>All type definitions (enums and structs) go into another <code>.cpp/.h</code> pair</li>
