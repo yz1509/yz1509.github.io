@@ -25,12 +25,24 @@
 &lt;ul&gt;
 &lt;li&gt;项目介绍&lt;/li&gt;
 &lt;li&gt;同步/异步 IO：简单介绍、区别&lt;/li&gt;
-&lt;li&gt;水平/垂直触发：简单介绍、区别及使用场景&lt;/li&gt;
+&lt;li&gt;水平/边缘触发：简单介绍、区别及使用场景&lt;/li&gt;
 &lt;li&gt;TCP Listen over flow 的原因&lt;/li&gt;
 &lt;li&gt;结构体对齐，成员偏移量计算&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;kill&lt;/code&gt; 与 &lt;code&gt;kill -9&lt;/code&gt; 的区别&lt;/li&gt;
+&lt;li&gt;GDB: 调试多线程&lt;/li&gt;
 &lt;li&gt;Redis: bio、主从复制原理&lt;/li&gt;
 &lt;li&gt;&lt;a href=&#34;https://leetcode-cn.com/problems/reverse-linked-list-ii/&#34;&gt;反转链表 Ⅱ&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;二面&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;项目介绍&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;char* v1, v2;&lt;/code&gt; v1，v2 分别是什么类型&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;(1 llu &amp;lt;&amp;lt; 33) &amp;amp; (1 &amp;lt;&amp;lt; 31) = ?&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;C 和 C++ 有无默认形参&lt;/li&gt;
+&lt;li&gt;判断当前系统大小端&lt;/li&gt;
+&lt;li&gt;将 ipv4 地址从字符串转换为 int&lt;/li&gt;
+&lt;li&gt;TCP 服务端程序实现？其中有哪些系统调用？&lt;/li&gt;
+&lt;li&gt;TCP 滑动窗口介绍，用途&lt;/li&gt;
 &lt;/ul&gt;</description>
       
     </item>
@@ -968,7 +980,7 @@ $$NotANat = CHOOSE \enspace n : n \notin Nat$$&lt;/p&gt;
       
         <description>&lt;p&gt;&lt;a href=&#34;http://lamport.azurewebsites.net/tla/book-02-08-08.pdf&#34;&gt;《Specifying Systems》&lt;/a&gt; 阅读笔记。&lt;/p&gt;
 &lt;hr&gt;
-&lt;h2 id=&#34;1-chapter-1-a-little-simple-math&#34;&gt;1. Chapter 1: A Little Simple Math&lt;/h2&gt;
+&lt;h2 id=&#34;1-a-little-simple-math&#34;&gt;1. A Little Simple Math&lt;/h2&gt;
 &lt;h3 id=&#34;11-propositional-logic&#34;&gt;1.1. Propositional Logic&lt;/h3&gt;
 &lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Propositional_calculus&#34;&gt;Propositional Logic&lt;/a&gt; (命题逻辑) is the mathematics of the two Boolean values &lt;code&gt;TRUE&lt;/code&gt; and &lt;code&gt;FALSE&lt;/code&gt; and the five operators whose names are:&lt;/p&gt;
 &lt;ul&gt;
@@ -986,7 +998,7 @@ $$NotANat = CHOOSE \enspace n : n \notin Nat$$&lt;/p&gt;
 &lt;li&gt;$\exists$ existential quantification (there exists)&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;其中，&lt;a href=&#34;https://en.wikipedia.org/wiki/Predicate_(mathematical_logic)&#34;&gt;Predicate&lt;/a&gt; 可以看作为一个布尔值函数，而 &lt;a href=&#34;https://en.wikipedia.org/wiki/Quantifier_(logic)&#34;&gt;quantifiers&lt;/a&gt; 指定了该 predicate 成立的程度。&lt;/p&gt;
-&lt;h2 id=&#34;2-chapter-2-specifying-a-simple-clock&#34;&gt;2. Chapter 2: Specifying a Simple Clock&lt;/h2&gt;
+&lt;h2 id=&#34;2-specifying-a-simple-clock&#34;&gt;2. Specifying a Simple Clock&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;strong&gt;state&lt;/strong&gt;: an assignment of values to varibles.&lt;/li&gt;
 &lt;li&gt;&lt;strong&gt;behavior&lt;/strong&gt; is an infinite sequence of states.&lt;/li&gt;
@@ -1012,7 +1024,7 @@ $$NotANat = CHOOSE \enspace n : n \notin Nat$$&lt;/p&gt;
 &lt;li&gt;然后，得到 $Spec \triangleq Init \land \Box [Next]_{vars}$&lt;/li&gt;
 &lt;li&gt;最后给出系统应满足的条件：$\mathrm{THEOREM} \enspace Spec \Rightarrow \mathrm{Temporal \enspace formula}$&lt;/li&gt;
 &lt;/ol&gt;
-&lt;h2 id=&#34;3-chapter-3-an-asynchronous-interface&#34;&gt;3. Chapter 3: An Asynchronous Interface&lt;/h2&gt;
+&lt;h2 id=&#34;3-an-asynchronous-interface&#34;&gt;3. An Asynchronous Interface&lt;/h2&gt;
 &lt;h3 id=&#34;31-invariant--type&#34;&gt;3.1. Invariant &amp;amp; Type&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;A &lt;strong&gt;state function&lt;/strong&gt; is an ordinary expression (one with no prime or $\Box$) that can contain variables and constants.&lt;/li&gt;
@@ -1081,7 +1093,7 @@ $$\mathrm{IF} \enspace i = &amp;ldquo;val&amp;rdquo; \enspace \mathrm{THEN} \ens
 &lt;li&gt;可以通过定义 &lt;code&gt;invariant&lt;/code&gt; 描述系统该满足的条件，以便于理解，比如 type-correctness invariant&lt;/li&gt;
 &lt;li&gt;可以使用 &lt;code&gt;record&lt;/code&gt; 将多个变量整合为单个变量&lt;/li&gt;
 &lt;/ol&gt;
-&lt;h2 id=&#34;4-chapter-4-a-fifo&#34;&gt;4. Chapter 4: A FIFO&lt;/h2&gt;
+&lt;h2 id=&#34;4-a-fifo&#34;&gt;4. A FIFO&lt;/h2&gt;
 &lt;h3 id=&#34;41-instantiation-examined&#34;&gt;4.1. Instantiation Examined&lt;/h3&gt;
 &lt;p&gt;&lt;strong&gt;Instantiation Is Substitution&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;Let&amp;rsquo;s now consider an arbitrary $\mathrm{INSTANCE}$ statement&lt;/p&gt;
@@ -1133,7 +1145,7 @@ $$OutChan \triangleq \mathrm{INTSANCE} \enspace Channel \enspace \mathrm{WITH} \
 &lt;li&gt;通过利用量词 &lt;strong&gt;∃&lt;/strong&gt; 和参数实例化的特性可达到隐藏变量的目的&lt;/li&gt;
 &lt;li&gt;利用 $\mathrm{ASSUME}$ 语句可以设定 $\mathrm{CONSTANT}$ 的取值范围&lt;/li&gt;
 &lt;/ol&gt;
-&lt;h2 id=&#34;5-chapter-5-a-caching-memory&#34;&gt;5. Chapter 5: A Caching Memory&lt;/h2&gt;
+&lt;h2 id=&#34;5-a-caching-memory&#34;&gt;5. A Caching Memory&lt;/h2&gt;
 &lt;h3 id=&#34;51-parameters&#34;&gt;5.1. Parameters&lt;/h3&gt;
 &lt;ul&gt;
 &lt;li&gt;
@@ -1225,7 +1237,7 @@ $$f \triangleq \mathrm{CHOOSE} \enspace f : f = [x \in S \mapsto e]$$&lt;/p&gt;
 &lt;li&gt;可以利用 $\mathrm{CHOOSE}$ 表示不属于某集合的值&lt;/li&gt;
 &lt;li&gt;invariant of action $\neq$ invariant of formula&lt;/li&gt;
 &lt;/ol&gt;
-&lt;h2 id=&#34;6-chapter-6-some-more-math&#34;&gt;6. Chapter 6: Some More Math&lt;/h2&gt;
+&lt;h2 id=&#34;6-some-more-math&#34;&gt;6. Some More Math&lt;/h2&gt;
 &lt;h3 id=&#34;61-sets&#34;&gt;6.1. Sets&lt;/h3&gt;
 &lt;p&gt;&lt;strong&gt;built-in operators of TLA+&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
@@ -1280,7 +1292,7 @@ $$fact[n \in Nat] \triangleq \mathrm{IF} \enspace n = 0 \enspace \mathrm{THEN} \
 &lt;li&gt;The definition of $Tail$ defines $Tail(s)$ for all values of $s$. whatever $Tail(s)$ means, it equals $Tail(s)$. But the definition of $fact$ defines $fact[n]$ only for $n \in Nat$, it tells us nothing about the value of $fact[1/2]$.&lt;/li&gt;
 &lt;li&gt;TLA+ doesn&amp;rsquo;t permit us to define infix functions&lt;/li&gt;
 &lt;/ul&gt;
-&lt;h2 id=&#34;7-chapter-7-writing-a-specification-some-advice&#34;&gt;7. Chapter 7: Writing a Specification: Some Advice&lt;/h2&gt;
+&lt;h2 id=&#34;7-writing-a-specification-some-advice&#34;&gt;7. Writing a Specification: Some Advice&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;Why Specify?
 &lt;ul&gt;
@@ -1328,9 +1340,9 @@ $$fact[n \in Nat] \triangleq \mathrm{IF} \enspace n = 0 \enspace \mathrm{THEN} \
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;h2 id=&#34;8-chapter-8-liveness-and-fairness&#34;&gt;8. Chapter 8: Liveness and Fairness&lt;/h2&gt;
+&lt;h2 id=&#34;8-liveness-and-fairness&#34;&gt;8. Liveness and Fairness&lt;/h2&gt;
 &lt;ul&gt;
-&lt;li&gt;Safety properties: waht a system must not do&lt;/li&gt;
+&lt;li&gt;Safety properties: what a system must not do&lt;/li&gt;
 &lt;li&gt;Liveness properties: something does happen&lt;/li&gt;
 &lt;li&gt;We express liveness properties as temporal formulas&lt;/li&gt;
 &lt;li&gt;Liveness properties are likely to be the least important part of your specification&lt;/li&gt;
@@ -1540,7 +1552,7 @@ $$\forall n \in Nat : (\sigma^{+n} \models F) \Rightarrow (\exists m \in Nat : (
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
-&lt;h2 id=&#34;9-chapter-x-the-standard-modules&#34;&gt;9. Chapter X: The Standard Modules&lt;/h2&gt;
+&lt;h2 id=&#34;9-the-standard-modules&#34;&gt;9. The Standard Modules&lt;/h2&gt;
 &lt;h3 id=&#34;91-sequences-module&#34;&gt;9.1. Sequences Module&lt;/h3&gt;
 &lt;p&gt;The Sequences module defines the following operators on sequences:&lt;/p&gt;
 &lt;ul&gt;

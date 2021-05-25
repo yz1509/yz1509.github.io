@@ -70,7 +70,7 @@
 <meta itemprop="description" content="《Specifying Systems》 阅读笔记。">
 <meta itemprop="datePublished" content="2020-12-08T10:23:40+08:00" />
 <meta itemprop="dateModified" content="2020-12-08T10:23:40+08:00" />
-<meta itemprop="wordCount" content="5260">
+<meta itemprop="wordCount" content="5242">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/"> 分布式系统 </a>
             
           </div>
-        <span class="more-meta"> 5260 words </span>
+        <span class="more-meta"> 5242 words </span>
           <span class="more-meta"> 11 min read </span>
 
         
@@ -331,18 +331,18 @@
   <div class="post-toc-content">
     <nav id="TableOfContents">
   <ul>
-    <li><a href="#1-chapter-1-a-little-simple-math">1. Chapter 1: A Little Simple Math</a>
+    <li><a href="#1-a-little-simple-math">1. A Little Simple Math</a>
       <ul>
         <li><a href="#11-propositional-logic">1.1. Propositional Logic</a></li>
         <li><a href="#12-predicate-logic">1.2. Predicate Logic</a></li>
       </ul>
     </li>
-    <li><a href="#2-chapter-2-specifying-a-simple-clock">2. Chapter 2: Specifying a Simple Clock</a>
+    <li><a href="#2-specifying-a-simple-clock">2. Specifying a Simple Clock</a>
       <ul>
         <li><a href="#21-小结">2.1. 小结</a></li>
       </ul>
     </li>
-    <li><a href="#3-chapter-3-an-asynchronous-interface">3. Chapter 3: An Asynchronous Interface</a>
+    <li><a href="#3-an-asynchronous-interface">3. An Asynchronous Interface</a>
       <ul>
         <li><a href="#31-invariant--type">3.1. Invariant &amp; Type</a></li>
         <li><a href="#32-record">3.2. Record</a></li>
@@ -351,7 +351,7 @@
         <li><a href="#35-小结">3.5. 小结</a></li>
       </ul>
     </li>
-    <li><a href="#4-chapter-4-a-fifo">4. Chapter 4: A FIFO</a>
+    <li><a href="#4-a-fifo">4. A FIFO</a>
       <ul>
         <li><a href="#41-instantiation-examined">4.1. Instantiation Examined</a></li>
         <li><a href="#42-hiding-variables">4.2. Hiding variables</a></li>
@@ -359,7 +359,7 @@
         <li><a href="#44-小结">4.4. 小结</a></li>
       </ul>
     </li>
-    <li><a href="#5-chapter-5-a-caching-memory">5. Chapter 5: A Caching Memory</a>
+    <li><a href="#5-a-caching-memory">5. A Caching Memory</a>
       <ul>
         <li><a href="#51-parameters">5.1. Parameters</a></li>
         <li><a href="#52-functions">5.2. Functions</a></li>
@@ -367,15 +367,15 @@
         <li><a href="#54-小结">5.4. 小结</a></li>
       </ul>
     </li>
-    <li><a href="#6-chapter-6-some-more-math">6. Chapter 6: Some More Math</a>
+    <li><a href="#6-some-more-math">6. Some More Math</a>
       <ul>
         <li><a href="#61-sets">6.1. Sets</a></li>
         <li><a href="#62-silly-expressions">6.2. Silly Expressions</a></li>
         <li><a href="#63-functions-versus-operators">6.3. Functions versus Operators</a></li>
       </ul>
     </li>
-    <li><a href="#7-chapter-7-writing-a-specification-some-advice">7. Chapter 7: Writing a Specification: Some Advice</a></li>
-    <li><a href="#8-chapter-8-liveness-and-fairness">8. Chapter 8: Liveness and Fairness</a>
+    <li><a href="#7-writing-a-specification-some-advice">7. Writing a Specification: Some Advice</a></li>
+    <li><a href="#8-liveness-and-fairness">8. Liveness and Fairness</a>
       <ul>
         <li><a href="#81-temporal-formulas">8.1. Temporal Formulas</a></li>
         <li><a href="#82-temporal-tautologies">8.2. Temporal Tautologies</a></li>
@@ -383,7 +383,7 @@
         <li><a href="#84-weak-fairness">8.4. Weak Fairness</a></li>
       </ul>
     </li>
-    <li><a href="#9-chapter-x-the-standard-modules">9. Chapter X: The Standard Modules</a>
+    <li><a href="#9-the-standard-modules">9. The Standard Modules</a>
       <ul>
         <li><a href="#91-sequences-module">9.1. Sequences Module</a></li>
         <li><a href="#92-finitesets-module">9.2. FiniteSets Module</a></li>
@@ -402,7 +402,7 @@
     <div class="post-content">
       <p><a href="http://lamport.azurewebsites.net/tla/book-02-08-08.pdf">《Specifying Systems》</a> 阅读笔记。</p>
 <hr>
-<h2 id="1-chapter-1-a-little-simple-math">1. Chapter 1: A Little Simple Math</h2>
+<h2 id="1-a-little-simple-math">1. A Little Simple Math</h2>
 <h3 id="11-propositional-logic">1.1. Propositional Logic</h3>
 <p><a href="https://en.wikipedia.org/wiki/Propositional_calculus">Propositional Logic</a> (命题逻辑) is the mathematics of the two Boolean values <code>TRUE</code> and <code>FALSE</code> and the five operators whose names are:</p>
 <ul>
@@ -420,7 +420,7 @@
 <li>$\exists$ existential quantification (there exists)</li>
 </ul>
 <p>其中，<a href="https://en.wikipedia.org/wiki/Predicate_(mathematical_logic)">Predicate</a> 可以看作为一个布尔值函数，而 <a href="https://en.wikipedia.org/wiki/Quantifier_(logic)">quantifiers</a> 指定了该 predicate 成立的程度。</p>
-<h2 id="2-chapter-2-specifying-a-simple-clock">2. Chapter 2: Specifying a Simple Clock</h2>
+<h2 id="2-specifying-a-simple-clock">2. Specifying a Simple Clock</h2>
 <ul>
 <li><strong>state</strong>: an assignment of values to varibles.</li>
 <li><strong>behavior</strong> is an infinite sequence of states.</li>
@@ -446,7 +446,7 @@
 <li>然后，得到 $Spec \triangleq Init \land \Box [Next]_{vars}$</li>
 <li>最后给出系统应满足的条件：$\mathrm{THEOREM} \enspace Spec \Rightarrow \mathrm{Temporal \enspace formula}$</li>
 </ol>
-<h2 id="3-chapter-3-an-asynchronous-interface">3. Chapter 3: An Asynchronous Interface</h2>
+<h2 id="3-an-asynchronous-interface">3. An Asynchronous Interface</h2>
 <h3 id="31-invariant--type">3.1. Invariant &amp; Type</h3>
 <ul>
 <li>A <strong>state function</strong> is an ordinary expression (one with no prime or $\Box$) that can contain variables and constants.</li>
@@ -515,7 +515,7 @@ $$\mathrm{IF} \enspace i = &ldquo;val&rdquo; \enspace \mathrm{THEN} \enspace  d 
 <li>可以通过定义 <code>invariant</code> 描述系统该满足的条件，以便于理解，比如 type-correctness invariant</li>
 <li>可以使用 <code>record</code> 将多个变量整合为单个变量</li>
 </ol>
-<h2 id="4-chapter-4-a-fifo">4. Chapter 4: A FIFO</h2>
+<h2 id="4-a-fifo">4. A FIFO</h2>
 <h3 id="41-instantiation-examined">4.1. Instantiation Examined</h3>
 <p><strong>Instantiation Is Substitution</strong></p>
 <p>Let&rsquo;s now consider an arbitrary $\mathrm{INSTANCE}$ statement</p>
@@ -567,7 +567,7 @@ $$OutChan \triangleq \mathrm{INTSANCE} \enspace Channel \enspace \mathrm{WITH} \
 <li>通过利用量词 <strong>∃</strong> 和参数实例化的特性可达到隐藏变量的目的</li>
 <li>利用 $\mathrm{ASSUME}$ 语句可以设定 $\mathrm{CONSTANT}$ 的取值范围</li>
 </ol>
-<h2 id="5-chapter-5-a-caching-memory">5. Chapter 5: A Caching Memory</h2>
+<h2 id="5-a-caching-memory">5. A Caching Memory</h2>
 <h3 id="51-parameters">5.1. Parameters</h3>
 <ul>
 <li>
@@ -659,7 +659,7 @@ $$f \triangleq \mathrm{CHOOSE} \enspace f : f = [x \in S \mapsto e]$$</p>
 <li>可以利用 $\mathrm{CHOOSE}$ 表示不属于某集合的值</li>
 <li>invariant of action $\neq$ invariant of formula</li>
 </ol>
-<h2 id="6-chapter-6-some-more-math">6. Chapter 6: Some More Math</h2>
+<h2 id="6-some-more-math">6. Some More Math</h2>
 <h3 id="61-sets">6.1. Sets</h3>
 <p><strong>built-in operators of TLA+</strong></p>
 <ul>
@@ -714,7 +714,7 @@ $$fact[n \in Nat] \triangleq \mathrm{IF} \enspace n = 0 \enspace \mathrm{THEN} \
 <li>The definition of $Tail$ defines $Tail(s)$ for all values of $s$. whatever $Tail(s)$ means, it equals $Tail(s)$. But the definition of $fact$ defines $fact[n]$ only for $n \in Nat$, it tells us nothing about the value of $fact[1/2]$.</li>
 <li>TLA+ doesn&rsquo;t permit us to define infix functions</li>
 </ul>
-<h2 id="7-chapter-7-writing-a-specification-some-advice">7. Chapter 7: Writing a Specification: Some Advice</h2>
+<h2 id="7-writing-a-specification-some-advice">7. Writing a Specification: Some Advice</h2>
 <ul>
 <li>Why Specify?
 <ul>
@@ -762,9 +762,9 @@ $$fact[n \in Nat] \triangleq \mathrm{IF} \enspace n = 0 \enspace \mathrm{THEN} \
 </ul>
 </li>
 </ul>
-<h2 id="8-chapter-8-liveness-and-fairness">8. Chapter 8: Liveness and Fairness</h2>
+<h2 id="8-liveness-and-fairness">8. Liveness and Fairness</h2>
 <ul>
-<li>Safety properties: waht a system must not do</li>
+<li>Safety properties: what a system must not do</li>
 <li>Liveness properties: something does happen</li>
 <li>We express liveness properties as temporal formulas</li>
 <li>Liveness properties are likely to be the least important part of your specification</li>
@@ -974,7 +974,7 @@ $$\forall n \in Nat : (\sigma^{+n} \models F) \Rightarrow (\exists m \in Nat : (
 </ul>
 </li>
 </ul>
-<h2 id="9-chapter-x-the-standard-modules">9. Chapter X: The Standard Modules</h2>
+<h2 id="9-the-standard-modules">9. The Standard Modules</h2>
 <h3 id="91-sequences-module">9.1. Sequences Module</h3>
 <p>The Sequences module defines the following operators on sequences:</p>
 <ul>
