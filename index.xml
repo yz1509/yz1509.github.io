@@ -43,6 +43,16 @@
 &lt;li&gt;将 ipv4 地址从字符串转换为 int&lt;/li&gt;
 &lt;li&gt;TCP 服务端程序实现？其中有哪些系统调用？&lt;/li&gt;
 &lt;li&gt;TCP 滑动窗口介绍，用途&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;京东&#34;&gt;京东&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;一面&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Redis 为什么快&lt;/li&gt;
+&lt;li&gt;Codis 如何保证高可用，Sentinel 主从切换时 Codis 的具体行为？&lt;/li&gt;
+&lt;li&gt;Codis 数据迁移细节&lt;/li&gt;
+&lt;li&gt;B+ 树的特点&lt;/li&gt;
+&lt;li&gt;LevelDB 的 SST 组织结构&lt;/li&gt;
+&lt;li&gt;C++ 的多态&lt;/li&gt;
 &lt;/ul&gt;</description>
       
     </item>
