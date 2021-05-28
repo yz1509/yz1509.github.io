@@ -44,6 +44,15 @@
 &lt;li&gt;TCP 服务端程序实现？其中有哪些系统调用？&lt;/li&gt;
 &lt;li&gt;TCP 滑动窗口介绍，用途&lt;/li&gt;
 &lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;三面&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;项目介绍&lt;/li&gt;
+&lt;li&gt;Raft 协议介绍&lt;/li&gt;
+&lt;li&gt;Raft 配置变更时如何 apply 日志&lt;/li&gt;
+&lt;li&gt;Raft term 的作用&lt;/li&gt;
+&lt;li&gt;Raft 分区结束后如何处理少数派 term 较大的问题&lt;/li&gt;
+&lt;li&gt;遍历二叉树，将每层节点从左到右连成单向链表&lt;/li&gt;
+&lt;/ul&gt;
 &lt;h2 id=&#34;京东&#34;&gt;京东&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;一面&lt;/strong&gt;&lt;/p&gt;
 &lt;ul&gt;
