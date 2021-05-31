@@ -6,7 +6,25 @@
     <description>Recent content in 数据库 on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 24 Oct 2020 16:01:48 +0800</lastBuildDate><atom:link href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 07 Feb 2021 14:39:21 +0800</lastBuildDate><atom:link href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>LSM Notes</title>
+      <link>https://k-on.me/post/lsm-notes/</link>
+      <pubDate>Sun, 07 Feb 2021 14:39:21 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/lsm-notes/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Log-structured_merge-tree&#34;&gt;Log-Structured Merge-tree&lt;/a&gt; 相关笔记。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Redis 源码阅读 --- Server</title>
+      <link>https://k-on.me/post/redis-sourcecode-server/</link>
+      <pubDate>Tue, 27 Oct 2020 20:01:48 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/redis-sourcecode-server/</guid>
+      <description>&lt;p&gt;Redis Server 相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; &amp;amp; &lt;code&gt;server.c&lt;/code&gt; &amp;amp;  &lt;code&gt;networking.c&lt;/code&gt;。&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>Redis 源码阅读 --- ae</title>
       <link>https://k-on.me/post/redis-sourcecode-ae/</link>

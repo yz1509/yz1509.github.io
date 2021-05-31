@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Shell on HTT - ふわふわ時間</title>
+    <link>https://k-on.me/tags/shell/</link>
+    <description>Recent content in Shell on HTT - ふわふわ時間</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 13 Jan 2021 20:07:43 +0800</lastBuildDate><atom:link href="https://k-on.me/tags/shell/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Missing Semester of Your CS Education</title>
+      <link>https://k-on.me/post/the-missing-semester-of-your-cs-education/</link>
+      <pubDate>Wed, 13 Jan 2021 20:07:43 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/the-missing-semester-of-your-cs-education/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://missing-semester-cn.github.io/&#34;&gt;The Missing Semester of Your CS Education&lt;/a&gt; 阅读笔记.&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>

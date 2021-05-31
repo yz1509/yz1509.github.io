@@ -100,6 +100,48 @@
   </url>
   
   <url>
+    <loc>https://k-on.me/tags/leveldb/</loc>
+    <lastmod>2021-02-07T15:48:24+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://k-on.me/tags/lsm/</loc>
+    <lastmod>2021-02-07T15:48:24+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://k-on.me/post/lsm-based-storage-techniques-a-survey/</loc>
+    <lastmod>2021-02-07T15:48:24+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://k-on.me/tags/rocksdb/</loc>
+    <lastmod>2021-02-07T15:48:24+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://k-on.me/post/lsm-notes/</loc>
+    <lastmod>2021-02-07T14:39:21+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/</loc>
+    <lastmod>2021-02-07T14:39:21+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://k-on.me/post/time-clocks-and-the-ordering-of-events-in-a-distributed-system/</loc>
     <lastmod>2021-02-04T18:14:47+08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -149,6 +191,34 @@
   </url>
   
   <url>
+    <loc>https://k-on.me/tags/shell/</loc>
+    <lastmod>2021-01-13T20:07:43+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://k-on.me/post/the-missing-semester-of-your-cs-education/</loc>
+    <lastmod>2021-01-13T20:07:43+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://k-on.me/tags/%E5%85%AC%E5%BC%80%E8%AF%BE/</loc>
+    <lastmod>2021-01-13T20:07:43+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>https://k-on.me/categories/%E7%94%9F%E6%B4%BB%E5%B0%8F%E5%B8%B8%E8%AF%86/</loc>
+    <lastmod>2021-01-13T20:07:43+08:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
     <loc>https://k-on.me/tags/crdt/</loc>
     <lastmod>2020-12-31T17:09:00+08:00</lastmod>
     <changefreq>weekly</changefreq>
@@ -184,14 +254,14 @@
   </url>
   
   <url>
-    <loc>https://k-on.me/post/redis-sourcecode-ae/</loc>
-    <lastmod>2020-10-24T16:01:48+08:00</lastmod>
+    <loc>https://k-on.me/post/redis-sourcecode-server/</loc>
+    <lastmod>2020-10-27T20:01:48+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>
   
   <url>
-    <loc>https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/</loc>
+    <loc>https://k-on.me/post/redis-sourcecode-ae/</loc>
     <lastmod>2020-10-24T16:01:48+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -417,13 +487,6 @@
   <url>
     <loc>https://k-on.me/post/%E5%88%9D%E8%AF%95%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/</loc>
     <lastmod>2020-01-22T10:36:38+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>https://k-on.me/categories/%E7%94%9F%E6%B4%BB%E5%B0%8F%E5%B8%B8%E8%AF%86/</loc>
-    <lastmod>2019-12-23T19:59:24+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url>

@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>The Missing Semester of Your CS Education - HTT - ふわふわ時間</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="765PRO.P" />
+  <meta name="description" content="The Missing Semester of Your CS Education 阅读笔记.
+" />
+
+  <meta name="keywords" content="K-ON, KyoAni" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.80.0-DEV" />
+
+
+<link rel="canonical" href="https://k-on.me/post/the-missing-semester-of-your-cs-education/" />
+
+
+
+
+
+
+
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.b3a8813c06e6d785beba22bf8264e174fa2cb3a396b22f9ba24e2c00c18aaf7f.css" integrity="sha256-s6iBPAbm14W&#43;uiK/gmThdPoss6OWsi&#43;bok4sAMGKr38=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="The Missing Semester of Your CS Education" />
+<meta property="og:description" content="The Missing Semester of Your CS Education 阅读笔记." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://k-on.me/post/the-missing-semester-of-your-cs-education/" />
+<meta property="article:published_time" content="2021-01-13T20:07:43+08:00" />
+<meta property="article:modified_time" content="2021-01-13T20:07:43+08:00" />
+<meta itemprop="name" content="The Missing Semester of Your CS Education">
+<meta itemprop="description" content="The Missing Semester of Your CS Education 阅读笔记.">
+<meta itemprop="datePublished" content="2021-01-13T20:07:43+08:00" />
+<meta itemprop="dateModified" content="2021-01-13T20:07:43+08:00" />
+<meta itemprop="wordCount" content="1716">
+
+
+
+<meta itemprop="keywords" content="公开课,Shell," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="The Missing Semester of Your CS Education"/>
+<meta name="twitter:description" content="The Missing Semester of Your CS Education 阅读笔记."/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">HTT</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/about/">About</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/categories/">Categories</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      HTT
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/about/">About</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">The Missing Semester of Your CS Education</h1>
+      
+      <div class="post-meta">
+        <time datetime="2021-01-13" class="post-time">
+          2021-01-13
+        </time>
+        <div class="post-category">
+            <a href="https://k-on.me/categories/%E7%94%9F%E6%B4%BB%E5%B0%8F%E5%B8%B8%E8%AF%86/"> 生活小常识 </a>
+            
+          </div>
+        <span class="more-meta"> 1716 words </span>
+          <span class="more-meta"> 4 min read </span>
+
+        
+        
+          <span id="busuanzi_container_page_pv">
+            | 阅读 <span id="busuanzi_value_page_pv"></span>
+          </span>
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-the-shell">1. The Shell</a>
+      <ul>
+        <li><a href="#11-在程序间创建连接">1.1. 在程序间创建连接</a></li>
+        <li><a href="#12-shell-脚本-bash">1.2. shell 脚本 (bash)</a></li>
+        <li><a href="#13-shell-工具">1.3. Shell 工具</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p><a href="https://missing-semester-cn.github.io/">The Missing Semester of Your CS Education</a> 阅读笔记.</p>
+<hr>
+<h2 id="1-the-shell">1. The Shell</h2>
+<p>Shell: 允许你执行程序,输入并获取某种半结构化的输出。</p>
+<p><a href="https://www.gnu.org/software/bash/manual/bash.html">Bash Reference Manual</a>
+<a href="https://tldp.org/LDP/abs/html/">Advanced Bash-Scripting Guide</a>
+<a href="https://mywiki.wooledge.org/BashGuide">Bash Guide</a></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-s" data-lang="s"><span class="n">kumiko</span><span class="o">:~$</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>kumiko</code>：主机名</li>
+<li><code>~</code>：当前工作目录</li>
+<li><code>$</code>：表示您现在的身份不是 root 用户</li>
+</ul>
+<h3 id="11-在程序间创建连接">1.1. 在程序间创建连接</h3>
+<p>在 shell 中，程序有两个主要的“流”：输入流和输出流。通常，一个程序的输入输出流都是终端（键盘作为输入，显示器作为输出）；但是，我们也可以重定向这些流。</p>
+<ul>
+<li><code>&lt; file</code> &amp; <code>&gt; file</code>: 将程序的输入输出流分别重定向至文件</li>
+<li><code>&gt;&gt;</code>：向一个文件追加内容</li>
+<li><code>|</code>：将一个程序的输出和另外一个程序的输入连接起来</li>
+</ul>
+<p>值得注意的是，<code>|</code>、<code>&gt;</code> 和 <code>&lt;</code> 是通过 shell 执行的，而不是被各个程序单独执行。因此会有以下情况发生</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># error</span>
+sudo <span class="nb">echo</span> <span class="m">3</span> &gt; brightness
+An error occurred <span class="k">while</span> redirecting file <span class="s1">&#39;brightness&#39;</span>
+open: Permission denied
+
+<span class="c1"># ok</span>
+<span class="nb">echo</span> <span class="m">3</span> <span class="p">|</span> sudo tee brightness
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="12-shell-脚本-bash">1.2. shell 脚本 (bash)</h3>
+<p>可以使用 <a href="https://github.com/koalaman/shellcheck">shellcheck</a> 定位 shell 脚本中的错误。</p>
+<p>在 shell 脚本中使用空格以分割参数：</p>
+<ul>
+<li><code>foo=bar</code>：变量 <code>foo</code> 赋值为 <code>bar</code></li>
+<li><code>foo = bar</code>：调用程序 <code>foo</code> 并将 <code>=</code> 和 <code>bar</code> 作为参数</li>
+</ul>
+<p>Bash 中的字符串通过 <code>'</code> 和 <code>&quot;</code> 分隔符来定义：</p>
+<ul>
+<li><code>'</code> 定义的字符串为原义字符串，其中的变量不会被转义</li>
+<li><code>&quot;</code> 定义的字符串会将变量值进行替换</li>
+</ul>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="nv">foo</span><span class="o">=</span>bar
+
+<span class="c1"># bar</span>
+<span class="nb">echo</span> <span class="s2">&#34;</span><span class="nv">$foo</span><span class="s2">&#34;</span>
+
+<span class="c1"># $foo</span>
+<span class="nb">echo</span> <span class="s1">&#39;$foo&#39;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>函数</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">mcd <span class="o">()</span> <span class="o">{</span>
+  mkdir -p <span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span>
+  <span class="nb">cd</span> <span class="s2">&#34;</span><span class="nv">$1</span><span class="s2">&#34;</span>
+<span class="o">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>$0</code>： 脚本名</li>
+<li><code>$1</code>-<code>$9</code>： 脚本的参数列表</li>
+<li><code>$@</code>：所有参数</li>
+<li><code>$#</code>：参数个数</li>
+<li><code>$?</code>：前一个命令的返回值</li>
+<li><code>$$</code>：当前脚本的进程识别码</li>
+<li><code>!!</code>：完整的上一条命令，包括参数
+<blockquote>
+<p>当你因为权限不足执行命令失败时，可以使用 <code>sudo !!</code> 再尝试一次</p>
+</blockquote>
+</li>
+<li><code>$_</code>：上一条命令的最后一个参数
+<ul>
+<li>如果你正在使用的是交互式 shell，可以通过按下 <code>Esc</code> 之后键入 <code>.</code> 来获取这个值</li>
+</ul>
+</li>
+</ul>
+<p><strong>命令输出</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># 黄前久美子世界第一！</span>
+<span class="nb">false</span> <span class="o">||</span> <span class="nb">echo</span> <span class="s2">&#34;黄前久美子世界第一！&#34;</span>
+
+<span class="c1"># nothing</span>
+<span class="nb">false</span> <span class="o">&amp;&amp;</span> <span class="nb">echo</span> <span class="s2">&#34;黄前久美子世界第一！&#34;</span>
+
+<span class="c1"># 黄前久美子世界第一！</span>
+<span class="nb">false</span> <span class="p">;</span> <span class="nb">echo</span> <span class="s2">&#34;黄前久美子世界第一！&#34;</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>命令通常使用 <code>STDOUT</code> 来返回输出值，使用 <code>STDERR</code> 来返回错误及错误码</li>
+<li>返回值 0 表示正常执行，其他所有非 0 的返回值都表示有错误发生</li>
+<li>退出码可以搭配 <code>&amp;&amp;</code> 和 <code>||</code> 使用，用来进行条件判断，决定是否执行其他程序</li>
+<li>程序 <code>true</code> 的返回码永远是 0，<code>false</code> 的返回码永远是 1</li>
+<li>同一行的多个命令可以用 <code>;</code> 分隔</li>
+</ul>
+<p><strong>Command/Process Substitution</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="c1"># date 会被替换成日期和时间</span>
+<span class="nb">echo</span> <span class="s2">&#34;Starting program at </span><span class="k">$(</span>date<span class="k">)</span><span class="s2">&#34;</span>
+
+<span class="c1"># 显示文件夹 foo 和 bar 中文件的区别</span>
+diff &lt;<span class="o">(</span>ls foo<span class="o">)</span> &lt;<span class="o">(</span>ls bar<span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>Command Substitution <code>$(cmd)</code>：执行 <code>cmd</code>，并使用输出结果替换 <code>$(cmd)</code></li>
+<li>Porcess Substitution <code>&lt;(cmd)</code>：执行 <code>cmd</code>，将结果输出到一个临时文件中，并将 <code>&lt;(cmd)</code> 替换成临时文件名</li>
+</ul>
+<p><strong>比较</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="cp">#!/bin/bash
+</span><span class="cp"></span>
+<span class="k">for</span> file in <span class="nv">$@</span><span class="p">;</span> <span class="k">do</span>
+    grep foobar <span class="nv">$file</span> &gt; /dev/null 2&gt; /dev/null
+    <span class="c1"># 如果模式没有找到，则grep退出状态为 1</span>
+    <span class="c1"># 我们将标准输出流和标准错误流重定向到Null，因为我们并不关心这些信息</span>
+    <span class="k">if</span> <span class="o">[[</span> <span class="nv">$?</span> -ne <span class="m">0</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then</span>
+        <span class="nb">echo</span> <span class="s2">&#34;File </span><span class="nv">$file</span><span class="s2"> does not have any foobar, adding one&#34;</span>
+        <span class="nb">echo</span> <span class="s2">&#34;# foobar&#34;</span> &gt;&gt; <span class="s2">&#34;</span><span class="nv">$file</span><span class="s2">&#34;</span>
+    <span class="k">fi</span>
+<span class="k">done</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>在 bash 中进行比较时，尽量使用双方括号 <code>[[ ]]</code> 而不是单方括号 <code>[ ]</code>，这样会降低犯错的几率，尽管这样并不能兼容 <code>sh</code></li>
+<li>可通过 <code>man test</code> 查看 Bash 中的 test 手册，下面给出常见的比较操作说明：
+<ul>
+<li>
+<p>布尔运算</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell"><span class="o">(</span> expression <span class="o">)</span>      <span class="c1"># 返回表达式值，输入注意括号前反斜杆</span>
+exp1 -a exp2        <span class="c1"># 与</span>
+exp1 -o exp2        <span class="c1"># 或</span>
+! expression        <span class="c1"># 非</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>字符串判断</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">-n str1             <span class="c1"># 字符串不为空(长度不为零)，等同于 str1</span>
+-z str1             <span class="c1"># 字符串为空(长度等于零)</span>
+<span class="nv">str1</span> <span class="o">=</span> str2         <span class="c1"># 相等</span>
+str1 !<span class="o">=</span> str2        <span class="c1"># 不等</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>整型比较</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">num1 -eq num2       <span class="c1"># == </span>
+num1 -ne num2       <span class="c1"># !=</span>
+num1 -lt num2       <span class="c1"># &lt;</span>
+num1 -le num2       <span class="c1"># &lt;=</span>
+num1 -gt num2       <span class="c1"># &gt;</span>
+num1 -ge num2       <span class="c1"># &gt;=</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p>文件判断</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">-e file             <span class="c1"># file exists</span>
+-d file             <span class="c1"># file exists and is a directory</span>
+-f file             <span class="c1"># file exists and is a regular file</span>
+-h file             <span class="c1"># file exists and is a symbolic link</span>
+-L file             <span class="c1"># same as -h file</span>
+-S file             <span class="c1"># file exists and is a socket</span>
+
+file1 -ef file2     <span class="c1"># file1 and file2 have the same device and inode numbers</span>
+file1 -nt file2     <span class="c1"># file1 is newer(modification date) than file2</span>
+file1 -ot file2     <span class="c1"># file1 is older than file2</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+</li>
+</ul>
+<p><strong>通配(globbing)</strong></p>
+<ul>
+<li>
+<p>通配符</p>
+<ul>
+<li><code>?</code> 匹配一个字符</li>
+<li><code>*</code> 匹配任意个字符</li>
+</ul>
+</li>
+<li>
+<p>花括号 <code>{}</code>：当你有一系列的指令，其中包含一段公共子串时，可以用花括号来自动展开这些命令</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">convert image.<span class="o">{</span>png,jpg<span class="o">}</span>
+<span class="c1"># 会展开为</span>
+convert image.png image.jpg
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+<h3 id="13-shell-工具">1.3. Shell 工具</h3>
+<p><strong>查看命令如何使用</strong></p>
+<ul>
+<li>
+<p>命令行输入</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">cmd_name -h
+cmd_name --help
+man cmd_name
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><code>man</code> 获得的使用手册太过详实，推荐使用 <a href="https://tldr.sh/">TLDR pages</a></p>
+</li>
+</ul>
+<p><strong>查找文件</strong></p>
+<ul>
+<li><a href="https://man7.org/linux/man-pages/man1/find.1.html">find</a></li>
+<li><a href="https://github.com/sharkdp/fd">fd</a></li>
+<li><a href="https://man7.org/linux/man-pages/man1/locate.1.html">locate</a></li>
+</ul>
+<p><a href="https://unix.stackexchange.com/questions/60205/locate-vs-find-usage-pros-and-cons-of-each-other">locate vs find</a></p>
+<p><strong>查找文件内容</strong></p>
+<ul>
+<li><a href="https://man7.org/linux/man-pages/man1/grep.1.html">grep</a></li>
+<li><a href="https://beyondgrep.com/">ack</a></li>
+<li><a href="https://github.com/ggreer/the_silver_searcher">ag</a></li>
+<li><a href="https://github.com/BurntSushi/ripgrep">rg</a></li>
+</ul>
+<p><strong>查找 shell 历史命令</strong></p>
+<ul>
+<li><code>history</code> 命令允许您以程序员的方式来访问 shell 中输入的历史命令</li>
+<li>可以使用 <code>Ctrl+R</code> 对命令历史记录进行回溯搜索</li>
+<li>输入命令时，如果您在命令的开头加上一个空格，它就不会被加进 shell 记录中。当你输入包含密码或是其他敏感信息的命令时会用到这一特性。如果你不小心忘了在前面加空格，可以通过编辑 <code>bash_history</code> 或 <code>.zhistory</code> 来手动地从历史记录中移除那一项</li>
+</ul>
+<p><strong>目录切换</strong></p>
+<ul>
+<li>使用 <a href="https://github.com/clvv/fasd">fasd</a> 可以查找最常用和/或最近使用的文件和目录</li>
+<li>也可以使用 <a href="https://github.com/wting/autojump">autojump</a></li>
+</ul>
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">765PRO.P</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2021-01-13
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://k-on.me/tags/%E5%85%AC%E5%BC%80%E8%AF%BE/">公开课</a>
+          <a href="https://k-on.me/tags/shell/">Shell</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/tlc-model-checker/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">TLC Model Checker</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/the-problem-with-embedded-crdt-counters-and-a-solution/">
+            <span class="next-text nav-default">The Problem With Embedded CRDT Counters and a Solution</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="pro-765@qq.com" rel="me noopener" class="iconfont"
+      title="email"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1451 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M664.781909 681.472759 0 97.881301C0 3.997201 71.046997 0 71.046997 0L474.477909 0 961.649408 0 1361.641813 0C1361.641813 0 1432.688811 3.997201 1432.688811 97.881301L771.345323 681.472759C771.345323 681.472759 764.482731 685.154773 753.594283 688.65053L753.594283 688.664858C741.602731 693.493018 729.424896 695.068979 718.077952 694.839748 706.731093 695.068979 694.553173 693.493018 682.561621 688.664858L682.561621 688.65053C671.644501 685.140446 664.781909 681.472759 664.781909 681.472759L664.781909 681.472759ZM718.063616 811.603883C693.779541 811.016482 658.879232 802.205449 619.10784 767.734955 542.989056 701.759633 0 212.052267 0 212.052267L0 942.809523C0 942.809523 0 1024 83.726336 1024L682.532949 1024 753.579947 1024 1348.948139 1024C1432.688811 1024 1432.688811 942.809523 1432.688811 942.809523L1432.688811 212.052267C1432.688811 212.052267 893.138176 701.759633 817.019477 767.734955 777.248 802.205449 742.347691 811.03081 718.063616 811.603883L718.063616 811.603883Z"></path>
+</svg>
+
+    </a>
+  
+    <a href="https://github.com/yz1509" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://k-on.me/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2018 -
+    2021
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        765PRO.P
+        
+      </span></span>
+
+  
+  
+    <span id="busuanzi_container">
+      访客数/访问量：<span id="busuanzi_value_site_uv"></span>/<span id="busuanzi_value_site_pv"></span>
+    </span>
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

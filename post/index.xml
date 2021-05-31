@@ -35,6 +35,24 @@
     </item>
     
     <item>
+      <title>LSM Based Storage Techniques: A Survey</title>
+      <link>https://k-on.me/post/lsm-based-storage-techniques-a-survey/</link>
+      <pubDate>Sun, 07 Feb 2021 15:48:24 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/lsm-based-storage-techniques-a-survey/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://arxiv.org/pdf/1812.07527.pdf&#34;&gt;《LSM-based Storage Techniques: A Survey》&lt;/a&gt; 阅读笔记。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>LSM Notes</title>
+      <link>https://k-on.me/post/lsm-notes/</link>
+      <pubDate>Sun, 07 Feb 2021 14:39:21 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/lsm-notes/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/Log-structured_merge-tree&#34;&gt;Log-Structured Merge-tree&lt;/a&gt; 相关笔记。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Time, Clocks, and the Ordering of Events in a Distributed System</title>
       <link>https://k-on.me/post/time-clocks-and-the-ordering-of-events-in-a-distributed-system/</link>
       <pubDate>Thu, 04 Feb 2021 18:14:47 +0800</pubDate>
@@ -50,6 +68,15 @@
       
       <guid>https://k-on.me/post/tlc-model-checker/</guid>
       <description>&lt;p&gt;&lt;a href=&#34;https://tla.msr-inria.inria.fr/tlatoolbox/doc/model/model.html&#34;&gt;TLC moder checker&lt;/a&gt; 相关文档阅读笔记，专注于相关概念内容，省略 IDE 界面介绍部分。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>The Missing Semester of Your CS Education</title>
+      <link>https://k-on.me/post/the-missing-semester-of-your-cs-education/</link>
+      <pubDate>Wed, 13 Jan 2021 20:07:43 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/the-missing-semester-of-your-cs-education/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://missing-semester-cn.github.io/&#34;&gt;The Missing Semester of Your CS Education&lt;/a&gt; 阅读笔记.&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -77,6 +104,15 @@
       
       <guid>https://k-on.me/post/tla_notes/</guid>
       <description>&lt;p&gt;&lt;a href=&#34;https://en.wikipedia.org/wiki/TLA%2B&#34;&gt;TLA+&lt;/a&gt; 相关笔记。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
+      <title>Redis 源码阅读 --- Server</title>
+      <link>https://k-on.me/post/redis-sourcecode-server/</link>
+      <pubDate>Tue, 27 Oct 2020 20:01:48 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/redis-sourcecode-server/</guid>
+      <description>&lt;p&gt;Redis Server 相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; &amp;amp; &lt;code&gt;server.c&lt;/code&gt; &amp;amp;  &lt;code&gt;networking.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
     <item>
@@ -149,42 +185,6 @@
       
       <guid>https://k-on.me/post/redis-sourcecode-quicklist/</guid>
       <description>&lt;p&gt;Redis 快速链表相关源码阅读笔记，源码文件 &lt;code&gt;quicklist.h&lt;/code&gt; &amp;amp; &lt;code&gt;quicklist.c&lt;/code&gt;。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Redis 源码阅读 --- ziplist</title>
-      <link>https://k-on.me/post/redis-sourcecode-ziplist/</link>
-      <pubDate>Thu, 24 Sep 2020 14:42:15 +0800</pubDate>
-      
-      <guid>https://k-on.me/post/redis-sourcecode-ziplist/</guid>
-      <description>&lt;p&gt;Redis 压缩列表相关源码阅读笔记，源码文件 &lt;code&gt;ziplist.h&lt;/code&gt; &amp;amp; &lt;code&gt;ziplist.c&lt;/code&gt;。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Redis 源码阅读 --- adlist</title>
-      <link>https://k-on.me/post/redis-sourcecode-adlist/</link>
-      <pubDate>Thu, 24 Sep 2020 14:39:37 +0800</pubDate>
-      
-      <guid>https://k-on.me/post/redis-sourcecode-adlist/</guid>
-      <description>&lt;p&gt;Redis 双向链表相关源码阅读笔记，源码文件 &lt;code&gt;adlist.h&lt;/code&gt; &amp;amp; &lt;code&gt;adlist.c&lt;/code&gt;。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Redis 源码阅读 --- sds</title>
-      <link>https://k-on.me/post/redis-sourcecode-sds/</link>
-      <pubDate>Thu, 24 Sep 2020 10:42:57 +0800</pubDate>
-      
-      <guid>https://k-on.me/post/redis-sourcecode-sds/</guid>
-      <description>&lt;p&gt;Redis 简单字符串相关源码阅读笔记，源码文件 &lt;code&gt;sdsalloc.h&lt;/code&gt; &amp;amp; &lt;code&gt;sds.h&lt;/code&gt; &amp;amp; &lt;code&gt;sds.c&lt;/code&gt;。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Redis 源码阅读 --- zmalloc</title>
-      <link>https://k-on.me/post/redis-sourcecode-zmalloc/</link>
-      <pubDate>Wed, 23 Sep 2020 17:14:57 +0800</pubDate>
-      
-      <guid>https://k-on.me/post/redis-sourcecode-zmalloc/</guid>
-      <description>&lt;p&gt;Redis 内存分配及释放相关源码阅读笔记，源码文件 &lt;code&gt;zmalloc.h&lt;/code&gt; &amp;amp; &lt;code&gt;zmalloc.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
   </channel>
