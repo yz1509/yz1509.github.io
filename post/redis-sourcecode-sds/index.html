@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Redis 简单字符串相关源码阅读笔记，源码文件 sdsalloc.h &amp; sds.h &amp; sds.c。">
 <meta itemprop="datePublished" content="2020-09-24T10:42:57+08:00" />
 <meta itemprop="dateModified" content="2020-09-24T10:42:57+08:00" />
-<meta itemprop="wordCount" content="5131">
+<meta itemprop="wordCount" content="5137">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 5131 words </span>
+        <span class="more-meta"> 5137 words </span>
           <span class="more-meta"> 11 min read </span>
 
         
@@ -332,82 +332,81 @@
     <nav id="TableOfContents">
   <ul>
     <li><a href="#1-小结">1. 小结</a></li>
-    <li><a href="#2-sdsalloc">2. sdsalloc</a></li>
-    <li><a href="#3-sds-数据结构">3. sds 数据结构</a></li>
-    <li><a href="#4-sds-构造函数">4. sds 构造函数</a>
+    <li><a href="#2-sds-数据结构">2. sds 数据结构</a></li>
+    <li><a href="#3-sds-构造函数">3. sds 构造函数</a>
       <ul>
-        <li><a href="#41-sdsnewlen">4.1. sdsnewlen</a></li>
-        <li><a href="#42-sdsempty">4.2. sdsempty</a></li>
-        <li><a href="#43-sdsnew">4.3. sdsnew</a></li>
-        <li><a href="#44-sdsdup">4.4. sdsdup</a></li>
-        <li><a href="#45-sdsfromlonglong">4.5. sdsfromlonglong</a></li>
+        <li><a href="#31-sdsnewlen">3.1. sdsnewlen</a></li>
+        <li><a href="#32-sdsempty">3.2. sdsempty</a></li>
+        <li><a href="#33-sdsnew">3.3. sdsnew</a></li>
+        <li><a href="#34-sdsdup">3.4. sdsdup</a></li>
+        <li><a href="#35-sdsfromlonglong">3.5. sdsfromlonglong</a></li>
       </ul>
     </li>
-    <li><a href="#5-setget-apis">5. Set/Get APIs</a>
+    <li><a href="#4-setget-apis">4. Set/Get APIs</a>
       <ul>
-        <li><a href="#51-sdslen">5.1. sdslen</a></li>
-        <li><a href="#52-sdsavail">5.2. sdsavail</a></li>
-        <li><a href="#53-sdssetlen----设置-len">5.3. sdssetlen &ndash; 设置 len</a></li>
-        <li><a href="#54-sdsinclen----增加-len">5.4. sdsinclen &ndash; 增加 len</a></li>
-        <li><a href="#55-sdsupdatelen">5.5. sdsupdatelen</a></li>
-        <li><a href="#56-sdsalloc----获取-alloc">5.6. sdsalloc &ndash; 获取 alloc</a></li>
-        <li><a href="#57-sdssetalloc----设置-alloc">5.7. sdssetalloc &ndash; 设置 alloc</a></li>
-        <li><a href="#58-sdsallocsize">5.8. sdsAllocSize</a></li>
-        <li><a href="#59-sdsallocptr">5.9. sdsAllocPtr</a></li>
+        <li><a href="#41-sdslen">4.1. sdslen</a></li>
+        <li><a href="#42-sdsavail">4.2. sdsavail</a></li>
+        <li><a href="#43-sdssetlen----设置-len">4.3. sdssetlen &ndash; 设置 len</a></li>
+        <li><a href="#44-sdsinclen----增加-len">4.4. sdsinclen &ndash; 增加 len</a></li>
+        <li><a href="#45-sdsupdatelen">4.5. sdsupdatelen</a></li>
+        <li><a href="#46-sdsalloc----获取-alloc">4.6. sdsalloc &ndash; 获取 alloc</a></li>
+        <li><a href="#47-sdssetalloc----设置-alloc">4.7. sdssetalloc &ndash; 设置 alloc</a></li>
+        <li><a href="#48-sdsallocsize">4.8. sdsAllocSize</a></li>
+        <li><a href="#49-sdsallocptr">4.9. sdsAllocPtr</a></li>
       </ul>
     </li>
-    <li><a href="#6-sds-析构函数">6. sds 析构函数</a>
+    <li><a href="#5-sds-析构函数">5. sds 析构函数</a>
       <ul>
-        <li><a href="#61-sdsclear----虚假的析构函数">6.1. sdsclear &ndash; 虚假的析构函数</a></li>
-        <li><a href="#62-sdsfree----真实的析构函数">6.2. sdsfree &ndash; 真实的析构函数</a></li>
+        <li><a href="#51-sdsclear----虚假的析构函数">5.1. sdsclear &ndash; 虚假的析构函数</a></li>
+        <li><a href="#52-sdsfree----真实的析构函数">5.2. sdsfree &ndash; 真实的析构函数</a></li>
       </ul>
     </li>
-    <li><a href="#7-动态调整函数">7. 动态调整函数</a>
+    <li><a href="#6-动态调整函数">6. 动态调整函数</a>
       <ul>
-        <li><a href="#71-sdsmakeroomfor----扩容">7.1. sdsMakeRoomFor &ndash; 扩容</a></li>
-        <li><a href="#72-sdsremovefreespace----回收空闲空间">7.2. sdsRemoveFreeSpace &ndash; 回收空闲空间</a></li>
-        <li><a href="#73-sdsincrlen----调整长度">7.3. sdsIncrLen &ndash; 调整长度</a></li>
+        <li><a href="#61-sdsmakeroomfor----扩容">6.1. sdsMakeRoomFor &ndash; 扩容</a></li>
+        <li><a href="#62-sdsremovefreespace----回收空闲空间">6.2. sdsRemoveFreeSpace &ndash; 回收空闲空间</a></li>
+        <li><a href="#63-sdsincrlen----调整长度">6.3. sdsIncrLen &ndash; 调整长度</a></li>
       </ul>
     </li>
-    <li><a href="#8-append-操作">8. Append 操作</a>
+    <li><a href="#7-append-操作">7. Append 操作</a>
       <ul>
-        <li><a href="#81-sdsgrowzero">8.1. sdsgrowzero</a></li>
-        <li><a href="#82-sdscatlen">8.2. sdscatlen</a></li>
-        <li><a href="#83-sdscat">8.3. sdscat</a></li>
-        <li><a href="#84-sdscatsds">8.4. sdscatsds</a></li>
-        <li><a href="#85-sdscatvprintf">8.5. sdscatvprintf</a></li>
-        <li><a href="#86-sdscatprintf">8.6. sdscatprintf</a></li>
-        <li><a href="#87-sdscatfmt">8.7. sdscatfmt</a></li>
-        <li><a href="#88-sdscatrepr">8.8. sdscatrepr</a></li>
-        <li><a href="#89-sdsjoin">8.9. sdsjoin</a></li>
-        <li><a href="#810-sdsjoinsds">8.10. sdsjoinsds</a></li>
+        <li><a href="#71-sdsgrowzero">7.1. sdsgrowzero</a></li>
+        <li><a href="#72-sdscatlen">7.2. sdscatlen</a></li>
+        <li><a href="#73-sdscat">7.3. sdscat</a></li>
+        <li><a href="#74-sdscatsds">7.4. sdscatsds</a></li>
+        <li><a href="#75-sdscatvprintf">7.5. sdscatvprintf</a></li>
+        <li><a href="#76-sdscatprintf">7.6. sdscatprintf</a></li>
+        <li><a href="#77-sdscatfmt">7.7. sdscatfmt</a></li>
+        <li><a href="#78-sdscatrepr">7.8. sdscatrepr</a></li>
+        <li><a href="#79-sdsjoin">7.9. sdsjoin</a></li>
+        <li><a href="#710-sdsjoinsds">7.10. sdsjoinsds</a></li>
       </ul>
     </li>
-    <li><a href="#9-拷贝操作">9. 拷贝操作</a>
+    <li><a href="#8-拷贝操作">8. 拷贝操作</a>
       <ul>
-        <li><a href="#91-sdscpylen">9.1. sdscpylen</a></li>
-        <li><a href="#92-sdscpy">9.2. sdscpy</a></li>
+        <li><a href="#81-sdscpylen">8.1. sdscpylen</a></li>
+        <li><a href="#82-sdscpy">8.2. sdscpy</a></li>
       </ul>
     </li>
-    <li><a href="#10-修剪操作">10. 修剪操作</a>
+    <li><a href="#9-修剪操作">9. 修剪操作</a>
       <ul>
-        <li><a href="#101-sdstrim">10.1. sdstrim</a></li>
-        <li><a href="#102-sdsrange">10.2. sdsrange</a></li>
+        <li><a href="#91-sdstrim">9.1. sdstrim</a></li>
+        <li><a href="#92-sdsrange">9.2. sdsrange</a></li>
       </ul>
     </li>
-    <li><a href="#11-split-操作">11. split 操作</a>
+    <li><a href="#10-split-操作">10. split 操作</a>
       <ul>
-        <li><a href="#111-sdssplitlen">11.1. sdssplitlen</a></li>
-        <li><a href="#112-sdsfreesplitres">11.2. sdsfreesplitres</a></li>
-        <li><a href="#113-sdsplitargs">11.3. sdsplitargs</a></li>
+        <li><a href="#101-sdssplitlen">10.1. sdssplitlen</a></li>
+        <li><a href="#102-sdsfreesplitres">10.2. sdsfreesplitres</a></li>
+        <li><a href="#103-sdsplitargs">10.3. sdsplitargs</a></li>
       </ul>
     </li>
-    <li><a href="#12-utils">12. Utils</a>
+    <li><a href="#11-utils">11. Utils</a>
       <ul>
-        <li><a href="#121-sdstolower----转换为小写">12.1. sdstolower &ndash; 转换为小写</a></li>
-        <li><a href="#122-sdstoupper----转换为大写">12.2. sdstoupper &ndash; 转换为大写</a></li>
-        <li><a href="#123-sdscmp">12.3. sdscmp</a></li>
-        <li><a href="#124-sdsmapchars">12.4. sdsmapchars</a></li>
+        <li><a href="#111-sdstolower----转换为小写">11.1. sdstolower &ndash; 转换为小写</a></li>
+        <li><a href="#112-sdstoupper----转换为大写">11.2. sdstoupper &ndash; 转换为大写</a></li>
+        <li><a href="#113-sdscmp">11.3. sdscmp</a></li>
+        <li><a href="#114-sdsmapchars">11.4. sdsmapchars</a></li>
       </ul>
     </li>
   </ul>
@@ -461,7 +460,7 @@ s-hdrlen          s-1       s
 </ul>
 <p><em>Tips</em></p>
 <ul>
-<li>在 C 语言中，可利用<a href="https://en.wikipedia.org/wiki/Flexible_array_member">柔性数组成员</a> 的特性实现变长数组</li>
+<li>在 C 语言中，可利用<a href="https://en.wikipedia.org/wiki/Flexible_array_member">柔性数组成员</a> 的特性实现变长数组，而且与使用指针相比，柔性数组地址连续，便于内存申请与释放，较少内存碎片</li>
 <li>宏定义中的 <code>##</code> 为符号连接操作符</li>
 <li>关于 <code>static inline</code>
 <ul>
@@ -470,21 +469,7 @@ s-hdrlen          s-1       s
 </ul>
 </li>
 </ul>
-<h2 id="2-sdsalloc">2. sdsalloc</h2>
-<p>在 <code>sdsalloc.h</code> 中重命名内存管理相关 API。</p>
-<div class="highlight"><div class="chroma">
-<table class="lntable"><tr><td class="lntd">
-<pre class="chroma"><code><span class="lnt">1
-</span><span class="lnt">2
-</span><span class="lnt">3
-</span></code></pre></td>
-<td class="lntd">
-<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#define s_malloc zmalloc
-</span><span class="cp">#define s_realloc zrealloc
-</span><span class="cp">#define s_free zfree
-</span></code></pre></td></tr></table>
-</div>
-</div><h2 id="3-sds-数据结构">3. sds 数据结构</h2>
+<h2 id="2-sds-数据结构">2. sds 数据结构</h2>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt"> 1
@@ -562,8 +547,8 @@ s-hdrlen          s-1       s
 <p><code>sdshdr5</code> 会在 <code>key</code> 的长度小于 32 时使用，详细可了解 <a href="https://github.com/redis/redis/blob/6.0.8/src/db.c#L179">dbAdd</a> -&gt; <a href="https://github.com/redis/redis/blob/6.0.8/src/sds.c#L160">sdsdup</a> -&gt; <a href="https://github.com/redis/redis/blob/6.0.8/src/sds.c#L89">sdsnewlen</a> 的代码。</p>
 <p><code>__attribute__ ((__packed__))</code> 的作用就是告诉编译器取消结构体在编译过程中的优化对齐，以紧凑模式来分配内存。按照实际占用字节数进行对齐，是 GCC 特有的语法。这个功能是跟操作系统没关系，跟编译器有关。</p>
 <p>在上述结构体定义中，<code>char buf[]</code> 使用了<a href="https://en.wikipedia.org/wiki/Flexible_array_member">柔性数组成员</a> 的特性，其长度为 0，不占用额外的内存空间，<code>buf</code> 实际指向的是结构体之后的内存空间，如果给这个结构体分配的内容大于这个结构体实际大小，后面多余的部分就是这个 <code>buf</code> 的内容，也可用此类特性实现 C 语言变长数组。</p>
-<h2 id="4-sds-构造函数">4. sds 构造函数</h2>
-<h3 id="41-sdsnewlen">4.1. sdsnewlen</h3>
+<h2 id="3-sds-构造函数">3. sds 构造函数</h2>
+<h3 id="31-sdsnewlen">3.1. sdsnewlen</h3>
 <p>根据指针 <code>init</code> 和长度 <code>initlen</code> 构造一个 sds。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -742,7 +727,7 @@ s-hdrlen          s-1       s
 </div>
 </div></li>
 </ul>
-<h3 id="42-sdsempty">4.2. sdsempty</h3>
+<h3 id="32-sdsempty">3.2. sdsempty</h3>
 <p>构造一个空的 sds，可以看出 <code>buf</code> 数组长度即使为 0，该 sds 也包含 <code>\0</code>。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -756,7 +741,7 @@ s-hdrlen          s-1       s
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="43-sdsnew">4.3. sdsnew</h3>
+</div><h3 id="33-sdsnew">3.3. sdsnew</h3>
 <p>根据一个 C 风格字符串构造一个 sds</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -772,7 +757,7 @@ s-hdrlen          s-1       s
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="44-sdsdup">4.4. sdsdup</h3>
+</div><h3 id="34-sdsdup">3.4. sdsdup</h3>
 <p>复制一个 sds</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -786,7 +771,7 @@ s-hdrlen          s-1       s
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="45-sdsfromlonglong">4.5. sdsfromlonglong</h3>
+</div><h3 id="35-sdsfromlonglong">3.5. sdsfromlonglong</h3>
 <p>将一个 <code>long long</code> 类型转换为 sds，该操作比直接调用 <code>sdscatprintf(sdsempty(),&quot;%lld\n&quot;, value);</code> 高效得多。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -816,8 +801,8 @@ s-hdrlen          s-1       s
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="5-setget-apis">5. Set/Get APIs</h2>
-<h3 id="51-sdslen">5.1. sdslen</h3>
+</div><h2 id="4-setget-apis">4. Set/Get APIs</h2>
+<h3 id="41-sdslen">4.1. sdslen</h3>
 <p>获取 <code>buf</code> 数组已使用长度 <code>len</code></p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -879,7 +864,7 @@ s-hdrlen          s-1       s
 <li><code>inline</code> 的作用仅仅是建议编译器做内联开展处理，而不是强制。内联函数 (inline) 可以减少 CPU 的系统开销，并且程序的整体速度将加快，但当内联函数很大时，会有相反的作用，因此一般比较小的函数才使用内联函数。通常，程序执行时，处理器从内存中读取代码执行。当程序中调用一个函数时，程序跳到存储器中保存函数的位置，开始读取代码执行，执行完后再返回。为了提高速度，C 语言定义了 <code>inline</code> 函数，告诉编译器把函数代码在编译时直接拷贝到程序中，这样就不用执行时另外读取函数代码。</li>
 <li><code>static</code> 告诉编译器其他文件看不到这个函数，因此该函数只能在当前文件中被调用。</li>
 </ul>
-<h3 id="52-sdsavail">5.2. sdsavail</h3>
+<h3 id="42-sdsavail">4.2. sdsavail</h3>
 <p>获取 <code>buf</code> 数组中的剩余可用空间大小</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -949,7 +934,7 @@ s-hdrlen          s-1       s
 <li>可以少计算一次</li>
 </ul>
 <p>而 <code>SDS_HDR_VAR</code> 的宏定义最后的分号其实可以去掉，<a href="https://wiki.sei.cmu.edu/confluence/display/c/PRE11-C.+Do+not+conclude+macro+definitions+with+a+semicolon">详情请见</a></p>
-<h3 id="53-sdssetlen----设置-len">5.3. sdssetlen &ndash; 设置 len</h3>
+<h3 id="43-sdssetlen----设置-len">4.3. sdssetlen &ndash; 设置 len</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -958,7 +943,7 @@ s-hdrlen          s-1       s
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">sdssetlen</span><span class="p">(</span><span class="n">sds</span> <span class="n">s</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">newlen</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="54-sdsinclen----增加-len">5.4. sdsinclen &ndash; 增加 len</h3>
+</div><h3 id="44-sdsinclen----增加-len">4.4. sdsinclen &ndash; 增加 len</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -969,7 +954,7 @@ s-hdrlen          s-1       s
 </span><span class="c1"></span><span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">sdsinclen</span><span class="p">(</span><span class="n">sds</span> <span class="n">s</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">inc</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="55-sdsupdatelen">5.5. sdsupdatelen</h3>
+</div><h3 id="45-sdsupdatelen">4.5. sdsupdatelen</h3>
 <p>更新 sds 的长度 <code>len</code>，由于是调用 <code>strlen</code>，故只统计到终止字符 <code>\0</code> (不包括 <code>\0</code>)</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -985,7 +970,7 @@ s-hdrlen          s-1       s
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="56-sdsalloc----获取-alloc">5.6. sdsalloc &ndash; 获取 alloc</h3>
+</div><h3 id="46-sdsalloc----获取-alloc">4.6. sdsalloc &ndash; 获取 alloc</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -996,7 +981,7 @@ s-hdrlen          s-1       s
 <span class="k">static</span> <span class="kr">inline</span> <span class="n">size_t</span> <span class="nf">sdsalloc</span><span class="p">(</span><span class="k">const</span> <span class="n">sds</span> <span class="n">s</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="57-sdssetalloc----设置-alloc">5.7. sdssetalloc &ndash; 设置 alloc</h3>
+</div><h3 id="47-sdssetalloc----设置-alloc">4.7. sdssetalloc &ndash; 设置 alloc</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -1005,7 +990,7 @@ s-hdrlen          s-1       s
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">static</span> <span class="kr">inline</span> <span class="kt">void</span> <span class="nf">sdssetalloc</span><span class="p">(</span><span class="n">sds</span> <span class="n">s</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">newlen</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="58-sdsallocsize">5.8. sdsAllocSize</h3>
+</div><h3 id="48-sdsallocsize">4.8. sdsAllocSize</h3>
 <p>返回分配内存空间的大小，包括：</p>
 <ul>
 <li>头部结构体的大小 <code>sdsHdrSize</code></li>
@@ -1026,7 +1011,7 @@ s-hdrlen          s-1       s
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="59-sdsallocptr">5.9. sdsAllocPtr</h3>
+</div><h3 id="49-sdsallocptr">4.9. sdsAllocPtr</h3>
 <p>返回 sds 头部起始地址。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1040,8 +1025,8 @@ s-hdrlen          s-1       s
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="6-sds-析构函数">6. sds 析构函数</h2>
-<h3 id="61-sdsclear----虚假的析构函数">6.1. sdsclear &ndash; 虚假的析构函数</h3>
+</div><h2 id="5-sds-析构函数">5. sds 析构函数</h2>
+<h3 id="51-sdsclear----虚假的析构函数">5.1. sdsclear &ndash; 虚假的析构函数</h3>
 <p>将 <code>buf</code> 数组长度设置为 0，但是可以发现并未调用 <code>free</code>，而是将其设置为空闲空间。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1057,7 +1042,7 @@ s-hdrlen          s-1       s
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="62-sdsfree----真实的析构函数">6.2. sdsfree &ndash; 真实的析构函数</h3>
+</div><h3 id="52-sdsfree----真实的析构函数">5.2. sdsfree &ndash; 真实的析构函数</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -1074,8 +1059,8 @@ s-hdrlen          s-1       s
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="7-动态调整函数">7. 动态调整函数</h2>
-<h3 id="71-sdsmakeroomfor----扩容">7.1. sdsMakeRoomFor &ndash; 扩容</h3>
+</div><h2 id="6-动态调整函数">6. 动态调整函数</h2>
+<h3 id="61-sdsmakeroomfor----扩容">6.1. sdsMakeRoomFor &ndash; 扩容</h3>
 <p>不改变 <code>len</code>，扩大可用空间 <code>avail</code> 大小，使其大于 <code>addlen</code>。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1180,7 +1165,7 @@ s-hdrlen          s-1       s
 </code></pre></td></tr></table>
 </div>
 </div><p>可以发现该函数仅在当前剩余可用空间不足时进行扩容，采取的扩容策略类似 <code>vector</code>，可以在尽可能不浪费内存空间的基础上减少扩容操作的次数。</p>
-<h3 id="72-sdsremovefreespace----回收空闲空间">7.2. sdsRemoveFreeSpace &ndash; 回收空闲空间</h3>
+<h3 id="62-sdsremovefreespace----回收空闲空间">6.2. sdsRemoveFreeSpace &ndash; 回收空闲空间</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -1193,7 +1178,7 @@ s-hdrlen          s-1       s
 <li>新的头部结构为 <code>sdshdr8</code> 且旧的头部结构不为 <code>sdshdr8</code> 时，调用 <code>s_malloc</code> 重新申请新的内存空间，不然只是在旧的 sds 基础上调用 <code>s_realloc</code> 调整 <code>buf</code> 数组的容量，使得 <code>alloc = len</code> 成立</li>
 <li>注意调用 <code>sdsRemoveFreeSpace</code> 成功返回后，原指针会失效，请使用返回的新指针</li>
 </ul>
-<h3 id="73-sdsincrlen----调整长度">7.3. sdsIncrLen &ndash; 调整长度</h3>
+<h3 id="63-sdsincrlen----调整长度">6.3. sdsIncrLen &ndash; 调整长度</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -1207,8 +1192,8 @@ s-hdrlen          s-1       s
 <li><code>incr &gt;= 0</code>: 增长时需确保剩余可用空间大小充足</li>
 <li><code>incr &lt; 0</code>: 缩短时需确保减少量不得超过现有长度</li>
 </ul>
-<h2 id="8-append-操作">8. Append 操作</h2>
-<h3 id="81-sdsgrowzero">8.1. sdsgrowzero</h3>
+<h2 id="7-append-操作">7. Append 操作</h2>
+<h3 id="71-sdsgrowzero">7.1. sdsgrowzero</h3>
 <p>将 <code>buf</code> 的数组长度增长到给定的 <code>len</code>，如果 <code>len &lt; currentLen</code>，则什么都不做。新增的字节部分，每一位都置为 0。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1218,7 +1203,7 @@ s-hdrlen          s-1       s
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">sds</span> <span class="nf">sdsgrowzero</span><span class="p">(</span><span class="n">sds</span> <span class="n">s</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">len</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="82-sdscatlen">8.2. sdscatlen</h3>
+</div><h3 id="72-sdscatlen">7.2. sdscatlen</h3>
 <p>将二进制安全的字符串附加到现有的 <code>buf</code> 数组之后，注意该函数调用成功后，原指针会失效，请使用返回的新指针。</p>
 <ul>
 <li><code>t</code>：附加字符串首位地址</li>
@@ -1232,7 +1217,7 @@ s-hdrlen          s-1       s
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">sds</span> <span class="nf">sdscatlen</span><span class="p">(</span><span class="n">sds</span> <span class="n">s</span><span class="p">,</span> <span class="k">const</span> <span class="kt">void</span> <span class="o">*</span><span class="n">t</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">len</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="83-sdscat">8.3. sdscat</h3>
+</div><h3 id="73-sdscat">7.3. sdscat</h3>
 <p>将 C 风格字符串附加到现有的 <code>buf</code> 数组之后，注意该函数调用成功后，原指针会失效，请使用返回的新指针。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1246,7 +1231,7 @@ s-hdrlen          s-1       s
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="84-sdscatsds">8.4. sdscatsds</h3>
+</div><h3 id="74-sdscatsds">7.4. sdscatsds</h3>
 <p>拼接两个 sds，注意该函数调用成功后，原指针会失效，请使用返回的新指针。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1260,7 +1245,7 @@ s-hdrlen          s-1       s
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="85-sdscatvprintf">8.5. sdscatvprintf</h3>
+</div><h3 id="75-sdscatvprintf">7.5. sdscatvprintf</h3>
 <p>将格式化字符串拼接到 sds 之后，注意该函数调用成功后，原指针会失效，请使用返回的新指针。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1367,7 +1352,7 @@ s-hdrlen          s-1       s
 </code></pre></td></tr></table>
 </div>
 </div><p>由于不知晓格式化字符串的长度，所以我们需要使用一个 <code>while</code> 循环来测试当前分配的 <code>buf</code> 字符数组的容量是否可以容纳该格式化字符串，每次失败时，我们将 <code>buf</code> 的容量翻倍。</p>
-<h3 id="86-sdscatprintf">8.6. sdscatprintf</h3>
+<h3 id="76-sdscatprintf">7.6. sdscatprintf</h3>
 <p>将格式化字符串拼接到 sds 之后，注意该函数调用成功后，原指针会失效，请使用返回的新指针。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1377,7 +1362,7 @@ s-hdrlen          s-1       s
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">sds</span> <span class="nf">sdscatprintf</span><span class="p">(</span><span class="n">sds</span> <span class="n">s</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="87-sdscatfmt">8.7. sdscatfmt</h3>
+</div><h3 id="77-sdscatfmt">7.7. sdscatfmt</h3>
 <p>将格式化字符串拼接到 sds 之后，比 <code>sdscatprintf</code> 更快，但是其仅支持以下几种格式化字符串：</p>
 <ul>
 <li><code>%s</code> - C String</li>
@@ -1396,7 +1381,7 @@ s-hdrlen          s-1       s
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">sds</span> <span class="nf">sdscatfmt</span><span class="p">(</span><span class="n">sds</span> <span class="n">s</span><span class="p">,</span> <span class="kt">char</span> <span class="k">const</span> <span class="o">*</span><span class="n">fmt</span><span class="p">,</span> <span class="p">...);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="88-sdscatrepr">8.8. sdscatrepr</h3>
+</div><h3 id="78-sdscatrepr">7.8. sdscatrepr</h3>
 <p>将无法打印显式字符的字符数组的转义形式 (eg, &ldquo;\n\r\a&hellip;&rdquo; or &ldquo;\x&lt;hex-number&gt;&quot;) 拼接到 sds 之后，注意该函数调用成功后，原指针会失效，请使用返回的新指针。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1406,7 +1391,7 @@ s-hdrlen          s-1       s
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">sds</span> <span class="nf">sdscatrepr</span><span class="p">(</span><span class="n">sds</span> <span class="n">s</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">p</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">len</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="89-sdsjoin">8.9. sdsjoin</h3>
+</div><h3 id="79-sdsjoin">7.9. sdsjoin</h3>
 <p>使用 C 风格字符串 <code>sep</code> 作为分隔符，将 C 风格字符串数组拼接为一个 sds。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1416,7 +1401,7 @@ s-hdrlen          s-1       s
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">sds</span> <span class="nf">sdsjoin</span><span class="p">(</span><span class="kt">char</span> <span class="o">**</span><span class="n">argv</span><span class="p">,</span> <span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">sep</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="810-sdsjoinsds">8.10. sdsjoinsds</h3>
+</div><h3 id="710-sdsjoinsds">7.10. sdsjoinsds</h3>
 <p>类似于 <code>sdsjoin</code>，将 sds 字符串数组拼接为一个 sds。值得注意的是，使用的字符串分隔符是二进制安全的，而不是 C 风格字符串。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1426,8 +1411,8 @@ s-hdrlen          s-1       s
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">sds</span> <span class="nf">sdsjoinsds</span><span class="p">(</span><span class="n">sds</span> <span class="o">*</span><span class="n">argv</span><span class="p">,</span> <span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">sep</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">seplen</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="9-拷贝操作">9. 拷贝操作</h2>
-<h3 id="91-sdscpylen">9.1. sdscpylen</h3>
+</div><h2 id="8-拷贝操作">8. 拷贝操作</h2>
+<h3 id="81-sdscpylen">8.1. sdscpylen</h3>
 <p>丢弃 sds 字符数组中的原内容，将长为 <code>len</code> 的字符串拷贝至 sds 的 <code>buf</code> 中。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1437,7 +1422,7 @@ s-hdrlen          s-1       s
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">sds</span> <span class="nf">sdscpylen</span><span class="p">(</span><span class="n">sds</span> <span class="n">s</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">t</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">len</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="92-sdscpy">9.2. sdscpy</h3>
+</div><h3 id="82-sdscpy">8.2. sdscpy</h3>
 <p>丢弃 sds 字符数组中的原内容，将 C 风格字符串拷贝至 sds 的 <code>buf</code> 中。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1451,8 +1436,8 @@ s-hdrlen          s-1       s
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="10-修剪操作">10. 修剪操作</h2>
-<h3 id="101-sdstrim">10.1. sdstrim</h3>
+</div><h2 id="9-修剪操作">9. 修剪操作</h2>
+<h3 id="91-sdstrim">9.1. sdstrim</h3>
 <p>去除 sds 两端出现在 C 风格字符串 <code>cset</code> 中的字符。注意该函数调用成功后，原指针会失效，请使用返回的新指针。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1509,7 +1494,7 @@ s-hdrlen          s-1       s
 </code></pre></td></tr></table>
 </div>
 </div><p>可以看出在移除指定的字符后，并未改变 sds 所申请的内存空间大小，可能会造成内存碎片。</p>
-<h3 id="102-sdsrange">10.2. sdsrange</h3>
+<h3 id="92-sdsrange">9.2. sdsrange</h3>
 <p>依据 <code>start</code> 和 <code>end</code> 索引下标修剪 sds 字符串，注意：</p>
 <ul>
 <li><code>start</code> 和 <code>end</code> 可以为负数，类似数组的下标索引</li>
@@ -1523,8 +1508,8 @@ s-hdrlen          s-1       s
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="nf">sdsrange</span><span class="p">(</span><span class="n">sds</span> <span class="n">s</span><span class="p">,</span> <span class="n">ssize_t</span> <span class="n">start</span><span class="p">,</span> <span class="n">ssize_t</span> <span class="n">end</span><span class="p">);</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="11-split-操作">11. split 操作</h2>
-<h3 id="111-sdssplitlen">11.1. sdssplitlen</h3>
+</div><h2 id="10-split-操作">10. split 操作</h2>
+<h3 id="101-sdssplitlen">10.1. sdssplitlen</h3>
 <p>使用长为 <code>seplen</code> 的二进制安全字符串 <code>sep</code> 作为分隔符，将长为 <code>len</code> 的二进制安全字符串 <code>s</code> 分割成 <code>count</code> 个 sds 字符串。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1534,7 +1519,7 @@ s-hdrlen          s-1       s
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">sds</span> <span class="o">*</span><span class="n">sdssplitlen</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">s</span><span class="p">,</span> <span class="n">ssize_t</span> <span class="n">len</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">sep</span><span class="p">,</span> <span class="kt">int</span> <span class="n">seplen</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">count</span><span class="p">)</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="112-sdsfreesplitres">11.2. sdsfreesplitres</h3>
+</div><h3 id="102-sdsfreesplitres">10.2. sdsfreesplitres</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -1555,7 +1540,7 @@ s-hdrlen          s-1       s
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="113-sdsplitargs">11.3. sdsplitargs</h3>
+</div><h3 id="103-sdsplitargs">10.3. sdsplitargs</h3>
 <ul>
 <li>Split a line into arguments, where every argument can be in the following programming-language REPL-alike form:
 <code>foo bar &quot;newline are supported\n&quot; and &quot;\xff\x00otherstuff&quot;</code></li>
@@ -1570,8 +1555,8 @@ s-hdrlen          s-1       s
 <pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">sds</span> <span class="o">*</span><span class="n">sdssplitargs</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">line</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">argc</span><span class="p">)</span>
 </code></pre></td></tr></table>
 </div>
-</div><h2 id="12-utils">12. Utils</h2>
-<h3 id="121-sdstolower----转换为小写">12.1. sdstolower &ndash; 转换为小写</h3>
+</div><h2 id="11-utils">11. Utils</h2>
+<h3 id="111-sdstolower----转换为小写">11.1. sdstolower &ndash; 转换为小写</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -1586,7 +1571,7 @@ s-hdrlen          s-1       s
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="122-sdstoupper----转换为大写">12.2. sdstoupper &ndash; 转换为大写</h3>
+</div><h3 id="112-sdstoupper----转换为大写">11.2. sdstoupper &ndash; 转换为大写</h3>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
 <pre class="chroma"><code><span class="lnt">1
@@ -1601,7 +1586,7 @@ s-hdrlen          s-1       s
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="123-sdscmp">12.3. sdscmp</h3>
+</div><h3 id="113-sdscmp">11.3. sdscmp</h3>
 <p>使用 <code>memcmp</code> 实现两个 sds 的比较操作</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">
@@ -1631,7 +1616,7 @@ s-hdrlen          s-1       s
 <span class="p">}</span>
 </code></pre></td></tr></table>
 </div>
-</div><h3 id="124-sdsmapchars">12.4. sdsmapchars</h3>
+</div><h3 id="114-sdsmapchars">11.4. sdsmapchars</h3>
 <p>遍历 sds 字符串，将在字符串 <code>from</code> 中出现的字符替换成 <code>to</code> 中对应位置的字符，<code>setlen</code> 为字符串 <code>from</code> 和 <code>to</code> 的长度。</p>
 <div class="highlight"><div class="chroma">
 <table class="lntable"><tr><td class="lntd">

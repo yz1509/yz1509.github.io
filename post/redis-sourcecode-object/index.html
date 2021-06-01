@@ -424,17 +424,17 @@
 </span><span class="lnt">11
 </span></code></pre></td>
 <td class="lntd">
-<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#define OBJ_ENCODING_RAW 0     </span><span class="cm">/* Raw representation */</span><span class="cp">
-</span><span class="cp">#define OBJ_ENCODING_INT 1     </span><span class="cm">/* Encoded as integer */</span><span class="cp">
-</span><span class="cp">#define OBJ_ENCODING_HT 2      </span><span class="cm">/* Encoded as hash table */</span><span class="cp">
-</span><span class="cp">#define OBJ_ENCODING_ZIPMAP 3  </span><span class="cm">/* No longer used */</span><span class="cp">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cp">#define OBJ_ENCODING_RAW 0        </span><span class="cm">/* Raw representation */</span><span class="cp">
+</span><span class="cp">#define OBJ_ENCODING_INT 1        </span><span class="cm">/* Encoded as integer */</span><span class="cp">
+</span><span class="cp">#define OBJ_ENCODING_HT 2         </span><span class="cm">/* Encoded as hash table */</span><span class="cp">
+</span><span class="cp">#define OBJ_ENCODING_ZIPMAP 3     </span><span class="cm">/* No longer used */</span><span class="cp">
 </span><span class="cp">#define OBJ_ENCODING_LINKEDLIST 4 </span><span class="cm">/* No longer used: old list encoding. */</span><span class="cp">
-</span><span class="cp">#define OBJ_ENCODING_ZIPLIST 5 </span><span class="cm">/* Encoded as ziplist */</span><span class="cp">
-</span><span class="cp">#define OBJ_ENCODING_INTSET 6  </span><span class="cm">/* Encoded as intset */</span><span class="cp">
-</span><span class="cp">#define OBJ_ENCODING_SKIPLIST 7  </span><span class="cm">/* Encoded as skiplist */</span><span class="cp">
-</span><span class="cp">#define OBJ_ENCODING_EMBSTR 8  </span><span class="cm">/* Embedded sds string encoding */</span><span class="cp">
-</span><span class="cp">#define OBJ_ENCODING_QUICKLIST 9 </span><span class="cm">/* Encoded as linked list of ziplists */</span><span class="cp">
-</span><span class="cp">#define OBJ_ENCODING_STREAM 10 </span><span class="cm">/* Encoded as a radix tree of listpacks */</span><span class="cp">
+</span><span class="cp">#define OBJ_ENCODING_ZIPLIST 5    </span><span class="cm">/* Encoded as ziplist */</span><span class="cp">
+</span><span class="cp">#define OBJ_ENCODING_INTSET 6     </span><span class="cm">/* Encoded as intset */</span><span class="cp">
+</span><span class="cp">#define OBJ_ENCODING_SKIPLIST 7   </span><span class="cm">/* Encoded as skiplist */</span><span class="cp">
+</span><span class="cp">#define OBJ_ENCODING_EMBSTR 8     </span><span class="cm">/* Embedded sds string encoding */</span><span class="cp">
+</span><span class="cp">#define OBJ_ENCODING_QUICKLIST 9  </span><span class="cm">/* Encoded as linked list of ziplists */</span><span class="cp">
+</span><span class="cp">#define OBJ_ENCODING_STREAM 10    </span><span class="cm">/* Encoded as a radix tree of listpacks */</span><span class="cp">
 </span></code></pre></td></tr></table>
 </div>
 </div><p>为节省内存使用，同一 <code>type</code> 可能会使用多种 <code>encoding</code>，其对应关系如下：</p>
