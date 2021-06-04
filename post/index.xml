@@ -17,6 +17,15 @@
     </item>
     
     <item>
+      <title>Raft</title>
+      <link>https://k-on.me/post/raft/</link>
+      <pubDate>Fri, 21 May 2021 16:03:49 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/raft/</guid>
+      <description>&lt;p&gt;Raft 算法相关笔记。&lt;/p&gt;</description>
+    </item>
+    
+    <item>
       <title>Introduction to Infiniband for End Users</title>
       <link>https://k-on.me/post/introduction-to-infiniband-for-end-users/</link>
       <pubDate>Sat, 13 Mar 2021 15:05:02 +0800</pubDate>
@@ -176,15 +185,6 @@
       
       <guid>https://k-on.me/post/redis-sourcecode-dict/</guid>
       <description>&lt;p&gt;Redis dict 实现相关源码阅读笔记，源码文件 &lt;code&gt;dict.h&lt;/code&gt; &amp;amp; &lt;code&gt;dict.c&lt;/code&gt;。&lt;/p&gt;</description>
-    </item>
-    
-    <item>
-      <title>Redis 源码阅读 --- quicklist</title>
-      <link>https://k-on.me/post/redis-sourcecode-quicklist/</link>
-      <pubDate>Thu, 24 Sep 2020 18:35:10 +0800</pubDate>
-      
-      <guid>https://k-on.me/post/redis-sourcecode-quicklist/</guid>
-      <description>&lt;p&gt;Redis 快速链表相关源码阅读笔记，源码文件 &lt;code&gt;quicklist.h&lt;/code&gt; &amp;amp; &lt;code&gt;quicklist.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
   </channel>
