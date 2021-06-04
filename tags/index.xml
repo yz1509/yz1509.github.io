@@ -17,6 +17,15 @@
     </item>
     
     <item>
+      <title>raft</title>
+      <link>https://k-on.me/tags/raft/</link>
+      <pubDate>Fri, 21 May 2021 16:03:49 +0800</pubDate>
+      
+      <guid>https://k-on.me/tags/raft/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>一致性</title>
       <link>https://k-on.me/tags/%E4%B8%80%E8%87%B4%E6%80%A7/</link>
       <pubDate>Fri, 21 May 2021 16:03:49 +0800</pubDate>
@@ -175,15 +184,6 @@
       <pubDate>Thu, 24 Sep 2020 14:39:37 +0800</pubDate>
       
       <guid>https://k-on.me/tags/%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>malloc</title>
-      <link>https://k-on.me/tags/malloc/</link>
-      <pubDate>Wed, 23 Sep 2020 17:14:57 +0800</pubDate>
-      
-      <guid>https://k-on.me/tags/malloc/</guid>
       <description></description>
     </item>
     
