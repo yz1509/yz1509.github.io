@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Raft 算法相关笔记。">
 <meta itemprop="datePublished" content="2021-05-21T16:03:49+08:00" />
 <meta itemprop="dateModified" content="2021-05-21T16:03:49+08:00" />
-<meta itemprop="wordCount" content="5248">
+<meta itemprop="wordCount" content="6029">
 
 
 
@@ -309,8 +309,8 @@
             <a href="https://k-on.me/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/"> 分布式系统 </a>
             
           </div>
-        <span class="more-meta"> 5248 words </span>
-          <span class="more-meta"> 11 min read </span>
+        <span class="more-meta"> 6029 words </span>
+          <span class="more-meta"> 13 min read </span>
 
         
         
@@ -360,7 +360,8 @@
       </ul>
     </li>
     <li><a href="#6-日志压缩">6. 日志压缩</a></li>
-    <li><a href="#7-参考资料">7. 参考资料</a></li>
+    <li><a href="#7-客户端交互">7. 客户端交互</a></li>
+    <li><a href="#8-参考资料">8. 参考资料</a></li>
   </ul>
 </nav>
   </div>
@@ -557,6 +558,57 @@
 <tr>
 <td style="text-align:left">voteGranted</td>
 <td style="text-align:left">值为 true 时表示候选人赢得此张选票</td>
+</tr>
+</tbody>
+</table>
+<p><code>InstallSnapshot RPC</code>: 领导人调用，用于将日志快照发送给跟随者，通常是将快照分为多个 chunks 后按序发送</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">参数</th>
+<th style="text-align:left">说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Sends</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">term</td>
+<td style="text-align:left">领导人的任期号</td>
+</tr>
+<tr>
+<td style="text-align:left">leaderId</td>
+<td style="text-align:left">领导人 ID，因此跟随者可以据此将客户端请求重定向至领导人</td>
+</tr>
+<tr>
+<td style="text-align:left">lastIncludedIndex</td>
+<td style="text-align:left">快照中包含的最后日志条目的索引值</td>
+</tr>
+<tr>
+<td style="text-align:left">lastIncludedTerm</td>
+<td style="text-align:left">快照中包含的最后日志条目的任期号</td>
+</tr>
+<tr>
+<td style="text-align:left">offset</td>
+<td style="text-align:left">该 chunk 在快照中的字节偏移量</td>
+</tr>
+<tr>
+<td style="text-align:left">data[]</td>
+<td style="text-align:left">该 chunk 的内容</td>
+</tr>
+<tr>
+<td style="text-align:left">done</td>
+<td style="text-align:left">如果这是快照的最后一个 chunk 时为真</td>
+</tr>
+<tr>
+<td style="text-align:left">Results</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align:left">term</td>
+<td style="text-align:left">供领导人判断自己的任期号是否已过期，按需更新 currentTerm</td>
 </tr>
 </tbody>
 </table>
@@ -772,9 +824,43 @@
 <p><code>Joint consensus</code> 较为复杂，在实际的实现中大多会采用单步变更算法，也即每次仅从集群中添加/删除一个节点。</p>
 <p>详细介绍可参考 <a href="https://blog.openacid.com/distributed/raft-bug/">TiDB 在 Raft 成员变更上踩的坑</a>。</p>
 <h2 id="6-日志压缩">6. 日志压缩</h2>
+<p>在 Raft 中，每个节点独立地创建快照，其仅包括已被提交地日志条目。如下图所示，在快照中主要包含以下信息：</p>
+<ul>
+<li><code>last included index</code>: 被快照取代的最后一条日志的索引值</li>
+<li><code>last included term</code>: 被快照取代的最后一条日志的任期号</li>
+<li><code>state machine state</code>: 状态机状态</li>
+</ul>
 <p><img src="/raft/raft_snapshot.png" alt="snapshot"></p>
-<p>TODO</p>
-<h2 id="7-参考资料">7. 参考资料</h2>
+<p>虽然快照由每个节点独立创建，但有时还是需要领导人发送快照至跟随者（如新加节点等）。此时，领导人可以使用 <code>InstallSnapshot RPC</code> 将快照分块发送至跟随者，跟随者在接收到快照后，依据 RPC 中的 <code>lastIncludedIndex</code> 和 <code>lastIncludedTerm</code> 信息，删除被快照包含的日志条目，保留未被快照包含的日志条目。</p>
+<h2 id="7-客户端交互">7. 客户端交互</h2>
+<ul>
+<li>
+<p>Raft 中由领导人处理所有的客户端请求</p>
+<ul>
+<li>客户端随机挑选集群中的一个节点进行通信，当该节点不是领导人时，那么该节点会拒绝客户端请求，并提供他最近接收到的领导人信息(<code>AppendEntries RPC</code> or <code>InstallSnapshot RPC</code> 中的 <code>leaderId</code>)</li>
+</ul>
+</li>
+<li>
+<p>为了避免客户端请求因为重试而被执行多次，可以为每一个请求赋予一个唯一的序列号</p>
+</li>
+<li>
+<p>虽然只读的请求不需要记录日志，但领导人直接返回结果至客户端时，可能因为该领导人被罢黜而导致返回脏数据。在不使用新增日志条目的情况下，如要保证读请求返回的正确性，需要做到以下两点：</p>
+<ul>
+<li>领导人必须拥有关于被提交日志的最新信息
+<ul>
+<li><code>Leader Completeness</code> 保证了领导人拥有所有已被提交的日志</li>
+<li>但在领导人任期刚开始时，他可能不知道哪些日志已经被之前的领导人提交，为了知道这些信息，领导人可以在任期刚开始时提交一个空的日志条目
+<blockquote>
+<p>在单步变更时也是通过在任期开始提交一条 NoOp 的日志，避免已提交变更日志的丢失</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li>领导人在处理只读请求之前必须依赖心跳机制检查自己的领导人身份</li>
+</ul>
+</li>
+</ul>
+<h2 id="8-参考资料">8. 参考资料</h2>
 <ul>
 <li>
 <p>In search of an understandable consensus algorithm (extended version)</p>

@@ -210,6 +210,57 @@
 &lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
+&lt;p&gt;&lt;code&gt;InstallSnapshot RPC&lt;/code&gt;: 领导人调用，用于将日志快照发送给跟随者，通常是将快照分为多个 chunks 后按序发送&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;参数&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;说明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Sends&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;term&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;领导人的任期号&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;leaderId&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;领导人 ID，因此跟随者可以据此将客户端请求重定向至领导人&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;lastIncludedIndex&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;快照中包含的最后日志条目的索引值&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;lastIncludedTerm&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;快照中包含的最后日志条目的任期号&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;offset&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;该 chunk 在快照中的字节偏移量&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;data[]&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;该 chunk 的内容&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;done&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;如果这是快照的最后一个 chunk 时为真&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;Results&lt;/td&gt;
+&lt;td&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;term&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;供领导人判断自己的任期号是否已过期，按需更新 currentTerm&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
 &lt;h2 id=&#34;3-领导人选举&#34;&gt;3. 领导人选举&lt;/h2&gt;
 &lt;p&gt;在 Raft 中，每个服务器节点都处于以下三种状态之一：领导人(leader)、跟随者(follower)或候选人(candidate)。其状态转移图如下所示：&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://k-on.me/raft/raft_server_status.png&#34; alt=&#34;服务器状态&#34;&gt;&lt;/p&gt;
@@ -422,9 +473,43 @@
 &lt;p&gt;&lt;code&gt;Joint consensus&lt;/code&gt; 较为复杂，在实际的实现中大多会采用单步变更算法，也即每次仅从集群中添加/删除一个节点。&lt;/p&gt;
 &lt;p&gt;详细介绍可参考 &lt;a href=&#34;https://blog.openacid.com/distributed/raft-bug/&#34;&gt;TiDB 在 Raft 成员变更上踩的坑&lt;/a&gt;。&lt;/p&gt;
 &lt;h2 id=&#34;6-日志压缩&#34;&gt;6. 日志压缩&lt;/h2&gt;
+&lt;p&gt;在 Raft 中，每个节点独立地创建快照，其仅包括已被提交地日志条目。如下图所示，在快照中主要包含以下信息：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;last included index&lt;/code&gt;: 被快照取代的最后一条日志的索引值&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;last included term&lt;/code&gt;: 被快照取代的最后一条日志的任期号&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;state machine state&lt;/code&gt;: 状态机状态&lt;/li&gt;
+&lt;/ul&gt;
 &lt;p&gt;&lt;img src=&#34;https://k-on.me/raft/raft_snapshot.png&#34; alt=&#34;snapshot&#34;&gt;&lt;/p&gt;
-&lt;p&gt;TODO&lt;/p&gt;
-&lt;h2 id=&#34;7-参考资料&#34;&gt;7. 参考资料&lt;/h2&gt;
+&lt;p&gt;虽然快照由每个节点独立创建，但有时还是需要领导人发送快照至跟随者（如新加节点等）。此时，领导人可以使用 &lt;code&gt;InstallSnapshot RPC&lt;/code&gt; 将快照分块发送至跟随者，跟随者在接收到快照后，依据 RPC 中的 &lt;code&gt;lastIncludedIndex&lt;/code&gt; 和 &lt;code&gt;lastIncludedTerm&lt;/code&gt; 信息，删除被快照包含的日志条目，保留未被快照包含的日志条目。&lt;/p&gt;
+&lt;h2 id=&#34;7-客户端交互&#34;&gt;7. 客户端交互&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Raft 中由领导人处理所有的客户端请求&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;客户端随机挑选集群中的一个节点进行通信，当该节点不是领导人时，那么该节点会拒绝客户端请求，并提供他最近接收到的领导人信息(&lt;code&gt;AppendEntries RPC&lt;/code&gt; or &lt;code&gt;InstallSnapshot RPC&lt;/code&gt; 中的 &lt;code&gt;leaderId&lt;/code&gt;)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;为了避免客户端请求因为重试而被执行多次，可以为每一个请求赋予一个唯一的序列号&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;虽然只读的请求不需要记录日志，但领导人直接返回结果至客户端时，可能因为该领导人被罢黜而导致返回脏数据。在不使用新增日志条目的情况下，如要保证读请求返回的正确性，需要做到以下两点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;领导人必须拥有关于被提交日志的最新信息
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Leader Completeness&lt;/code&gt; 保证了领导人拥有所有已被提交的日志&lt;/li&gt;
+&lt;li&gt;但在领导人任期刚开始时，他可能不知道哪些日志已经被之前的领导人提交，为了知道这些信息，领导人可以在任期刚开始时提交一个空的日志条目
+&lt;blockquote&gt;
+&lt;p&gt;在单步变更时也是通过在任期开始提交一条 NoOp 的日志，避免已提交变更日志的丢失&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;领导人在处理只读请求之前必须依赖心跳机制检查自己的领导人身份&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;8-参考资料&#34;&gt;8. 参考资料&lt;/h2&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;In search of an understandable consensus algorithm (extended version)&lt;/p&gt;
@@ -928,7 +1013,7 @@
 &lt;h4 id=&#34;111-update-index-structure&#34;&gt;1.1.1. Update index structure&lt;/h4&gt;
 &lt;p&gt;In general, an index structure can choose one of two strategies to handle updates:&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;em&gt;in-place update structure&lt;/em&gt;: directly overwrites old records to store new updates (such as $B^+$-tree)
+&lt;li&gt;&lt;code&gt;in-place&lt;/code&gt; update structure: directly overwrites old records to store new updates (such as $B^+$-tree)
 &lt;ul&gt;
 &lt;li&gt;优点：数据仅保留一份，利于读操作&lt;/li&gt;
 &lt;li&gt;缺点
@@ -939,7 +1024,7 @@
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;&lt;em&gt;out-of-place update structure&lt;/em&gt;: always stores updates into new locations instead of overwriting old entries (such as LSM-tree)
+&lt;li&gt;&lt;code&gt;out-of-place&lt;/code&gt; update structure: always stores updates into new locations instead of overwriting old entries (such as LSM-tree)
 &lt;ul&gt;
 &lt;li&gt;优点：
 &lt;ul&gt;
@@ -1197,7 +1282,10 @@
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;2-lsm-tree-improvements&#34;&gt;2. LSM-tree improvements&lt;/h2&gt;
-&lt;p&gt;TODO&lt;/p&gt;
+&lt;h3 id=&#34;reducing-write-amplification&#34;&gt;Reducing Write Amplification&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Tiering&lt;/li&gt;
+&lt;/ul&gt;
 &lt;h2 id=&#34;3-representative-lsm-based-systems&#34;&gt;3. Representative LSM-based systems&lt;/h2&gt;
 &lt;p&gt;TODO&lt;/p&gt;</description>
       
@@ -1228,7 +1316,11 @@
 &lt;/ul&gt;
 &lt;h2 id=&#34;2-论文&#34;&gt;2. 论文&lt;/h2&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;a href=&#34;https://arxiv.org/pdf/1812.07527.pdf&#34;&gt;LSM-based Storage Techniques: A Survey&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;a href=&#34;https://arxiv.org/pdf/1812.07527.pdf&#34;&gt;LSM-based Storage Techniques: A Survey&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;一篇关于 LSM 很详尽的综述，本文首先讲述了 LSM 的基础知识，随后介绍了从多个方面提升 LSM 性能的一些技术，最后简单介绍了现有基于 LSM 实现的 NoSQL 数据引擎。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://k-on.me/post/lsm-based-storage-techniques-a-survey/&#34;&gt;笔记地址&lt;/a&gt;&lt;/p&gt;
+&lt;/li&gt;
 &lt;/ul&gt;</description>
       
     </item>
