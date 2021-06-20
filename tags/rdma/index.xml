@@ -6,7 +6,16 @@
     <description>Recent content in RDMA on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 13 Mar 2021 15:05:02 +0800</lastBuildDate><atom:link href="https://k-on.me/tags/rdma/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 16 Jun 2021 16:34:17 +0800</lastBuildDate><atom:link href="https://k-on.me/tags/rdma/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>RDMA in Redis</title>
+      <link>https://k-on.me/post/rdma-in-redis/</link>
+      <pubDate>Wed, 16 Jun 2021 16:34:17 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/rdma-in-redis/</guid>
+      <description>&lt;p&gt;调研 RDMA 技术应用于 Redis 的杂乱笔记。&lt;/p&gt;</description>
+    </item>
+    
     <item>
       <title>Introduction to Infiniband for End Users</title>
       <link>https://k-on.me/post/introduction-to-infiniband-for-end-users/</link>

@@ -70,7 +70,7 @@
 <meta itemprop="description" content="《LSM-based Storage Techniques: A Survey》 阅读笔记。">
 <meta itemprop="datePublished" content="2021-02-07T15:48:24+08:00" />
 <meta itemprop="dateModified" content="2021-02-07T15:48:24+08:00" />
-<meta itemprop="wordCount" content="1450">
+<meta itemprop="wordCount" content="2299">
 
 
 
@@ -308,8 +308,8 @@
         <div class="post-category">
             
           </div>
-        <span class="more-meta"> 1450 words </span>
-          <span class="more-meta"> 3 min read </span>
+        <span class="more-meta"> 2299 words </span>
+          <span class="more-meta"> 5 min read </span>
 
         
         
@@ -339,7 +339,8 @@
     </li>
     <li><a href="#2-lsm-tree-improvements">2. LSM-tree improvements</a>
       <ul>
-        <li><a href="#reducing-write-amplification">Reducing Write Amplification</a></li>
+        <li><a href="#21-reducing-write-amplification">2.1. Reducing Write Amplification</a></li>
+        <li><a href="#22-optimizing-merge-operations">2.2. Optimizing Merge Operations</a></li>
       </ul>
     </li>
     <li><a href="#3-representative-lsm-based-systems">3. Representative LSM-based systems</a></li>
@@ -520,16 +521,22 @@
 <li>Merge: all of the SSTables in a group are merged together to produce the resulting SSTables <em>based on the key ranges</em> of the overlapping groups at the next level, which are then added to these overlapping groups</li>
 <li>SSTables are <em>no longer fixed-size</em> since they are produced based on the key ranges of the overlapping groups at the next level</li>
 </ul>
+<blockquote>
+<p>依赖 key 的范围进行分区，因此不同 Group 的 key 范围无重叠，但是 SSTable 的大小不固定</p>
+</blockquote>
 <p><img src="/lsm/partitioned_tiering_with_vertical_grouping.png" alt="partitioned_tiering_with_vertical_grouping"></p>
 </li>
 <li>
 <p><code>Partitioned tiering with horizontal grouping</code></p>
 <ul>
 <li>Each component is range-partitioned into a set of <em>fixed-size</em> SSTables, serves as logical group directly</li>
-<li>Each level $L$ further maintains an <em>active group</em> to rreceive new SSTables merged from the previous level</li>
+<li>Each level $L$ further maintains an <em>active group</em> to receive new SSTables merged from the previous level</li>
 <li>Merge: selects the SSTables with overlapping key ranges from all of the groups at a level, and the resulting SSTables are added to the active group at the next level</li>
 <li>It is possible one SSTable from a group may overlap a large number of SSTables in the remaining groups</li>
 </ul>
+<blockquote>
+<p>SSTable 大小固定，但是不同 Group 的 key 范围有重叠</p>
+</blockquote>
 <p><img src="/lsm/partitioned_tiering_with_horizontal_grouping.png" alt="partitioned_tiering_with_horizontal_grouping"></p>
 </li>
 </ul>
@@ -626,10 +633,119 @@
 </li>
 </ul>
 <h2 id="2-lsm-tree-improvements">2. LSM-tree improvements</h2>
-<h3 id="reducing-write-amplification">Reducing Write Amplification</h3>
+<h3 id="21-reducing-write-amplification">2.1. Reducing Write Amplification</h3>
+<h4 id="211-tiering">2.1.1. Tiering</h4>
 <ul>
-<li>Tiering</li>
+<li>
+<p>WriteBuffer Tree (WB-tree)</p>
+<ul>
+<li>variant of the <code>partitoned tiering with vertical grouping</code></li>
+<li>relies on hash-partitioning to achieve workload balance so that each SSTable group roughly stores the same amount of data
+<blockquote>
+<p>gives up the ability of supporting range queries</p>
+</blockquote>
+</li>
+<li>organizes SSTable groups into a $B^+$-tree-like structure to enable self-balancing to minimize the total number of levels</li>
 </ul>
+</li>
+<li>
+<p>Light-Weight Compaction tree (LWC-tree)</p>
+<ul>
+<li>variant of the <code>partitoned tiering with vertical grouping</code></li>
+<li>if a group contains too many entries, it will shrink the key range of this group after the group has been merged (now temporarily empty) and will widen the key ranges of its sibling groups accordingly</li>
+</ul>
+</li>
+<li>
+<p>PebblesDB</p>
+<ul>
+<li>variant of the <code>partitoned tiering with vertical grouping</code></li>
+<li>key ranges of SSTable groups, are selected probabilistically based on inserted keys to achieve workload balance</li>
+<li>performs parallel seeks of SSTables to improve range query performance</li>
+</ul>
+</li>
+<li>
+<p>dCompaction</p>
+<ul>
+<li>variant of the <code>tiering merge</code> policy</li>
+<li>introduces the concept of virtual SSTables and virtual merges, delays a merge operation until multiple SSTables can be merged together, reduces the merge frequency</li>
+</ul>
+</li>
+<li>
+<p>SifrDB</p>
+<ul>
+<li>variant of the <code>partitioned tiering with horizontal grouping</code></li>
+<li>proposes an early-cleaning technique to reduce disk space utilization during merges</li>
+<li>exploits I/O parallelism to speedup query performance by examining multiple SSTables in parallel</li>
+</ul>
+</li>
+</ul>
+<h4 id="212-merge-skipping">2.1.2. Merge Skipping</h4>
+<p>如下图所示，在 skip-tree 中提出：</p>
+<ul>
+<li>当在 $L$ 层 merge 时，可以将部分 key 直接推送至一个与 $L + K$ 层关联的 buffer
+<ul>
+<li>只有当 key 不存在于 $L + 1, \dots, L + K - 1$ 层时，才可以直接推送至 $L + K$ 层</li>
+<li>为保证 buffer 中的数据不丢失，skip-tree 使用了 WAL 机制</li>
+</ul>
+</li>
+<li>在随后的 merge 操作时，再将 buffer 中的内容合并入 $L + K$ 层</li>
+</ul>
+<p><img src="/lsm/merge_skip_tree.png" alt="merge_skip_tree"></p>
+<h4 id="213-exploiting-data-skew">2.1.3. Exploiting Data Skew</h4>
+<p>TRIAD 通过采用以下方法降低写放大：</p>
+<ul>
+<li>区别对待冷热 key
+<ul>
+<li>只有冷 key 会落盘</li>
+<li>热 key 虽然不落盘，但是为了清理旧的 binlog，会将热 key 的 log 复制到新的 binlog 中</li>
+</ul>
+</li>
+<li>在 level 0 含有多个 SSTables 时再执行 merge</li>
+<li>当数据落盘时，不生成新的文件，而是直接使用 binlog
+<ul>
+<li>虽然其在 binlog 中加入了索引以提升点查找性能，但是因为 binlog 无序，因此范围查询性能较差</li>
+</ul>
+</li>
+</ul>
+<h3 id="22-optimizing-merge-operations">2.2. Optimizing Merge Operations</h3>
+<h4 id="221-improving-merge-performance">2.2.1. Improving Merge Performance</h4>
+<ul>
+<li>
+<p>VT-tree</p>
+<ul>
+<li>基本思想：当合并多个 SSTables 时，若某一 SSTable 中的某一 page 和其他 SSTables 中的 pages key 范围均无重叠，则在合并后的 SSTable 中直接指向该 page，减少了读取/拷贝该 page 的消耗</li>
+<li>衍生问题：
+<ul>
+<li>
+<p>Q: 由于 pages 在磁盘上不再是连续地存储着，因此会带来碎片</p>
+<p>A: VT-tree 通过设定一个阈值 $K$ (只有连续超过 $K$ 个 pages 无重叠时可免去读取、拷贝过程) 减轻了碎片化</p>
+</li>
+<li>
+<p>Q: 这些 pages 中的 key 在合并时没经历扫描过程，无法设置 Bloom filter</p>
+<p>A: VT-tree uses <code>quotient filters</code> since multiple quotient filters can be combined directly without accessing the original keys</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>Pipelined merge</p>
+<ul>
+<li>如下图所示，将 merge 过程分成三个阶段，使用流水线式实现，从而更好地利用 CPU 和 I/O 并行来提高合并性能
+<ul>
+<li><code>read phase</code>: reads pages from input SSTables (I/O heavy)</li>
+<li><code>merge-sort phase</code>: produce new pages (CPU heavy)</li>
+<li><code>write phase</code>: writes the new pages to disk (I/O heavy)</li>
+</ul>
+</li>
+</ul>
+<p><img src="/lsm/pipelined_merge.png" alt="pipelined_merge"></p>
+</li>
+</ul>
+<h4 id="222-reducing-buffer-cache-misses">2.2.2. Reducing buffer Cache Misses</h4>
+<p>在 merge 操作结束后，由于新的 SSTable 尚未缓存，旧的 SSTables 已被删除，因此查询操作可能因为 cache misses 导致响应耗时增加、性能下降。</p>
+<p><img src="/lsm/lsbm_tree.png" alt="lsbm_tree"></p>
+<h4 id="223-minimizing-write-stalls">2.2.3. Minimizing Write Stalls</h4>
 <h2 id="3-representative-lsm-based-systems">3. Representative LSM-based systems</h2>
 <p>TODO</p>
     </div>

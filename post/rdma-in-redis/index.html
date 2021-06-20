@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>数据库 · HTT - ふわふわ時間</title>
+  <title>RDMA in Redis - HTT - ふわふわ時間</title>
   
 
 <meta name="renderer" content="webkit" />
@@ -23,7 +23,9 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <meta name="author" content="765PRO.P" />
-  <meta name="description" content="K-ON Fans." />
+  <meta name="description" content="调研 RDMA 技术应用于 Redis 的杂乱笔记。
+" />
+
   <meta name="keywords" content="K-ON, KyoAni" />
 
 
@@ -34,8 +36,8 @@
 <meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
-<link rel="canonical" href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" />
-<link href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/index.xml" rel="alternate" type="application/rss+xml" title="HTT - ふわふわ時間" />
+<link rel="canonical" href="https://k-on.me/post/rdma-in-redis/" />
+
 
 
 
@@ -58,16 +60,24 @@
 
 
 
-<meta property="og:title" content="数据库" />
-<meta property="og:description" content="K-ON Fans." />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" />
-<meta property="og:updated_time" content="2021-06-16T16:34:17+08:00" />
-<meta itemprop="name" content="数据库">
-<meta itemprop="description" content="K-ON Fans.">
+<meta property="og:title" content="RDMA in Redis" />
+<meta property="og:description" content="调研 RDMA 技术应用于 Redis 的杂乱笔记。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://k-on.me/post/rdma-in-redis/" />
+<meta property="article:published_time" content="2021-06-16T16:34:17+08:00" />
+<meta property="article:modified_time" content="2021-06-16T16:34:17+08:00" />
+<meta itemprop="name" content="RDMA in Redis">
+<meta itemprop="description" content="调研 RDMA 技术应用于 Redis 的杂乱笔记。">
+<meta itemprop="datePublished" content="2021-06-16T16:34:17+08:00" />
+<meta itemprop="dateModified" content="2021-06-16T16:34:17+08:00" />
+<meta itemprop="wordCount" content="1428">
+
+
+
+<meta itemprop="keywords" content="Redis,RDMA,InfiniBand," />
 <meta name="twitter:card" content="summary"/>
-<meta name="twitter:title" content="数据库"/>
-<meta name="twitter:description" content="K-ON Fans."/>
+<meta name="twitter:title" content="RDMA in Redis"/>
+<meta name="twitter:description" content="调研 RDMA 技术应用于 Redis 的杂乱笔记。"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -286,170 +296,216 @@
     <main id="main" class="main bg-llight">
       <div class="content-wrapper">
         <div id="content" class="content container">
-          
-
-<section id="archive" class="archive">
-  
+          <article class="post bg-white">
     
-      <div class="archive-title category">
-        <h2 class="archive-name"> 数据库</h2>
+    <header class="post-header">
+      <h1 class="post-title">RDMA in Redis</h1>
+      
+      <div class="post-meta">
+        <time datetime="2021-06-16" class="post-time">
+          2021-06-16
+        </time>
+        <div class="post-category">
+            <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
+            
+          </div>
+        <span class="more-meta"> 1428 words </span>
+          <span class="more-meta"> 3 min read </span>
+
+        
+        
+          <span id="busuanzi_container_page_pv">
+            | 阅读 <span id="busuanzi_value_page_pv"></span>
+          </span>
+        
+
+        
+        
       </div>
+    </header>
+
     
-  
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-rdma-vs-传统计算机网络">1. RDMA vs 传统计算机网络</a></li>
+    <li><a href="#2-应用-rdma-技术">2. 应用 RDMA 技术</a></li>
+    <li><a href="#3-测试结果">3. 测试结果</a></li>
+    <li><a href="#4-参考资料">4. 参考资料</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
 
-  
-    <div class="archive-post">
-      <time datetime="2021-06-16" class="archive-post-time">
-        2021-06-16
-      </time>
-      <span class="archive-post-title">
-        <a href="/post/rdma-in-redis/" class="archive-post-link">
-          RDMA in Redis
-        </a>
-      </span>
+    
+    <div class="post-content">
+      <p>调研 RDMA 技术应用于 Redis 的杂乱笔记。</p>
+<hr>
+<h2 id="1-rdma-vs-传统计算机网络">1. RDMA vs 传统计算机网络</h2>
+<p><strong>传统计算机网络</strong></p>
+<p>传统的计算机网络收包流程如下图所示，可以发现：</p>
+<ul>
+<li>网络通信时，数据包每次至少需要复制 2 次</li>
+<li>以字节流传递，一条消息完整地传递至对端时，接收端可能会触发多次系统调用以读取完整地消息</li>
+</ul>
+<p><img src="/network/network_recv_packet.jpg" alt="network_recv_packets"></p>
+<p><strong>RDMA</strong></p>
+<p><a href="https://en.wikipedia.org/wiki/Remote_direct_memory_access">RDMA</a> 是一种绕过远程主机操作系统内核直接访问其内存的技术。目前实现 RDMA 技术的网络协议有以下三种：</p>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/InfiniBand">InfiniBand</a>：支持 RDMA 的新一代网络协议。由于这是一种新的网络协议，因此需要支持该协议的网卡和交换机。</li>
+<li><a href="https://en.wikipedia.org/wiki/RDMA_over_Converged_Ethernet">RoCE</a>：RDMA over Ethernet network，允许在标准以太网上(交换机)使用 RDMA 技术的网络协议，需要网卡必须是支持 RoCE 的特殊网卡。</li>
+<li><a href="https://en.wikipedia.org/wiki/IWARP">iWARP</a>：RDMA over TCP，允许在标准以太网上(交换机)使用 RDMA 技术的网络协议，只不过网卡要求是支持 iWARP 的(如果使用 CPU offloads 的话)，否则所有 iWARP 栈都可以在软件中实现，但失去了大部分 RDMA 的性能优势。</li>
+</ul>
+<blockquote>
+<p>三种协议使用的 API (verbs) 是相同的。</p>
+</blockquote>
+<p><img src="/network/rdma_three_protocols.png" alt="rdma_protocols"></p>
+<p>我们以 InfiniBand 为例，InfiniBand 通过在应用程序之间创建 channel 连接 (故可称为 <code>Channel I/O</code>) 以提供 messaging service 进行通信，如下图所示：</p>
+<ul>
+<li><code>Queue Pairs(QPs)</code>：指 channel 的端点，每个 QP 包含一个 Send Queue(SQ) 和一个 Receive Queue(RQ)</li>
+<li>通过将 QPs 映射为应用程序的虚拟内存空间，以实现应用程序直接访问 QPs
+<ul>
+<li>由 HCA(Host Channel Adapter) 提供地址转换</li>
+</ul>
+</li>
+<li>InfiniBand 提供两种 transfer semantics 用于传递消息
+<ul>
+<li>channel semantic: <code>SEND</code> / <code>RECEIVE</code>
+<ul>
+<li>接收方预先在自己的 RQ 中定义数据结构</li>
+<li>发送方无需知道接收方 RQ 中的数据结构，仅负责调用 <code>SEND</code> 发送消息</li>
+</ul>
+</li>
+<li>memory semantic: <code>RDMA READ</code> / <code>RDMA WRITE</code>
+<ul>
+<li>接收方在自己的虚拟内存空间中注册一个 buffer，并将控制权交予发送方</li>
+<li>发送方通过调用 <code>RDMA READ</code> 或 <code>RDMA WRITE</code> 读写该 buffer</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><img src="/network/intro_to_ib_for_end/channel.png" alt="channel"></p>
+<p>可以发现，InfiniBand 通过将网络协议固化于硬件上，从而实现 RDMA 技术，其带来以下优势：</p>
+<ul>
+<li><strong>Zero copy</strong>：应用程序可以在没有网络软件栈参与的情况下执行数据传输，并且数据被直接发送至对端缓冲区，无需在网络层之间进行复制</li>
+<li><strong>Kernel bypass</strong>：应用程序可以直接在用户态执行数据传输，无需系统调用，从而无需执行上下文切换</li>
+<li>No CPU involvement：应用程序可直接访问远程主机的内存而无需远程主机的 CPU 参与</li>
+<li>Message based transactions：数据以消息的形式传输，而不是以字节流的形式，从而应用程序无需执行将字节流切分为不同消息的过程</li>
+<li>Scatter/gather entries support：RDMA 原生支持分散/聚合，即读取多个内存缓冲区并将它们作为一个流发送，或接收一个流后将其写入多个内存缓冲区中</li>
+</ul>
+<p>其中 zero copy 和 kernel bypass 是 RDMA 具有低延迟、高吞吐和降低 CPU 使用率特性的关键所在。</p>
+<h2 id="2-应用-rdma-技术">2. 应用 RDMA 技术</h2>
+<p>想在 Redis 中利用 RDMA 技术的优势，主要有以下两种方式：</p>
+<ul>
+<li>软件重构：使用 <a href="https://github.com/linux-rdma/rdma-core">RDMA API</a> 重构应用程序
+<ul>
+<li>优点：可以结合 RDMA 网络的硬件特性，调整软硬件结构，从原语使用、数据流优化、协议设计等方面重新设计软件逻辑，从而充分发挥 RDMA 网络的硬件优势</li>
+<li>缺点：侵入式开发，后续跟随官方 Redis 的更新较为复杂，门槛较高 (在学了，在学了.jpg)</li>
+</ul>
+</li>
+<li>简单的网络替换：启动应用程序时，加载 <a href="https://github.com/Mellanox/libvma">libvma</a> 动态库
+<ul>
+<li>优点：操作简单，无需修改应用程序，方便跟随官方 Redis 版本更新</li>
+<li>缺点：无法充分发挥 RDMA 网络性能</li>
+</ul>
+</li>
+</ul>
+<h2 id="3-测试结果">3. 测试结果</h2>
+<p>以下测试结果是在服务端加载 libvma 动态库的情况下测得：</p>
+<ul>
+<li>当客户端数量和数据量大小变化时，使用 RDMA 对 Redis 的吞吐量和延迟均有巨大的提升: ops 约为未使用 RDMA 的 2 倍，延迟约为 1/2.</li>
+<li>可以发现在客户端线程数增加时，虽然吞吐量和延迟的提升和不使用 Pipeline 场景类似，但是 p99/p100 Latency 在线程数增加时，使用 RDMA 时延迟值的增长较未使用 RDMA 更为缓慢</li>
+<li>但是在使用 Pipeline 的情况下，使用 RDMA 对 Redis 的性能提升不明显: 数值上无明显差异</li>
+</ul>
+<h2 id="4-参考资料">4. 参考资料</h2>
+<ul>
+<li><a href="https://zhuanlan.zhihu.com/p/256428917">图解Linux网络包接收过程</a></li>
+<li><a href="https://www.snia.org/sites/default/files/ESF/RoCE-vs.-iWARP-Final.pdf">RoCE vs. iWARP - A Great Storage Debate</a></li>
+<li><a href="https://www.rdmamojo.com/2014/03/31/remote-direct-memory-access-rdma/">Introduction to Remote Direct Memory Access (RDMA)</a></li>
+<li><a href="https://www.mellanox.com/pdf/whitepapers/Intro_to_IB_for_End_Users.pdf">Introduction to InfiniBand™ for End Users</a></li>
+</ul>
     </div>
-  
-    <div class="archive-post">
-      <time datetime="2021-02-07" class="archive-post-time">
-        2021-02-07
-      </time>
-      <span class="archive-post-title">
-        <a href="/post/lsm-notes/" class="archive-post-link">
-          LSM Notes
-        </a>
-      </span>
-    </div>
-  
-    <div class="archive-post">
-      <time datetime="2020-10-27" class="archive-post-time">
-        2020-10-27
-      </time>
-      <span class="archive-post-title">
-        <a href="/post/redis-sourcecode-server/" class="archive-post-link">
-          Redis 源码阅读 --- Server
-        </a>
-      </span>
-    </div>
-  
-    <div class="archive-post">
-      <time datetime="2020-10-24" class="archive-post-time">
-        2020-10-24
-      </time>
-      <span class="archive-post-title">
-        <a href="/post/redis-sourcecode-ae/" class="archive-post-link">
-          Redis 源码阅读 --- ae
-        </a>
-      </span>
-    </div>
-  
-    <div class="archive-post">
-      <time datetime="2020-10-20" class="archive-post-time">
-        2020-10-20
-      </time>
-      <span class="archive-post-title">
-        <a href="/post/redis-sourcecode-persistence/" class="archive-post-link">
-          Redis 源码阅读 --- 持久化
-        </a>
-      </span>
-    </div>
-  
-    <div class="archive-post">
-      <time datetime="2020-10-13" class="archive-post-time">
-        2020-10-13
-      </time>
-      <span class="archive-post-title">
-        <a href="/post/redis-sourcecode-db/" class="archive-post-link">
-          Redis 源码阅读 --- Database
-        </a>
-      </span>
-    </div>
-  
-    <div class="archive-post">
-      <time datetime="2020-10-09" class="archive-post-time">
-        2020-10-09
-      </time>
-      <span class="archive-post-title">
-        <a href="/post/redis-sourcecode-object/" class="archive-post-link">
-          Redis 源码阅读 --- Object
-        </a>
-      </span>
-    </div>
-  
-    <div class="archive-post">
-      <time datetime="2020-10-06" class="archive-post-time">
-        2020-10-06
-      </time>
-      <span class="archive-post-title">
-        <a href="/post/redis-sourcecode-skiplist/" class="archive-post-link">
-          Redis 源码阅读 --- skiplist
-        </a>
-      </span>
-    </div>
-  
-    <div class="archive-post">
-      <time datetime="2020-09-28" class="archive-post-time">
-        2020-09-28
-      </time>
-      <span class="archive-post-title">
-        <a href="/post/redis-sourcecode-intset/" class="archive-post-link">
-          Redis 源码阅读 --- intset
-        </a>
-      </span>
-    </div>
-  
-    <div class="archive-post">
-      <time datetime="2020-09-27" class="archive-post-time">
-        2020-09-27
-      </time>
-      <span class="archive-post-title">
-        <a href="/post/redis-sourcecode-dict/" class="archive-post-link">
-          Redis 源码阅读 --- dict
-        </a>
-      </span>
-    </div>
-  
-</section>
 
-
-
-
-
-
-  
-  
-  
-
-  
-  
-
-  
-  
-
-  
-  
-
-  
-  
-  <nav class="pagination">
-    <ul>
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">765PRO.P</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2021-06-16
       
-      <li  class="active" >
-        <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/">1</a>
-      </li>
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://k-on.me/tags/redis/">Redis</a>
+          <a href="https://k-on.me/tags/rdma/">RDMA</a>
+          <a href="https://k-on.me/tags/infiniband/">InfiniBand</a>
+          
+        </div>
+
       
-      <li >
-        <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/page/2/">2</a>
-      </li>
-      
-    </ul>
-  </nav>
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/raft/">
+            <span class="next-text nav-default">Raft</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+  
+  
 
   
   
 
+  
 
+  
+  
 
+  
 
+  
+
+  
+
+    
+
+  
 
         </div>
       </div>
@@ -559,6 +615,13 @@
 
 
 
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
 
 
 
