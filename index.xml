@@ -348,6 +348,10 @@
 &lt;td style=&#34;text-align:left&#34;&gt;如果这是快照的最后一个 chunk 时为真&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;mdash;&amp;ndash;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;Results&lt;/td&gt;
 &lt;td&gt;&lt;/td&gt;
 &lt;/tr&gt;
@@ -385,7 +389,7 @@
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;h3 id=&#34;32-选举原则&#34;&gt;3.2. 选举原则&lt;/h3&gt;
-&lt;p&gt;Raft 应用以下选举原则以确保 &lt;code&gt;election safety&lt;/code&gt;：&lt;/p&gt;
+&lt;p&gt;Raft 应用以下选举原则以确保 &lt;code&gt;election safety&lt;/code&gt;(安全性第一条)：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;每一个服务器按照先来先服务的原则，最多会对一个任期号投出一张选票&lt;/p&gt;
@@ -429,7 +433,7 @@
 &lt;p&gt;在 Raft 中，领导人处理所有的客户端请求，因此领导人需要将从客户端接受到的日志条目(其实也就是请求)复制至集群中的其他节点，并且需保证其他节点的日志和自己相同。日志的组织方式大致如下图所示：&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;https://k-on.me/raft/raft_log_composed.png&#34; alt=&#34;日志组织方式&#34;&gt;&lt;/p&gt;
 &lt;h3 id=&#34;41-日志特性&#34;&gt;4.1. 日志特性&lt;/h3&gt;
-&lt;p&gt;Raft 通过维护以下日志特性，而保证 &lt;code&gt;Log Matching&lt;/code&gt;：&lt;/p&gt;
+&lt;p&gt;Raft 通过维护以下日志特性，而保证 &lt;code&gt;Log Matching&lt;/code&gt;(安全性第三条)：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
 &lt;p&gt;如果在不同日志中的两个条目拥有相同的索引和任期号，那么他们存储了相同的指令 (唯一性)&lt;/p&gt;
@@ -569,7 +573,7 @@
 &lt;p&gt;&lt;code&gt;Joint consensus&lt;/code&gt; 较为复杂，在实际的实现中大多会采用单步变更算法，也即每次仅从集群中添加/删除一个节点。&lt;/p&gt;
 &lt;p&gt;详细介绍可参考 &lt;a href=&#34;https://blog.openacid.com/distributed/raft-bug/&#34;&gt;TiDB 在 Raft 成员变更上踩的坑&lt;/a&gt;。&lt;/p&gt;
 &lt;h2 id=&#34;6-日志压缩&#34;&gt;6. 日志压缩&lt;/h2&gt;
-&lt;p&gt;在 Raft 中，每个节点独立地创建快照，其仅包括已被提交地日志条目。如下图所示，在快照中主要包含以下信息：&lt;/p&gt;
+&lt;p&gt;在 Raft 中，每个节点独立地创建快照，其仅包括已被提交的日志条目。如下图所示，在快照中主要包含以下信息：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;&lt;code&gt;last included index&lt;/code&gt;: 被快照取代的最后一条日志的索引值&lt;/li&gt;
 &lt;li&gt;&lt;code&gt;last included term&lt;/code&gt;: 被快照取代的最后一条日志的任期号&lt;/li&gt;

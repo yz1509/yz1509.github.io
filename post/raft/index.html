@@ -70,7 +70,7 @@
 <meta itemprop="description" content="Raft 算法相关笔记。">
 <meta itemprop="datePublished" content="2021-05-21T16:03:49+08:00" />
 <meta itemprop="dateModified" content="2021-05-21T16:03:49+08:00" />
-<meta itemprop="wordCount" content="6029">
+<meta itemprop="wordCount" content="6047">
 
 
 
@@ -309,7 +309,7 @@
             <a href="https://k-on.me/categories/%E5%88%86%E5%B8%83%E5%BC%8F%E7%B3%BB%E7%BB%9F/"> 分布式系统 </a>
             
           </div>
-        <span class="more-meta"> 6029 words </span>
+        <span class="more-meta"> 6047 words </span>
           <span class="more-meta"> 13 min read </span>
 
         
@@ -603,6 +603,10 @@
 <td style="text-align:left">如果这是快照的最后一个 chunk 时为真</td>
 </tr>
 <tr>
+<td style="text-align:left">&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;</td>
+<td style="text-align:left">&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&ndash;</td>
+</tr>
+<tr>
 <td style="text-align:left">Results</td>
 <td></td>
 </tr>
@@ -640,7 +644,7 @@
 </li>
 </ul>
 <h3 id="32-选举原则">3.2. 选举原则</h3>
-<p>Raft 应用以下选举原则以确保 <code>election safety</code>：</p>
+<p>Raft 应用以下选举原则以确保 <code>election safety</code>(安全性第一条)：</p>
 <ul>
 <li>
 <p>每一个服务器按照先来先服务的原则，最多会对一个任期号投出一张选票</p>
@@ -684,7 +688,7 @@
 <p>在 Raft 中，领导人处理所有的客户端请求，因此领导人需要将从客户端接受到的日志条目(其实也就是请求)复制至集群中的其他节点，并且需保证其他节点的日志和自己相同。日志的组织方式大致如下图所示：</p>
 <p><img src="/raft/raft_log_composed.png" alt="日志组织方式"></p>
 <h3 id="41-日志特性">4.1. 日志特性</h3>
-<p>Raft 通过维护以下日志特性，而保证 <code>Log Matching</code>：</p>
+<p>Raft 通过维护以下日志特性，而保证 <code>Log Matching</code>(安全性第三条)：</p>
 <ul>
 <li>
 <p>如果在不同日志中的两个条目拥有相同的索引和任期号，那么他们存储了相同的指令 (唯一性)</p>
@@ -824,7 +828,7 @@
 <p><code>Joint consensus</code> 较为复杂，在实际的实现中大多会采用单步变更算法，也即每次仅从集群中添加/删除一个节点。</p>
 <p>详细介绍可参考 <a href="https://blog.openacid.com/distributed/raft-bug/">TiDB 在 Raft 成员变更上踩的坑</a>。</p>
 <h2 id="6-日志压缩">6. 日志压缩</h2>
-<p>在 Raft 中，每个节点独立地创建快照，其仅包括已被提交地日志条目。如下图所示，在快照中主要包含以下信息：</p>
+<p>在 Raft 中，每个节点独立地创建快照，其仅包括已被提交的日志条目。如下图所示，在快照中主要包含以下信息：</p>
 <ul>
 <li><code>last included index</code>: 被快照取代的最后一条日志的索引值</li>
 <li><code>last included term</code>: 被快照取代的最后一条日志的任期号</li>
