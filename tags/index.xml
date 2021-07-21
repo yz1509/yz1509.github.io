@@ -6,7 +6,25 @@
     <description>Recent content in Tags on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 16 Jun 2021 16:34:17 +0800</lastBuildDate><atom:link href="https://k-on.me/tags/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 07 Jul 2021 21:06:50 +0800</lastBuildDate><atom:link href="https://k-on.me/tags/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Codis</title>
+      <link>https://k-on.me/tags/codis/</link>
+      <pubDate>Wed, 07 Jul 2021 21:06:50 +0800</pubDate>
+      
+      <guid>https://k-on.me/tags/codis/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Redis</title>
+      <link>https://k-on.me/tags/redis/</link>
+      <pubDate>Wed, 07 Jul 2021 21:06:50 +0800</pubDate>
+      
+      <guid>https://k-on.me/tags/redis/</guid>
+      <description></description>
+    </item>
+    
     <item>
       <title>InfiniBand</title>
       <link>https://k-on.me/tags/infiniband/</link>
@@ -22,15 +40,6 @@
       <pubDate>Wed, 16 Jun 2021 16:34:17 +0800</pubDate>
       
       <guid>https://k-on.me/tags/rdma/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Redis</title>
-      <link>https://k-on.me/tags/redis/</link>
-      <pubDate>Wed, 16 Jun 2021 16:34:17 +0800</pubDate>
-      
-      <guid>https://k-on.me/tags/redis/</guid>
       <description></description>
     </item>
     
@@ -175,15 +184,6 @@
       <pubDate>Thu, 24 Sep 2020 14:39:37 +0800</pubDate>
       
       <guid>https://k-on.me/tags/%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>malloc</title>
-      <link>https://k-on.me/tags/malloc/</link>
-      <pubDate>Wed, 23 Sep 2020 17:14:57 +0800</pubDate>
-      
-      <guid>https://k-on.me/tags/malloc/</guid>
       <description></description>
     </item>
     

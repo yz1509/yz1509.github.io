@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Codis 简要介绍 - HTT - ふわふわ時間</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="765PRO.P" />
+  <meta name="description" content="Codis 是一个基于 Proxy 的 Redis 集群化方案，其具体介绍与使用可参考 Codis 使用文档。本文首先从运维角度出发介绍 Codis，便于了解每个操作背后的具体内容，随后简要介绍了 Codis-Proxy 基本的工作原理，最后简单介绍了扩缩容相关操作。
+" />
+
+  <meta name="keywords" content="K-ON, KyoAni" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.85.0" />
+
+
+<link rel="canonical" href="https://k-on.me/post/codis_intro/" />
+
+
+
+
+
+
+
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.b3a8813c06e6d785beba22bf8264e174fa2cb3a396b22f9ba24e2c00c18aaf7f.css" integrity="sha256-s6iBPAbm14W&#43;uiK/gmThdPoss6OWsi&#43;bok4sAMGKr38=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Codis 简要介绍" />
+<meta property="og:description" content="Codis 是一个基于 Proxy 的 Redis 集群化方案，其具体介绍与使用可参考 Codis 使用文档。本文首先从运维角度出发介绍 Codis，便于了解每个操作背后的具体内容，随后简要介绍了 Codis-Proxy 基本的工作原理，最后简单介绍了扩缩容相关操作。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://k-on.me/post/codis_intro/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2021-07-07T21:06:50+08:00" />
+<meta property="article:modified_time" content="2021-07-07T21:06:50+08:00" />
+
+<meta itemprop="name" content="Codis 简要介绍">
+<meta itemprop="description" content="Codis 是一个基于 Proxy 的 Redis 集群化方案，其具体介绍与使用可参考 Codis 使用文档。本文首先从运维角度出发介绍 Codis，便于了解每个操作背后的具体内容，随后简要介绍了 Codis-Proxy 基本的工作原理，最后简单介绍了扩缩容相关操作。"><meta itemprop="datePublished" content="2021-07-07T21:06:50+08:00" />
+<meta itemprop="dateModified" content="2021-07-07T21:06:50+08:00" />
+<meta itemprop="wordCount" content="6593">
+<meta itemprop="keywords" content="Redis,Codis," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Codis 简要介绍"/>
+<meta name="twitter:description" content="Codis 是一个基于 Proxy 的 Redis 集群化方案，其具体介绍与使用可参考 Codis 使用文档。本文首先从运维角度出发介绍 Codis，便于了解每个操作背后的具体内容，随后简要介绍了 Codis-Proxy 基本的工作原理，最后简单介绍了扩缩容相关操作。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">HTT</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/about/">About</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/categories/">Categories</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      HTT
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/about/">About</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Codis 简要介绍</h1>
+      
+      <div class="post-meta">
+        <time datetime="2021-07-07" class="post-time">
+          2021-07-07
+        </time>
+        <div class="post-category">
+            <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
+            
+          </div>
+        <span class="more-meta"> 6593 words </span>
+          <span class="more-meta"> 14 min read </span>
+
+        
+        
+          <span id="busuanzi_container_page_pv">
+            | 阅读 <span id="busuanzi_value_page_pv"></span>
+          </span>
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-集群管理">1. 集群管理</a>
+      <ul>
+        <li><a href="#11-group-相关操作">1.1. Group 相关操作</a></li>
+        <li><a href="#12-slot-相关操作">1.2. Slot 相关操作</a></li>
+        <li><a href="#13-codis-proxy-相关操作">1.3. Codis-Proxy 相关操作</a></li>
+        <li><a href="#14-sentinel-相关操作">1.4. Sentinel 相关操作</a></li>
+      </ul>
+    </li>
+    <li><a href="#2-请求处理">2. 请求处理</a></li>
+    <li><a href="#3-扩缩容">3. 扩缩容</a>
+      <ul>
+        <li><a href="#31-相关命令">3.1. 相关命令</a></li>
+        <li><a href="#32-codis-dashboard-扩缩容流程">3.2. Codis-Dashboard 扩缩容流程</a></li>
+        <li><a href="#33-codis-proxy-在扩缩容期间请求的处理">3.3. Codis-Proxy 在扩缩容期间请求的处理</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-参考资料">4. 参考资料</a></li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p><a href="https://github.com/CodisLabs/codis">Codis</a> 是一个基于 Proxy 的 Redis 集群化方案，其具体介绍与使用可参考 <a href="https://github.com/CodisLabs/codis/blob/release3.2/doc/tutorial_zh.md">Codis 使用文档</a>。本文首先从运维角度出发介绍 Codis，便于了解每个操作背后的具体内容，随后简要介绍了 Codis-Proxy 基本的工作原理，最后简单介绍了扩缩容相关操作。</p>
+<hr>
+<h2 id="1-集群管理">1. 集群管理</h2>
+<p>Codis-Dashboard 主要负责集群元数据的管理，在下面的讨论中，我们假设集群的元数据存储在 zk 中。Codis 集群的元数据大致有以下几种：</p>
+<ul>
+<li><code>Group</code>: 记录该 Group 下 Servers 地址及状态 (是否有 Promoting，是否 out-of-sync, 是否可读等)</li>
+<li><code>SlotMapping</code>: 包含 Slot-Group 映射关系，以及该 Slot 的状态 (用于数据迁移)</li>
+<li><code>Proxy</code>: 记录 Proxy 的基本信息</li>
+<li><code>Sentinel</code>: 记录 Sentinel 的地址及状态 (是否 out-of-sync)</li>
+</ul>
+<p>Codis-Dashboard 在本地保存了一份集群元数据的缓存 <code>Topom.cache</code>：(Cache Aside Pattern)</p>
+<ul>
+<li><strong>写操作</strong>：修改集群元数据时，会直接写 zk，不论写 zk 成功与否此时都会将缓存 <code>Topom.cache</code> 中对应的内容标记为失效 (<code>nil</code>)</li>
+<li><strong>读操作</strong>：读取元数据时，遍历 <code>Topom.cache</code>，以 zk 中的数据填充失效的缓存部分，随后返回 <code>Topom.cache</code></li>
+</ul>
+<p>下文操作均会先读缓存，再更新 zk，并将相应的缓存信息标记为失效。值得注意的是，更新 zk 操作不一定会成功执行，但是将缓存信息标记为失效一定会执行。</p>
+<h3 id="11-group-相关操作">1.1. Group 相关操作</h3>
+<ul>
+<li>
+<p><strong>添加 Group</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR  --create-group  --gid<span class="o">=</span>ID
+</code></pre></td></tr></table>
+</div>
+</div><p>含义：添加指定 <code>ID</code> 的 Group。</p>
+<p>在添加 Group 时，只需注意 Group ID 范围在 $[0, 9999]$ 内，且该 Group ID 目前不在集群内即可。</p>
+</li>
+<li>
+<p><strong>Group 中添加 Server</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR  --group-add  --gid<span class="o">=</span>ID --addr<span class="o">=</span>ADDR <span class="o">[</span>--datacenter<span class="o">=</span>DATACENTER<span class="o">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>含义：向 <code>gid = ID</code> 的 Group 中添加地址为 <code>ADDR</code> 的 Server。</p>
+<p><img src="/codis/group_add_server.png" alt="group_add_server"></p>
+</li>
+<li>
+<p><strong>Group 中删除 Server</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR  --group-del  --gid<span class="o">=</span>ID --addr<span class="o">=</span>ADDR
+</code></pre></td></tr></table>
+</div>
+</div><p>含义：从 <code>gid = ID</code> 的 Group 删除地址为 <code>ADDR</code> 的 Server。</p>
+<p><img src="/codis/group_del_server.png" alt="group_del_server"></p>
+<p>可以发现，可以直接移除可读从库，因此在移除从库时，建议先取消可读并点击 SYNC 后再移除该从库。</p>
+</li>
+<li>
+<p><strong>删除 Group</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR  --remove-group  --gid<span class="o">=</span>ID
+</code></pre></td></tr></table>
+</div>
+</div><p>含义：删除 <code>gid = ID</code> 的 Group.</p>
+<p>在删除 Group 之前，需先清空 Group 中的 Server。</p>
+</li>
+<li>
+<p><strong>建立/取消主从同步</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR  --sync-action  --create --addr<span class="o">=</span>ADDR
+</code></pre></td></tr></table>
+</div>
+</div><p>含义：向地址为 <code>ADDR</code> 发送 <code>SLAVEOF</code> 命令，在 Group 内依据 Server 的位置建立主从关系。</p>
+<ul>
+<li><code>index = 0</code>: <code>SLAVEOF NO ONE</code></li>
+<li><code>index &gt; 0</code>: 成为 <code>index = 0</code> 的 Server 的从库</li>
+</ul>
+<p><img src="/codis/group_add_sync.png" alt="group_add_sync"></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR  --sync-action  --remove --addr<span class="o">=</span>ADDR
+</code></pre></td></tr></table>
+</div>
+</div><p>含义：删除地址为 <code>ADDR</code> 的实例上 Pending 的主从同步操作。</p>
+<p><img src="/codis/group_del_sync.png" alt="group_del_sync"></p>
+<ul>
+<li>该操作极少使用，只有在原主库所在机器宕机后，不想机器上的实例在机器启动时收到 <code>SLAVEOF</code> 操作时会使用。</li>
+<li>另外，在人工介入集群的故障恢复过程中时，最好直接<strong>停止</strong>集群中的 Sentinel 实例进程，以免受到 Sentinel 的干扰</li>
+</ul>
+</li>
+<li>
+<p><strong>开启/关闭从库可读</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR --replica-groups --gid<span class="o">=</span>ID --addr<span class="o">=</span>ADDR <span class="o">(</span>--enable<span class="p">|</span>--disable<span class="o">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>含义：依据 enable/disable 开启/关闭特定实例的可读状态。</p>
+<p><img src="/codis/group_replica_read.png" alt="group_replica_read"></p>
+</li>
+<li>
+<p><strong>响应 Sentinel 切主</strong></p>
+<p>Codis-Dashboard 通过订阅 Sentinel 的 <code>+switch-master</code> 消息响应 Sentinel 执行故障恢复时的切主行为，当监听到切主时：</p>
+<p><img src="/codis/group_switch_master.png" alt="group_switch_master"></p>
+</li>
+<li>
+<p><strong>Group SYNC</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR  --resync-group  <span class="o">[</span>--gid<span class="o">=</span>ID <span class="p">|</span> --all<span class="o">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>含义：将该 Group 相关的 Server 地址，是否从库可读和 Slot-Group 映射关系同步至 Codis-Proxy。</p>
+<p>由上述可知，Group 会在以下情况下标记为 <code>out-of-sync</code>:</p>
+<ul>
+<li>从 Group 中去除一个可读从库</li>
+<li>开启/关闭可读</li>
+<li>Sentinel 自动切主后</li>
+</ul>
+</li>
+<li>
+<p><strong>Promote</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR  --promote-server --gid<span class="o">=</span>ID --addr<span class="o">=</span>ADDR
+</code></pre></td></tr></table>
+</div>
+</div><p>含义：将 <code>gid = ID</code> 的 Group 中地址为 <code>ADDR</code> 的实例提升为主库。</p>
+<p><img src="/codis/group_promote_server.png" alt="group_promote_server"></p>
+</li>
+</ul>
+<h3 id="12-slot-相关操作">1.2. Slot 相关操作</h3>
+<ul>
+<li>
+<p><strong>分配 Slot</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR --slot-action --create --sid<span class="o">=</span>ID --gid<span class="o">=</span>ID
+</code></pre></td></tr></table>
+</div>
+</div><p>含义：将 <code>sid = ID</code> 的 slot 分配至 <code>gid = ID</code> 的 Group</p>
+<p><img src="/codis/slot_2_group.png" alt="slot_2_group"></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR --slot-action --create-some --gid-from<span class="o">=</span>ID --gid-to<span class="o">=</span>ID --num-slots<span class="o">=</span>N
+</code></pre></td></tr></table>
+</div>
+</div><p>含义：从 <code>gid-from = ID</code> 的 Group 中迁移不大于 <code>num-slots = N</code> 的 slots 至 <code>gid-to = ID</code> 的 Group</p>
+<p>具体操作流程同上。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR --slot-action --create-range --beg<span class="o">=</span>ID --end<span class="o">=</span>ID --gid<span class="o">=</span>ID
+</code></pre></td></tr></table>
+</div>
+</div><p>含义：将 $[beg, end]$ 之间的 slots 分配至 <code>gid = ID</code> 的 Group</p>
+<p>具体操作流程同上。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR --rebalance <span class="o">[</span>--confirm<span class="o">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>含义：重分配 Slots，使得各个 Group 所分配到的 Slots 数量大致相等</p>
+</li>
+<li>
+<p><strong>移除 Pending 状态的操作</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR --slot-action --remove --sid<span class="o">=</span>ID
+</code></pre></td></tr></table>
+</div>
+</div><p>含义：移除 <code>sid = ID</code> 的 Slot 上 <code>ActionPending</code> 状态的分配操作</p>
+</li>
+<li>
+<p><strong>参数设置</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR --slot-action --interval<span class="o">=</span>VALUE
+</code></pre></td></tr></table>
+</div>
+</div><p>含义：设置 Codis-Dashboard 后台执行 slot 相关操作的时间间隔，有效范围为 $[0, 1]$ (秒)</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR --slot-action --disabled<span class="o">=</span>VALUE
+</code></pre></td></tr></table>
+</div>
+</div><p>含义：暂停/开始 slot 相关操作。</p>
+</li>
+</ul>
+<h3 id="13-codis-proxy-相关操作">1.3. Codis-Proxy 相关操作</h3>
+<ul>
+<li>
+<p><strong>添加 Codis-Proxy</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR --create-proxy --addr<span class="o">=</span>ADDR
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="/codis/add_codis_proxy.png" alt="add_codis_proxy"></p>
+</li>
+<li>
+<p><strong>Online Codis-Proxy</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR --online-proxy --addr<span class="o">=</span>ADDR
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>若 Codis-Proxy 此前未在集群中，则与添加时的流程完全一致</li>
+<li>若 Codis-Proxy 此前已在集群中，则会 <code>Online</code> 现有的 Codis-Proxy</li>
+</ul>
+</li>
+<li>
+<p><strong>删除 Codis-Proxy</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR --remove-proxy <span class="o">(</span>--addr<span class="o">=</span>ADDR<span class="p">|</span>--token<span class="o">=</span>TOKEN<span class="p">|</span>--pid<span class="o">=</span>ID<span class="o">)</span>       <span class="o">[</span>--force<span class="o">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="/codis/del_codis_proxy.png" alt="del_codis_proxy"></p>
+</li>
+<li>
+<p><strong>Codis-Proxy SYNC</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR --reinit-proxy <span class="o">(</span>--addr<span class="o">=</span>ADDR<span class="p">|</span>--token<span class="o">=</span>TOKEN<span class="p">|</span>--pid<span class="o">=</span>ID<span class="p">|</span>--all<span class="o">)</span> <span class="o">[</span>--force<span class="o">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>初始化主要包括以下三部分</p>
+<ul>
+<li>将集群 Slots 信息同步至 Codis Proxy</li>
+<li>Start Codis Proxy: Codis Proxy  &amp; Router Online 状态设置为 true</li>
+<li>令 Codis Proxy 订阅 Sentinel 主从切换信息</li>
+</ul>
+</li>
+</ul>
+<h3 id="14-sentinel-相关操作">1.4. Sentinel 相关操作</h3>
+<ul>
+<li>
+<p><strong>添加 Sentinel</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR --sentinel-add --addr<span class="o">=</span>ADDR      
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="/codis/add_sentinel.png" alt="add_sentinel"></p>
+<p>可以发现在添加 Sentinel 时，只是将 Sentinels 的状态标记为 <code>out-of-sync</code>。这是因为此时并未让 Sentinel 监听集群中的 Server 实例，也未令 Codis-Dashboard 和 Codis-Proxy 订阅 Sentinel 的 <code>+switch-master</code> 消息。</p>
+</li>
+<li>
+<p><strong>删除 Sentinel</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR --sentinel-del --addr<span class="o">=</span>ADDR <span class="o">[</span>--force<span class="o">]</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="/codis/del_sentinel.png" alt="del_sentinel"></p>
+</li>
+<li>
+<p><strong>Sentinel SYNC</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-shell" data-lang="shell">codis-admin <span class="o">[</span>-v<span class="o">]</span> --dashboard<span class="o">=</span>ADDR --sentinel-resync
+</code></pre></td></tr></table>
+</div>
+</div><p><img src="/codis/sentinel_sync.png" alt="sentinel_sync"></p>
+</li>
+</ul>
+<h2 id="2-请求处理">2. 请求处理</h2>
+<p><img src="/codis/codis_proxy.png" alt="codis_proxy"></p>
+<p>Codis-Proxy 处理请求的过程大致如上图所示：</p>
+<ul>
+<li>
+<p><code>Session</code> 与 <code>BackendConn</code> 之间的通信</p>
+<ul>
+<li>每个客户端连接对应一个 <code>Session</code></li>
+<li>每个后端 server 对应的 <code>BackendConn</code> 数由配置项 <code>backend_primary_parallel</code> 和 <code>backend_replica_parallel</code> 控制</li>
+<li><code>Session</code> 与 <code>BackendConn</code> 之间通过管道 <code>bc.input</code> 通信，每个 <code>BackendConn</code> 负责处理消费一个管道，其容量为固定大小 $1024$，因此当 <code>Session</code> 数量远大于 <code>BackendConn</code> 数量时，在 <code>bc.input</code> 中排队阻塞的概率较大</li>
+</ul>
+</li>
+<li>
+<p>按序回复</p>
+<ul>
+<li><code>Session</code> 中的 <code>tasks</code> 管道保证请求按序回复</li>
+<li><code>BackendConn</code> 中的 <code>tasks</code> 管道保证转发至 Servers 的请求，会按序收包</li>
+</ul>
+</li>
+<li>
+<p>每个请求会有两个 <code>WaitGroup</code></p>
+<ul>
+<li><code>r.Batch</code>: <code>Session</code> 依此等待请求处理完成</li>
+<li><code>r.Group</code>: 其实际为 <code>Slot.refs</code> (请求哈希至该 <code>Slot</code>, 便会令 <code>r.Group = Slot.refs</code>)。<code>Slot</code> 依此会在每次更新路由表 (Slot-Group 映射) 前等待当前 <code>Slot</code> 上的请求处理完毕</li>
+</ul>
+</li>
+<li>
+<p>批量操作命令</p>
+<ul>
+<li>只要批量操作多个 key 的请求可以拆成多个单次操作并行执行，则 Codis 支持该命令</li>
+<li>因为 Codis 是将批量操作拆分成多个请求转发至 Redis，因此批量操作的耗时大致上取决于最慢的那个子请求的耗时</li>
+<li>因为批量操作的存在，Codis-Proxy 的扇出一般大于 $1$，因此当 Codis-Proxy 的 QPS 并无大幅上涨时，底层 Servers 的请求也可能上涨 (每个批量操作操作的 key 数量增长所致)</li>
+</ul>
+</li>
+</ul>
+<h2 id="3-扩缩容">3. 扩缩容</h2>
+<p>在向 Group 中添加 Server 时，我们可以看到只有支持 <code>SlotsInfo</code> 命令的 Server 方可加入集群。事实上 Codis 为了能平滑扩缩容，修改了 Redis 源码以记录当前 Server 所负责的 <code>Slot</code> 以及每个 <code>Slot</code> 中的 key 的信息，这些信息记录在 <a href="https://github.com/CodisLabs/codis/blob/release3.2/extern/redis-3.2.11/src/server.h#L523">redisDb-&gt;hash_slots</a> 中。</p>
+<blockquote>
+<p>当然，没有扩缩容需求的话，可以实现一个空的 <code>SlotsInfo</code> 请求处理函数便可将 Server 添加至 Codis 集群提供服务。</p>
+</blockquote>
+<h3 id="31-相关命令">3.1. 相关命令</h3>
+<p>修改后的 Redis 也实现了一系列 <code>Slot</code> 相关的命令以支持扩缩容，参考<a href="https://github.com/CodisLabs/codis/blob/release3.2/doc/redis_change_zh.md">redis 修改部分(增加若干指令)</a>、<a href="https://github.com/CodisLabs/codis/blob/release3.2/extern/redis-3.2.11/src/slots.c">slots.c</a> 和 <a href="https://github.com/CodisLabs/codis/blob/release3.2/extern/redis-3.2.11/src/slots_async.c">slots_async.c</a>，介绍如下：</p>
+<h4 id="311-调试相关">3.1.1. 调试相关</h4>
+<ul>
+<li>
+<p><code>slotshashkey key1 [key2 …]</code></p>
+<ul>
+<li>
+<p>命令说明：计算并返回给定 key 的 slot 序号</p>
+</li>
+<li>
+<p>命令参数：输入为 1 个或多个 key</p>
+</li>
+<li>
+<p>返回结果： 操作返回 array，其中 <code>slot</code> 表示对应 key 的 slot 序号，即 $hash32(key) \ \% \ \mathrm{NUM\_OF\_SLOTS}$</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">response</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="nx">slot1</span><span class="p">,</span> <span class="nx">slot2</span><span class="o">...</span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+</li>
+<li>
+<p><code>slotsinfo [start] [count]</code></p>
+<ul>
+<li>
+<p>命令说明：获取 redis 中 slot 的个数以及每个 slot 的大小</p>
+</li>
+<li>
+<p>命令参数：缺省查询 $[0, \mathrm{MAX\_SLOT\_NUM})$</p>
+<ul>
+<li><code>start</code> - 起始的 slot 序号
+<blockquote>
+<p>缺省 = $0$</p>
+</blockquote>
+</li>
+<li><code>count</code> - 查询的区间的大小，即查询范围为 $[start, start + count)$
+<blockquote>
+<p>缺省 = $\mathrm{MAX\_SLOT\_NUM}$</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li>
+<p>返回结果：返回结果是 slotinfo 的 array；slotinfo 本身也是一个 array。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">response</span> <span class="o">:=</span> <span class="p">[]</span><span class="nx">slotinfo</span><span class="p">{</span><span class="nx">slot1</span><span class="p">,</span> <span class="nx">slot2</span><span class="p">,</span> <span class="nx">slot3</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
+<span class="nx">slotinfo</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="nx">slotnum</span><span class="p">,</span> <span class="nx">slotsize</span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其中：</p>
+<ul>
+<li><code>slotnum</code>: slot 序号</li>
+<li><code>slotsize</code>: slot 内数据个数</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><code>slotsscan slotnum cursor [COUNT count]</code></p>
+<ul>
+<li>
+<p>命令说明：获取指定 slotnum 下的 key 列表</p>
+</li>
+<li>
+<p>命令参数：参数说明类似 SCAN 命令</p>
+<ul>
+<li><code>slotnum</code> - 查询的 slot 序号，$[0, \mathrm{MAX\_SLOT\_NUM})$</li>
+<li><code>cursor</code> - 说明参考 SCAN 命令</li>
+<li><code>[COUNT count)</code> - 说明参考 SCAN 命令</li>
+<li>暂不支持 MATCH 查询</li>
+</ul>
+</li>
+<li>
+<p>返回结果：参考 SCAN 命令</p>
+<ul>
+<li>返回更新后的 cursor 以及一组 key 列表</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><code>slotsdel slot1 [slot2 …]</code></p>
+<ul>
+<li>命令说明：删除 redis 中若干 slot 下的全部 key-value</li>
+<li>命令参数：接受至少 1 个 slotnum 作为参数</li>
+<li>返回结果：格式参见 slotsinfo，不同的是：slotsize 表示删除后剩余大小，通常为 0</li>
+</ul>
+</li>
+<li>
+<p><code>slotscheck</code></p>
+<ul>
+<li>
+<p>命令说明：对 redis 内的 slots 进行一致性检查，即满足如下两条</p>
+<ul>
+<li>每个 slot 中保存的 key 都能在 db 中找到对应的 val</li>
+<li>每个 db 中的 key 都能在对应的 slot 中查找到</li>
+</ul>
+<blockquote>
+<p>该操作比较慢，仅仅作为 redis 开发的调试工具使用，不能在线上使用</p>
+</blockquote>
+</li>
+<li>
+<p>命令参数：0 参数</p>
+</li>
+<li>
+<p>返回结果：</p>
+<ul>
+<li>成功返回字符串 <code>OK</code></li>
+<li>如果 check 失败，会返回 <code>ERR</code> 并包含对应出错的 key</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="312-同步迁移">3.1.2. 同步迁移</h4>
+<p><strong>通常客户端请求</strong></p>
+<ul>
+<li>
+<p><code>slotsmgrtslot host port timeout slot</code></p>
+<ul>
+<li>
+<p>命令说明：随机选择 slot 下的 1 个 key-value 到迁移到目标机（同步 IO 操作）</p>
+<ul>
+<li>如果当前 slot 已经空了或者选择的 key 刚好过期，返回 0</li>
+<li>如果当前 slot 下面还有 key 则选择一个进行迁移</li>
+<li>同时返回当前 slot 剩余 key 的个数</li>
+<li>迁移过程在目标机器调用 <code>slotsrestore</code> 命令，迁移会 <strong>覆盖旧值</strong></li>
+</ul>
+</li>
+<li>
+<p>命令参数：</p>
+<ul>
+<li><code>host:port</code> - 目标机地址
+<ul>
+<li>redis 内部缓存到 <code>host:port</code> 的连接 $30s$，超时或错误则关闭</li>
+</ul>
+</li>
+<li><code>timeout</code> - 操作超时，单位 $ms$
+<ul>
+<li>过程需要 3 个同步操作：
+<ol>
+<li>建立连接（可被缓存优化）</li>
+<li>发送 key-value 数据</li>
+<li>接受目标机返回</li>
+</ol>
+</li>
+<li>指令保证每个操作不超过 <code>timeout</code></li>
+</ul>
+</li>
+<li><code>slot</code> - 指定迁移的 slot 序号</li>
+</ul>
+</li>
+<li>
+<p>返回结果： 操作返回 <code>int</code></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">response</span> <span class="o">:=</span> <span class="p">[]</span><span class="kt">int</span><span class="p">{</span><span class="nx">succ</span><span class="p">,</span><span class="nx">size</span><span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其中：</p>
+<ul>
+<li><code>succ</code>: 表示迁移是否成功。
+<ul>
+<li>0 表示当前 slot 已经空了（迁移成功个数 = 0）</li>
+<li>1 表示迁移一个 key 成功，并从本地删除（迁移成功个数 = 1）</li>
+</ul>
+</li>
+<li><code>size</code>: 表示 slot 下剩余 key 的个数</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><code>slotsmgrtone host port timeout key</code></p>
+<ul>
+<li>
+<p>命令说明：迁移 key 到目标机，与 <code>slotsmgrtslot</code> 相同</p>
+</li>
+<li>
+<p>命令参数：参见 <code>slotsmgrtslot</code></p>
+</li>
+<li>
+<p>返回结果：操作返回整数，其中 <code>succ</code> 的含义与 <code>slotsmgrtslot</code> 相似</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">response</span> <span class="o">:=</span> <span class="nb">int</span><span class="p">(</span><span class="nx">succ</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+</li>
+<li>
+<p><code>slotsmgrttagone host port timeout key</code></p>
+<ul>
+<li>
+<p>命令说明：迁移与 key 有相同的 tag 的所有 key 到目标机</p>
+<ul>
+<li>当 key 中不包含合法 tag 时，命令退化为 <code>slotsmgrtone</code>，时间复杂度为 $O(1)$</li>
+<li>当 key 中包含合法 tag 时，命令会计算 tag 的 hash 值，并在 skiplist 中找到所有具有相同 hash 值的 key-value 对，原子地迁移到目标机，时间复杂度为 $O(log(n))$</li>
+</ul>
+<blockquote>
+<p>修改的 redis 中，会将所有含有 tag 的 key，组织在 skiplist 中，并按照 tag 的 hash 值进行排序。当对按照某一 tag 进行迁移数据时，实际操作会将所有具有相同 hash 值的 tag 所涉及到的所有 key 一起迁移。也就是说，真正迁移的数据<strong>可能包含更多的 key</strong>，但是这么设计会减少 tag 迁移过程对字符串的比较次数，显著提升性能。</p>
+</blockquote>
+</li>
+<li>
+<p>命令参数：参见 <code>slotsmgrtone</code></p>
+</li>
+<li>
+<p>返回结果：操作返回整数，其中 <code>succ</code> 表示成功迁移的 key 的个数。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-go" data-lang="go"><span class="nx">response</span> <span class="o">:=</span> <span class="nb">int</span><span class="p">(</span><span class="nx">succ</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+</ul>
+</li>
+<li>
+<p><code>slotsmgrttagslot host port timeout slot</code></p>
+<ul>
+<li>命令说明：与 <code>slotsmgrtslot</code> 对应的迁移指令</li>
+<li>其他说明参考 <code>slotsmgrtslot</code> 以及 <code>slotsmgrttagone</code> 的解释即可</li>
+</ul>
+</li>
+</ul>
+<p><strong>衍生命令</strong></p>
+<ul>
+<li><code>slotsrestore key1 ttl1 val1 [key2 ttl2 val2 …]</code>
+<ul>
+<li>命令说明：该命令是对 redis-2.8 的 <code>restore</code> 命令的扩展
+<ul>
+<li>可以对 <code>restore</code> 多个 key-value</li>
+<li>过程是原子的</li>
+</ul>
+<blockquote>
+<p>与 <code>restore</code> 不同的是，<code>slotsrestore</code> 只支持 replace，即一定<strong>覆盖旧值</strong>。如果旧值已经存在，那么只可能是 redis-slots 或者 proxy 的实现 bug，程序会通过 redisLog 打印一条冲突记录。</p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ul>
+<h4 id="313-异步迁移">3.1.3. 异步迁移</h4>
+<p><strong>通常客户端请求</strong></p>
+<ul>
+<li>
+<p><code>slotsmgrtone-async host port timeout maxbulks maxbytes key1 [key2 ...]</code></p>
+<ul>
+<li>
+<p>命令说明：迁移 key1, key2 &hellip; 到目标机</p>
+</li>
+<li>
+<p>命令参数：</p>
+<ul>
+<li><code>host:port</code>: 目标机地址</li>
+<li><code>timeout</code>: 操作超时
+<ul>
+<li>默认值 $30s$</li>
+<li>当 <code>timeout</code> 时间内未发送 <code>slotsrestore-async</code> 迁移命令时，同步客户端会被服务器关闭</li>
+<li>也是所同步 key 在同步途中设置临时过期时间，用于错误处理，保证单个数据的完整性</li>
+<li>可在 Codis-Dashboard 的配置文件中通过配置项 <code>migration_timeout</code> 设置</li>
+</ul>
+</li>
+<li><code>maxbulks</code>：大对象进行指令拆分时，单个指令可包含的数据分片个数
+<ul>
+<li>默认值 $200$，最大值 $512 \times 1024$</li>
+<li>可在 Codis-Dashboard 的配置文件中通过配置项 <code>migration_async_maxbulks</code> 设置</li>
+</ul>
+</li>
+<li><code>maxbytes</code>：同步客户端输出缓冲区大小，缓冲区满时不产生新的迁移指令
+<ul>
+<li>默认值 512 KB，最大值 <code>INT_MAX / 2</code> Byte</li>
+<li>同时需满足 Redis 对 Normal Client 的缓冲区大小限制</li>
+<li>可在 Codis-Dashboard 的配置文件中通过配置项 <code>migration_async_maxbytes</code> 设置</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>返回结果：操作返回整数，表示已迁移 key 的数量</p>
+</li>
+</ul>
+</li>
+<li>
+<p><code>slotsmgrttagone-async host port timeout maxbulks maxbytes key1 [key2 ...]</code></p>
+<ul>
+<li>命令说明：迁移与 key1, key2, &hellip; 有相同的 tag 的所有 key 到目标机</li>
+<li>其他说明参考 <code>slotsmgrttagone</code> 以及 <code>slotsmgrtone-async</code> 的解释即可</li>
+</ul>
+</li>
+<li>
+<p><code>slotsmgrtslot-async host port timeout maxbulks maxbytes slot numkeys</code></p>
+<ul>
+<li>
+<p>命令说明：从指定 <code>slot</code> 中迁移至多 <code>numkeys</code> 个 key 至目标机</p>
+</li>
+<li>
+<p>命令参数：</p>
+<ul>
+<li><code>slot</code>：slot number</li>
+<li><code>numkeys</code>：本次迁移指令的数量上限
+<ul>
+<li>默认值 $100$</li>
+<li>大对象在拆分时，会被当成多个 key 被计算，所以实际迁移的 key 的数量一般小于 <code>numkeys</code></li>
+<li>可在 Codis-Dashboard 的配置文件中通过配置项 <code>migration_async_numkeys</code> 设置</li>
+</ul>
+</li>
+<li>其他命令参数说明同 <code>slotsmgrtone-async</code></li>
+</ul>
+</li>
+<li>
+<p>返回结果：操作返回两个整数</p>
+<ul>
+<li>已迁移 key 的数量</li>
+<li>该 slot 中剩余 key 的数量</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><code>slotsmgrttagslot-async host port timeout maxbulks maxbytes slot numkeys</code></p>
+<ul>
+<li>命令说明：与 <code>slotsmgrtslot-async</code> 对应的迁移指令，会在迁移 key 时同时迁移具有相同 tag 的 key</li>
+<li>其他说明参考 <code>slotsmgrttagone</code> 以及 <code>slotsmgrtslot-async</code> 的解释即可</li>
+</ul>
+</li>
+<li>
+<p><code>slotsmgrt-exec-wrapper key command [arg1 ...]</code></p>
+<ul>
+<li>
+<p>命令说明：依赖 <code>key</code> 的状态决定如何执行包装的 command</p>
+</li>
+<li>
+<p>返回结果：操作返回 Arrays</p>
+<ul>
+<li><code>Arrays[0]</code> 为整数标识
+<ul>
+<li><code>-1</code> 表示所包装的请求格式错误</li>
+<li><code>0</code>  表示所操作的 <code>key</code> 不存在</li>
+<li><code>1</code>  表示包装的请求为写操作，且该 <code>key</code> 正在迁移中</li>
+<li><code>2</code>  表示所包装的请求可被执行</li>
+</ul>
+</li>
+<li><code>Arrays[1]</code> 返回值类型取决于 <code>Arrays[0]</code>
+<ul>
+<li><code>Arrays[0] == 2</code> 时，<code>Arrays[1]</code> 表示所包装的 command 执行的结果</li>
+<li><code>Arrays[0] != 2</code> 时，<code>Arrays[1]</code> 为一条错误信息</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>附加说明：</p>
+<ul>
+<li>在所包装的请求为读操作时，可直接执行</li>
+<li>在所包装的请求为写操作时
+<ul>
+<li>如果 key 未处于迁移状态，可执行
+<blockquote>
+<p>需注意的是，此处写操作并不会转发至 AOF 和从库</p>
+</blockquote>
+</li>
+<li>如果 key 处于迁移状态，则不会执行写操作，直接返回 error</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p><strong>衍生命令</strong></p>
+<ul>
+<li>
+<p><code>slotsrestore-async-auth passwd</code></p>
+<ul>
+<li>命令说明：同步客户端认证
+<blockquote>
+<p>需注意的是会使用本机的 <code>requirepass</code> 向目标机进行认证，因此我们需保证同一集群内的所有 Codis-Server 密码一致</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li>
+<p><code>slotsrestore-async-select db</code></p>
+<ul>
+<li>命令说明：同 <code>SELECT db</code>，保证同一 slot 中的 key 即使处于不同 Codis-Server 中，但是 db ID 会是相同的</li>
+</ul>
+</li>
+<li>
+<p><code>slotsrestore-async</code> 类命令</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-c" data-lang="c"><span class="cm">/* *
+</span><span class="cm"> * SLOTSRESTORE-ASYNC delete $key
+</span><span class="cm"> *                    expire $key $ttl
+</span><span class="cm"> *                    object $key $ttl $payload
+</span><span class="cm"> *                    string $key $ttl $payload
+</span><span class="cm"> *                    list   $key $ttl $hint [$elem1 ...]
+</span><span class="cm"> *                    hash   $key $ttl $hint [$hkey1 $hval1 ...]
+</span><span class="cm"> *                    dict   $key $ttl $hint [$elem1 ...]
+</span><span class="cm"> *                    zset   $key $ttl $hint [$elem1 $score1 ...]
+</span><span class="cm"> * */</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p>命令说明：按照所包装命令对 key 执行删除、设置过期时间或 restore 操作</p>
+<ul>
+<li><code>delete</code>: 删除该 key</li>
+<li><code>expire</code>: 给该 key 设置过期时间</li>
+<li><code>object</code>: 表示该 key 的 val (<code>payload</code>) 为 RDB 格式
+<ul>
+<li>小对象使用 RDB</li>
+</ul>
+</li>
+<li><code>string</code>: 表示该 key 为字符串类型，且其 <code>val</code> 未压缩
+<ul>
+<li>字符串类型不压缩</li>
+</ul>
+</li>
+<li><code>list/hash/dict/zset</code>：表示该 key 为列表/哈希表/集合/有序集合类型
+<ul>
+<li>大对象进行指令拆分，单条指令可包含多个数据分片，由参数 <code>maxbulks</code> 控制</li>
+<li><code>hint</code>: 该 key 总的元素个数</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p>于何处衍生该命令？</p>
+<ul>
+<li>在客户端发送 <code>slotsmgrtone-async</code>、<code>slotsmgrttagone-async</code>、<code>slotsmgrtslot-async</code> 或 <code>slotsmgrttagslot-async</code> 时会尝试在 $500\mu s$ 内发送不少于 $3$ 条 <code>slotsrestore-async</code> 命令至目标机</li>
+<li>在源端收到目标机返回的 <code>slotsrestore-async-ack</code> 时，会尝试在 $10\mu s$ 内发送不少于 $2$ 条 <code>slotsrestore-async</code> 命令至目标机</li>
+<li>在目标机调用 <code>slotsmgrtone-async-dump</code> 或 <code>slotsmgrttagone-async-dump</code> 时</li>
+</ul>
+</li>
+<li>
+<p>返回结果：在目标机收到并处理 <code>slotsrestore-async</code> 命令后，会返回 <code>slotsrestore-async-ack errno message</code> 请求至源端</p>
+<ul>
+<li><code>errno = -1</code>: 有错误发生，<code>message</code> 会显示具体的错误信息</li>
+<li><code>errno = 0</code> : 成功执行相应操作，<code>message</code> 为一个整型字符串，其含义依据所包装的请求而定
+<ul>
+<li><code>delete</code>: 0 or 1 表示成功删除的 key 个数</li>
+<li><code>expire/object/string</code>: 1</li>
+<li><code>list/hash/dict/zset</code>: 执行 restore 操作后目标机该 key 中所含的元素个数</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><code>slotsrestore-async-ack errno message</code></p>
+<ul>
+<li>命令说明：响应来自目标机的 ack 回复，尝试继续发送 <code>slotsrestore-async</code> 命令以迁移数据，当数据迁移完毕时，通知客户端 (发送数据迁移请求的客户端)，在本地删除已迁移 key</li>
+</ul>
+</li>
+</ul>
+<p><strong>调试命令</strong></p>
+<ul>
+<li>
+<p><code>slotsmgrtone-async-dump timeout maxbulks key1 [key2 ...]</code></p>
+<ul>
+<li>命令说明：要求服务器迁移 key1, key2, &hellip; 至本客户端</li>
+<li>命令参数的说明同 <code>slotsmgrtone-async</code>，唯一不同的是此处 <code>maxbulks</code> 的默认值为 $1000$，最大值为 <code>INT_MAX</code></li>
+</ul>
+</li>
+<li>
+<p><code>slotsmgrttagone-async-dump timeout maxbulks key1 [key2 ...]</code></p>
+<ul>
+<li>命令说明：要求服务器迁移 key1, key2, &hellip; 及其相同 tag 的 key 至本客户端</li>
+<li>命令参数的说明同上</li>
+</ul>
+</li>
+<li>
+<p><code>slotsmgrt-async-fence</code></p>
+<ul>
+<li>命令说明：判断或等待数据迁移完毕</li>
+<li>返回结果
+<ul>
+<li><code>OK</code>: 当前该客户端所在 db 无数据迁移任务</li>
+<li>error: 表示重复调用 <code>slotsmgrt-async-fence</code> 命令</li>
+<li>已迁移完毕的返回值，取决于触发当前迁移任务的请求类型</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><code>slotsmgrt-async-cancel</code></p>
+<ul>
+<li>命令说明：终止数据迁移</li>
+<li>返回结果：整型
+<ul>
+<li>0: 表示当前该客户端所在 db 无数据迁移任务</li>
+<li>1: 表示当前该客户端所在 db 数据迁移任务已终止</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>
+<p><code>slotsmgrt-async-status</code></p>
+<ul>
+<li>命令说明：返回当前该客户端所在 db 数据迁移任务的运行状态</li>
+<li>返回结果：bulk strings
+<ul>
+<li><code>host</code>: 目标机 IP</li>
+<li><code>port</code>: 目标机端口号</li>
+<li><code>used</code>: 同步客户端是否已通过认证以及选择相应的 db</li>
+<li><code>timeout</code>: 客户端操作超时时间</li>
+<li><code>lastuse</code>: 表示上一次使用同步客户端发送迁移命令的时间</li>
+<li><code>since_lastuse</code>: 当前时间 $-$ <code>lastuse</code></li>
+<li><code>sending_msgs</code>: 已发送 <code>slotsrestore-async</code> 类迁移命令但还未收到 <code>slotsrestore-async-ack</code> 的请求数</li>
+<li><code>blocked_clients</code>: 阻塞等待当前迁移任务完成的客户端数量</li>
+<li><code>batched_iterator</code>: 迁移迭代器状态
+<ul>
+<li><code>keys</code>: 将要迁移的 key</li>
+<li><code>timeout</code>: 临时过期时间 (其值与客户端操作超时时间相同)</li>
+<li><code>maxbulks</code>: 大对象进行指令拆分时，单个指令可包含的数据分片个数</li>
+<li><code>maxbytes</code>: 同步客户端输出缓冲区大小，缓冲区满时不产生新的迁移指令</li>
+<li><code>estimate_msgs</code>: 本次迁移任务的 <code>slotsrestore-async</code> 指令数量</li>
+<li><code>removed_keys</code>: 已迁移完成的 key 列表的长度，会随着迁移任务的进行增长，在迁移任务结束时会依据列表 <code>it-&gt;removed_keys</code> 删除本地的 key</li>
+<li><code>chunked_vals</code>: 迁移过程中产生的中间值列表的长度，在迁移任务结束时会依据列表 <code>it-&gt;chunked_vals</code> 释放中间值</li>
+<li><code>iterators</code>: 当前尚未迁移的 key 的列表</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="32-codis-dashboard-扩缩容流程">3.2. Codis-Dashboard 扩缩容流程</h3>
+<p>在 <a href="https://k-on.me/post/codis_intro/#12-slot-%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C">slot-相关操作</a> 中我们发现 Codis-Dashboard 只是会把相关 slot 标记为 <code>ActionPending</code> 状态，事后具体的 slot 分配以及数据迁移操作会有 Goroutine <code>ProcessSlotAction</code> 执行：</p>
+<ul>
+<li>并行操作的 slot 数量由配置项 <code>migration_parallel_slots</code> 控制</li>
+<li>数据迁移时使用的迁移方式由配置项 <code>migration_method</code> 控制</li>
+</ul>
+<p>其执行流程如下图所示：</p>
+<p><img src="/codis/process_slot_action.png" alt="process_slot_action"></p>
+<p>可以发现其中有多次将 Slot 相关状态信息同步至 Codis-Proxy 的操作，此时 Codis-Proxy 获取的 Slot-Group 映射关系与 Slot 当前 Action 的状态有关：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Slot.Action.State</th>
+<th style="text-align:left">Slot-Group Map</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">ActionNothing, ActionPending</td>
+<td style="text-align:left">backend = GroupId, Replicas = GroupId.replicas</td>
+</tr>
+<tr>
+<td style="text-align:left">ActionPreparing</td>
+<td style="text-align:left">backend = GroupId</td>
+</tr>
+<tr>
+<td style="text-align:left">ActionPrepared</td>
+<td style="text-align:left">\</td>
+</tr>
+<tr>
+<td style="text-align:left">ActionMigrating</td>
+<td style="text-align:left">backend = Action.TargetId, migrateFrom = GroupId</td>
+</tr>
+<tr>
+<td style="text-align:left">ActionFinished</td>
+<td style="text-align:left">backend = Action.TargetId</td>
+</tr>
+</tbody>
+</table>
+<p>在迁移 Slot 中的数据时，根据 <code>migration_method</code> 配置选择不同的迁移方案：</p>
+<h4 id="321-同步迁移-----sync">3.2.1. 同步迁移 &mdash; sync</h4>
+<p>通过循环调用 <code>slotsmgrttagslot host port timeout slot</code> 逐步迁移该 slot 中的 key 至目标机：</p>
+<p><img src="/codis/codis_dashboard_sync_slot.png" alt="codis_dashboard_sync_slot"></p>
+<p>同步迁移存在以下问题：</p>
+<ul>
+<li>迁移速度慢
+<ul>
+<li>序列化 &amp; 反序列化时间开销大</li>
+<li>单个数据迁移以 $ms$ 为单位</li>
+<li>迁移单位过小：单次操作 $1$ 个或几个数据</li>
+<li>受网络 RTT 以及迁移指令间隔 (Codis 默认 $1ms$) 影响</li>
+</ul>
+</li>
+<li>出错无法修复
+<ul>
+<li>失败的迁移会永远失败</li>
+<li>失败的迁移会阻塞服务</li>
+</ul>
+</li>
+<li>迁移过程阻塞 Redis
+<ul>
+<li>单线程阻塞，无法提供服务
+<ul>
+<li>访问无关数据以及被迁移数据都是不支持的</li>
+</ul>
+</li>
+<li>有误触发 HA 的风险：主从切换、丢失数据</li>
+</ul>
+</li>
+<li>低版本 Redis 数据大小会受到协议限制
+<ul>
+<li><a href="https://github.com/redis/redis/issues/757">Remove 512 MB max value limit</a></li>
+</ul>
+</li>
+</ul>
+<h4 id="322-异步迁移-----semi-async">3.2.2. 异步迁移 &mdash; semi-async</h4>
+<p>通过循环调用 <code>slotsmgrttagslot-async host port timeout maxbulks maxbytes slot numkeys</code> 逐步迁移该 slot 中的 key 至目标机：</p>
+<p><img src="/codis/codis_dashboard_semi_sync_slot.png" alt="codis_dashboard_semi_sync_slot"></p>
+<p>针对同步迁移的缺陷，异步迁移的实现进行了一系列的优化：</p>
+<ul>
+<li>降低序列化 &amp; 反序列化开销
+<ul>
+<li>string 类型不压缩</li>
+<li>小对象使用 RDB</li>
+<li>大对象使用指令进行拆分
+<ul>
+<li>单个指令可包含多个数据分片 (通过参数 <code>maxbulks</code> 进行配置)</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>批量迁移
+<ul>
+<li>单次请求可以迁移多个 key (通过参数 <code>numkeys</code> 进行配置)</li>
+<li>迁移开销预估，避免大对象与其他对象在同一 batch 内迁移 (除非具有相同 tag)</li>
+</ul>
+</li>
+<li>流量优化
+<ul>
+<li>流量加速
+<ul>
+<li>充分利用 RESP 的 Pipeline</li>
+<li>每条 <code>slotsrestore-async-ack</code> 会尝试产生不少于 $2$ 条新的 <code>slotsrestore-async</code> 迁移指令 (指数级增长)</li>
+</ul>
+</li>
+<li>流量限速
+<ul>
+<li>每条 <code>slotsrestore-async-ack</code> 用于产生迁移指令的时间限制为 $10 \mu s$</li>
+<li>使用参数 <code>maxbytes</code> 控制同步客户端输出缓冲区的大小，当缓冲区满时不产生新的迁移指令</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>错误处理
+<ul>
+<li>在每条迁移指令中，为 key 加上临时过期时间 (通过参数 <code>timeout</code> 进行配置)，用于错误处理，保证单个数据的完整性</li>
+</ul>
+</li>
+<li>读写冲突处理
+<ul>
+<li>访问无关数据，允许</li>
+<li>访问被迁移数据，只读</li>
+</ul>
+</li>
+</ul>
+<h3 id="33-codis-proxy-在扩缩容期间请求的处理">3.3. Codis-Proxy 在扩缩容期间请求的处理</h3>
+<p>Codis-Proxy 在某个 Slot 处于迁移状态时，处理读写请求的逻辑与 Codis-Dashboard 所配置(<code>migration_method</code>)的同步方式有关。</p>
+<p><strong>同步迁移</strong></p>
+<ol>
+<li>向源端发送 <code>SLOTSMGRTTAGONE host port 3000 key</code> 命令，将本次客户端请求涉及到的 <code>key</code> 迁移至目标机</li>
+<li>将客户端请求路由至目标机</li>
+</ol>
+<p><strong>异步迁移</strong></p>
+<p>向源端发送 <code>SLOTSMGRT-EXEC-WRAPPER key command [arg1 ...]</code> 命令</p>
+<ul>
+<li>如果该 key 已迁移，则将客户端请求路由至目标机</li>
+<li>如果该 key 尚未迁移：
+<ul>
+<li>如请求为读请求，则可直接获得结果</li>
+<li>如请求为写请求，则不断重试发送 <code>SLOTSMGRT-EXEC-WRAPPER</code> 命令判断 key 是否已迁移，直至 key 已迁移</li>
+</ul>
+</li>
+</ul>
+<h2 id="4-参考资料">4. 参考资料</h2>
+<ul>
+<li><a href="https://github.com/redis/redis/pull/3997">Implementation of nonblocking data migration</a></li>
+</ul>
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">765PRO.P</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2021-07-07
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://k-on.me/tags/redis/">Redis</a>
+          <a href="https://k-on.me/tags/codis/">Codis</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/rdma-in-redis/">
+            <span class="next-text nav-default">RDMA in Redis</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="pro-765@qq.com" rel="me noopener" class="iconfont"
+      title="email"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1451 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M664.781909 681.472759 0 97.881301C0 3.997201 71.046997 0 71.046997 0L474.477909 0 961.649408 0 1361.641813 0C1361.641813 0 1432.688811 3.997201 1432.688811 97.881301L771.345323 681.472759C771.345323 681.472759 764.482731 685.154773 753.594283 688.65053L753.594283 688.664858C741.602731 693.493018 729.424896 695.068979 718.077952 694.839748 706.731093 695.068979 694.553173 693.493018 682.561621 688.664858L682.561621 688.65053C671.644501 685.140446 664.781909 681.472759 664.781909 681.472759L664.781909 681.472759ZM718.063616 811.603883C693.779541 811.016482 658.879232 802.205449 619.10784 767.734955 542.989056 701.759633 0 212.052267 0 212.052267L0 942.809523C0 942.809523 0 1024 83.726336 1024L682.532949 1024 753.579947 1024 1348.948139 1024C1432.688811 1024 1432.688811 942.809523 1432.688811 942.809523L1432.688811 212.052267C1432.688811 212.052267 893.138176 701.759633 817.019477 767.734955 777.248 802.205449 742.347691 811.03081 718.063616 811.603883L718.063616 811.603883Z"></path>
+</svg>
+
+    </a>
+  
+    <a href="https://github.com/yz1509" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://k-on.me/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2018 -
+    2021
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        765PRO.P
+        
+      </span></span>
+
+  
+  
+    <span id="busuanzi_container">
+      访客数/访问量：<span id="busuanzi_value_site_uv"></span>/<span id="busuanzi_value_site_pv"></span>
+    </span>
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

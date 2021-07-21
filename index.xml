@@ -6,10 +6,1096 @@
     <description>Recent content on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Wed, 16 Jun 2021 16:34:17 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 07 Jul 2021 21:06:50 +0800</lastBuildDate>
     
         <atom:link href="https://k-on.me/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Codis 简要介绍</title>
+      <link>https://k-on.me/post/codis_intro/</link>
+      <pubDate>Wed, 07 Jul 2021 21:06:50 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/codis_intro/</guid>
+      
+        <description>&lt;p&gt;&lt;a href=&#34;https://github.com/CodisLabs/codis&#34;&gt;Codis&lt;/a&gt; 是一个基于 Proxy 的 Redis 集群化方案，其具体介绍与使用可参考 &lt;a href=&#34;https://github.com/CodisLabs/codis/blob/release3.2/doc/tutorial_zh.md&#34;&gt;Codis 使用文档&lt;/a&gt;。本文首先从运维角度出发介绍 Codis，便于了解每个操作背后的具体内容，随后简要介绍了 Codis-Proxy 基本的工作原理，最后简单介绍了扩缩容相关操作。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;1-集群管理&#34;&gt;1. 集群管理&lt;/h2&gt;
+&lt;p&gt;Codis-Dashboard 主要负责集群元数据的管理，在下面的讨论中，我们假设集群的元数据存储在 zk 中。Codis 集群的元数据大致有以下几种：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Group&lt;/code&gt;: 记录该 Group 下 Servers 地址及状态 (是否有 Promoting，是否 out-of-sync, 是否可读等)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;SlotMapping&lt;/code&gt;: 包含 Slot-Group 映射关系，以及该 Slot 的状态 (用于数据迁移)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Proxy&lt;/code&gt;: 记录 Proxy 的基本信息&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Sentinel&lt;/code&gt;: 记录 Sentinel 的地址及状态 (是否 out-of-sync)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Codis-Dashboard 在本地保存了一份集群元数据的缓存 &lt;code&gt;Topom.cache&lt;/code&gt;：(Cache Aside Pattern)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;写操作&lt;/strong&gt;：修改集群元数据时，会直接写 zk，不论写 zk 成功与否此时都会将缓存 &lt;code&gt;Topom.cache&lt;/code&gt; 中对应的内容标记为失效 (&lt;code&gt;nil&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;读操作&lt;/strong&gt;：读取元数据时，遍历 &lt;code&gt;Topom.cache&lt;/code&gt;，以 zk 中的数据填充失效的缓存部分，随后返回 &lt;code&gt;Topom.cache&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;下文操作均会先读缓存，再更新 zk，并将相应的缓存信息标记为失效。值得注意的是，更新 zk 操作不一定会成功执行，但是将缓存信息标记为失效一定会执行。&lt;/p&gt;
+&lt;h3 id=&#34;11-group-相关操作&#34;&gt;1.1. Group 相关操作&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;添加 Group&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR  --create-group  --gid&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ID
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;含义：添加指定 &lt;code&gt;ID&lt;/code&gt; 的 Group。&lt;/p&gt;
+&lt;p&gt;在添加 Group 时，只需注意 Group ID 范围在 $[0, 9999]$ 内，且该 Group ID 目前不在集群内即可。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Group 中添加 Server&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR  --group-add  --gid&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ID --addr&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;--datacenter&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;DATACENTER&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;含义：向 &lt;code&gt;gid = ID&lt;/code&gt; 的 Group 中添加地址为 &lt;code&gt;ADDR&lt;/code&gt; 的 Server。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/codis/group_add_server.png&#34; alt=&#34;group_add_server&#34;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Group 中删除 Server&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR  --group-del  --gid&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ID --addr&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;含义：从 &lt;code&gt;gid = ID&lt;/code&gt; 的 Group 删除地址为 &lt;code&gt;ADDR&lt;/code&gt; 的 Server。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/codis/group_del_server.png&#34; alt=&#34;group_del_server&#34;&gt;&lt;/p&gt;
+&lt;p&gt;可以发现，可以直接移除可读从库，因此在移除从库时，建议先取消可读并点击 SYNC 后再移除该从库。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;删除 Group&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR  --remove-group  --gid&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ID
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;含义：删除 &lt;code&gt;gid = ID&lt;/code&gt; 的 Group.&lt;/p&gt;
+&lt;p&gt;在删除 Group 之前，需先清空 Group 中的 Server。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;建立/取消主从同步&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR  --sync-action  --create --addr&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;含义：向地址为 &lt;code&gt;ADDR&lt;/code&gt; 发送 &lt;code&gt;SLAVEOF&lt;/code&gt; 命令，在 Group 内依据 Server 的位置建立主从关系。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;index = 0&lt;/code&gt;: &lt;code&gt;SLAVEOF NO ONE&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;index &amp;gt; 0&lt;/code&gt;: 成为 &lt;code&gt;index = 0&lt;/code&gt; 的 Server 的从库&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/codis/group_add_sync.png&#34; alt=&#34;group_add_sync&#34;&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR  --sync-action  --remove --addr&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;含义：删除地址为 &lt;code&gt;ADDR&lt;/code&gt; 的实例上 Pending 的主从同步操作。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/codis/group_del_sync.png&#34; alt=&#34;group_del_sync&#34;&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;该操作极少使用，只有在原主库所在机器宕机后，不想机器上的实例在机器启动时收到 &lt;code&gt;SLAVEOF&lt;/code&gt; 操作时会使用。&lt;/li&gt;
+&lt;li&gt;另外，在人工介入集群的故障恢复过程中时，最好直接&lt;strong&gt;停止&lt;/strong&gt;集群中的 Sentinel 实例进程，以免受到 Sentinel 的干扰&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;开启/关闭从库可读&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR --replica-groups --gid&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ID --addr&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;--enable&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;--disable&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;含义：依据 enable/disable 开启/关闭特定实例的可读状态。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/codis/group_replica_read.png&#34; alt=&#34;group_replica_read&#34;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;响应 Sentinel 切主&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Codis-Dashboard 通过订阅 Sentinel 的 &lt;code&gt;+switch-master&lt;/code&gt; 消息响应 Sentinel 执行故障恢复时的切主行为，当监听到切主时：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/codis/group_switch_master.png&#34; alt=&#34;group_switch_master&#34;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Group SYNC&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR  --resync-group  &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;--gid&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ID &lt;span class=&#34;p&#34;&gt;|&lt;/span&gt; --all&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;含义：将该 Group 相关的 Server 地址，是否从库可读和 Slot-Group 映射关系同步至 Codis-Proxy。&lt;/p&gt;
+&lt;p&gt;由上述可知，Group 会在以下情况下标记为 &lt;code&gt;out-of-sync&lt;/code&gt;:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;从 Group 中去除一个可读从库&lt;/li&gt;
+&lt;li&gt;开启/关闭可读&lt;/li&gt;
+&lt;li&gt;Sentinel 自动切主后&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Promote&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR  --promote-server --gid&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ID --addr&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;含义：将 &lt;code&gt;gid = ID&lt;/code&gt; 的 Group 中地址为 &lt;code&gt;ADDR&lt;/code&gt; 的实例提升为主库。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/codis/group_promote_server.png&#34; alt=&#34;group_promote_server&#34;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;12-slot-相关操作&#34;&gt;1.2. Slot 相关操作&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;分配 Slot&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR --slot-action --create --sid&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ID --gid&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ID
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;含义：将 &lt;code&gt;sid = ID&lt;/code&gt; 的 slot 分配至 &lt;code&gt;gid = ID&lt;/code&gt; 的 Group&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/codis/slot_2_group.png&#34; alt=&#34;slot_2_group&#34;&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR --slot-action --create-some --gid-from&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ID --gid-to&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ID --num-slots&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;N
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;含义：从 &lt;code&gt;gid-from = ID&lt;/code&gt; 的 Group 中迁移不大于 &lt;code&gt;num-slots = N&lt;/code&gt; 的 slots 至 &lt;code&gt;gid-to = ID&lt;/code&gt; 的 Group&lt;/p&gt;
+&lt;p&gt;具体操作流程同上。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR --slot-action --create-range --beg&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ID --end&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ID --gid&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ID
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;含义：将 $[beg, end]$ 之间的 slots 分配至 &lt;code&gt;gid = ID&lt;/code&gt; 的 Group&lt;/p&gt;
+&lt;p&gt;具体操作流程同上。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR --rebalance &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;--confirm&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;含义：重分配 Slots，使得各个 Group 所分配到的 Slots 数量大致相等&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;移除 Pending 状态的操作&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR --slot-action --remove --sid&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ID
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;含义：移除 &lt;code&gt;sid = ID&lt;/code&gt; 的 Slot 上 &lt;code&gt;ActionPending&lt;/code&gt; 状态的分配操作&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;参数设置&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR --slot-action --interval&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;VALUE
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;含义：设置 Codis-Dashboard 后台执行 slot 相关操作的时间间隔，有效范围为 $[0, 1]$ (秒)&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR --slot-action --disabled&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;VALUE
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;含义：暂停/开始 slot 相关操作。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;13-codis-proxy-相关操作&#34;&gt;1.3. Codis-Proxy 相关操作&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;添加 Codis-Proxy&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR --create-proxy --addr&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://k-on.me/codis/add_codis_proxy.png&#34; alt=&#34;add_codis_proxy&#34;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Online Codis-Proxy&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR --online-proxy --addr&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;若 Codis-Proxy 此前未在集群中，则与添加时的流程完全一致&lt;/li&gt;
+&lt;li&gt;若 Codis-Proxy 此前已在集群中，则会 &lt;code&gt;Online&lt;/code&gt; 现有的 Codis-Proxy&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;删除 Codis-Proxy&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR --remove-proxy &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;--addr&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;--token&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;TOKEN&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;--pid&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ID&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt;       &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;--force&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://k-on.me/codis/del_codis_proxy.png&#34; alt=&#34;del_codis_proxy&#34;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Codis-Proxy SYNC&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR --reinit-proxy &lt;span class=&#34;o&#34;&gt;(&lt;/span&gt;--addr&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;--token&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;TOKEN&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;--pid&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ID&lt;span class=&#34;p&#34;&gt;|&lt;/span&gt;--all&lt;span class=&#34;o&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;--force&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;初始化主要包括以下三部分&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;将集群 Slots 信息同步至 Codis Proxy&lt;/li&gt;
+&lt;li&gt;Start Codis Proxy: Codis Proxy  &amp;amp; Router Online 状态设置为 true&lt;/li&gt;
+&lt;li&gt;令 Codis Proxy 订阅 Sentinel 主从切换信息&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;14-sentinel-相关操作&#34;&gt;1.4. Sentinel 相关操作&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;添加 Sentinel&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR --sentinel-add --addr&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR      
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://k-on.me/codis/add_sentinel.png&#34; alt=&#34;add_sentinel&#34;&gt;&lt;/p&gt;
+&lt;p&gt;可以发现在添加 Sentinel 时，只是将 Sentinels 的状态标记为 &lt;code&gt;out-of-sync&lt;/code&gt;。这是因为此时并未让 Sentinel 监听集群中的 Server 实例，也未令 Codis-Dashboard 和 Codis-Proxy 订阅 Sentinel 的 &lt;code&gt;+switch-master&lt;/code&gt; 消息。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;删除 Sentinel&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR --sentinel-del --addr&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;--force&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://k-on.me/codis/del_sentinel.png&#34; alt=&#34;del_sentinel&#34;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Sentinel SYNC&lt;/strong&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;codis-admin &lt;span class=&#34;o&#34;&gt;[&lt;/span&gt;-v&lt;span class=&#34;o&#34;&gt;]&lt;/span&gt; --dashboard&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;ADDR --sentinel-resync
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;&lt;img src=&#34;https://k-on.me/codis/sentinel_sync.png&#34; alt=&#34;sentinel_sync&#34;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;2-请求处理&#34;&gt;2. 请求处理&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/codis/codis_proxy.png&#34; alt=&#34;codis_proxy&#34;&gt;&lt;/p&gt;
+&lt;p&gt;Codis-Proxy 处理请求的过程大致如上图所示：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;Session&lt;/code&gt; 与 &lt;code&gt;BackendConn&lt;/code&gt; 之间的通信&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;每个客户端连接对应一个 &lt;code&gt;Session&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;每个后端 server 对应的 &lt;code&gt;BackendConn&lt;/code&gt; 数由配置项 &lt;code&gt;backend_primary_parallel&lt;/code&gt; 和 &lt;code&gt;backend_replica_parallel&lt;/code&gt; 控制&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Session&lt;/code&gt; 与 &lt;code&gt;BackendConn&lt;/code&gt; 之间通过管道 &lt;code&gt;bc.input&lt;/code&gt; 通信，每个 &lt;code&gt;BackendConn&lt;/code&gt; 负责处理消费一个管道，其容量为固定大小 $1024$，因此当 &lt;code&gt;Session&lt;/code&gt; 数量远大于 &lt;code&gt;BackendConn&lt;/code&gt; 数量时，在 &lt;code&gt;bc.input&lt;/code&gt; 中排队阻塞的概率较大&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;按序回复&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Session&lt;/code&gt; 中的 &lt;code&gt;tasks&lt;/code&gt; 管道保证请求按序回复&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;BackendConn&lt;/code&gt; 中的 &lt;code&gt;tasks&lt;/code&gt; 管道保证转发至 Servers 的请求，会按序收包&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;每个请求会有两个 &lt;code&gt;WaitGroup&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;r.Batch&lt;/code&gt;: &lt;code&gt;Session&lt;/code&gt; 依此等待请求处理完成&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;r.Group&lt;/code&gt;: 其实际为 &lt;code&gt;Slot.refs&lt;/code&gt; (请求哈希至该 &lt;code&gt;Slot&lt;/code&gt;, 便会令 &lt;code&gt;r.Group = Slot.refs&lt;/code&gt;)。&lt;code&gt;Slot&lt;/code&gt; 依此会在每次更新路由表 (Slot-Group 映射) 前等待当前 &lt;code&gt;Slot&lt;/code&gt; 上的请求处理完毕&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;批量操作命令&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;只要批量操作多个 key 的请求可以拆成多个单次操作并行执行，则 Codis 支持该命令&lt;/li&gt;
+&lt;li&gt;因为 Codis 是将批量操作拆分成多个请求转发至 Redis，因此批量操作的耗时大致上取决于最慢的那个子请求的耗时&lt;/li&gt;
+&lt;li&gt;因为批量操作的存在，Codis-Proxy 的扇出一般大于 $1$，因此当 Codis-Proxy 的 QPS 并无大幅上涨时，底层 Servers 的请求也可能上涨 (每个批量操作操作的 key 数量增长所致)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;3-扩缩容&#34;&gt;3. 扩缩容&lt;/h2&gt;
+&lt;p&gt;在向 Group 中添加 Server 时，我们可以看到只有支持 &lt;code&gt;SlotsInfo&lt;/code&gt; 命令的 Server 方可加入集群。事实上 Codis 为了能平滑扩缩容，修改了 Redis 源码以记录当前 Server 所负责的 &lt;code&gt;Slot&lt;/code&gt; 以及每个 &lt;code&gt;Slot&lt;/code&gt; 中的 key 的信息，这些信息记录在 &lt;a href=&#34;https://github.com/CodisLabs/codis/blob/release3.2/extern/redis-3.2.11/src/server.h#L523&#34;&gt;redisDb-&amp;gt;hash_slots&lt;/a&gt; 中。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;当然，没有扩缩容需求的话，可以实现一个空的 &lt;code&gt;SlotsInfo&lt;/code&gt; 请求处理函数便可将 Server 添加至 Codis 集群提供服务。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&#34;31-相关命令&#34;&gt;3.1. 相关命令&lt;/h3&gt;
+&lt;p&gt;修改后的 Redis 也实现了一系列 &lt;code&gt;Slot&lt;/code&gt; 相关的命令以支持扩缩容，参考&lt;a href=&#34;https://github.com/CodisLabs/codis/blob/release3.2/doc/redis_change_zh.md&#34;&gt;redis 修改部分(增加若干指令)&lt;/a&gt;、&lt;a href=&#34;https://github.com/CodisLabs/codis/blob/release3.2/extern/redis-3.2.11/src/slots.c&#34;&gt;slots.c&lt;/a&gt; 和 &lt;a href=&#34;https://github.com/CodisLabs/codis/blob/release3.2/extern/redis-3.2.11/src/slots_async.c&#34;&gt;slots_async.c&lt;/a&gt;，介绍如下：&lt;/p&gt;
+&lt;h4 id=&#34;311-调试相关&#34;&gt;3.1.1. 调试相关&lt;/h4&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotshashkey key1 [key2 …]&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;命令说明：计算并返回给定 key 的 slot 序号&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;命令参数：输入为 1 个或多个 key&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;返回结果： 操作返回 array，其中 &lt;code&gt;slot&lt;/code&gt; 表示对应 key 的 slot 序号，即 $hash32(key) \ \% \ \mathrm{NUM\_OF\_SLOTS}$&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;nx&#34;&gt;response&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[]&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;slot1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;slot2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotsinfo [start] [count]&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;命令说明：获取 redis 中 slot 的个数以及每个 slot 的大小&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;命令参数：缺省查询 $[0, \mathrm{MAX\_SLOT\_NUM})$&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;start&lt;/code&gt; - 起始的 slot 序号
+&lt;blockquote&gt;
+&lt;p&gt;缺省 = $0$&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;count&lt;/code&gt; - 查询的区间的大小，即查询范围为 $[start, start + count)$
+&lt;blockquote&gt;
+&lt;p&gt;缺省 = $\mathrm{MAX\_SLOT\_NUM}$&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;返回结果：返回结果是 slotinfo 的 array；slotinfo 本身也是一个 array。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;nx&#34;&gt;response&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[]&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;slotinfo&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;slot1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;slot2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;slot3&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;span class=&#34;nx&#34;&gt;slotinfo&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[]&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;slotnum&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;nx&#34;&gt;slotsize&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;其中：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;slotnum&lt;/code&gt;: slot 序号&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;slotsize&lt;/code&gt;: slot 内数据个数&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotsscan slotnum cursor [COUNT count]&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;命令说明：获取指定 slotnum 下的 key 列表&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;命令参数：参数说明类似 SCAN 命令&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;slotnum&lt;/code&gt; - 查询的 slot 序号，$[0, \mathrm{MAX\_SLOT\_NUM})$&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;cursor&lt;/code&gt; - 说明参考 SCAN 命令&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;[COUNT count)&lt;/code&gt; - 说明参考 SCAN 命令&lt;/li&gt;
+&lt;li&gt;暂不支持 MATCH 查询&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;返回结果：参考 SCAN 命令&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;返回更新后的 cursor 以及一组 key 列表&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotsdel slot1 [slot2 …]&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;命令说明：删除 redis 中若干 slot 下的全部 key-value&lt;/li&gt;
+&lt;li&gt;命令参数：接受至少 1 个 slotnum 作为参数&lt;/li&gt;
+&lt;li&gt;返回结果：格式参见 slotsinfo，不同的是：slotsize 表示删除后剩余大小，通常为 0&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotscheck&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;命令说明：对 redis 内的 slots 进行一致性检查，即满足如下两条&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;每个 slot 中保存的 key 都能在 db 中找到对应的 val&lt;/li&gt;
+&lt;li&gt;每个 db 中的 key 都能在对应的 slot 中查找到&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;该操作比较慢，仅仅作为 redis 开发的调试工具使用，不能在线上使用&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;命令参数：0 参数&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;返回结果：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;成功返回字符串 &lt;code&gt;OK&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;如果 check 失败，会返回 &lt;code&gt;ERR&lt;/code&gt; 并包含对应出错的 key&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;312-同步迁移&#34;&gt;3.1.2. 同步迁移&lt;/h4&gt;
+&lt;p&gt;&lt;strong&gt;通常客户端请求&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotsmgrtslot host port timeout slot&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;命令说明：随机选择 slot 下的 1 个 key-value 到迁移到目标机（同步 IO 操作）&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果当前 slot 已经空了或者选择的 key 刚好过期，返回 0&lt;/li&gt;
+&lt;li&gt;如果当前 slot 下面还有 key 则选择一个进行迁移&lt;/li&gt;
+&lt;li&gt;同时返回当前 slot 剩余 key 的个数&lt;/li&gt;
+&lt;li&gt;迁移过程在目标机器调用 &lt;code&gt;slotsrestore&lt;/code&gt; 命令，迁移会 &lt;strong&gt;覆盖旧值&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;命令参数：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;host:port&lt;/code&gt; - 目标机地址
+&lt;ul&gt;
+&lt;li&gt;redis 内部缓存到 &lt;code&gt;host:port&lt;/code&gt; 的连接 $30s$，超时或错误则关闭&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;timeout&lt;/code&gt; - 操作超时，单位 $ms$
+&lt;ul&gt;
+&lt;li&gt;过程需要 3 个同步操作：
+&lt;ol&gt;
+&lt;li&gt;建立连接（可被缓存优化）&lt;/li&gt;
+&lt;li&gt;发送 key-value 数据&lt;/li&gt;
+&lt;li&gt;接受目标机返回&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;指令保证每个操作不超过 &lt;code&gt;timeout&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;slot&lt;/code&gt; - 指定迁移的 slot 序号&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;返回结果： 操作返回 &lt;code&gt;int&lt;/code&gt;&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;nx&#34;&gt;response&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;[]&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;succ&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;size&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;p&gt;其中：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;succ&lt;/code&gt;: 表示迁移是否成功。
+&lt;ul&gt;
+&lt;li&gt;0 表示当前 slot 已经空了（迁移成功个数 = 0）&lt;/li&gt;
+&lt;li&gt;1 表示迁移一个 key 成功，并从本地删除（迁移成功个数 = 1）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;size&lt;/code&gt;: 表示 slot 下剩余 key 的个数&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotsmgrtone host port timeout key&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;命令说明：迁移 key 到目标机，与 &lt;code&gt;slotsmgrtslot&lt;/code&gt; 相同&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;命令参数：参见 &lt;code&gt;slotsmgrtslot&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;返回结果：操作返回整数，其中 &lt;code&gt;succ&lt;/code&gt; 的含义与 &lt;code&gt;slotsmgrtslot&lt;/code&gt; 相似&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;nx&#34;&gt;response&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;succ&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotsmgrttagone host port timeout key&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;命令说明：迁移与 key 有相同的 tag 的所有 key 到目标机&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;当 key 中不包含合法 tag 时，命令退化为 &lt;code&gt;slotsmgrtone&lt;/code&gt;，时间复杂度为 $O(1)$&lt;/li&gt;
+&lt;li&gt;当 key 中包含合法 tag 时，命令会计算 tag 的 hash 值，并在 skiplist 中找到所有具有相同 hash 值的 key-value 对，原子地迁移到目标机，时间复杂度为 $O(log(n))$&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;修改的 redis 中，会将所有含有 tag 的 key，组织在 skiplist 中，并按照 tag 的 hash 值进行排序。当对按照某一 tag 进行迁移数据时，实际操作会将所有具有相同 hash 值的 tag 所涉及到的所有 key 一起迁移。也就是说，真正迁移的数据&lt;strong&gt;可能包含更多的 key&lt;/strong&gt;，但是这么设计会减少 tag 迁移过程对字符串的比较次数，显著提升性能。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;命令参数：参见 &lt;code&gt;slotsmgrtone&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;返回结果：操作返回整数，其中 &lt;code&gt;succ&lt;/code&gt; 表示成功迁移的 key 的个数。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-go&#34; data-lang=&#34;go&#34;&gt;&lt;span class=&#34;nx&#34;&gt;response&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:=&lt;/span&gt; &lt;span class=&#34;nb&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;nx&#34;&gt;succ&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotsmgrttagslot host port timeout slot&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;命令说明：与 &lt;code&gt;slotsmgrtslot&lt;/code&gt; 对应的迁移指令&lt;/li&gt;
+&lt;li&gt;其他说明参考 &lt;code&gt;slotsmgrtslot&lt;/code&gt; 以及 &lt;code&gt;slotsmgrttagone&lt;/code&gt; 的解释即可&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;衍生命令&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;slotsrestore key1 ttl1 val1 [key2 ttl2 val2 …]&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;命令说明：该命令是对 redis-2.8 的 &lt;code&gt;restore&lt;/code&gt; 命令的扩展
+&lt;ul&gt;
+&lt;li&gt;可以对 &lt;code&gt;restore&lt;/code&gt; 多个 key-value&lt;/li&gt;
+&lt;li&gt;过程是原子的&lt;/li&gt;
+&lt;/ul&gt;
+&lt;blockquote&gt;
+&lt;p&gt;与 &lt;code&gt;restore&lt;/code&gt; 不同的是，&lt;code&gt;slotsrestore&lt;/code&gt; 只支持 replace，即一定&lt;strong&gt;覆盖旧值&lt;/strong&gt;。如果旧值已经存在，那么只可能是 redis-slots 或者 proxy 的实现 bug，程序会通过 redisLog 打印一条冲突记录。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;313-异步迁移&#34;&gt;3.1.3. 异步迁移&lt;/h4&gt;
+&lt;p&gt;&lt;strong&gt;通常客户端请求&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotsmgrtone-async host port timeout maxbulks maxbytes key1 [key2 ...]&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;命令说明：迁移 key1, key2 &amp;hellip; 到目标机&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;命令参数：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;host:port&lt;/code&gt;: 目标机地址&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;timeout&lt;/code&gt;: 操作超时
+&lt;ul&gt;
+&lt;li&gt;默认值 $30s$&lt;/li&gt;
+&lt;li&gt;当 &lt;code&gt;timeout&lt;/code&gt; 时间内未发送 &lt;code&gt;slotsrestore-async&lt;/code&gt; 迁移命令时，同步客户端会被服务器关闭&lt;/li&gt;
+&lt;li&gt;也是所同步 key 在同步途中设置临时过期时间，用于错误处理，保证单个数据的完整性&lt;/li&gt;
+&lt;li&gt;可在 Codis-Dashboard 的配置文件中通过配置项 &lt;code&gt;migration_timeout&lt;/code&gt; 设置&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;maxbulks&lt;/code&gt;：大对象进行指令拆分时，单个指令可包含的数据分片个数
+&lt;ul&gt;
+&lt;li&gt;默认值 $200$，最大值 $512 \times 1024$&lt;/li&gt;
+&lt;li&gt;可在 Codis-Dashboard 的配置文件中通过配置项 &lt;code&gt;migration_async_maxbulks&lt;/code&gt; 设置&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;maxbytes&lt;/code&gt;：同步客户端输出缓冲区大小，缓冲区满时不产生新的迁移指令
+&lt;ul&gt;
+&lt;li&gt;默认值 512 KB，最大值 &lt;code&gt;INT_MAX / 2&lt;/code&gt; Byte&lt;/li&gt;
+&lt;li&gt;同时需满足 Redis 对 Normal Client 的缓冲区大小限制&lt;/li&gt;
+&lt;li&gt;可在 Codis-Dashboard 的配置文件中通过配置项 &lt;code&gt;migration_async_maxbytes&lt;/code&gt; 设置&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;返回结果：操作返回整数，表示已迁移 key 的数量&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotsmgrttagone-async host port timeout maxbulks maxbytes key1 [key2 ...]&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;命令说明：迁移与 key1, key2, &amp;hellip; 有相同的 tag 的所有 key 到目标机&lt;/li&gt;
+&lt;li&gt;其他说明参考 &lt;code&gt;slotsmgrttagone&lt;/code&gt; 以及 &lt;code&gt;slotsmgrtone-async&lt;/code&gt; 的解释即可&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotsmgrtslot-async host port timeout maxbulks maxbytes slot numkeys&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;命令说明：从指定 &lt;code&gt;slot&lt;/code&gt; 中迁移至多 &lt;code&gt;numkeys&lt;/code&gt; 个 key 至目标机&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;命令参数：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;slot&lt;/code&gt;：slot number&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;numkeys&lt;/code&gt;：本次迁移指令的数量上限
+&lt;ul&gt;
+&lt;li&gt;默认值 $100$&lt;/li&gt;
+&lt;li&gt;大对象在拆分时，会被当成多个 key 被计算，所以实际迁移的 key 的数量一般小于 &lt;code&gt;numkeys&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;可在 Codis-Dashboard 的配置文件中通过配置项 &lt;code&gt;migration_async_numkeys&lt;/code&gt; 设置&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;其他命令参数说明同 &lt;code&gt;slotsmgrtone-async&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;返回结果：操作返回两个整数&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;已迁移 key 的数量&lt;/li&gt;
+&lt;li&gt;该 slot 中剩余 key 的数量&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotsmgrttagslot-async host port timeout maxbulks maxbytes slot numkeys&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;命令说明：与 &lt;code&gt;slotsmgrtslot-async&lt;/code&gt; 对应的迁移指令，会在迁移 key 时同时迁移具有相同 tag 的 key&lt;/li&gt;
+&lt;li&gt;其他说明参考 &lt;code&gt;slotsmgrttagone&lt;/code&gt; 以及 &lt;code&gt;slotsmgrtslot-async&lt;/code&gt; 的解释即可&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotsmgrt-exec-wrapper key command [arg1 ...]&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;命令说明：依赖 &lt;code&gt;key&lt;/code&gt; 的状态决定如何执行包装的 command&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;返回结果：操作返回 Arrays&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Arrays[0]&lt;/code&gt; 为整数标识
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;-1&lt;/code&gt; 表示所包装的请求格式错误&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;0&lt;/code&gt;  表示所操作的 &lt;code&gt;key&lt;/code&gt; 不存在&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;1&lt;/code&gt;  表示包装的请求为写操作，且该 &lt;code&gt;key&lt;/code&gt; 正在迁移中&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;2&lt;/code&gt;  表示所包装的请求可被执行&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Arrays[1]&lt;/code&gt; 返回值类型取决于 &lt;code&gt;Arrays[0]&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;Arrays[0] == 2&lt;/code&gt; 时，&lt;code&gt;Arrays[1]&lt;/code&gt; 表示所包装的 command 执行的结果&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;Arrays[0] != 2&lt;/code&gt; 时，&lt;code&gt;Arrays[1]&lt;/code&gt; 为一条错误信息&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;附加说明：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在所包装的请求为读操作时，可直接执行&lt;/li&gt;
+&lt;li&gt;在所包装的请求为写操作时
+&lt;ul&gt;
+&lt;li&gt;如果 key 未处于迁移状态，可执行
+&lt;blockquote&gt;
+&lt;p&gt;需注意的是，此处写操作并不会转发至 AOF 和从库&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;li&gt;如果 key 处于迁移状态，则不会执行写操作，直接返回 error&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;衍生命令&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotsrestore-async-auth passwd&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;命令说明：同步客户端认证
+&lt;blockquote&gt;
+&lt;p&gt;需注意的是会使用本机的 &lt;code&gt;requirepass&lt;/code&gt; 向目标机进行认证，因此我们需保证同一集群内的所有 Codis-Server 密码一致&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotsrestore-async-select db&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;命令说明：同 &lt;code&gt;SELECT db&lt;/code&gt;，保证同一 slot 中的 key 即使处于不同 Codis-Server 中，但是 db ID 会是相同的&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotsrestore-async&lt;/code&gt; 类命令&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
+&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
+&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
+&lt;td class=&#34;lntd&#34;&gt;
+&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* *
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * SLOTSRESTORE-ASYNC delete $key
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *                    expire $key $ttl
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *                    object $key $ttl $payload
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *                    string $key $ttl $payload
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *                    list   $key $ttl $hint [$elem1 ...]
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *                    hash   $key $ttl $hint [$hkey1 $hval1 ...]
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *                    dict   $key $ttl $hint [$elem1 ...]
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; *                    zset   $key $ttl $hint [$elem1 $score1 ...]
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * */&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
+&lt;/div&gt;
+&lt;/div&gt;&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;命令说明：按照所包装命令对 key 执行删除、设置过期时间或 restore 操作&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;delete&lt;/code&gt;: 删除该 key&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;expire&lt;/code&gt;: 给该 key 设置过期时间&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;object&lt;/code&gt;: 表示该 key 的 val (&lt;code&gt;payload&lt;/code&gt;) 为 RDB 格式
+&lt;ul&gt;
+&lt;li&gt;小对象使用 RDB&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;string&lt;/code&gt;: 表示该 key 为字符串类型，且其 &lt;code&gt;val&lt;/code&gt; 未压缩
+&lt;ul&gt;
+&lt;li&gt;字符串类型不压缩&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;list/hash/dict/zset&lt;/code&gt;：表示该 key 为列表/哈希表/集合/有序集合类型
+&lt;ul&gt;
+&lt;li&gt;大对象进行指令拆分，单条指令可包含多个数据分片，由参数 &lt;code&gt;maxbulks&lt;/code&gt; 控制&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;hint&lt;/code&gt;: 该 key 总的元素个数&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;于何处衍生该命令？&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在客户端发送 &lt;code&gt;slotsmgrtone-async&lt;/code&gt;、&lt;code&gt;slotsmgrttagone-async&lt;/code&gt;、&lt;code&gt;slotsmgrtslot-async&lt;/code&gt; 或 &lt;code&gt;slotsmgrttagslot-async&lt;/code&gt; 时会尝试在 $500\mu s$ 内发送不少于 $3$ 条 &lt;code&gt;slotsrestore-async&lt;/code&gt; 命令至目标机&lt;/li&gt;
+&lt;li&gt;在源端收到目标机返回的 &lt;code&gt;slotsrestore-async-ack&lt;/code&gt; 时，会尝试在 $10\mu s$ 内发送不少于 $2$ 条 &lt;code&gt;slotsrestore-async&lt;/code&gt; 命令至目标机&lt;/li&gt;
+&lt;li&gt;在目标机调用 &lt;code&gt;slotsmgrtone-async-dump&lt;/code&gt; 或 &lt;code&gt;slotsmgrttagone-async-dump&lt;/code&gt; 时&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;返回结果：在目标机收到并处理 &lt;code&gt;slotsrestore-async&lt;/code&gt; 命令后，会返回 &lt;code&gt;slotsrestore-async-ack errno message&lt;/code&gt; 请求至源端&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;errno = -1&lt;/code&gt;: 有错误发生，&lt;code&gt;message&lt;/code&gt; 会显示具体的错误信息&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;errno = 0&lt;/code&gt; : 成功执行相应操作，&lt;code&gt;message&lt;/code&gt; 为一个整型字符串，其含义依据所包装的请求而定
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;delete&lt;/code&gt;: 0 or 1 表示成功删除的 key 个数&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;expire/object/string&lt;/code&gt;: 1&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;list/hash/dict/zset&lt;/code&gt;: 执行 restore 操作后目标机该 key 中所含的元素个数&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotsrestore-async-ack errno message&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;命令说明：响应来自目标机的 ack 回复，尝试继续发送 &lt;code&gt;slotsrestore-async&lt;/code&gt; 命令以迁移数据，当数据迁移完毕时，通知客户端 (发送数据迁移请求的客户端)，在本地删除已迁移 key&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;调试命令&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotsmgrtone-async-dump timeout maxbulks key1 [key2 ...]&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;命令说明：要求服务器迁移 key1, key2, &amp;hellip; 至本客户端&lt;/li&gt;
+&lt;li&gt;命令参数的说明同 &lt;code&gt;slotsmgrtone-async&lt;/code&gt;，唯一不同的是此处 &lt;code&gt;maxbulks&lt;/code&gt; 的默认值为 $1000$，最大值为 &lt;code&gt;INT_MAX&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotsmgrttagone-async-dump timeout maxbulks key1 [key2 ...]&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;命令说明：要求服务器迁移 key1, key2, &amp;hellip; 及其相同 tag 的 key 至本客户端&lt;/li&gt;
+&lt;li&gt;命令参数的说明同上&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotsmgrt-async-fence&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;命令说明：判断或等待数据迁移完毕&lt;/li&gt;
+&lt;li&gt;返回结果
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;OK&lt;/code&gt;: 当前该客户端所在 db 无数据迁移任务&lt;/li&gt;
+&lt;li&gt;error: 表示重复调用 &lt;code&gt;slotsmgrt-async-fence&lt;/code&gt; 命令&lt;/li&gt;
+&lt;li&gt;已迁移完毕的返回值，取决于触发当前迁移任务的请求类型&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotsmgrt-async-cancel&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;命令说明：终止数据迁移&lt;/li&gt;
+&lt;li&gt;返回结果：整型
+&lt;ul&gt;
+&lt;li&gt;0: 表示当前该客户端所在 db 无数据迁移任务&lt;/li&gt;
+&lt;li&gt;1: 表示当前该客户端所在 db 数据迁移任务已终止&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;slotsmgrt-async-status&lt;/code&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;命令说明：返回当前该客户端所在 db 数据迁移任务的运行状态&lt;/li&gt;
+&lt;li&gt;返回结果：bulk strings
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;host&lt;/code&gt;: 目标机 IP&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;port&lt;/code&gt;: 目标机端口号&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;used&lt;/code&gt;: 同步客户端是否已通过认证以及选择相应的 db&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;timeout&lt;/code&gt;: 客户端操作超时时间&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;lastuse&lt;/code&gt;: 表示上一次使用同步客户端发送迁移命令的时间&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;since_lastuse&lt;/code&gt;: 当前时间 $-$ &lt;code&gt;lastuse&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;sending_msgs&lt;/code&gt;: 已发送 &lt;code&gt;slotsrestore-async&lt;/code&gt; 类迁移命令但还未收到 &lt;code&gt;slotsrestore-async-ack&lt;/code&gt; 的请求数&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;blocked_clients&lt;/code&gt;: 阻塞等待当前迁移任务完成的客户端数量&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;batched_iterator&lt;/code&gt;: 迁移迭代器状态
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;keys&lt;/code&gt;: 将要迁移的 key&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;timeout&lt;/code&gt;: 临时过期时间 (其值与客户端操作超时时间相同)&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;maxbulks&lt;/code&gt;: 大对象进行指令拆分时，单个指令可包含的数据分片个数&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;maxbytes&lt;/code&gt;: 同步客户端输出缓冲区大小，缓冲区满时不产生新的迁移指令&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;estimate_msgs&lt;/code&gt;: 本次迁移任务的 &lt;code&gt;slotsrestore-async&lt;/code&gt; 指令数量&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;removed_keys&lt;/code&gt;: 已迁移完成的 key 列表的长度，会随着迁移任务的进行增长，在迁移任务结束时会依据列表 &lt;code&gt;it-&amp;gt;removed_keys&lt;/code&gt; 删除本地的 key&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;chunked_vals&lt;/code&gt;: 迁移过程中产生的中间值列表的长度，在迁移任务结束时会依据列表 &lt;code&gt;it-&amp;gt;chunked_vals&lt;/code&gt; 释放中间值&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;iterators&lt;/code&gt;: 当前尚未迁移的 key 的列表&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;32-codis-dashboard-扩缩容流程&#34;&gt;3.2. Codis-Dashboard 扩缩容流程&lt;/h3&gt;
+&lt;p&gt;在 &lt;a href=&#34;https://k-on.me/post/codis_intro/#12-slot-%E7%9B%B8%E5%85%B3%E6%93%8D%E4%BD%9C&#34;&gt;slot-相关操作&lt;/a&gt; 中我们发现 Codis-Dashboard 只是会把相关 slot 标记为 &lt;code&gt;ActionPending&lt;/code&gt; 状态，事后具体的 slot 分配以及数据迁移操作会有 Goroutine &lt;code&gt;ProcessSlotAction&lt;/code&gt; 执行：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;并行操作的 slot 数量由配置项 &lt;code&gt;migration_parallel_slots&lt;/code&gt; 控制&lt;/li&gt;
+&lt;li&gt;数据迁移时使用的迁移方式由配置项 &lt;code&gt;migration_method&lt;/code&gt; 控制&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;其执行流程如下图所示：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/codis/process_slot_action.png&#34; alt=&#34;process_slot_action&#34;&gt;&lt;/p&gt;
+&lt;p&gt;可以发现其中有多次将 Slot 相关状态信息同步至 Codis-Proxy 的操作，此时 Codis-Proxy 获取的 Slot-Group 映射关系与 Slot 当前 Action 的状态有关：&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;Slot.Action.State&lt;/th&gt;
+&lt;th style=&#34;text-align:left&#34;&gt;Slot-Group Map&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;ActionNothing, ActionPending&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;backend = GroupId, Replicas = GroupId.replicas&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;ActionPreparing&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;backend = GroupId&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;ActionPrepared&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;\&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;ActionMigrating&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;backend = Action.TargetId, migrateFrom = GroupId&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;ActionFinished&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;backend = Action.TargetId&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;在迁移 Slot 中的数据时，根据 &lt;code&gt;migration_method&lt;/code&gt; 配置选择不同的迁移方案：&lt;/p&gt;
+&lt;h4 id=&#34;321-同步迁移-----sync&#34;&gt;3.2.1. 同步迁移 &amp;mdash; sync&lt;/h4&gt;
+&lt;p&gt;通过循环调用 &lt;code&gt;slotsmgrttagslot host port timeout slot&lt;/code&gt; 逐步迁移该 slot 中的 key 至目标机：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/codis/codis_dashboard_sync_slot.png&#34; alt=&#34;codis_dashboard_sync_slot&#34;&gt;&lt;/p&gt;
+&lt;p&gt;同步迁移存在以下问题：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;迁移速度慢
+&lt;ul&gt;
+&lt;li&gt;序列化 &amp;amp; 反序列化时间开销大&lt;/li&gt;
+&lt;li&gt;单个数据迁移以 $ms$ 为单位&lt;/li&gt;
+&lt;li&gt;迁移单位过小：单次操作 $1$ 个或几个数据&lt;/li&gt;
+&lt;li&gt;受网络 RTT 以及迁移指令间隔 (Codis 默认 $1ms$) 影响&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;出错无法修复
+&lt;ul&gt;
+&lt;li&gt;失败的迁移会永远失败&lt;/li&gt;
+&lt;li&gt;失败的迁移会阻塞服务&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;迁移过程阻塞 Redis
+&lt;ul&gt;
+&lt;li&gt;单线程阻塞，无法提供服务
+&lt;ul&gt;
+&lt;li&gt;访问无关数据以及被迁移数据都是不支持的&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;有误触发 HA 的风险：主从切换、丢失数据&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;低版本 Redis 数据大小会受到协议限制
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/redis/redis/issues/757&#34;&gt;Remove 512 MB max value limit&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h4 id=&#34;322-异步迁移-----semi-async&#34;&gt;3.2.2. 异步迁移 &amp;mdash; semi-async&lt;/h4&gt;
+&lt;p&gt;通过循环调用 &lt;code&gt;slotsmgrttagslot-async host port timeout maxbulks maxbytes slot numkeys&lt;/code&gt; 逐步迁移该 slot 中的 key 至目标机：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://k-on.me/codis/codis_dashboard_semi_sync_slot.png&#34; alt=&#34;codis_dashboard_semi_sync_slot&#34;&gt;&lt;/p&gt;
+&lt;p&gt;针对同步迁移的缺陷，异步迁移的实现进行了一系列的优化：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;降低序列化 &amp;amp; 反序列化开销
+&lt;ul&gt;
+&lt;li&gt;string 类型不压缩&lt;/li&gt;
+&lt;li&gt;小对象使用 RDB&lt;/li&gt;
+&lt;li&gt;大对象使用指令进行拆分
+&lt;ul&gt;
+&lt;li&gt;单个指令可包含多个数据分片 (通过参数 &lt;code&gt;maxbulks&lt;/code&gt; 进行配置)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;批量迁移
+&lt;ul&gt;
+&lt;li&gt;单次请求可以迁移多个 key (通过参数 &lt;code&gt;numkeys&lt;/code&gt; 进行配置)&lt;/li&gt;
+&lt;li&gt;迁移开销预估，避免大对象与其他对象在同一 batch 内迁移 (除非具有相同 tag)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;流量优化
+&lt;ul&gt;
+&lt;li&gt;流量加速
+&lt;ul&gt;
+&lt;li&gt;充分利用 RESP 的 Pipeline&lt;/li&gt;
+&lt;li&gt;每条 &lt;code&gt;slotsrestore-async-ack&lt;/code&gt; 会尝试产生不少于 $2$ 条新的 &lt;code&gt;slotsrestore-async&lt;/code&gt; 迁移指令 (指数级增长)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;流量限速
+&lt;ul&gt;
+&lt;li&gt;每条 &lt;code&gt;slotsrestore-async-ack&lt;/code&gt; 用于产生迁移指令的时间限制为 $10 \mu s$&lt;/li&gt;
+&lt;li&gt;使用参数 &lt;code&gt;maxbytes&lt;/code&gt; 控制同步客户端输出缓冲区的大小，当缓冲区满时不产生新的迁移指令&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;错误处理
+&lt;ul&gt;
+&lt;li&gt;在每条迁移指令中，为 key 加上临时过期时间 (通过参数 &lt;code&gt;timeout&lt;/code&gt; 进行配置)，用于错误处理，保证单个数据的完整性&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;读写冲突处理
+&lt;ul&gt;
+&lt;li&gt;访问无关数据，允许&lt;/li&gt;
+&lt;li&gt;访问被迁移数据，只读&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;33-codis-proxy-在扩缩容期间请求的处理&#34;&gt;3.3. Codis-Proxy 在扩缩容期间请求的处理&lt;/h3&gt;
+&lt;p&gt;Codis-Proxy 在某个 Slot 处于迁移状态时，处理读写请求的逻辑与 Codis-Dashboard 所配置(&lt;code&gt;migration_method&lt;/code&gt;)的同步方式有关。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;同步迁移&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;向源端发送 &lt;code&gt;SLOTSMGRTTAGONE host port 3000 key&lt;/code&gt; 命令，将本次客户端请求涉及到的 &lt;code&gt;key&lt;/code&gt; 迁移至目标机&lt;/li&gt;
+&lt;li&gt;将客户端请求路由至目标机&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;异步迁移&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;向源端发送 &lt;code&gt;SLOTSMGRT-EXEC-WRAPPER key command [arg1 ...]&lt;/code&gt; 命令&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如果该 key 已迁移，则将客户端请求路由至目标机&lt;/li&gt;
+&lt;li&gt;如果该 key 尚未迁移：
+&lt;ul&gt;
+&lt;li&gt;如请求为读请求，则可直接获得结果&lt;/li&gt;
+&lt;li&gt;如请求为写请求，则不断重试发送 &lt;code&gt;SLOTSMGRT-EXEC-WRAPPER&lt;/code&gt; 命令判断 key 是否已迁移，直至 key 已迁移&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;4-参考资料&#34;&gt;4. 参考资料&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;https://github.com/redis/redis/pull/3997&#34;&gt;Implementation of nonblocking data migration&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+      
+    </item>
     
     <item>
       <title>RDMA in Redis</title>
@@ -1499,8 +2585,42 @@
 &lt;/ul&gt;
 &lt;h4 id=&#34;222-reducing-buffer-cache-misses&#34;&gt;2.2.2. Reducing buffer Cache Misses&lt;/h4&gt;
 &lt;p&gt;在 merge 操作结束后，由于新的 SSTable 尚未缓存，旧的 SSTables 已被删除，因此查询操作可能因为 cache misses 导致响应耗时增加、性能下降。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;将 merge 操作交予其他服务器执行，通过缓存预热渐进式地将旧的 SSTables 替换为新地 SSTable&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;LSbM-tree (Log-Structuredd buffered Merge tree)&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;如下图所示，在将位于 $L$ 层 SSTables merge 至 $L+1$ 层时，旧的 SSTables 并不会立马删除，而是作为 $L+1$ 层的 &lt;code&gt;buffered SSTables&lt;/code&gt;，在查询操作时，得益于 &lt;code&gt;buffered SSTables&lt;/code&gt; 并未删除，从而减少了 cache misses，这些 &lt;code&gt;buffered SSTables&lt;/code&gt; 之后会根据其访问频率逐渐被删除&lt;/li&gt;
+&lt;li&gt;优点：无需额外的 I/O 开销，因为这个策略只是将旧的 SSTables 的删除操作推迟了而已&lt;/li&gt;
+&lt;li&gt;缺点：仅在访问热点数据时有效，当访问到冷数据时，由于需要查看的 SStables 的数量的增加，会降低查询性能&lt;/li&gt;
+&lt;/ul&gt;
 &lt;p&gt;&lt;img src=&#34;https://k-on.me/lsm/lsbm_tree.png&#34; alt=&#34;lsbm_tree&#34;&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
 &lt;h4 id=&#34;223-minimizing-write-stalls&#34;&gt;2.2.3. Minimizing Write Stalls&lt;/h4&gt;
+&lt;p&gt;由于底层 I/O 的影响，可能会造成 write stalls，从而写延迟无法得到有效的保证。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;bLSM&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;基于 unpartitioned leveling merge policy 进行优化&lt;/li&gt;
+&lt;li&gt;Basic idea: tolerate an extra component at each level so that merges at different levels can proceed in parallel&lt;/li&gt;
+&lt;li&gt;Merge scheduler controls the progress of merge operations to ensure that level $L$ produces a new component at level $L+1$ only after the previous merge operation at level $L+1$ has completed&lt;/li&gt;
+&lt;li&gt;缺点：
+&lt;ul&gt;
+&lt;li&gt;设计上仅支持 unpartitioned leveling merge policy&lt;/li&gt;
+&lt;li&gt;只对写入的最大延迟进行了保证，而未考虑查询的性能&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;23-hardware-opportunities&#34;&gt;2.3. Hardware Opportunities&lt;/h3&gt;
+&lt;h4 id=&#34;231-large-memory&#34;&gt;2.3.1. Large Memory&lt;/h4&gt;
+&lt;h4 id=&#34;232-multi-core&#34;&gt;2.3.2. Multi-Core&lt;/h4&gt;
+&lt;h4 id=&#34;233-ssdnvm&#34;&gt;2.3.3. SSD/NVM&lt;/h4&gt;
+&lt;h4 id=&#34;234-native-storage&#34;&gt;2.3.4. Native Storage&lt;/h4&gt;
 &lt;h2 id=&#34;3-representative-lsm-based-systems&#34;&gt;3. Representative LSM-based systems&lt;/h2&gt;
 &lt;p&gt;TODO&lt;/p&gt;</description>
       
@@ -3300,8 +4420,8 @@ for any $e$ and any bags $B1$ and $B2$&lt;/li&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;It’s equivalent to writing &lt;code&gt;(~P /\ ~Q) \/ (P /\ Q)&lt;/code&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;|-&amp;gt;&lt;/code&gt;, &lt;code&gt;-&amp;gt;&lt;/code&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;map. use &lt;code&gt;|-&amp;gt;&lt;/code&gt; when you want one function that maps&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;`&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;-&amp;gt;&lt;code&gt;, &lt;/code&gt;-&amp;gt;`&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
@@ -3312,8 +4432,8 @@ for any $e$ and any bags $B1$ and $B2$&lt;/li&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;the set of functions that maps the domain to the range.&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;||&lt;/code&gt;&lt;/td&gt;
-&lt;td style=&#34;text-align:left&#34;&gt;lets multiple assignments all use the old values&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;`&lt;/td&gt;
+&lt;td style=&#34;text-align:left&#34;&gt;&lt;/td&gt;
 &lt;/tr&gt;
 &lt;tr&gt;
 &lt;td style=&#34;text-align:left&#34;&gt;&lt;code&gt;[]&lt;/code&gt;&lt;/td&gt;
@@ -4736,7 +5856,7 @@ for any $e$ and any bags $B1$ and $B2$&lt;/li&gt;
 &lt;li&gt;字符串长度小于 11 且可转化为 &lt;code&gt;int32_t&lt;/code&gt; 范围内的整型&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;通过阅读 &lt;code&gt;rdbSaveRawString&lt;/code&gt; 可以发现，当使用 &lt;code&gt;&amp;lt;len&amp;gt; &amp;lt;data&amp;gt;&lt;/code&gt; 存储字符串对象时，若 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L330&#34;&gt;rdbcompression&lt;/a&gt; 配置为 yes，且字符串长度大于 20，则会尝试对字符串进行 LZF 压缩，若压缩后最小可节省 4 byte，则调用 &lt;code&gt;rdbSaveLzfBlob&lt;/code&gt; 存储压缩后的内容：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;div class=&#34;highlight&#34; cmd=&#34;true&#34; args=&#34;&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
@@ -5092,7 +6212,7 @@ for any $e$ and any bags $B1$ and $B2$&lt;/li&gt;
 &lt;/div&gt;&lt;p&gt;如果此时正在进行 AOF rewrite，则 Redis 主进程除了将写请求写入 AOF 缓冲区之外，还会通过调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/aof.c#L650&#34;&gt;aofRewriteBufferAppend&lt;/a&gt;将数据写入 AOF rewrite buffer。在 &lt;code&gt;aofRewriteBufferAppend&lt;/code&gt; 中，以 append 的形式写入数据，同时会创建 &lt;code&gt;aofChildWriteDiffData&lt;/code&gt; file event，以将 AOF rewrite buffer 中的内容从前往后遍历写入管道 &lt;code&gt;server.aof_pipe_write_data_to_child&lt;/code&gt;，以供子进程读取，写入管道成功后会释放该节点所占用的内存块。因此，AOF rewrite buffer 如同一个先进先出的队列，在 append 时(链表尾部)申请内存，在写入管道后(链表头部)释放内存。&lt;/p&gt;
 &lt;h4 id=&#34;232-use-rdb-preamble&#34;&gt;2.3.2. Use RDB preamble&lt;/h4&gt;
 &lt;p&gt;因为 RDB 文件小，加载速度快，因此在 AOF rewrite 时，可使用 RDB 保存当前数据库状态。如果配置项 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L1195&#34;&gt;aof-use-rdb-preamble&lt;/a&gt; 为 &lt;code&gt;yes&lt;/code&gt;，则会调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/aof.c#L1432&#34;&gt;rdbSaveRio&lt;/a&gt; 保存数据库状态，此时 AOF rewrite 结束之后的文件组织形式如下：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;div class=&#34;highlight&#34; cmd=&#34;true&#34; args=&#34;&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
@@ -5966,7 +7086,7 @@ for any $e$ and any bags $B1$ and $B2$&lt;/li&gt;
 &lt;/div&gt;
 &lt;/div&gt;&lt;h3 id=&#34;52-least-frequently-usedlfu&#34;&gt;5.2. Least Frequently Used(LFU)&lt;/h3&gt;
 &lt;p&gt;从 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/src/server.h#L623&#34;&gt;redisObject&lt;/a&gt; 的定义中，我们知道 LFU 和 LRU 复用同一 field &lt;code&gt;lru&lt;/code&gt;，因此在 LFU 中访问频率的大小只可用 &lt;code&gt;LRU_BITS&lt;/code&gt; 位来表示。Redis 使用下图所示的结构表示频率：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
+&lt;div class=&#34;highlight&#34; cmd=&#34;true&#34; args=&#34;&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
 &lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
@@ -7544,389 +8664,6 @@ $$&lt;/p&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
 &lt;/div&gt;</description>
-      
-    </item>
-    
-    <item>
-      <title>Redis 源码阅读 --- dict</title>
-      <link>https://k-on.me/post/redis-sourcecode-dict/</link>
-      <pubDate>Sun, 27 Sep 2020 10:15:20 +0800</pubDate>
-      
-      <guid>https://k-on.me/post/redis-sourcecode-dict/</guid>
-      
-        <description>&lt;p&gt;Redis dict 实现相关源码阅读笔记，源码文件 &lt;code&gt;dict.h&lt;/code&gt; &amp;amp; &lt;code&gt;dict.c&lt;/code&gt;。&lt;/p&gt;
-&lt;hr&gt;
-&lt;h2 id=&#34;1-小结&#34;&gt;1. 小结&lt;/h2&gt;
-&lt;p&gt;在 Redis 中，&lt;code&gt;dict&lt;/code&gt; 不仅用于实现不同的对象类型，还用于数据库的实现。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;可通过自定义哈希、复制、比较和析构函数实现不同的 &lt;code&gt;dictType&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;哈希表使用链地址法处理&lt;strong&gt;哈希冲突&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;每个 &lt;code&gt;dict&lt;/code&gt; 中含有两个哈希表 &lt;code&gt;dictht&lt;/code&gt;，以便于实现&lt;strong&gt;渐进式 Rehash&lt;/strong&gt;&lt;/li&gt;
-&lt;li&gt;在每次尝试往字典中新增 key-val pair 时，可能会触发&lt;strong&gt;扩容&lt;/strong&gt; Rehash:
-&lt;ul&gt;
-&lt;li&gt;一般情况下，载荷因子大于 &lt;a href=&#34;https://github.com/redis/redis/blob/6.2.3/src/dict.c#L994&#34;&gt;$1$&lt;/a&gt; 即触发扩容，但在使用 &lt;code&gt;dict&lt;/code&gt; 实现键空间时还需&lt;a href=&#34;https://github.com/redis/redis/blob/6.2.3/src/server.c#L1350&#34;&gt;考虑 Rehash 带来的内存使用量突增的情况&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;当 Redis 有子进程在做 RDB saving、AOF rewriting 或 module 相关的任务时，载荷因子需大于 &lt;a href=&#34;https://github.com/redis/redis/blob/6.2.3/src/dict.c#L59&#34;&gt;$5$&lt;/a&gt; 才会触发扩容&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;一般情况下，当哈希表的载荷因子小于 &lt;a href=&#34;https://github.com/redis/redis/blob/6.2.3/src/server.c#L1543&#34;&gt;$0.1$&lt;/a&gt; 时会触发&lt;strong&gt;缩容&lt;/strong&gt;操作
-&lt;ul&gt;
-&lt;li&gt;当 Redis 有子进程在做 RDB saving、AOF rewriting 或 module 相关的任务时，不会进行缩容操作&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;em&gt;Tips&lt;/em&gt;&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;对 $b = 2^n$ 取余&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;%&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;b&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;b&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h2 id=&#34;2-数据结构&#34;&gt;2. 数据结构&lt;/h2&gt;
-&lt;p&gt;&lt;code&gt;dict&lt;/code&gt; 的数据结构如下所示：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;7
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;k&#34;&gt;typedef&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;dict&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;dictType&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;type&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-    &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;privdata&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;dictht&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ht&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
-    &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;rehashidx&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;cm&#34;&gt;/* rehashing not in progress if rehashidx == -1 */&lt;/span&gt;
-    &lt;span class=&#34;kt&#34;&gt;int16_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;pauserehash&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;cm&#34;&gt;/* If &amp;gt;0 rehashing is paused (&amp;lt;0 indicates coding error) */&lt;/span&gt;
-&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dict&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;&lt;code&gt;rehashidx&lt;/code&gt; 记录了当前 Rehash 的进度，小于该值的 bucket 均已被迁移至 &lt;code&gt;ht[1]&lt;/code&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;dictType&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;其中字典类型 &lt;code&gt;dictType&lt;/code&gt; 的结构如下，可以看出，用户可以传入各种自定义的操作函数以实现不同的字典类型。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;k&#34;&gt;typedef&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;dictType&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-    &lt;span class=&#34;cm&#34;&gt;/* 自定义哈希值计算函数 */&lt;/span&gt;
-    &lt;span class=&#34;kt&#34;&gt;uint64_t&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hashFunction&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)(&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;const&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-    &lt;span class=&#34;cm&#34;&gt;/* 自定义键复制函数 */&lt;/span&gt;
-    &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;keyDup&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;privdata&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;const&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-    &lt;span class=&#34;cm&#34;&gt;/* 自定义值复制函数 */&lt;/span&gt;
-    &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;valDup&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;privdata&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;const&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;obj&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-    &lt;span class=&#34;cm&#34;&gt;/* 自定义键比较函数 */&lt;/span&gt;
-    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;keyCompare&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;privdata&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;const&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;const&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-    &lt;span class=&#34;cm&#34;&gt;/* 自定义键析构函数 */&lt;/span&gt;
-    &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;keyDestructor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;privdata&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-    &lt;span class=&#34;cm&#34;&gt;/* 自定义值析构函数 */&lt;/span&gt;
-    &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;valDestructor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;privdata&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;obj&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-    &lt;span class=&#34;cm&#34;&gt;/* 自定义 Rehash 控制函数 */&lt;/span&gt;
-    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;expandAllowed&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;size_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;moreMem&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;double&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;usedRatio&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dictType&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;&lt;strong&gt;dictht&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;可以看到在 &lt;code&gt;dict&lt;/code&gt; 中有两个哈希表 &lt;code&gt;dictht&lt;/code&gt;，方便实现渐进式 Rehash，以免在字典中数据量较大时 Rehash 操作带来较大延时。&lt;/p&gt;
-&lt;p&gt;&lt;code&gt;dictht&lt;/code&gt; 的结构如下：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;13
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;14
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;15
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;16
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;17
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;k&#34;&gt;typedef&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;dictht&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;dictEntry&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;**&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-    &lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;size&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;cm&#34;&gt;/* size of table */&lt;/span&gt;
-    &lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;sizemask&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;cm&#34;&gt;/* size - 1 */&lt;/span&gt;
-    &lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;used&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;cm&#34;&gt;/* total dictEntries in table */&lt;/span&gt;
-&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dictht&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-
-&lt;span class=&#34;k&#34;&gt;typedef&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;dictEntry&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-    &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-    &lt;span class=&#34;k&#34;&gt;union&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-        &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;val&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-        &lt;span class=&#34;kt&#34;&gt;uint64_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;u64&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-        &lt;span class=&#34;kt&#34;&gt;int64_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;s64&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-        &lt;span class=&#34;kt&#34;&gt;double&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-    &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;v&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-    &lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;dictEntry&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;next&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dictEntry&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;Redis 哈希表使用单向链表解决哈希冲突，新加入的节点 &lt;code&gt;dictEntry&lt;/code&gt; 置于 table 中相应 bucket 的头部。&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;在 &lt;code&gt;dictht&lt;/code&gt; 中，table 的长度 &lt;code&gt;size&lt;/code&gt; 始终为 2 的整数倍(在 &lt;a href=&#34;https://github.com/redis/redis/blob/6.2.3/src/dict.c#L1005&#34;&gt;_dictNextPower&lt;/a&gt; 函数中实现)，而 &lt;code&gt;sizemask = size - 1&lt;/code&gt;，从而可以将取余操作转化为位运算&lt;/li&gt;
-&lt;li&gt;在 &lt;code&gt;dictEntry&lt;/code&gt; 中，使用 &lt;code&gt;union&lt;/code&gt; 来存储不同类型的值 &lt;code&gt;v&lt;/code&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;&lt;em&gt;Tips&lt;/em&gt;: 对 $b = 2^n$ 取余&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;%&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;b&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;b&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;-&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;&lt;strong&gt;迭代器&lt;/strong&gt;&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 5
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 6
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 7
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 8
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt; 9
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;10
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;11
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;12
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* If safe is set to 1 this is a safe iterator, that means, you can call
-&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * dictAdd, dictFind, and other functions against the dictionary even while
-&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * iterating. Otherwise it is a non safe iterator, and only dictNext()
-&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * should be called while iterating. */&lt;/span&gt;
-&lt;span class=&#34;k&#34;&gt;typedef&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;dictIterator&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;dict&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-    &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;index&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;table&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;safe&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-    &lt;span class=&#34;n&#34;&gt;dictEntry&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;entry&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;nextEntry&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-    &lt;span class=&#34;cm&#34;&gt;/* unsafe iterator fingerprint for misuse detection. */&lt;/span&gt;
-    &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;fingerprint&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dictIterator&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;在 &lt;code&gt;dict&lt;/code&gt; 结构中的 &lt;code&gt;pauserehash&lt;/code&gt; 表示的是当前正在运行的安全(&lt;code&gt;safe=1&lt;/code&gt;)迭代器个数，其值不为 0 时，意味着此时不能进行 &lt;a href=&#34;https://github.com/redis/redis/blob/6.2.3/src/dict.c#L207&#34;&gt;move bucket&lt;/a&gt; 操作。&lt;/p&gt;
-&lt;h2 id=&#34;3-相关操作&#34;&gt;3. 相关操作&lt;/h2&gt;
-&lt;h3 id=&#34;31-扩容&#34;&gt;3.1. 扩容&lt;/h3&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;n&#34;&gt;dictEntry&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;dictAddRaw&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dict&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;key&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dictEntry&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;**&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;existing&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;在调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.2.3/src/dict.c#L315&#34;&gt;dictAddRaw&lt;/a&gt; 尝试往哈希表中添加元素时，会先根据 &lt;code&gt;key&lt;/code&gt; 及其哈希值调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.2.3/src/dict.c#L1024&#34;&gt;_dictKeyIndex&lt;/a&gt; 获取哈希表的 index。&lt;code&gt;_dictKeyIndex&lt;/code&gt; 在查找 index 之前会先调用 &lt;a href=&#34;https://github.com/redis/redis/blob/6.2.3/src/dict.c#L982&#34;&gt;_dictExpandIfNeeded&lt;/a&gt; 判断是否需要扩容。扩容需要同时满足以下条件：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;dict_can_resize&lt;/code&gt; 为 $1$ 时，载荷因子大于 $1$；&lt;code&gt;dict_can_resize&lt;/code&gt; 为 $0$ 时，载荷因子需大于 $5$&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;从 &lt;a href=&#34;https://github.com/redis/redis/blob/6.2.3/src/server.c#L1588&#34;&gt;updateDictResizePolicy&lt;/a&gt; 可知当 Redis 有子进程在做 RDB saving、AOF rewriting 或 module 相关的任务时，&lt;code&gt;dict_can_resize&lt;/code&gt; 为 0&lt;/li&gt;
-&lt;li&gt;当前的实现除了键空间以外的哈希表，仅需满足该条件即可扩容&lt;/li&gt;
-&lt;/ul&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;实现键空间相关的哈希表考虑到 Rehash 时的内存使用量突增的情况，还需调用&lt;a href=&#34;https://github.com/redis/redis/blob/6.2.3/src/dict.c#L974&#34;&gt;dictExpandAllowed&lt;/a&gt;判断是否可以扩容&lt;/p&gt;
-&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;如果正处于 Rehash 状态，&lt;strong&gt;新增&lt;/strong&gt;的 &lt;code&gt;dictEntry&lt;/code&gt; 会添加至 &lt;code&gt;ht[1]&lt;/code&gt;。修改已存在 &lt;code&gt;dictEntry&lt;/code&gt; 的值会就地修改。&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;PS:&lt;/em&gt; 从 &lt;a href=&#34;https://github.com/redis/redis/pull/7954#issuecomment-725544359&#34;&gt;redis/pull/7954&lt;/a&gt; 可以知道在该 PR 之前的 Rehash 操作后，哈希表的大小每次都是翻 $4$ 倍，而不是 $2$ 倍。&lt;/p&gt;
-&lt;h3 id=&#34;32-缩容&#34;&gt;3.2. 缩容&lt;/h3&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Resize the table to the minimal size that contains all the elements,
-&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * but with the invariant of a USED/BUCKETS ratio near to &amp;lt;= 1 */&lt;/span&gt;
-&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;dictResize&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dict&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;ul&gt;
-&lt;li&gt;当 Redis 有子进程在做 RDB saving、AOF rewriting 或 module 相关的任务时，不会进行缩容操作&lt;/li&gt;
-&lt;li&gt;缩容后确保哈希表 size 大于等于 &lt;code&gt;DICT_HT_INITIAL_SIZE&lt;/code&gt; (4)&lt;/li&gt;
-&lt;li&gt;缩容后确保载荷因子小于等于 $1$&lt;/li&gt;
-&lt;li&gt;从 &lt;a href=&#34;https://github.com/redis/redis/blob/6.2.3/src/server.c#L1543&#34;&gt;htNeedsResize&lt;/a&gt; 可知，当哈希表的载荷因子小于 &lt;a href=&#34;https://github.com/redis/redis/blob/6.2.3/src/server.h#L170&#34;&gt;$0.1$&lt;/a&gt; 时会触发缩容操作&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;在以下几种情况下会调用该函数：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;Redis Server 在 &lt;code&gt;databasesCron&lt;/code&gt; 中会调用 &lt;code&gt;tryResizeHashTables&lt;/code&gt; 尝试对键空间相关哈希表进行缩容&lt;/li&gt;
-&lt;li&gt;哈希数据类型在调用 &lt;code&gt;hashTypeDelete&lt;/code&gt; 删除一个元素后会判断是否需要缩容&lt;/li&gt;
-&lt;li&gt;集合数据类型在调用 &lt;code&gt;setTypeRemove&lt;/code&gt; 删除一个元素后会判断是否需要缩容&lt;/li&gt;
-&lt;li&gt;有序集合数据类型在调用 &lt;code&gt;zsetDel&lt;/code&gt; or &lt;code&gt;zremrangeGenericCommand&lt;/code&gt; or &lt;code&gt;zdiffAlgorithm2&lt;/code&gt; 删除元素后会判断是否需要缩容&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3 id=&#34;33-rehash&#34;&gt;3.3. Rehash&lt;/h3&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;dictRehash&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dict&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;ul&gt;
-&lt;li&gt;在每次调用 &lt;code&gt;dictRehash&lt;/code&gt; 时，最多迁移 $n$ 个非空 bucket，最多迁移 $10 \cdot n$ 个空 bucket&lt;/li&gt;
-&lt;li&gt;以 bucket 为单位进行迁移，每次迁移完一个 bucket 会相应地增加 &lt;code&gt;d-&amp;gt;rehashidx&lt;/code&gt; 值&lt;/li&gt;
-&lt;li&gt;返回 $1$ 时表示 Rehash 操作还未完成，未处于 Rehash 状态或 Rehash 完成时返回 $0$&lt;/li&gt;
-&lt;/ul&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;k&#34;&gt;static&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;_dictRehashStep&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dict&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
-    &lt;span class=&#34;k&#34;&gt;if&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;pauserehash&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;==&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dictRehash&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;ul&gt;
-&lt;li&gt;在添加(&lt;code&gt;dictAddRaw&lt;/code&gt;)、查找(&lt;code&gt;dictFind&lt;/code&gt;, &lt;code&gt;dictGetRandomKey&lt;/code&gt;, &lt;code&gt;dictGetSomeKeys&lt;/code&gt;)、删除(&lt;code&gt;dictGenericDelete&lt;/code&gt;) 时，会调用该函数执行渐进式 Rehash，表示如果此时无安全迭代器在遍历哈希表，则会调用 &lt;code&gt;dictRehash(d,1)&lt;/code&gt; 迁移 $1$ 个非空 bucket (或 $10$ 个空 bucket)&lt;/li&gt;
-&lt;/ul&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Rehash for an amount of time between ms milliseconds and ms+1 milliseconds */&lt;/span&gt;
-&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;dictRehashMilliseconds&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dict&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ms&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;ul&gt;
-&lt;li&gt;在 &lt;code&gt;databasesCron&lt;/code&gt; 中会调用该函数尝试对键空间相关的哈希表执行渐进式 Rehash，每次执行时间 &lt;code&gt;ms&lt;/code&gt; 设置为 $1ms$，但由于在该函数的循环中是每次先调用 &lt;code&gt;dictRehash(d,100)&lt;/code&gt; 再判断当前耗时是否超过 &lt;code&gt;ms&lt;/code&gt;，因此这个执行时间限制只是一个软限制。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3 id=&#34;34-访问&#34;&gt;3.4. 访问&lt;/h3&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* Return a random entry from the hash table. Useful to
-&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * implement randomized algorithms */&lt;/span&gt;
-&lt;span class=&#34;n&#34;&gt;dictEntry&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;dictGetRandomKey&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dict&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;首先随机选择一个非空的 bucket，然后从该 bucket 中随机选择一个 &lt;code&gt;dictEntry&lt;/code&gt; 作为返回值。可以看出，长度越短的 bucket 中的 &lt;code&gt;dictEntry&lt;/code&gt; 被选中的概率越大。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* This function samples the dictionary to return a few keys from random
-&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * locations. */&lt;/span&gt;
-&lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;dictGetSomeKeys&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dict&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;dictEntry&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;**&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;des&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;count&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;ul&gt;
-&lt;li&gt;函数返回时，在 &lt;code&gt;des&lt;/code&gt; 中存储采样所得的 &lt;code&gt;dictEntry&lt;/code&gt; 数组结果，不保证元素不会重复，&lt;code&gt;des&lt;/code&gt; 所指的内存空闲需能容纳 &lt;code&gt;count&lt;/code&gt; 个 &lt;code&gt;dictEntry&lt;/code&gt; 指针&lt;/li&gt;
-&lt;li&gt;函数返回值为 &lt;code&gt;des&lt;/code&gt; 中包含的 &lt;code&gt;dictEntry&lt;/code&gt; 个数，其可能小于 &lt;code&gt;count&lt;/code&gt;&lt;/li&gt;
-&lt;li&gt;比调用 &lt;code&gt;count&lt;/code&gt; 次 &lt;code&gt;dictGetRandomKey&lt;/code&gt; 高效&lt;/li&gt;
-&lt;/ul&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* This is like dictGetRandomKey() from the POV of the API, but will do more
-&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * work to ensure a better distribution of the returned element. */&lt;/span&gt;
-&lt;span class=&#34;n&#34;&gt;dictEntry&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;nf&#34;&gt;dictGetFairRandomKey&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dict&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;ul&gt;
-&lt;li&gt;会先尝试调用 &lt;code&gt;dictGetSomeKeys&lt;/code&gt; 获取 &lt;code&gt;GETFAIR_NUM_ENTRIES&lt;/code&gt; 个 &lt;code&gt;dictEntry&lt;/code&gt;，再随机挑选一个返回&lt;/li&gt;
-&lt;li&gt;调用 &lt;code&gt;dictGetSomeKeys&lt;/code&gt; 返回值为 0 时，直接调用 &lt;code&gt;dictGetRandomKey&lt;/code&gt;，返回其结果&lt;/li&gt;
-&lt;/ul&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;4
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;5
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;6
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* dictScan() is used to iterate over the elements of a dictionary. */&lt;/span&gt;
-&lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;dictScan&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;dict&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;d&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-                       &lt;span class=&#34;kt&#34;&gt;unsigned&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;long&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-                       &lt;span class=&#34;n&#34;&gt;dictScanFunction&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;fn&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-                       &lt;span class=&#34;n&#34;&gt;dictScanBucketFunction&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;bucketfn&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;
-                       &lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;privdata&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;Scan 开始时，设置 &lt;code&gt;cursor = 0&lt;/code&gt; 调用该函数&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;该函数每次迭代后，返回 &lt;code&gt;cursor&lt;/code&gt; 用于下次调用&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;当返回的 &lt;code&gt;cursor&lt;/code&gt; 等于 0 时，表示 Scan 结束&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;保证返回所有 &lt;code&gt;dictEntry&lt;/code&gt;，但不保证不重复&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;如下所示，&lt;code&gt;cursor&lt;/code&gt; 并不是按序递增，而是按位反转之后递增，利用 &lt;code&gt;dictht-&amp;gt;size&lt;/code&gt; 是 $2$ 的整数倍的条件，这保证了在 Rehash 时不会漏掉 bucket。&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
-&lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt;1
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;2
-&lt;/span&gt;&lt;span class=&#34;lnt&#34;&gt;3
-&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;
-&lt;td class=&#34;lntd&#34;&gt;
-&lt;pre class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-cpp&#34; data-lang=&#34;cpp&#34;&gt;&lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;rev&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;++&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
-&lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;rev&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cursor&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
-&lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
-&lt;/div&gt;
-&lt;/div&gt;&lt;/li&gt;
-&lt;/ul&gt;</description>
       
     </item>
     

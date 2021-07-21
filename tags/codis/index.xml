@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Codis on HTT - ふわふわ時間</title>
+    <link>https://k-on.me/tags/codis/</link>
+    <description>Recent content in Codis on HTT - ふわふわ時間</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Wed, 07 Jul 2021 21:06:50 +0800</lastBuildDate><atom:link href="https://k-on.me/tags/codis/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Codis 简要介绍</title>
+      <link>https://k-on.me/post/codis_intro/</link>
+      <pubDate>Wed, 07 Jul 2021 21:06:50 +0800</pubDate>
+      
+      <guid>https://k-on.me/post/codis_intro/</guid>
+      <description>&lt;p&gt;&lt;a href=&#34;https://github.com/CodisLabs/codis&#34;&gt;Codis&lt;/a&gt; 是一个基于 Proxy 的 Redis 集群化方案，其具体介绍与使用可参考 &lt;a href=&#34;https://github.com/CodisLabs/codis/blob/release3.2/doc/tutorial_zh.md&#34;&gt;Codis 使用文档&lt;/a&gt;。本文首先从运维角度出发介绍 Codis，便于了解每个操作背后的具体内容，随后简要介绍了 Codis-Proxy 基本的工作原理，最后简单介绍了扩缩容相关操作。&lt;/p&gt;</description>
+    </item>
+    
+  </channel>
+</rss>
