@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Redis 源码阅读 --- Client - HTT - ふわふわ時間</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="765PRO.P" />
+  <meta name="description" content="Redis client 相关源码阅读笔记，源码文件 server.h &amp;amp; server.c &amp;amp; networking.c。
+" />
+
+  <meta name="keywords" content="K-ON, KyoAni" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.76.0-DEV" />
+
+
+<link rel="canonical" href="https://k-on.me/post/redis-sourcecode-client/" />
+
+
+
+
+
+
+
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.b3a8813c06e6d785beba22bf8264e174fa2cb3a396b22f9ba24e2c00c18aaf7f.css" integrity="sha256-s6iBPAbm14W&#43;uiK/gmThdPoss6OWsi&#43;bok4sAMGKr38=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Redis 源码阅读 --- Client" />
+<meta property="og:description" content="Redis client 相关源码阅读笔记，源码文件 server.h &amp; server.c &amp; networking.c。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://k-on.me/post/redis-sourcecode-client/" />
+<meta property="article:published_time" content="2020-10-29T15:20:48+08:00" />
+<meta property="article:modified_time" content="2020-10-29T15:20:48+08:00" />
+<meta itemprop="name" content="Redis 源码阅读 --- Client">
+<meta itemprop="description" content="Redis client 相关源码阅读笔记，源码文件 server.h &amp; server.c &amp; networking.c。">
+<meta itemprop="datePublished" content="2020-10-29T15:20:48+08:00" />
+<meta itemprop="dateModified" content="2020-10-29T15:20:48+08:00" />
+<meta itemprop="wordCount" content="3601">
+
+
+
+<meta itemprop="keywords" content="Redis," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Redis 源码阅读 --- Client"/>
+<meta name="twitter:description" content="Redis client 相关源码阅读笔记，源码文件 server.h &amp; server.c &amp; networking.c。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">HTT</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/about/">About</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/categories/">Categories</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      HTT
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/about/">About</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Redis 源码阅读 --- Client</h1>
+      
+      <div class="post-meta">
+        <time datetime="2020-10-29" class="post-time">
+          2020-10-29
+        </time>
+        <div class="post-category">
+            <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
+            
+          </div>
+        <span class="more-meta"> 3601 words </span>
+          <span class="more-meta"> 8 min read </span>
+
+        
+        
+          <span id="busuanzi_container_page_pv">
+            | 阅读 <span id="busuanzi_value_page_pv"></span>
+          </span>
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#客户端管理">客户端管理</a>
+      <ul>
+        <li><a href="#新建">新建</a></li>
+        <li><a href="#释放">释放</a></li>
+      </ul>
+    </li>
+    <li><a href="#缓冲区管理">缓冲区管理</a>
+      <ul>
+        <li><a href="#输入缓冲区">输入缓冲区</a></li>
+        <li><a href="#输出缓冲区">输出缓冲区</a></li>
+      </ul>
+    </li>
+    <li><a href="#解析请求---resp">解析请求 - RESP</a></li>
+    <li><a href="#处理请求">处理请求</a>
+      <ul>
+        <li><a href="#rediscommand">redisCommand</a></li>
+        <li><a href="#processcommand">processCommand</a></li>
+        <li><a href="#commandprocessed">commandProcessed</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>Redis client 相关源码阅读笔记，源码文件 <code>server.h</code> &amp; <code>server.c</code> &amp; <code>networking.c</code>。</p>
+<hr>
+<p>Redis 服务器处理客户端请求时大致经历了以下过程(以监听 TCP 端口且无 TLS 为例)：</p>
+<ol>
+<li>
+<p>在服务器初始化时，调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L2857">listenToPort</a> 监听指定端口，将相应的 scoket FD 存储至 <code>server.ipfd</code> 数组中</p>
+<ul>
+<li>由于机器上可能会有多个网卡，因此可通过配置项 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L69">bind</a> 绑定指定的网卡接口，若无设置则默认为绑定所有的网卡接口，其数量上限为 <code>CONFIG_BINDADDR_MAX</code> (16)</li>
+</ul>
+</li>
+<li>
+<p>对 <code>server.ipfd</code> 数组中的每个 socket FD 调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L2951">aeCreateFileEvent</a>，为其创建 File Event <a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L986">acceptTcpHandler</a>，并添加至 event loop <code>server.el</code> 中</p>
+</li>
+<li>
+<p>在 <a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L986">acceptTcpHandler</a> 中：</p>
+<ul>
+<li><a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L994">anetTcpAccept</a>: 建立连接</li>
+<li><a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L1002">connCreateAcceptedSocket</a>: 包装连接 FD 得到结构体 <a href="https://github.com/redis/redis/blob/6.0.8/src/connection.h#L73">connection</a></li>
+<li><a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L955">createClient</a>: 若当前客户端数量不高于 <code>server.maxclients</code>，则使用 <code>connection</code> 创建客户端 <code>client</code>
+<ul>
+<li>若 <code>connection</code> 非空，则添加事件 <a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L101">readQueryFromClient</a> 至 event loop <code>server.el</code>，用于读取客户端请求</li>
+<li>初始化客户端 fields</li>
+<li>若 <code>connection</code> 非空，将新建客户端加入服务器的客户端列表 <code>server.clients</code> 中，便于管理</li>
+<li>Client state initialization for MULTI/EXEC</li>
+</ul>
+</li>
+<li><a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L975">connAccept</a>: Initiate accept, the socket is ready for I/O</li>
+</ul>
+</li>
+<li>
+<p>在 File event <a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L1926">readQueryFromClient</a> 中，将来自用户的请求内容写入客户端的输入缓冲区 <code>client-&gt;querybuf</code></p>
+</li>
+<li>
+<p>将输入缓冲区中的内容解析为 Redis Command，并填充 <code>client-&gt;argv</code> &amp; <code>client-&gt;argc</code>: <a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L1843">processInputBuffer</a></p>
+</li>
+<li>
+<p>处理请求：<a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L1825">processCommandAndResetClient</a></p>
+</li>
+<li>
+<p>将回复内容写入客户端输出缓冲区并将当前客户端加入列表 <code>redisServer-&gt;clients_pending_write</code> 中，后续会遍历该列表中的客户端，将其输出缓冲区内容写至相应的 socket：<a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L301">addReply.*</a></p>
+</li>
+<li>
+<p>在进入 event loop 之前 (<code>beforeSleep</code>)，调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L2190">handleClientsWithPendingWritesUsingThreads</a>，在该函数中：</p>
+<ul>
+<li>首先调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L1440">writeToClient</a> 将客户端输出缓冲区的内容同步写入相应的 socket</li>
+<li>若客户端输出缓冲区仍有未写入的内容，则注册写事件 <a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L1456">sendReplyToClient</a> 至 event loop，以完成剩余内容的写入</li>
+</ul>
+<blockquote>
+<p>可以看出会有同步写入回复至 socket 操作，因此为满足 &ldquo;write the AOF before replying to the client&rdquo; 的条件，在 <code>beforeSleep</code> 中，<code>handleClientsWithPendingWritesUsingThreads</code> 的调用应在 <code>flushAppendOnlyFile</code> 之后</p>
+</blockquote>
+</li>
+</ol>
+<h2 id="客户端管理">客户端管理</h2>
+<h3 id="新建">新建</h3>
+<p>在 <code>acceptTcpHandler</code> (<code>acceptTLSHandler</code>/<code>acceptUnixHandler</code>) 中新建连接，当客户端连接数不超过上限 <code>server.maxclients</code> 时，为该连接创建 <code>client</code> 结构体并加入 <code>server.clients</code> 中。</p>
+<h3 id="释放">释放</h3>
+<ul>
+<li>同步释放：直接调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L1134">freeClient</a></li>
+<li>异步释放：调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L1258">freeClientAsync</a> 将客户端加入待释放列表 <code>server.clients_to_close</code>，随后在 <code>beforeSleep</code> 中调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L1279">freeClientsInAsyncFreeQueue</a> 释放列表 <code>server.clients_to_close</code> 中的客户端</li>
+</ul>
+<h2 id="缓冲区管理">缓冲区管理</h2>
+<h3 id="输入缓冲区">输入缓冲区</h3>
+<p>客户端使用 sds string <code>client-&gt;querybuf</code> 作为输入缓冲区</p>
+<ul>
+<li>扩容：在 <code>readQueryFromClient</code> 中，为了存放用户的请求内容，会调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L1957">sdsMakeRoomFor</a> 对输入缓冲区扩容</li>
+<li>限制：在扩容并读取内容后，若此时输入缓冲区中字符串长度大于 <code>server.client_max_querybuf_len</code>，会调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L1990">freeClientAsync</a> 异步释放该客户端。其中 <code>server.client_max_querybuf_len</code> 可由配置项 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L1666">client-query-buffer-limit</a> 进行设置</li>
+<li>缩容：在定期执行的 <code>serverCron</code> 中，会调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L1521">clientsCronResizeQueryBuffer</a> 对输入缓冲区进行适当地缩容操作</li>
+</ul>
+<p>若客户端为 master，则还会使用 <code>client-&gt;pending_querybuf</code> 存储尚未执行完毕的请求，其同样在 <code>readQueryFromClient</code> 中扩容，在 <code>clientsCronResizeQueryBuffer</code> 中缩容。</p>
+<h3 id="输出缓冲区">输出缓冲区</h3>
+<p>客户端的输出缓冲区分为两部分：</p>
+<ul>
+<li>大小固定为 <code>PROTO_REPLY_CHUNK_BYTES</code>(16KB) 大小的字符数组 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.h#L868">client-&gt;buf</a></li>
+<li>由 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.h#L650">clientReplyBlock</a> 组成的 reply 链表 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.h#L807">client-&gt;reply</a>，每个链表节点容量最小为 <code>PROTO_REPLY_CHUNK_BYTES</code>(16KB)</li>
+</ul>
+<p>在将回复写入输出缓冲区时:</p>
+<ul>
+<li>会先调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L248">_addReplyToBuffer</a> 尝试将回复内容写入 <code>client-&gt;buf</code>。</li>
+<li>若数组剩余空间不足，则会选择调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L265">_addReplyProtoToList</a> 将回复内容写入 <code>client-&gt;reply</code>，写入回复内容后会调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L2742">checkClientOutputBufferLimits</a> 检查 <code>client-&gt;reply</code> 使用内存大小是否超出设定的上限，若超上限则会调用 <code>freeClientAsync</code> 异步释放该客户端。</li>
+</ul>
+<p>输出缓冲区大小(实际上只计算 <code>client-&gt;reply</code>，而不包含 16KB 的定长字符数组)的限制可由配置项 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L1656">client-output-buffer-limit</a> 进行设置:</p>
+<ul>
+<li>
+<p>可以为三种客户端分别进行设置</p>
+<ul>
+<li><code>normal</code>: normal clients including MONITOR clients</li>
+<li><code>replica</code>: replica clients</li>
+<li><code>pubsub</code>: clients subscribed to at least one pubsub channel or pattern</li>
+</ul>
+</li>
+<li>
+<p>当 <code>client-&gt;reply</code> 内存使用量达到 hard limit，或保持在 soft limit 超过 soft seconds 时，会调用 <code>freeClientAsync</code> 异步释放该客户端</p>
+</li>
+<li>
+<p>由于 <code>normal</code> 客户端属于 &ldquo;pull&rdquo; 方式拉取数据，因此默认不设置上限，而 <code>replica</code> 和 <code>pubsub</code> 客户端属于 &ldquo;push&rdquo; 方式推送数据至指定的 replicas 或 subscribers，未防止对方消费速度低于生产速度，因此默认会设置上限</p>
+</li>
+</ul>
+<h2 id="解析请求---resp">解析请求 - RESP</h2>
+<p>Redis 使用 RESP 协议进行 client-server 通信，可阅读 <a href="https://redis.io/topics/protocol">Redis Protocol specification</a> 了解详情。</p>
+<p>在 RESP 中，主要分为以下几种数据类型，每种数据类型编码的终止符均为 <code>\r\n</code>。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Type</th>
+<th style="text-align:left">Encoding</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Simple Strings</td>
+<td style="text-align:left"><code>+[content]\r\n</code> (non binary safe strings)</td>
+</tr>
+<tr>
+<td style="text-align:left">Errors</td>
+<td style="text-align:left"><code>-[err-type][err-msg]\r\n</code> (non binary safe)</td>
+</tr>
+<tr>
+<td style="text-align:left">Integers</td>
+<td style="text-align:left"><code>:[integer]\r\n</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Bulk Strings</td>
+<td style="text-align:left"><code>$[length]\r\n[content]\r\n</code> (binary safe, $\le 512MB$)</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">Null Bulk String -&gt; <code>$-1\r\n</code></td>
+</tr>
+<tr>
+<td style="text-align:left">Arrays</td>
+<td style="text-align:left"><code>*[array-count]\r\n&lt;other-data-type&gt;...</code></td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">Null Array -&gt; <code>*-1\r\n</code></td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">Can contain mixed types, include Null Bulk String &amp; Arrays</td>
+</tr>
+</tbody>
+</table>
+<p>上述介绍的协议其实为 RESP2，新版本 RESP3 的介绍可阅读 <a href="https://github.com/antirez/RESP3/blob/master/spec.md">RESP3 specification</a>。</p>
+<p>客户端请求通常为两种格式：</p>
+<ul>
+<li><code>PROTO_REQ_MULTIBULK</code>: a RESP Array consisting of just Bulk Strings</li>
+<li><code>PROTO_REQ_INLINE</code>: inline command, space-separated arguments without encoding</li>
+</ul>
+<p>在 <a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L1843">processInputBuffer</a> 中解析客户端输入缓冲区的内容为完整的 Redis command 后将其填充至 <code>client-&gt;argv</code>。</p>
+<h2 id="处理请求">处理请求</h2>
+<p>在解析完一条完整的 Redis command 并将其填充至 <code>client-&gt;argv</code> 后，Redis 会调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L1910">processCommandAndResetClient</a> 来处理该请求：</p>
+<ul>
+<li>其首先调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L1828">processCommand</a> 处理请求，当请求处理完毕后，调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/networking.c#L1829">commandProcessed</a> 更新客户端相关状态。</li>
+<li>当在处理请求过程中客户端被 free 时，该函数返回 <code>C_ERR</code>，否则返回 <code>C_OK</code></li>
+</ul>
+<h3 id="rediscommand">redisCommand</h3>
+<p><a href="https://github.com/redis/redis/blob/6.0.8/src/server.h#L1480">redisCommand</a> 结构体的定义如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">struct</span> <span class="nc">redisCommand</span> <span class="p">{</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+    <span class="n">redisCommandProc</span> <span class="o">*</span><span class="n">proc</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">arity</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">sflags</span><span class="p">;</span>
+    <span class="kt">uint64_t</span> <span class="n">flags</span><span class="p">;</span>
+    <span class="n">redisGetKeysProc</span> <span class="o">*</span><span class="n">getkeys_proc</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">firstkey</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">lastkey</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">keystep</span><span class="p">;</span>
+    <span class="kt">long</span> <span class="kt">long</span> <span class="n">microseconds</span><span class="p">,</span> <span class="n">calls</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">id</span><span class="p">;</span>
+<span class="p">};</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>
+<p><code>name</code>: A string representing the command name.</p>
+</li>
+<li>
+<p><code>proc</code>: Pointer to the C function implementing the command, the function prototype is:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">typedef</span> <span class="kt">void</span> <span class="nf">redisCommandProc</span><span class="p">(</span><span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><code>arity</code>: Number of arguments, it is possible to use -N to say &gt;= N</p>
+</li>
+<li>
+<p><code>sflags</code>: Command flags as string. 详情可阅读 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L113">the meaning of the flags</a></p>
+</li>
+<li>
+<p><code>flags</code>: Flags as bitmask. Computed by Redis using the &lsquo;sflags&rsquo; field: <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L3027">populateCommandTableParseFlags</a></p>
+</li>
+<li>
+<p><code>getkeys_proc</code>: An optional function to get key arguments from a command. This is only used when the following three fields are not enough to specify what arguments are keys. the function prototype is:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">typedef</span> <span class="kt">int</span> <span class="o">*</span><span class="nf">redisGetKeysProc</span><span class="p">(</span><span class="k">struct</span> <span class="nc">redisCommand</span> <span class="o">*</span><span class="n">cmd</span><span class="p">,</span>
+                              <span class="n">robj</span> <span class="o">**</span><span class="n">argv</span><span class="p">,</span> <span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">int</span> <span class="o">*</span><span class="n">numkeys</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div></li>
+<li>
+<p><code>firstkey</code>: First argument that is a key (0 = no keys)</p>
+</li>
+<li>
+<p><code>lastkey</code>: Last argument that is a key</p>
+</li>
+<li>
+<p><code>keystep</code>: Step to get all the keys from first to last argument. For instance in <code>MSET</code> the step is two since arguments are key,val,key,val,&hellip;</p>
+</li>
+<li>
+<p><code>microseconds</code>: Microseconds of total execution time for this command.</p>
+</li>
+<li>
+<p><code>calls</code>: Total number of calls of this command.</p>
+</li>
+<li>
+<p><code>id</code>: Command bit identifier for ACLs or other goals.</p>
+</li>
+</ul>
+<p>其中, <code>flags</code>、<code>microseconds</code> 和 <code>calls</code> 由 Redis 自身计算填充，初始时均设为 0 即可。</p>
+<p>在 Redis server 初始化时，会调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L2428">populateCommandTable</a> 使用全局变量 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L182">redisCommandTable</a> 填充 <code>server.commands</code> 和 <code>server.orig_commands</code>。</p>
+<h3 id="processcommand">processCommand</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">int</span> <span class="nf">processCommand</span><span class="p">(</span><span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L3507">processCommand</a> 函数的处理流程大致如下：</p>
+<ol>
+<li>
+<p>调用 <code>moduleCallCommandFilters</code> 将原 Redis Command 替换成在 module 中想要替换的 Redis Command</p>
+</li>
+<li>
+<p>handle <code>QUIT</code> command</p>
+</li>
+<li>
+<p>根据 command name 从 <code>server.commands</code> 中查找相应的 <code>redisCommand</code>，并验证 <code>client-&gt;argc</code> 的有效性</p>
+</li>
+<li>
+<p>Check if the user is authenticated.</p>
+</li>
+<li>
+<p>Check if the user can run this command according to the current ACLs.</p>
+</li>
+<li>
+<p>If cluster is enabled perform the cluster redirection here. However we don&rsquo;t perform the redirection if:</p>
+<ul>
+<li>The sender of this command is our master.</li>
+<li>The command has no key arguments.</li>
+</ul>
+</li>
+<li>
+<p>调用 <code>freeMemoryIfNeededAndSafe</code> 检查当前内存使用情况，以满足 <code>server.maxmemory</code> 的限制</p>
+<ul>
+<li>如果当前有执行超时的 lua 脚本时，为了不混淆 lua 脚本运行时和驱逐键时传播出的 <code>DEL</code> 命令，因此不会检查内存使用情况</li>
+<li>在 <code>freeMemoryIfNeededAndSafe</code> 中，如果当前有执行超时的 lua 脚本，或者正在 loading data 时，不会释放内存，直接返回 <code>C_OK</code></li>
+</ul>
+</li>
+<li>
+<p>Make sure to use a reasonable amount of memory for client side caching metadata.</p>
+</li>
+<li>
+<p>Don&rsquo;t accept write commands if there are problems(AOF/RDB errors) persisting on disk and if this is a master instance.</p>
+</li>
+<li>
+<p>当主从复制延迟小于 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L595">min-replicas-max-lag</a> 的从库数量小于 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L594">min-replicas-to-write</a> 时，阻止写命令</p>
+</li>
+<li>
+<p>当实例为只读从库时，检测写命令是否来自 master，若不为真，则拒绝该写命令</p>
+</li>
+<li>
+<p>Only allow a subset of commands in the context of Pub/Sub if the connection is in RESP2 mode. With RESP3 there are no limits.</p>
+</li>
+<li>
+<p>Only allow commands with flag &ldquo;t&rdquo;, such as INFO, SLAVEOF and so on, when <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L421">replica-serve-stale-data</a> is <code>no</code> and we are a slave with a broken link with master.</p>
+</li>
+<li>
+<p>Loading DB? Return an error if the command has not the CMD_LOADING flag.</p>
+</li>
+<li>
+<p>Lua script too slow? Only allow a limited number of commands.</p>
+</li>
+<li>
+<p>执行该命令</p>
+<ul>
+<li>若在 <code>MULTI/EXEC</code> 上下文中，则将命令加入数组 <code>client-&gt;mstate.commands</code> 中，返回 <code>+QUEUED\r\n</code></li>
+<li>否则，调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L3750">call(c, CMD_CALL_FULL)</a> 处理该请求</li>
+</ul>
+</li>
+</ol>
+<h4 id="call">call</h4>
+<p>The prototype of <code>call</code> is:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="nf">call</span><span class="p">(</span><span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><table>
+<thead>
+<tr>
+<th style="text-align:left">flags</th>
+<th style="text-align:left">meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>CMD_CALL_NONE</code></td>
+<td style="text-align:left">No flags</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>CMD_CALL_SLOWLOG</code></td>
+<td style="text-align:left">Check command speed and log in the slowlog if needed</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>CMD_CALL_STATS</code></td>
+<td style="text-align:left">Populate command stats</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>CMD_CALL_PROPAGATE_AOF</code></td>
+<td style="text-align:left">Append command to AOF if it modified the dataset</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">or if the client flags are forcing propagation.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>CMD_CALL_PROPAGATE_REPL</code></td>
+<td style="text-align:left">Send command to slaves if it modified the dataset</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">or if the client flags are forcing propagation.</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>CMD_CALL_PROPAGATE</code></td>
+<td style="text-align:left">Alias for PROPAGATE_AOF</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>CMD_CALL_FULL</code></td>
+<td style="text-align:left">Alias for SLOWLOG</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>CMD_CALL_NOWRAP</code></td>
+<td style="text-align:left">Don&rsquo;t wrap also propagate array into MULTI/EXEC:</td>
+</tr>
+<tr>
+<td style="text-align:left"></td>
+<td style="text-align:left">the caller will handle it.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>调用 <code>call</code> 时，如果设置了 <code>CMD_CALL_PROPAGATE_AOF</code>
+<ul>
+<li>若客户端设置了 <code>CLIENT_FORCE_AOF</code>，则即使该命令不改变 dataset 也会传播</li>
+<li>若客户端设置了 <code>CLIENT_PREVENT_AOF_PROP</code>，则即使该命令改变 dataset 也不会传播</li>
+</ul>
+</li>
+<li>调用 <code>call</code> 时，如果未设置 <code>CMD_CALL_PROPAGATE_AOF</code>，则无论客户端设置何种标识，该命令也不会传播</li>
+</ul>
+<blockquote>
+<p><code>CMD_CALL_PROPAGATE_REPL</code> 同理</p>
+</blockquote>
+<p>该函数的处理流程大致如下：</p>
+<ol>
+<li>
+<p><code>server.fixed_time_expire++</code>: 表示当前正在处理请求 <code>call</code> 上下文中，当判断 key 是否过期时，会使用缓存的 <code>server.mstime</code>(调用请求处理函数 <code>redisCommand-&gt;proc</code> 前更新) 作为当前时间，这样做是为了防止在处理请求多次访问同一 key 时，该 key 可能中途过期造成不一致的现象</p>
+</li>
+<li>
+<p>Send the command to clients in MONITOR mode if applicable. Administrative commands are considered too dangerous to be shown.</p>
+</li>
+<li>
+<p>因为 <code>call()</code> 可能会递归调用，因此在调用 <code>redisCommand-&gt;proc</code> 前需要做以下准备工作，以在调用请求处理函数后相关状态可以恢复至调用前的状态：</p>
+<ul>
+<li>使用 <code>client_old_flags</code> 存储此时的 <code>client-&gt;flags</code>，随后清除命令传播相关标志位：<code>CLIENT_FORCE_AOF</code>, <code>CLIENT_FORCE_REPL</code>, &amp; <code>CLIENT_PREVENT_PROP</code></li>
+<li>使用 <code>prev_also_propagate</code> 存储此时的 <code>server.also_propagate</code>，随后将其初始化为空值</li>
+<li>记录此时的数据库状态 <code>server.dirty</code> 和时间 <code>server.ustime</code></li>
+</ul>
+</li>
+<li>
+<p>调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L3334">redisCommand-&gt;proc</a> 处理该请求，可能会修改 <code>client-&gt;flags</code> 和 <code>server.also_propagate</code>，因此需要存储调用该函数之前的状态</p>
+</li>
+<li>
+<p>按需记录慢日志，更新 Redis Command 相关状态</p>
+</li>
+<li>
+<p>调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L3400">propagate</a> 将命令传播至 AOF 和 replications，决定是否传播由 dataset 是否有变化和相关 flags 决定：</p>
+<ul>
+<li>请求相关 flags <code>CMD_CALL_PROPAGATE</code> 是必要不充分条件</li>
+<li>客户端相关 flags <code>CLIENT_FORCE_(AOF|REPL)</code> 或 <code>CLIENT_PREVENT_(AOF|REPL)_PROP</code> 是强制条件</li>
+</ul>
+</li>
+<li>
+<p>使用 <code>client_old_flags</code> 将 <code>client-&gt;flags</code> 恢复至调用 <code>redisCommand-&gt;proc</code> 前的状态</p>
+</li>
+<li>
+<p>传输 <code>server.also_propagate</code> 中的请求至 AOF 和 replications。</p>
+<ul>
+<li>在处理请求时，可能会调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L3229">alsoPropagate</a> 将想要额外传播的请求加入 <code>server.also_propagate</code> 数组中</li>
+<li>只需请求相关 flags 决定是否传播，不受客户端 flags 影响，因此这一步在第 6 步之后没问题</li>
+<li>传递多条请求时，会使用 <code>MULTI/EXEC</code> 上下文包装，以保证原子性</li>
+</ul>
+</li>
+<li>
+<p>使用 <code>prev_also_propagate</code> 将 <code>server.also_propagate</code> 恢复至调用 <code>redisCommand-&gt;proc</code> 前的状态</p>
+</li>
+<li>
+<p>If the client has keys tracking enabled for client side caching, make sure to remember the keys it fetched via this command.</p>
+</li>
+<li>
+<p><code>server.fixed_time_expire--</code>: 离开 <code>call</code> 上下文</p>
+</li>
+</ol>
+<h4 id="propagate">propagate</h4>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Propagate the specified command (in the context of the specified database id)
+</span><span class="cm"> * to AOF and Slaves. */</span>
+<span class="kt">void</span> <span class="n">propagate</span><span class="p">(</span><span class="k">struct</span> <span class="nc">redisCommand</span> <span class="o">*</span><span class="n">cmd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dbid</span><span class="p">,</span> <span class="n">robj</span> <span class="o">**</span><span class="n">argv</span><span class="p">,</span> <span class="kt">int</span> <span class="n">argc</span><span class="p">,</span>
+               <span class="kt">int</span> <span class="n">flags</span><span class="p">)</span>
+</code></pre></td></tr></table>
+</div>
+</div><table>
+<thead>
+<tr>
+<th style="text-align:left">flags</th>
+<th style="text-align:left">meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>PROPAGATE_NONE</code></td>
+<td style="text-align:left">no propagation of command at all</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>PROPAGATE_AOF</code></td>
+<td style="text-align:left">propagate into the AOF file if is enabled</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>PROPAGATE_REPL</code></td>
+<td style="text-align:left">propagate into the replication link</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/aof.c#L584">feedAppendOnlyFile</a> 将命令写至 AOF</li>
+<li>调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/replication.c#L208">replicationFeedSlaves</a> 将命令写至 replications</li>
+</ul>
+<h3 id="commandprocessed">commandProcessed</h3>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Perform necessary tasks after a command was executed:
+</span><span class="cm"> *
+</span><span class="cm"> * 1. The client is reset unless there are reasons to avoid doing it.
+</span><span class="cm"> * 2. In the case of master clients, the replication offset is updated.
+</span><span class="cm"> * 3. Propagate commands we got from our master to replicas down the line. */</span>
+<span class="kt">void</span> <span class="nf">commandProcessed</span><span class="p">(</span><span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div>
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">765PRO.P</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2020-10-29
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://k-on.me/tags/redis/">Redis</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/tla_notes/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">TLA&#43; notes</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/redis-sourcecode-server/">
+            <span class="next-text nav-default">Redis 源码阅读 --- Server</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="pro-765@qq.com" rel="me noopener" class="iconfont"
+      title="email"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1451 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M664.781909 681.472759 0 97.881301C0 3.997201 71.046997 0 71.046997 0L474.477909 0 961.649408 0 1361.641813 0C1361.641813 0 1432.688811 3.997201 1432.688811 97.881301L771.345323 681.472759C771.345323 681.472759 764.482731 685.154773 753.594283 688.65053L753.594283 688.664858C741.602731 693.493018 729.424896 695.068979 718.077952 694.839748 706.731093 695.068979 694.553173 693.493018 682.561621 688.664858L682.561621 688.65053C671.644501 685.140446 664.781909 681.472759 664.781909 681.472759L664.781909 681.472759ZM718.063616 811.603883C693.779541 811.016482 658.879232 802.205449 619.10784 767.734955 542.989056 701.759633 0 212.052267 0 212.052267L0 942.809523C0 942.809523 0 1024 83.726336 1024L682.532949 1024 753.579947 1024 1348.948139 1024C1432.688811 1024 1432.688811 942.809523 1432.688811 942.809523L1432.688811 212.052267C1432.688811 212.052267 893.138176 701.759633 817.019477 767.734955 777.248 802.205449 742.347691 811.03081 718.063616 811.603883L718.063616 811.603883Z"></path>
+</svg>
+
+    </a>
+  
+    <a href="https://github.com/yz1509" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://k-on.me/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2018 -
+    2021
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        765PRO.P
+        
+      </span></span>
+
+  
+  
+    <span id="busuanzi_container">
+      访客数/访问量：<span id="busuanzi_value_site_uv"></span>/<span id="busuanzi_value_site_pv"></span>
+    </span>
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
