@@ -9,10 +9,10 @@
     <lastBuildDate>Tue, 06 Oct 2020 11:10:35 +0800</lastBuildDate><atom:link href="https://k-on.me/tags/skip-list/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Redis 源码阅读 --- skiplist</title>
-      <link>https://k-on.me/post/redis-sourcecode-skiplist/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-skiplist/</link>
       <pubDate>Tue, 06 Oct 2020 11:10:35 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-skiplist/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-skiplist/</guid>
       <description>&lt;p&gt;Redis 跳跃表相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; &amp;amp; &lt;code&gt;t_zset.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     

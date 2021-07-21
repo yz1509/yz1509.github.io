@@ -9,10 +9,10 @@
     <lastBuildDate>Wed, 23 Sep 2020 17:14:57 +0800</lastBuildDate><atom:link href="https://k-on.me/tags/malloc/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Redis 源码阅读 --- zmalloc</title>
-      <link>https://k-on.me/post/redis-sourcecode-zmalloc/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-zmalloc/</link>
       <pubDate>Wed, 23 Sep 2020 17:14:57 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-zmalloc/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-zmalloc/</guid>
       <description>&lt;p&gt;Redis 内存分配及释放相关源码阅读笔记，源码文件 &lt;code&gt;zmalloc.h&lt;/code&gt; &amp;amp; &lt;code&gt;zmalloc.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     

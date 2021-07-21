@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Redis Streams - HTT - ふわふわ時間</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="765PRO.P" />
+  <meta name="description" content="主要介绍 Redis Streams 数据结构及部分操作，并不涉及源码部分。
+" />
+
+  <meta name="keywords" content="K-ON, KyoAni" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.85.0" />
+
+
+<link rel="canonical" href="https://k-on.me/post/redis/redisstreams/" />
+
+
+
+
+
+
+
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.b3a8813c06e6d785beba22bf8264e174fa2cb3a396b22f9ba24e2c00c18aaf7f.css" integrity="sha256-s6iBPAbm14W&#43;uiK/gmThdPoss6OWsi&#43;bok4sAMGKr38=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Redis Streams" />
+<meta property="og:description" content="主要介绍 Redis Streams 数据结构及部分操作，并不涉及源码部分。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://k-on.me/post/redis/redisstreams/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2019-10-16T17:50:09+00:00" />
+<meta property="article:modified_time" content="2019-10-16T17:50:09+00:00" />
+
+<meta itemprop="name" content="Redis Streams">
+<meta itemprop="description" content="主要介绍 Redis Streams 数据结构及部分操作，并不涉及源码部分。"><meta itemprop="datePublished" content="2019-10-16T17:50:09+00:00" />
+<meta itemprop="dateModified" content="2019-10-16T17:50:09+00:00" />
+<meta itemprop="wordCount" content="1504">
+<meta itemprop="keywords" content="Redis," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Redis Streams"/>
+<meta name="twitter:description" content="主要介绍 Redis Streams 数据结构及部分操作，并不涉及源码部分。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">HTT</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/about/">About</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/categories/">Categories</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      HTT
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/about/">About</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Redis Streams</h1>
+      
+      <div class="post-meta">
+        <time datetime="2019-10-16" class="post-time">
+          2019-10-16
+        </time>
+        <div class="post-category">
+            <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
+            
+          </div>
+        <span class="more-meta"> 1504 words </span>
+          <span class="more-meta"> 4 min read </span>
+
+        
+        
+          <span id="busuanzi_container_page_pv">
+            | 阅读 <span id="busuanzi_value_page_pv"></span>
+          </span>
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-什么是-redis-streams">1. 什么是 Redis Streams</a></li>
+    <li><a href="#2-redis-streams-结构">2. Redis Streams 结构</a></li>
+    <li><a href="#3-redis-streams-api">3. Redis Streams API</a>
+      <ul>
+        <li><a href="#31-xadd">3.1. XADD</a></li>
+        <li><a href="#32-xrange--xrevrange">3.2. XRANGE / XREVRANGE</a></li>
+        <li><a href="#33-xread-blocking-for-new-data">3.3. XREAD: blocking for new data</a></li>
+        <li><a href="#34-xlen">3.4. XLEN</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-consumer-groups">4. Consumer groups</a>
+      <ul>
+        <li><a href="#41-xgroup">4.1. XGROUP</a></li>
+        <li><a href="#42-xreadgroup">4.2. XREADGROUP</a></li>
+        <li><a href="#43-xack">4.3. XACK</a></li>
+        <li><a href="#44-xpending">4.4. XPENDING</a></li>
+        <li><a href="#45-xclaim">4.5. XCLAIM</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>主要介绍 Redis Streams 数据结构及部分操作，并不涉及源码部分。</p>
+<hr>
+<p>整理自 <a href="http://antirez.com/news/114">Streams: a new general purpose data structure in Redis</a>、<a href="http://antirez.com/news/116">An update on Redis Streams development</a>、<a href="http://antirez.com/news/128">Redis streams as a pure data structure</a> 和 <a href="https://redis.io/topics/streams-intro">Introduction to Redis Streams</a> 。</p>
+<h2 id="1-什么是-redis-streams">1. 什么是 Redis Streams</h2>
+<p>本质上是一个抽象日志：</p>
+<ul>
+<li>日志中的每条记录是结构化、可扩展的 <code>&lt;field, value&gt;</code> 对</li>
+<li>支持范围查询和指定读取</li>
+<li>每条记录在日志中有唯一标识，标识中包含了单调递增的时间戳信息</li>
+<li>日志可以根据需要自动清理历史记录</li>
+<li>日志保存在内存中，但是也支持持久化</li>
+</ul>
+<p>和其他可模拟消息队列的数据类型 (List, Pub/Sub, Zset) 对比：</p>
+<table>
+<thead>
+<tr>
+<th>List, Pub/Sub, Zset</th>
+<th>Redis Streams</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>List 不能从中间获取成员，$O(N)$</td>
+<td>可以从中间获取成员，$O(logN)$</td>
+</tr>
+<tr>
+<td>no fan-out is possible, blocking operations on list serve a single element to a single client</td>
+<td>可以多个 clients 使用 XREAD blocking for new message</td>
+</tr>
+<tr>
+<td>List 中没有标识符的概念</td>
+<td>每条 msg 都有一个唯一的 id</td>
+</tr>
+<tr>
+<td>Pub/Sub 无法保留历史消息，只能获取连接之后的消息，不支持范围查询</td>
+<td>可以保存在 AOF 和 RDB 中</td>
+</tr>
+<tr>
+<td>Pub/Sub 没有 consumer group 的概念</td>
+<td>有 consumer group，更贴近真实的业务场景</td>
+</tr>
+<tr>
+<td>Pub/Sub 的性能和订阅某个频道的 client 数量正相关</td>
+<td>不存在</td>
+</tr>
+<tr>
+<td>Zset 不允许添加重复成员，不支持成员淘汰和 block 新消息操作，内存开销大</td>
+<td>允许，支持按时间线来淘汰历史数据，支持 block 操作，基于 redix tree 和 listpack，内存开销低</td>
+</tr>
+<tr>
+<td>Zset 支持删除任意元素</td>
+<td>不支持从中间删除元素 (log属性)，more compact and memory efficient</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-redis-streams-结构">2. Redis Streams 结构</h2>
+<div class="highlight" cmd="true" args=""><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">+-----+--------+  +--------+  +--------+  +--------+
+| key | Entry1 |--| Entry2 |--| ...... |--| EntryN |
++-----+--------+  +--------+  +--------+  +--------+
+      :        :
++-----+        +-------------------------------------------+
+|                                                          |
++----+--------+--------+--------+--------+--------+--------+
+| ID | field1 | value1 | field2 | value3 | ...... | ...... |
++----+--------+--------+--------+--------+--------+--------+
+:    :
+|    +-------------------------------+
+|                                    |
++------------------+-----------------+
+| millisecond time | sequence number |
++------------------+-----------------+
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>在每个 streams 中含有多个 entry(message)</li>
+<li>每个 entry 有一唯一的 ID，并且可包含多个 <code>&lt;filed, value&gt;</code> 对
+<ul>
+<li>添加连续的 entry，如果使用相同的 field name 可以节省内存</li>
+</ul>
+</li>
+<li>ID 由 millisecond time(64bit) 和 sequence number(64bit) 两部分组成
+<ul>
+<li>其中，millisecond time 取当前时间戳和上一条插入 streams 的 entry 的时间戳之间的较大值，保证单调性</li>
+</ul>
+</li>
+</ul>
+<h2 id="3-redis-streams-api">3. Redis Streams API</h2>
+<h3 id="31-xadd">3.1. XADD</h3>
+<p><code>XADD key [MAXLEN [~] number] ID field string [field string ...]</code></p>
+<p>Appends a new entry into the specified streams.</p>
+<ul>
+<li>ID 为 <code>*</code> 表示让 Redis 自动生成 ID</li>
+<li>如果指定消息 ID，为了维持单调递增性，后面指令的 ID 必须大于之前指令的 ID</li>
+<li>可以指定 streams 的 <code>MAXLEN</code>，此时 streams 类似于一个固定大小的队列</li>
+<li>添加 <code>~</code> 表示并不严格要求 <code>MAXLEN=number</code></li>
+</ul>
+<h3 id="32-xrange--xrevrange">3.2. XRANGE / XREVRANGE</h3>
+<p><code>XRANGE key start end [COUNT count]</code></p>
+<ul>
+<li>返回结果包含 start ID 和 end ID，即闭区间</li>
+<li><code>-</code> 和 <code>+</code> 分别表示最小和最大 ID</li>
+<li>start ID 和 end ID 可以省略 sequenceNumber 部分，此时 start ID 默认 sequenceNumber = 0，而 end ID 默认 sequenceNumber 为最大值</li>
+<li>可以添加 <code>COUNT</code> 参数，实现类似 <code>scan</code> 操作</li>
+</ul>
+<p><code>XREVRANGE key end start [COUNT count]</code></p>
+<ul>
+<li>逆序返回结果，使用方法类似 <code>XRANGE</code></li>
+</ul>
+<h3 id="33-xread-blocking-for-new-data">3.3. XREAD: blocking for new data</h3>
+<p><code>XREAD [COUNT count] [BLOCK milliseconds] STREAMS key [key ...] ID [ID ...]</code></p>
+<ul>
+<li>ID为 <code>$</code> 表示指定 ID 为流中目前已存的最大 ID</li>
+<li>BLOCK 超时时间单位为 ms，超时时间为 0 时表示不会超时</li>
+<li>当有多个 client BLOCK 等待新 msg 时，排队方式为 FIFO</li>
+</ul>
+<h3 id="34-xlen">3.4. XLEN</h3>
+<p><code>XLEN key</code></p>
+<p>查看指定流中的 entry 个数，one ID one entry.</p>
+<h2 id="4-consumer-groups">4. Consumer groups</h2>
+<p>一个 consumer group 就像一个 pseudo consumer 一样从 streams 中获取数据，它有如下特点：</p>
+<ul>
+<li>同一消息不可能传递给多个 consumer</li>
+<li>在 consumer group 中由 consumer(client) 自身提供 name 来进行区分</li>
+<li>每个 consumer group 保存了目前尚未分发的第一条消息的 ID (即，偏移量)，据此，当 consumer 请求消费时， consumer group 保证不会将先前已分发的消息发送给该 consumer</li>
+<li>消费消息需要显式地 ACK 机制，只有当该消息确认被处理，才会从 consumer group 的消息队列中删除</li>
+<li>Consumer group 记录当前所有的未决消息的信息，因此保证了 consumer 在中断重连后只能重新获取之前自身未 ACK 的消息</li>
+</ul>
+<p>一个 consumer group 状态的示例如下:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-py" data-lang="py"><span class="o">+------------------------------------------+</span>
+<span class="o">|</span> <span class="n">consumer_group_name</span><span class="p">:</span> <span class="n">mygroup</span>             <span class="o">|</span>
+<span class="o">|</span> <span class="n">consumer_group_stream</span><span class="p">:</span> <span class="n">somekey</span>           <span class="o">|</span>
+<span class="o">|</span> <span class="n">last_delivered_id</span><span class="p">:</span> <span class="mi">1292309234234</span><span class="o">-</span><span class="mi">92</span>      <span class="o">|</span>
+<span class="o">|</span>                                          <span class="o">|</span>
+<span class="o">|</span> <span class="n">consumers</span><span class="p">:</span>                               <span class="o">|</span>
+<span class="o">|</span>     <span class="s2">&#34;consumer-1&#34;</span> <span class="k">with</span> <span class="n">pending</span> <span class="n">messages</span>   <span class="o">|</span>
+<span class="o">|</span>        <span class="mi">1292309234234</span><span class="o">-</span><span class="mi">4</span>                   <span class="o">|</span>
+<span class="o">|</span>        <span class="mi">1292309234232</span><span class="o">-</span><span class="mi">8</span>                   <span class="o">|</span>
+<span class="o">|</span>     <span class="s2">&#34;consumer-42&#34;</span> <span class="k">with</span> <span class="n">pending</span> <span class="n">messages</span>  <span class="o">|</span>
+<span class="o">|</span>       <span class="o">...</span> <span class="p">(</span><span class="ow">and</span> <span class="n">so</span> <span class="n">forth</span><span class="p">)</span>                 <span class="o">|</span>
+<span class="o">+------------------------------------------+</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="41-xgroup">4.1. XGROUP</h3>
+<p>创建、销毁和管理 consumer group</p>
+<ul>
+<li><code>XGROUP CREATE key groupname id-or-$</code>
+<ul>
+<li>目前尚不支持从一个未存在的 streams 上创建 consumer group</li>
+</ul>
+</li>
+<li><code>XGROUP SETID key groupname id-or-$</code></li>
+<li><code>XGROUP DESTROY key groupname</code></li>
+<li><code>XGROUP DELCONSUMER key groupname consumername</code></li>
+</ul>
+<h3 id="42-xreadgroup">4.2. XREADGROUP</h3>
+<p>通过 consumer group 的方式从 streams 中读取数据</p>
+<p><code>XREADGROUP GROUP group consumer [COUNT count] [BLOCK milliseconds] [NOACK] STREAMS key [key ...] ID [ID ...]</code></p>
+<ul>
+<li>首次出现的 consumer 将自动加入 consumer group，无需显式声明</li>
+<li>ID 为 <code>&gt;</code> 表示请求尚未分发给其他 consumer 的新消息</li>
+<li>ID 为其他有效的数字 ID 表示请求自身尚未 ACK 的 pending messages</li>
+</ul>
+<h3 id="43-xack">4.3. XACK</h3>
+<p>将一个未决消息标记为已处理</p>
+<p><code>XACK key group ID [ID ...]</code></p>
+<h3 id="44-xpending">4.4. XPENDING</h3>
+<p>返回 consumer group 中的 pending messages 相关信息</p>
+<p><code>XPENDING key group [start end count] [consumer]</code></p>
+<h3 id="45-xclaim">4.5. XCLAIM</h3>
+<p>将满足条件的 pending messages 重分配</p>
+<p><code>XCLAIM key group consumer min-idle-time ID [ID ...] [IDLE ms] [TIME ms-unix-time] [RETRYCOUNT count] [FORCE] [JUSTID]</code></p>
+<p>全部 consumer group 命令可查看<a href="https://redis.io/commands/xack">相关页面</a></p>
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">765PRO.P</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2019-10-16
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://k-on.me/tags/redis/">Redis</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/ccia-%E7%BA%BF%E7%A8%8B%E7%AE%A1%E7%90%86/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">CCIA-线程管理</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/paper/consistenthashing/">
+            <span class="next-text nav-default">Consistent Hashing</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="pro-765@qq.com" rel="me noopener" class="iconfont"
+      title="email"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1451 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M664.781909 681.472759 0 97.881301C0 3.997201 71.046997 0 71.046997 0L474.477909 0 961.649408 0 1361.641813 0C1361.641813 0 1432.688811 3.997201 1432.688811 97.881301L771.345323 681.472759C771.345323 681.472759 764.482731 685.154773 753.594283 688.65053L753.594283 688.664858C741.602731 693.493018 729.424896 695.068979 718.077952 694.839748 706.731093 695.068979 694.553173 693.493018 682.561621 688.664858L682.561621 688.65053C671.644501 685.140446 664.781909 681.472759 664.781909 681.472759L664.781909 681.472759ZM718.063616 811.603883C693.779541 811.016482 658.879232 802.205449 619.10784 767.734955 542.989056 701.759633 0 212.052267 0 212.052267L0 942.809523C0 942.809523 0 1024 83.726336 1024L682.532949 1024 753.579947 1024 1348.948139 1024C1432.688811 1024 1432.688811 942.809523 1432.688811 942.809523L1432.688811 212.052267C1432.688811 212.052267 893.138176 701.759633 817.019477 767.734955 777.248 802.205449 742.347691 811.03081 718.063616 811.603883L718.063616 811.603883Z"></path>
+</svg>
+
+    </a>
+  
+    <a href="https://github.com/yz1509" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://k-on.me/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2018 -
+    2021
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        765PRO.P
+        
+      </span></span>
+
+  
+  
+    <span id="busuanzi_container">
+      访客数/访问量：<span id="busuanzi_value_site_uv"></span>/<span id="busuanzi_value_site_pv"></span>
+    </span>
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

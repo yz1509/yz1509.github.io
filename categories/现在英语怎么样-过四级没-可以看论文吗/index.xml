@@ -6,67 +6,58 @@
     <description>Recent content in 现在英语怎么样 过四级没 可以看论文吗 on HTT - ふわふわ時間</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 13 Mar 2021 15:05:02 +0800</lastBuildDate><atom:link href="https://k-on.me/categories/%E7%8E%B0%E5%9C%A8%E8%8B%B1%E8%AF%AD%E6%80%8E%E4%B9%88%E6%A0%B7-%E8%BF%87%E5%9B%9B%E7%BA%A7%E6%B2%A1-%E5%8F%AF%E4%BB%A5%E7%9C%8B%E8%AE%BA%E6%96%87%E5%90%97/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Introduction to Infiniband for End Users</title>
-      <link>https://k-on.me/post/introduction-to-infiniband-for-end-users/</link>
-      <pubDate>Sat, 13 Mar 2021 15:05:02 +0800</pubDate>
-      
-      <guid>https://k-on.me/post/introduction-to-infiniband-for-end-users/</guid>
-      <description>&lt;p&gt;《Introduction to Infiniband for End Users》 阅读笔记。&lt;/p&gt;</description>
-    </item>
-    
+    <lastBuildDate>Sun, 07 Feb 2021 15:48:24 +0800</lastBuildDate><atom:link href="https://k-on.me/categories/%E7%8E%B0%E5%9C%A8%E8%8B%B1%E8%AF%AD%E6%80%8E%E4%B9%88%E6%A0%B7-%E8%BF%87%E5%9B%9B%E7%BA%A7%E6%B2%A1-%E5%8F%AF%E4%BB%A5%E7%9C%8B%E8%AE%BA%E6%96%87%E5%90%97/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>LSM Based Storage Techniques: A Survey</title>
-      <link>https://k-on.me/post/lsm-based-storage-techniques-a-survey/</link>
+      <link>https://k-on.me/post/paper/lsm-based-storage-techniques-a-survey/</link>
       <pubDate>Sun, 07 Feb 2021 15:48:24 +0800</pubDate>
       
-      <guid>https://k-on.me/post/lsm-based-storage-techniques-a-survey/</guid>
+      <guid>https://k-on.me/post/paper/lsm-based-storage-techniques-a-survey/</guid>
       <description>&lt;p&gt;&lt;a href=&#34;https://arxiv.org/pdf/1812.07527.pdf&#34;&gt;《LSM-based Storage Techniques: A Survey》&lt;/a&gt; 阅读笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Time, Clocks, and the Ordering of Events in a Distributed System</title>
-      <link>https://k-on.me/post/time-clocks-and-the-ordering-of-events-in-a-distributed-system/</link>
+      <link>https://k-on.me/post/paper/time-clocks-and-the-ordering-of-events-in-a-distributed-system/</link>
       <pubDate>Thu, 04 Feb 2021 18:14:47 +0800</pubDate>
       
-      <guid>https://k-on.me/post/time-clocks-and-the-ordering-of-events-in-a-distributed-system/</guid>
+      <guid>https://k-on.me/post/paper/time-clocks-and-the-ordering-of-events-in-a-distributed-system/</guid>
       <description>&lt;p&gt;《Time, Clocks, and the Ordering of Events in a Distributed System》 阅读笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>The Problem With Embedded CRDT Counters and a Solution</title>
-      <link>https://k-on.me/post/the-problem-with-embedded-crdt-counters-and-a-solution/</link>
+      <link>https://k-on.me/post/paper/the-problem-with-embedded-crdt-counters-and-a-solution/</link>
       <pubDate>Thu, 31 Dec 2020 17:09:00 +0800</pubDate>
       
-      <guid>https://k-on.me/post/the-problem-with-embedded-crdt-counters-and-a-solution/</guid>
+      <guid>https://k-on.me/post/paper/the-problem-with-embedded-crdt-counters-and-a-solution/</guid>
       <description>&lt;p&gt;《The Problem With Embedded CRDT Counters and a Solution》 阅读笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Efficient State-based CRDTs by Delta-Mutation</title>
-      <link>https://k-on.me/post/efficient-state-based-crdts-by-delta-mutation/</link>
+      <link>https://k-on.me/post/paper/efficient-state-based-crdts-by-delta-mutation/</link>
       <pubDate>Mon, 07 Sep 2020 12:02:54 +0000</pubDate>
       
-      <guid>https://k-on.me/post/efficient-state-based-crdts-by-delta-mutation/</guid>
+      <guid>https://k-on.me/post/paper/efficient-state-based-crdts-by-delta-mutation/</guid>
       <description>&lt;p&gt;《Efficient State-based CRDTs by Delta-Mutation》 阅读笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Conflict free replicated data types</title>
-      <link>https://k-on.me/post/conflict-free-replicated-data-types/</link>
+      <link>https://k-on.me/post/paper/conflict-free-replicated-data-types/</link>
       <pubDate>Wed, 22 Apr 2020 18:09:55 +0000</pubDate>
       
-      <guid>https://k-on.me/post/conflict-free-replicated-data-types/</guid>
+      <guid>https://k-on.me/post/paper/conflict-free-replicated-data-types/</guid>
       <description>&lt;p&gt;《Conflict free replicated data types》 阅读笔记。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Consistent Hashing</title>
-      <link>https://k-on.me/post/consistenthashing/</link>
+      <link>https://k-on.me/post/paper/consistenthashing/</link>
       <pubDate>Sat, 12 Oct 2019 21:26:09 +0000</pubDate>
       
-      <guid>https://k-on.me/post/consistenthashing/</guid>
+      <guid>https://k-on.me/post/paper/consistenthashing/</guid>
       <description>&lt;p&gt;一致性哈希的 first paper (maybe) 阅读笔记。&lt;/p&gt;</description>
     </item>
     

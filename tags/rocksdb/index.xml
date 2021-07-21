@@ -9,10 +9,10 @@
     <lastBuildDate>Sun, 07 Feb 2021 15:48:24 +0800</lastBuildDate><atom:link href="https://k-on.me/tags/rocksdb/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>LSM Based Storage Techniques: A Survey</title>
-      <link>https://k-on.me/post/lsm-based-storage-techniques-a-survey/</link>
+      <link>https://k-on.me/post/paper/lsm-based-storage-techniques-a-survey/</link>
       <pubDate>Sun, 07 Feb 2021 15:48:24 +0800</pubDate>
       
-      <guid>https://k-on.me/post/lsm-based-storage-techniques-a-survey/</guid>
+      <guid>https://k-on.me/post/paper/lsm-based-storage-techniques-a-survey/</guid>
       <description>&lt;p&gt;&lt;a href=&#34;https://arxiv.org/pdf/1812.07527.pdf&#34;&gt;《LSM-based Storage Techniques: A Survey》&lt;/a&gt; 阅读笔记。&lt;/p&gt;</description>
     </item>
     

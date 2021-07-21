@@ -9,10 +9,10 @@
     <lastBuildDate>Wed, 16 Jun 2021 16:34:17 +0800</lastBuildDate><atom:link href="https://k-on.me/tags/rdma/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>RDMA in Redis</title>
-      <link>https://k-on.me/post/rdma-in-redis/</link>
+      <link>https://k-on.me/post/redis/rdma-in-redis/</link>
       <pubDate>Wed, 16 Jun 2021 16:34:17 +0800</pubDate>
       
-      <guid>https://k-on.me/post/rdma-in-redis/</guid>
+      <guid>https://k-on.me/post/redis/rdma-in-redis/</guid>
       <description>&lt;p&gt;调研 RDMA 技术应用于 Redis 的杂乱笔记。&lt;/p&gt;</description>
     </item>
     

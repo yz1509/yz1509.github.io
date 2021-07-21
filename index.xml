@@ -13,10 +13,10 @@
     
     <item>
       <title>Codis 简要介绍</title>
-      <link>https://k-on.me/post/codis_intro/</link>
+      <link>https://k-on.me/post/redis/codis_intro/</link>
       <pubDate>Wed, 07 Jul 2021 21:06:50 +0800</pubDate>
       
-      <guid>https://k-on.me/post/codis_intro/</guid>
+      <guid>https://k-on.me/post/redis/codis_intro/</guid>
       
         <description>&lt;p&gt;&lt;a href=&#34;https://github.com/CodisLabs/codis&#34;&gt;Codis&lt;/a&gt; 是一个基于 Proxy 的 Redis 集群化方案，其具体介绍与使用可参考 &lt;a href=&#34;https://github.com/CodisLabs/codis/blob/release3.2/doc/tutorial_zh.md&#34;&gt;Codis 使用文档&lt;/a&gt;。本文首先从运维角度出发介绍 Codis，便于了解每个操作背后的具体内容，随后简要介绍了 Codis-Proxy 基本的工作原理，最后简单介绍了扩缩容相关操作。&lt;/p&gt;
 &lt;hr&gt;
@@ -1099,10 +1099,10 @@
     
     <item>
       <title>RDMA in Redis</title>
-      <link>https://k-on.me/post/rdma-in-redis/</link>
+      <link>https://k-on.me/post/redis/rdma-in-redis/</link>
       <pubDate>Wed, 16 Jun 2021 16:34:17 +0800</pubDate>
       
-      <guid>https://k-on.me/post/rdma-in-redis/</guid>
+      <guid>https://k-on.me/post/redis/rdma-in-redis/</guid>
       
         <description>&lt;p&gt;调研 RDMA 技术应用于 Redis 的杂乱笔记。&lt;/p&gt;
 &lt;hr&gt;
@@ -2187,10 +2187,10 @@
     
     <item>
       <title>LSM Based Storage Techniques: A Survey</title>
-      <link>https://k-on.me/post/lsm-based-storage-techniques-a-survey/</link>
+      <link>https://k-on.me/post/paper/lsm-based-storage-techniques-a-survey/</link>
       <pubDate>Sun, 07 Feb 2021 15:48:24 +0800</pubDate>
       
-      <guid>https://k-on.me/post/lsm-based-storage-techniques-a-survey/</guid>
+      <guid>https://k-on.me/post/paper/lsm-based-storage-techniques-a-survey/</guid>
       
         <description>&lt;p&gt;&lt;a href=&#34;https://arxiv.org/pdf/1812.07527.pdf&#34;&gt;《LSM-based Storage Techniques: A Survey》&lt;/a&gt; 阅读笔记。&lt;/p&gt;
 &lt;hr&gt;
@@ -2654,7 +2654,7 @@
 &lt;li&gt;
 &lt;p&gt;&lt;a href=&#34;https://arxiv.org/pdf/1812.07527.pdf&#34;&gt;LSM-based Storage Techniques: A Survey&lt;/a&gt;&lt;/p&gt;
 &lt;p&gt;一篇关于 LSM 很详尽的综述，本文首先讲述了 LSM 的基础知识，随后介绍了从多个方面提升 LSM 性能的一些技术，最后简单介绍了现有基于 LSM 实现的 NoSQL 数据引擎。&lt;/p&gt;
-&lt;p&gt;&lt;a href=&#34;https://k-on.me/post/lsm-based-storage-techniques-a-survey/&#34;&gt;笔记地址&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&#34;https://k-on.me/post/paper/lsm-based-storage-techniques-a-survey/&#34;&gt;笔记地址&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;</description>
       
@@ -2662,10 +2662,10 @@
     
     <item>
       <title>Time, Clocks, and the Ordering of Events in a Distributed System</title>
-      <link>https://k-on.me/post/time-clocks-and-the-ordering-of-events-in-a-distributed-system/</link>
+      <link>https://k-on.me/post/paper/time-clocks-and-the-ordering-of-events-in-a-distributed-system/</link>
       <pubDate>Thu, 04 Feb 2021 18:14:47 +0800</pubDate>
       
-      <guid>https://k-on.me/post/time-clocks-and-the-ordering-of-events-in-a-distributed-system/</guid>
+      <guid>https://k-on.me/post/paper/time-clocks-and-the-ordering-of-events-in-a-distributed-system/</guid>
       
         <description>&lt;p&gt;《Time, Clocks, and the Ordering of Events in a Distributed System》 阅读笔记。&lt;/p&gt;
 &lt;hr&gt;
@@ -3401,10 +3401,10 @@ man cmd_name
     
     <item>
       <title>The Problem With Embedded CRDT Counters and a Solution</title>
-      <link>https://k-on.me/post/the-problem-with-embedded-crdt-counters-and-a-solution/</link>
+      <link>https://k-on.me/post/paper/the-problem-with-embedded-crdt-counters-and-a-solution/</link>
       <pubDate>Thu, 31 Dec 2020 17:09:00 +0800</pubDate>
       
-      <guid>https://k-on.me/post/the-problem-with-embedded-crdt-counters-and-a-solution/</guid>
+      <guid>https://k-on.me/post/paper/the-problem-with-embedded-crdt-counters-and-a-solution/</guid>
       
         <description>&lt;p&gt;《The Problem With Embedded CRDT Counters and a Solution》 阅读笔记。&lt;/p&gt;
 &lt;hr&gt;
@@ -3474,7 +3474,7 @@ man cmd_name
 &lt;ul&gt;
 &lt;li&gt;上述数学描述给出的 &lt;code&gt;Resettable Counter&lt;/code&gt; 是 reset-wins 的，因此需要手动调用 fresh 接口防止更新操作被并行的 reset 所覆盖&lt;/li&gt;
 &lt;li&gt;只有在计数器状态被发送到其他 replicas 后调用 fresh 可适当减少 tag 数量&lt;/li&gt;
-&lt;li&gt;上述数学描述是 state-CRDT，在与 &lt;a href=&#34;https://k-on.me/post/efficient-state-based-crdts-by-delta-mutation/#delta-crdts-for-add-wins-or-sets&#34;&gt;Optimized Add-Wins OR-Set&lt;/a&gt; 结合时，需要进行适当修改&lt;/li&gt;
+&lt;li&gt;上述数学描述是 state-CRDT，在与 &lt;a href=&#34;https://k-on.me/post/paper/efficient-state-based-crdts-by-delta-mutation/#delta-crdts-for-add-wins-or-sets&#34;&gt;Optimized Add-Wins OR-Set&lt;/a&gt; 结合时，需要进行适当修改&lt;/li&gt;
 &lt;li&gt;事实上，当 &lt;code&gt;Resettable Counter&lt;/code&gt; 和 &lt;code&gt;Optimized Add-Wins OR-Set&lt;/code&gt; 结合后，在集合 $s$ 中存储的即为操作历史(五元组 &lt;code&gt;&amp;lt;id, seq, ele, pcnt, ncnt&amp;gt;&lt;/code&gt;)，利用 tag(&lt;code&gt;&amp;lt;id, seq&amp;gt;&lt;/code&gt;) 的唯一性、集合的互异性以及加减操作满足结合律和交换律的性质使得集合 $s$ 的 join 满足交换律、结合律和幂等的性质，故最后所有副本收敛至同一状态&lt;/li&gt;
 &lt;/ul&gt;</description>
       
@@ -4470,10 +4470,10 @@ for any $e$ and any bags $B1$ and $B2$&lt;/li&gt;
     
     <item>
       <title>Redis 源码阅读 --- Server</title>
-      <link>https://k-on.me/post/redis-sourcecode-server/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-server/</link>
       <pubDate>Tue, 27 Oct 2020 20:01:48 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-server/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-server/</guid>
       
         <description>&lt;p&gt;Redis Server 相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; &amp;amp; &lt;code&gt;server.c&lt;/code&gt; &amp;amp;  &lt;code&gt;networking.c&lt;/code&gt;。&lt;/p&gt;
 &lt;hr&gt;
@@ -4550,7 +4550,7 @@ for any $e$ and any bags $B1$ and $B2$&lt;/li&gt;
 &lt;p&gt;初始化 &lt;code&gt;server&lt;/code&gt; 内嵌的数据结构&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;初始化 &lt;code&gt;server.db&lt;/code&gt; 数组，长度为 &lt;code&gt;server.dbnum&lt;/code&gt;，并初始化每个 &lt;code&gt;redisDb&lt;/code&gt; 的状态&lt;/li&gt;
-&lt;li&gt;调用 &lt;code&gt;evictionPoolAlloc&lt;/code&gt; 初始化 &lt;a href=&#34;https://k-on.me/post/redis-sourcecode-db/#eviction-pool&#34;&gt;eviction pool&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;调用 &lt;code&gt;evictionPoolAlloc&lt;/code&gt; 初始化 &lt;a href=&#34;https://k-on.me/post/redis/redis-sourcecode-db/#eviction-pool&#34;&gt;eviction pool&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;初始化 Pub/Sub 客户端&lt;/li&gt;
 &lt;li&gt;初始化 RDB/AOF 相关状态，调用 &lt;code&gt;aofRewriteBufferReset&lt;/code&gt; 重置 AOF rewrite buffer&lt;/li&gt;
 &lt;li&gt;调用 &lt;code&gt;resetServerStats&lt;/code&gt; 重置服务器数据统计状态&lt;/li&gt;
@@ -4587,7 +4587,7 @@ for any $e$ and any bags $B1$ and $B2$&lt;/li&gt;
 &lt;h3 id=&#34;21-servercron&#34;&gt;2.1. serverCron&lt;/h3&gt;
 &lt;p&gt;Redis 在初始化时，会添加一个 time event &lt;code&gt;serverCron&lt;/code&gt; 至 event loop，其运行频率为 &lt;code&gt;server.hz&lt;/code&gt;；如果配置项 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.11/redis.conf#L1714&#34;&gt;dynamic_hz&lt;/a&gt; 设置为 &lt;code&gt;yes&lt;/code&gt;，则该频率会随着当前客户端连接数的增加而增加，上限为 &lt;code&gt;CONFIG_MAX_HZ&lt;/code&gt; (500)。&lt;/p&gt;
 &lt;p&gt;该函数内部分任务的运行频率并不是 &lt;code&gt;server.hz&lt;/code&gt;，而是由 &lt;code&gt;run_with_period(milliseconds) {...}&lt;/code&gt; 中的 &lt;code&gt;milliseconds&lt;/code&gt; 确定。&lt;/p&gt;
-&lt;p&gt;但是从 Redis 的&lt;a href=&#34;https://k-on.me/post/redis-sourcecode-ae/#event-loop-1&#34;&gt;事件循环处理过程&lt;/a&gt;可知 Redis 在处理时间事件之前会先遍历处理已触发的文件事件，因此 &lt;code&gt;serverCron&lt;/code&gt; 实际上的运行频率可能比理论上低。&lt;/p&gt;
+&lt;p&gt;但是从 Redis 的&lt;a href=&#34;https://k-on.me/post/redis/redis-sourcecode-ae/#event-loop-1&#34;&gt;事件循环处理过程&lt;/a&gt;可知 Redis 在处理时间事件之前会先遍历处理已触发的文件事件，因此 &lt;code&gt;serverCron&lt;/code&gt; 实际上的运行频率可能比理论上低。&lt;/p&gt;
 &lt;p&gt;在该定期执行的任务中，主要做了以下工作：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;
@@ -4659,7 +4659,7 @@ for any $e$ and any bags $B1$ and $B2$&lt;/li&gt;
 &lt;li&gt;根据配置项 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L1159&#34;&gt;auto-aof-rewrite-percentage&lt;/a&gt; 和 &lt;a href=&#34;https://github.com/redis/redis/blob/6.0.8/redis.conf#L1160&#34;&gt;auto-aof-rewrite-min-size&lt;/a&gt; 决定当前是否要调用 &lt;code&gt;rewriteAppendOnlyFileBackground&lt;/code&gt; 进行 AOF rewrite 以减少 AOF 文件磁盘空间占用&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;依据当前是否有子进程，调整 Rehash 扩容&lt;a href=&#34;https://k-on.me/post/redis-sourcecode-dict/#dictaddraw&#34;&gt;载荷因子阈值&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;依据当前是否有子进程，调整 Rehash 扩容&lt;a href=&#34;https://k-on.me/post/redis/redis-sourcecode-dict/#dictaddraw&#34;&gt;载荷因子阈值&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;如此前有推迟的 AOF 落盘任务或 AOF 写入发生错误，则调用 &lt;code&gt;flushAppendOnlyFile&lt;/code&gt; 将 AOF 缓冲区内容落盘&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
@@ -5207,10 +5207,10 @@ for any $e$ and any bags $B1$ and $B2$&lt;/li&gt;
     
     <item>
       <title>Redis 源码阅读 --- ae</title>
-      <link>https://k-on.me/post/redis-sourcecode-ae/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-ae/</link>
       <pubDate>Sat, 24 Oct 2020 16:01:48 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-ae/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-ae/</guid>
       
         <description>&lt;p&gt;Redis event loop 相关源码阅读笔记，源码文件 &lt;code&gt;ae.h&lt;/code&gt; &amp;amp; &lt;code&gt;ae.c&lt;/code&gt; &amp;amp; &lt;code&gt;ae_epoll.c&lt;/code&gt; &amp;amp; &lt;code&gt;ae_evport.c&lt;/code&gt; &amp;amp; &lt;code&gt;ae_kqueue.c&lt;/code&gt; &amp;amp; &lt;code&gt;ae_select.c&lt;/code&gt;。&lt;/p&gt;
 &lt;hr&gt;
@@ -5702,10 +5702,10 @@ for any $e$ and any bags $B1$ and $B2$&lt;/li&gt;
     
     <item>
       <title>Redis 源码阅读 --- 持久化</title>
-      <link>https://k-on.me/post/redis-sourcecode-persistence/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-persistence/</link>
       <pubDate>Tue, 20 Oct 2020 20:43:16 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-persistence/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-persistence/</guid>
       
         <description>&lt;p&gt;Redis 持久化相关源码阅读笔记，源码文件 &lt;code&gt;rdb.h&lt;/code&gt; &amp;amp; &lt;code&gt;rdb.c&lt;/code&gt; &amp;amp; &lt;code&gt;aof.c&lt;/code&gt;。&lt;/p&gt;
 &lt;hr&gt;
@@ -6063,7 +6063,7 @@ for any $e$ and any bags $B1$ and $B2$&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;数据对象内容：&lt;code&gt;&amp;lt;type&amp;gt; &amp;lt;key&amp;gt; &amp;lt;value&amp;gt;&lt;/code&gt;，详细内容可参照 &lt;a href=&#34;https://k-on.me/post/redis-sourcecode-persistence/#object-types&#34;&gt;Object types&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;数据对象内容：&lt;code&gt;&amp;lt;type&amp;gt; &amp;lt;key&amp;gt; &amp;lt;value&amp;gt;&lt;/code&gt;，详细内容可参照 &lt;a href=&#34;https://k-on.me/post/redis/redis-sourcecode-persistence/#object-types&#34;&gt;Object types&lt;/a&gt;&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
@@ -6231,10 +6231,10 @@ for any $e$ and any bags $B1$ and $B2$&lt;/li&gt;
     
     <item>
       <title>Redis 源码阅读 --- Database</title>
-      <link>https://k-on.me/post/redis-sourcecode-db/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-db/</link>
       <pubDate>Tue, 13 Oct 2020 17:11:09 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-db/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-db/</guid>
       
         <description>&lt;p&gt;Redis 数据库实现相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; &amp;amp; &lt;code&gt;server.c&lt;/code&gt; &amp;amp; &lt;code&gt;db.c&lt;/code&gt; &amp;amp; &lt;code&gt;evict.c&lt;/code&gt; &amp;amp; &lt;code&gt;expire.c&lt;/code&gt; &amp;amp; &lt;code&gt;blocked.c&lt;/code&gt;。&lt;/p&gt;
 &lt;hr&gt;
@@ -6292,7 +6292,7 @@ for any $e$ and any bags $B1$ and $B2$&lt;/li&gt;
 &lt;li&gt;为性能考虑，应尽量避免调用 &lt;code&gt;gettimeofday&lt;/code&gt; 来获取时间，可使用 Redis 缓存的时间值。&lt;/li&gt;
 &lt;/ul&gt;
 &lt;h2 id=&#34;2-redisdb&#34;&gt;2. redisDb&lt;/h2&gt;
-&lt;p&gt;Redis 数据库由多个 &lt;a href=&#34;https://k-on.me/post/redis-sourcecode-dict/&#34;&gt;dict&lt;/a&gt; 组成，其结构定义如下：&lt;/p&gt;
+&lt;p&gt;Redis 数据库由多个 &lt;a href=&#34;https://k-on.me/post/redis/redis-sourcecode-dict/&#34;&gt;dict&lt;/a&gt; 组成，其结构定义如下：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;div class=&#34;chroma&#34;&gt;
 &lt;table class=&#34;lntable&#34;&gt;&lt;tr&gt;&lt;td class=&#34;lntd&#34;&gt;
 &lt;pre class=&#34;chroma&#34;&gt;&lt;code&gt;&lt;span class=&#34;lnt&#34;&gt; 1
@@ -6329,7 +6329,7 @@ for any $e$ and any bags $B1$ and $B2$&lt;/li&gt;
 &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;redisDb&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;
 &lt;/div&gt;
-&lt;/div&gt;&lt;p&gt;在之前 Redis dict 结构的介绍中，我们知道 dict 可以有不同的 &lt;a href=&#34;https://k-on.me/post/redis-sourcecode-dict/#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84&#34;&gt;dictType&lt;/a&gt;，不同类型的 dict 的区别在于 kv 类型及其相关操作不同，在 &lt;code&gt;redisDb&lt;/code&gt; 中的各个 dict 其类型如下:&lt;/p&gt;
+&lt;/div&gt;&lt;p&gt;在之前 Redis dict 结构的介绍中，我们知道 dict 可以有不同的 &lt;a href=&#34;https://k-on.me/post/redis/redis-sourcecode-dict/#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84&#34;&gt;dictType&lt;/a&gt;，不同类型的 dict 的区别在于 kv 类型及其相关操作不同，在 &lt;code&gt;redisDb&lt;/code&gt; 中的各个 dict 其类型如下:&lt;/p&gt;
 &lt;table&gt;
 &lt;thead&gt;
 &lt;tr&gt;
@@ -7424,10 +7424,10 @@ $$&lt;/p&gt;
     
     <item>
       <title>Redis 源码阅读 --- Object</title>
-      <link>https://k-on.me/post/redis-sourcecode-object/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-object/</link>
       <pubDate>Fri, 09 Oct 2020 10:44:07 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-object/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-object/</guid>
       
         <description>&lt;p&gt;Redis Object 相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; 和 &lt;code&gt;object.c&lt;/code&gt;。&lt;/p&gt;
 &lt;hr&gt;
@@ -8084,10 +8084,10 @@ $$&lt;/p&gt;
     
     <item>
       <title>Redis 源码阅读 --- skiplist</title>
-      <link>https://k-on.me/post/redis-sourcecode-skiplist/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-skiplist/</link>
       <pubDate>Tue, 06 Oct 2020 11:10:35 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-skiplist/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-skiplist/</guid>
       
         <description>&lt;p&gt;Redis 跳跃表相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; &amp;amp; &lt;code&gt;t_zset.c&lt;/code&gt;。&lt;/p&gt;
 &lt;hr&gt;
@@ -8565,10 +8565,10 @@ $$&lt;/p&gt;
     
     <item>
       <title>Redis 源码阅读 --- intset</title>
-      <link>https://k-on.me/post/redis-sourcecode-intset/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-intset/</link>
       <pubDate>Mon, 28 Sep 2020 21:06:04 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-intset/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-intset/</guid>
       
         <description>&lt;p&gt;Redis 整型集合相关源码阅读笔记，源码文件 &lt;code&gt;intset.h&lt;/code&gt; &amp;amp; &lt;code&gt;intset.c&lt;/code&gt;。&lt;/p&gt;
 &lt;hr&gt;

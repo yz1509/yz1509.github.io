@@ -9,19 +9,19 @@
     <lastBuildDate>Wed, 07 Jul 2021 21:06:50 +0800</lastBuildDate><atom:link href="https://k-on.me/tags/redis/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Codis 简要介绍</title>
-      <link>https://k-on.me/post/codis_intro/</link>
+      <link>https://k-on.me/post/redis/codis_intro/</link>
       <pubDate>Wed, 07 Jul 2021 21:06:50 +0800</pubDate>
       
-      <guid>https://k-on.me/post/codis_intro/</guid>
+      <guid>https://k-on.me/post/redis/codis_intro/</guid>
       <description>&lt;p&gt;&lt;a href=&#34;https://github.com/CodisLabs/codis&#34;&gt;Codis&lt;/a&gt; 是一个基于 Proxy 的 Redis 集群化方案，其具体介绍与使用可参考 &lt;a href=&#34;https://github.com/CodisLabs/codis/blob/release3.2/doc/tutorial_zh.md&#34;&gt;Codis 使用文档&lt;/a&gt;。本文首先从运维角度出发介绍 Codis，便于了解每个操作背后的具体内容，随后简要介绍了 Codis-Proxy 基本的工作原理，最后简单介绍了扩缩容相关操作。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>RDMA in Redis</title>
-      <link>https://k-on.me/post/rdma-in-redis/</link>
+      <link>https://k-on.me/post/redis/rdma-in-redis/</link>
       <pubDate>Wed, 16 Jun 2021 16:34:17 +0800</pubDate>
       
-      <guid>https://k-on.me/post/rdma-in-redis/</guid>
+      <guid>https://k-on.me/post/redis/rdma-in-redis/</guid>
       <description>&lt;p&gt;调研 RDMA 技术应用于 Redis 的杂乱笔记。&lt;/p&gt;</description>
     </item>
     
@@ -36,154 +36,154 @@
     
     <item>
       <title>Redis 源码阅读 --- Server</title>
-      <link>https://k-on.me/post/redis-sourcecode-server/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-server/</link>
       <pubDate>Tue, 27 Oct 2020 20:01:48 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-server/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-server/</guid>
       <description>&lt;p&gt;Redis Server 相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; &amp;amp; &lt;code&gt;server.c&lt;/code&gt; &amp;amp;  &lt;code&gt;networking.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Redis 源码阅读 --- ae</title>
-      <link>https://k-on.me/post/redis-sourcecode-ae/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-ae/</link>
       <pubDate>Sat, 24 Oct 2020 16:01:48 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-ae/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-ae/</guid>
       <description>&lt;p&gt;Redis event loop 相关源码阅读笔记，源码文件 &lt;code&gt;ae.h&lt;/code&gt; &amp;amp; &lt;code&gt;ae.c&lt;/code&gt; &amp;amp; &lt;code&gt;ae_epoll.c&lt;/code&gt; &amp;amp; &lt;code&gt;ae_evport.c&lt;/code&gt; &amp;amp; &lt;code&gt;ae_kqueue.c&lt;/code&gt; &amp;amp; &lt;code&gt;ae_select.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Redis 源码阅读 --- 持久化</title>
-      <link>https://k-on.me/post/redis-sourcecode-persistence/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-persistence/</link>
       <pubDate>Tue, 20 Oct 2020 20:43:16 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-persistence/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-persistence/</guid>
       <description>&lt;p&gt;Redis 持久化相关源码阅读笔记，源码文件 &lt;code&gt;rdb.h&lt;/code&gt; &amp;amp; &lt;code&gt;rdb.c&lt;/code&gt; &amp;amp; &lt;code&gt;aof.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Redis 源码阅读 --- Database</title>
-      <link>https://k-on.me/post/redis-sourcecode-db/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-db/</link>
       <pubDate>Tue, 13 Oct 2020 17:11:09 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-db/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-db/</guid>
       <description>&lt;p&gt;Redis 数据库实现相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; &amp;amp; &lt;code&gt;server.c&lt;/code&gt; &amp;amp; &lt;code&gt;db.c&lt;/code&gt; &amp;amp; &lt;code&gt;evict.c&lt;/code&gt; &amp;amp; &lt;code&gt;expire.c&lt;/code&gt; &amp;amp; &lt;code&gt;blocked.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Redis 源码阅读 --- Object</title>
-      <link>https://k-on.me/post/redis-sourcecode-object/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-object/</link>
       <pubDate>Fri, 09 Oct 2020 10:44:07 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-object/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-object/</guid>
       <description>&lt;p&gt;Redis Object 相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; 和 &lt;code&gt;object.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Redis 源码阅读 --- skiplist</title>
-      <link>https://k-on.me/post/redis-sourcecode-skiplist/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-skiplist/</link>
       <pubDate>Tue, 06 Oct 2020 11:10:35 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-skiplist/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-skiplist/</guid>
       <description>&lt;p&gt;Redis 跳跃表相关源码阅读笔记，源码文件 &lt;code&gt;server.h&lt;/code&gt; &amp;amp; &lt;code&gt;t_zset.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Redis 源码阅读 --- intset</title>
-      <link>https://k-on.me/post/redis-sourcecode-intset/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-intset/</link>
       <pubDate>Mon, 28 Sep 2020 21:06:04 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-intset/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-intset/</guid>
       <description>&lt;p&gt;Redis 整型集合相关源码阅读笔记，源码文件 &lt;code&gt;intset.h&lt;/code&gt; &amp;amp; &lt;code&gt;intset.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Redis 源码阅读 --- dict</title>
-      <link>https://k-on.me/post/redis-sourcecode-dict/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-dict/</link>
       <pubDate>Sun, 27 Sep 2020 10:15:20 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-dict/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-dict/</guid>
       <description>&lt;p&gt;Redis dict 实现相关源码阅读笔记，源码文件 &lt;code&gt;dict.h&lt;/code&gt; &amp;amp; &lt;code&gt;dict.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Redis 源码阅读 --- quicklist</title>
-      <link>https://k-on.me/post/redis-sourcecode-quicklist/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-quicklist/</link>
       <pubDate>Thu, 24 Sep 2020 18:35:10 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-quicklist/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-quicklist/</guid>
       <description>&lt;p&gt;Redis 快速链表相关源码阅读笔记，源码文件 &lt;code&gt;quicklist.h&lt;/code&gt; &amp;amp; &lt;code&gt;quicklist.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Redis 源码阅读 --- ziplist</title>
-      <link>https://k-on.me/post/redis-sourcecode-ziplist/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-ziplist/</link>
       <pubDate>Thu, 24 Sep 2020 14:42:15 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-ziplist/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-ziplist/</guid>
       <description>&lt;p&gt;Redis 压缩列表相关源码阅读笔记，源码文件 &lt;code&gt;ziplist.h&lt;/code&gt; &amp;amp; &lt;code&gt;ziplist.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Redis 源码阅读 --- adlist</title>
-      <link>https://k-on.me/post/redis-sourcecode-adlist/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-adlist/</link>
       <pubDate>Thu, 24 Sep 2020 14:39:37 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-adlist/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-adlist/</guid>
       <description>&lt;p&gt;Redis 双向链表相关源码阅读笔记，源码文件 &lt;code&gt;adlist.h&lt;/code&gt; &amp;amp; &lt;code&gt;adlist.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Redis 源码阅读 --- sds</title>
-      <link>https://k-on.me/post/redis-sourcecode-sds/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-sds/</link>
       <pubDate>Thu, 24 Sep 2020 10:42:57 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-sds/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-sds/</guid>
       <description>&lt;p&gt;Redis 简单字符串相关源码阅读笔记，源码文件 &lt;code&gt;sdsalloc.h&lt;/code&gt; &amp;amp; &lt;code&gt;sds.h&lt;/code&gt; &amp;amp; &lt;code&gt;sds.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Redis 源码阅读 --- zmalloc</title>
-      <link>https://k-on.me/post/redis-sourcecode-zmalloc/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-zmalloc/</link>
       <pubDate>Wed, 23 Sep 2020 17:14:57 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-zmalloc/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-zmalloc/</guid>
       <description>&lt;p&gt;Redis 内存分配及释放相关源码阅读笔记，源码文件 &lt;code&gt;zmalloc.h&lt;/code&gt; &amp;amp; &lt;code&gt;zmalloc.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Redis notes</title>
-      <link>https://k-on.me/post/redis-notes/</link>
+      <link>https://k-on.me/post/redis/redis-notes/</link>
       <pubDate>Mon, 21 Sep 2020 11:03:57 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-notes/</guid>
+      <guid>https://k-on.me/post/redis/redis-notes/</guid>
       <description>&lt;p&gt;Redis 相关笔记，简单介绍 Redis 代码组织结构，记录一些和 Redis 相关有趣的博文。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Redis Modules APIs</title>
-      <link>https://k-on.me/post/redis-modules-apis/</link>
+      <link>https://k-on.me/post/redis/redis-modules-apis/</link>
       <pubDate>Thu, 27 Aug 2020 10:45:48 +0000</pubDate>
       
-      <guid>https://k-on.me/post/redis-modules-apis/</guid>
+      <guid>https://k-on.me/post/redis/redis-modules-apis/</guid>
       <description>&lt;p&gt;Redis Modules APIs 介绍。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>Introduction to Redis modules</title>
-      <link>https://k-on.me/post/introduction-to-redis-modules/</link>
+      <link>https://k-on.me/post/redis/introduction-to-redis-modules/</link>
       <pubDate>Wed, 19 Aug 2020 16:52:01 +0000</pubDate>
       
-      <guid>https://k-on.me/post/introduction-to-redis-modules/</guid>
+      <guid>https://k-on.me/post/redis/introduction-to-redis-modules/</guid>
       <description>&lt;p&gt;Redis Modules 入门。&lt;/p&gt;</description>
     </item>
     
     <item>
       <title>CRDTs in Redis</title>
-      <link>https://k-on.me/post/crdts-in-redis/</link>
+      <link>https://k-on.me/post/redis/crdts-in-redis/</link>
       <pubDate>Wed, 17 Jun 2020 11:15:10 +0000</pubDate>
       
-      <guid>https://k-on.me/post/crdts-in-redis/</guid>
+      <guid>https://k-on.me/post/redis/crdts-in-redis/</guid>
       <description>&lt;p&gt;Redis 全球多活调研笔记。&lt;/p&gt;</description>
     </item>
     

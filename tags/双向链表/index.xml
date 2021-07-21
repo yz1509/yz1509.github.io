@@ -9,10 +9,10 @@
     <lastBuildDate>Thu, 24 Sep 2020 14:39:37 +0800</lastBuildDate><atom:link href="https://k-on.me/tags/%E5%8F%8C%E5%90%91%E9%93%BE%E8%A1%A8/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Redis 源码阅读 --- adlist</title>
-      <link>https://k-on.me/post/redis-sourcecode-adlist/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-adlist/</link>
       <pubDate>Thu, 24 Sep 2020 14:39:37 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-adlist/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-adlist/</guid>
       <description>&lt;p&gt;Redis 双向链表相关源码阅读笔记，源码文件 &lt;code&gt;adlist.h&lt;/code&gt; &amp;amp; &lt;code&gt;adlist.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     

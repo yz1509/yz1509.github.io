@@ -71,7 +71,7 @@
 <meta itemprop="description" content="CRDT 学习笔记。"><meta itemprop="datePublished" content="2020-04-21T11:02:30+00:00" />
 <meta itemprop="dateModified" content="2020-04-21T11:02:30+00:00" />
 <meta itemprop="wordCount" content="2150">
-<meta itemprop="keywords" content="最终一致性,CRDT," /><meta name="twitter:card" content="summary"/>
+<meta itemprop="keywords" content="最终一致性,CRDT,Overview," /><meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="CRDT-notes"/>
 <meta name="twitter:description" content="CRDT 学习笔记。"/>
 
@@ -406,7 +406,7 @@
 <ul>
 <li>
 <p><a href="https://hal.inria.fr/inria-00609399v2/document">Conflict-free Replicated Data Types</a></p>
-<p>在这篇文章中，作者主要提出了两种本质上等价的 CRDT：CvRDT 和 CmRDT。为了保证强最终一致性，作者表示在 CvRDT 中需定义合适的操作，使得状态集合在给定的偏序关系下构成 Join-semilattice；而在 CmRDT 中，操作需满足要么可比较，不可比的便可交换的条件，除此之外，还需要消息传输提供 <code>exactly once</code> 的保证。详细内容<a href="https://k-on.me/post/conflict-free-replicated-data-types/">请点击</a>。</p>
+<p>在这篇文章中，作者主要提出了两种本质上等价的 CRDT：CvRDT 和 CmRDT。为了保证强最终一致性，作者表示在 CvRDT 中需定义合适的操作，使得状态集合在给定的偏序关系下构成 Join-semilattice；而在 CmRDT 中，操作需满足要么可比较，不可比的便可交换的条件，除此之外，还需要消息传输提供 <code>exactly once</code> 的保证。详细内容<a href="https://k-on.me/post/paper/conflict-free-replicated-data-types/">请点击</a>。</p>
 </li>
 <li>
 <p><a href="https://hal.inria.fr/inria-00555588/document">A comprehensive study of Convergent and Commutative Replicated Data Types</a></p>
@@ -418,7 +418,7 @@
 </li>
 <li>
 <p><a href="https://arxiv.org/pdf/1410.2803.pdf">Efficient State-based CRDTs by Delta-Mutation</a></p>
-<p>本文正式定义了 $\delta$-CRDT， 其通过传递状态增量而不是传递整个状态，有效地改善了 <code>CvRDT</code> 通信消耗过大的不足，最后给出了 <code>PN-Counter</code>、<code>OR-Set</code> 和 <code>Multi-value Register</code> 基于 $\delta$-CRDT 的实现。详细内容<a href="https://k-on.me/post/efficient-state-based-crdts-by-delta-mutation/">请点击</a>。</p>
+<p>本文正式定义了 $\delta$-CRDT， 其通过传递状态增量而不是传递整个状态，有效地改善了 <code>CvRDT</code> 通信消耗过大的不足，最后给出了 <code>PN-Counter</code>、<code>OR-Set</code> 和 <code>Multi-value Register</code> 基于 $\delta$-CRDT 的实现。详细内容<a href="https://k-on.me/post/paper/efficient-state-based-crdts-by-delta-mutation/">请点击</a>。</p>
 </li>
 <li>
 <p><a href="https://arxiv.org/pdf/1603.01529.pdf">Delta state replicated data types</a></p>
@@ -444,7 +444,7 @@
 </li>
 <li>
 <p><a href="https://dl.acm.org/doi/pdf/10.1145/2911151.2911159">The problem with embedded CRDT counters and a solution</a></p>
-<p>本文首先介绍了直接将 <code>OR-Set</code> 和 <code>PN-Counter</code> 简单组合作为 Map 时可能存在的问题，随后提出了相应的解决方案。详细内容<a href="https://k-on.me/post/the-problem-with-embedded-crdt-counters-and-a-solution/">请点击</a>.</p>
+<p>本文首先介绍了直接将 <code>OR-Set</code> 和 <code>PN-Counter</code> 简单组合作为 Map 时可能存在的问题，随后提出了相应的解决方案。详细内容<a href="https://k-on.me/post/paper/the-problem-with-embedded-crdt-counters-and-a-solution/">请点击</a>.</p>
 </li>
 </ul>
 <h2 id="4-conclusions">4. Conclusions</h2>
@@ -540,13 +540,14 @@
       <div class="post-tags">
           <a href="https://k-on.me/tags/%E6%9C%80%E7%BB%88%E4%B8%80%E8%87%B4%E6%80%A7/">最终一致性</a>
           <a href="https://k-on.me/tags/crdt/">CRDT</a>
+          <a href="https://k-on.me/tags/overview/">Overview</a>
           
         </div>
 
       
       <nav class="post-nav">
         
-          <a class="prev" href="/post/conflict-free-replicated-data-types/">
+          <a class="prev" href="/post/paper/conflict-free-replicated-data-types/">
             
             <i class="iconfont">
               <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"

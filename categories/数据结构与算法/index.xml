@@ -9,10 +9,10 @@
     <lastBuildDate>Wed, 17 Jun 2020 11:15:10 +0000</lastBuildDate><atom:link href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>CRDTs in Redis</title>
-      <link>https://k-on.me/post/crdts-in-redis/</link>
+      <link>https://k-on.me/post/redis/crdts-in-redis/</link>
       <pubDate>Wed, 17 Jun 2020 11:15:10 +0000</pubDate>
       
-      <guid>https://k-on.me/post/crdts-in-redis/</guid>
+      <guid>https://k-on.me/post/redis/crdts-in-redis/</guid>
       <description>&lt;p&gt;Redis 全球多活调研笔记。&lt;/p&gt;</description>
     </item>
     

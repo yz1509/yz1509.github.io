@@ -9,10 +9,10 @@
     <lastBuildDate>Sat, 12 Oct 2019 21:26:09 +0000</lastBuildDate><atom:link href="https://k-on.me/tags/%E4%B8%80%E8%87%B4%E6%80%A7%E5%93%88%E5%B8%8C/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Consistent Hashing</title>
-      <link>https://k-on.me/post/consistenthashing/</link>
+      <link>https://k-on.me/post/paper/consistenthashing/</link>
       <pubDate>Sat, 12 Oct 2019 21:26:09 +0000</pubDate>
       
-      <guid>https://k-on.me/post/consistenthashing/</guid>
+      <guid>https://k-on.me/post/paper/consistenthashing/</guid>
       <description>&lt;p&gt;一致性哈希的 first paper (maybe) 阅读笔记。&lt;/p&gt;</description>
     </item>
     

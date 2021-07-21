@@ -9,10 +9,10 @@
     <lastBuildDate>Sun, 27 Sep 2020 10:15:20 +0800</lastBuildDate><atom:link href="https://k-on.me/tags/%E5%93%88%E5%B8%8C%E8%A1%A8/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Redis 源码阅读 --- dict</title>
-      <link>https://k-on.me/post/redis-sourcecode-dict/</link>
+      <link>https://k-on.me/post/redis/redis-sourcecode-dict/</link>
       <pubDate>Sun, 27 Sep 2020 10:15:20 +0800</pubDate>
       
-      <guid>https://k-on.me/post/redis-sourcecode-dict/</guid>
+      <guid>https://k-on.me/post/redis/redis-sourcecode-dict/</guid>
       <description>&lt;p&gt;Redis dict 实现相关源码阅读笔记，源码文件 &lt;code&gt;dict.h&lt;/code&gt; &amp;amp; &lt;code&gt;dict.c&lt;/code&gt;。&lt;/p&gt;</description>
     </item>
     

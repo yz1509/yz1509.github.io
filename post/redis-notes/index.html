@@ -33,7 +33,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.85.0" />
+<meta name="generator" content="Hugo 0.80.0-DEV" />
 
 
 <link rel="canonical" href="https://k-on.me/post/redis-notes/" />
@@ -63,15 +63,19 @@
 <meta property="og:title" content="Redis notes" />
 <meta property="og:description" content="Redis 相关笔记，简单介绍 Redis 代码组织结构，记录一些和 Redis 相关有趣的博文。" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="https://k-on.me/post/redis-notes/" /><meta property="article:section" content="post" />
+<meta property="og:url" content="https://k-on.me/post/redis-notes/" />
 <meta property="article:published_time" content="2020-09-21T11:03:57+08:00" />
 <meta property="article:modified_time" content="2020-09-21T11:03:57+08:00" />
-
 <meta itemprop="name" content="Redis notes">
-<meta itemprop="description" content="Redis 相关笔记，简单介绍 Redis 代码组织结构，记录一些和 Redis 相关有趣的博文。"><meta itemprop="datePublished" content="2020-09-21T11:03:57+08:00" />
+<meta itemprop="description" content="Redis 相关笔记，简单介绍 Redis 代码组织结构，记录一些和 Redis 相关有趣的博文。">
+<meta itemprop="datePublished" content="2020-09-21T11:03:57+08:00" />
 <meta itemprop="dateModified" content="2020-09-21T11:03:57+08:00" />
-<meta itemprop="wordCount" content="1141">
-<meta itemprop="keywords" content="Redis," /><meta name="twitter:card" content="summary"/>
+<meta itemprop="wordCount" content="1124">
+
+
+
+<meta itemprop="keywords" content="Redis," />
+<meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Redis notes"/>
 <meta name="twitter:description" content="Redis 相关笔记，简单介绍 Redis 代码组织结构，记录一些和 Redis 相关有趣的博文。"/>
 
@@ -305,7 +309,7 @@
             <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
             
           </div>
-        <span class="more-meta"> 1141 words </span>
+        <span class="more-meta"> 1124 words </span>
           <span class="more-meta"> 3 min read </span>
 
         
@@ -343,340 +347,424 @@
 <table>
 <thead>
 <tr>
+<th style="text-align:left"></th>
 <th style="text-align:left">File Name</th>
 <th style="text-align:left">Meaning</th>
 </tr>
 </thead>
 <tbody>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>acl.c</code></td>
 <td style="text-align:left">Global state for ACLs</td>
 </tr>
 <tr>
+<td style="text-align:left">Y</td>
 <td style="text-align:left"><code>adlist.c</code>, <code>adlist.h</code></td>
 <td style="text-align:left">双向链表数据结构的实现</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>ae_epoll.c</code>, <code>ae_evport.c</code>, <code>ae_kqueue.c</code>, <code>ae_select.c</code>, <code>ae.c</code>, <code>ae.h</code></td>
 <td style="text-align:left">事件处理器，以及各个具体实现</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>anet.c</code>, <code>anet.h</code></td>
 <td style="text-align:left">Redis 的异步网络框架，内容主要为对 socket 库的包装</td>
 </tr>
 <tr>
+<td style="text-align:left">Y</td>
 <td style="text-align:left"><code>aof.c</code></td>
 <td style="text-align:left">AOF 功能的实现</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>asciilogo.h</code></td>
 <td style="text-align:left">保存了 Redis 的 ASCII LOGO</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>atomicvar.h</code></td>
 <td style="text-align:left">Implements atomic counters</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>bio.c</code>, <code>bio.h</code></td>
 <td style="text-align:left">Redis 的后台 I/O 程序，用于将 I/O 操作放到子线程里面执行, 减少 I/O 操作对主线程的阻塞</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>bitops.c</code></td>
 <td style="text-align:left">二进制位操作命令的实现文件</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>blocked.c</code></td>
 <td style="text-align:left">用于实现 BLPOP 命令和 WAIT 命令的阻塞效果</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>childinfo.c</code></td>
 <td style="text-align:left">Child info</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>cluster.c</code>, <code>cluster.h</code></td>
 <td style="text-align:left">Redis 的集群实现</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>config.c</code>, <code>config.h</code></td>
 <td style="text-align:left">Redis 的配置管理实现，负责读取并分析配置文件，然后根据这些配置修改 Redis 服务器的各个选项</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>connection.c</code>, <code>connection.h</code>, <code>connhelpers.h</code></td>
 <td style="text-align:left">Connection abstraction</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>crc16_slottable.h</code>, <code>crc16.c</code>, <code>crc64.c</code>, <code>crc64.h</code></td>
 <td style="text-align:left">计算 CRC 校验和</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>crcspeed.c</code>, <code>crcspeed.h</code></td>
 <td></td>
 </tr>
 <tr>
+<td style="text-align:left">Y</td>
 <td style="text-align:left"><code>db.c</code></td>
 <td style="text-align:left">数据库实现</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>debug.c</code>, <code>debugmacro.h</code></td>
 <td style="text-align:left">调试实现</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>defrag.c</code></td>
 <td></td>
 </tr>
 <tr>
+<td style="text-align:left">Y</td>
 <td style="text-align:left"><code>dict.c</code>, <code>dict.h</code></td>
 <td style="text-align:left">字典数据结构的实现</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>endianconv.c</code>, <code>endianconv.h</code></td>
 <td style="text-align:left">二进制的大端、小端转换函数</td>
 </tr>
 <tr>
+<td style="text-align:left">Y</td>
 <td style="text-align:left"><code>evict.c</code></td>
 <td style="text-align:left">Maxmemory directive handling (LRU eviction and other policies).</td>
 </tr>
 <tr>
+<td style="text-align:left">Y</td>
 <td style="text-align:left"><code>expire.c</code></td>
 <td style="text-align:left">Implementation of EXPIRE (keys with fixed time to live).</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>fmacros.h</code></td>
 <td style="text-align:left">一些移植性方面的宏</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>geo.c</code>, <code>geo.h</code>, <code>geohash_helper.c</code>, <code>geohash_helper.h</code>, <code>geohash.c</code>, <code>geohash.h</code></td>
 <td></td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>gopher.c</code></td>
 <td></td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>help.h</code></td>
 <td style="text-align:left"><code>utils/generate-command-help.rb</code> 程序自动生成的命令帮助信息</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>hyperloglog.c</code></td>
 <td style="text-align:left">HyperLogLog 数据结构的实现</td>
 </tr>
 <tr>
+<td style="text-align:left">Y</td>
 <td style="text-align:left"><code>intset.c</code>, <code>intset.h</code></td>
 <td style="text-align:left">整数集合数据结构的实现，用于优化整数 SET，以节省内存</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>latency.c</code>, <code>latency.h</code></td>
 <td style="text-align:left">Latency monitor API 及其实现</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>lazyfree.c</code></td>
 <td></td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>listpack_malloc.h</code>, <code>listpack.c</code>, <code>listpack.h</code></td>
 <td style="text-align:left">A lists of strings serialization format</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>localtime.c</code></td>
 <td></td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>lolwut.c</code>, <code>lolwut.h</code>, <code>lolwut5.c</code>, <code>lolwut6.c</code></td>
 <td></td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>lzf_c.c</code>, <code>lzf_d.c</code>, <code>lzf.h</code>, <code>lzfP.h</code></td>
 <td style="text-align:left">Redis 对字符串和 RDB 文件进行压缩时使用的 LZF 压缩算法的实现</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>Makefile</code></td>
 <td style="text-align:left">构建文件</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>memtest.c</code></td>
 <td style="text-align:left">内存测试</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>mkreleasehdr.sh</code></td>
 <td style="text-align:left">用于生成释出信息的脚本</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>module.c</code>, <code>redismodule.h</code></td>
 <td style="text-align:left">Redis Module 接口及其实现</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>multi.c</code></td>
 <td style="text-align:left">Redis 的事务实现</td>
 </tr>
 <tr>
+<td style="text-align:left">Y</td>
 <td style="text-align:left"><code>networking.c</code></td>
 <td style="text-align:left">Redis 的客户端网络操作库, 用于实现命令请求接收、发送命令回复等工作，文件中的函数大多为 write, read,close 等函数的包装，以及各种协议的分析和构建函数。</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>notify.c</code></td>
 <td style="text-align:left">Redis 的数据库通知实现</td>
 </tr>
 <tr>
+<td style="text-align:left">Y</td>
 <td style="text-align:left"><code>object.c</code></td>
 <td style="text-align:left">Redis 的对象系统实现</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>pqsort.c</code>, <code>pqsort.h</code></td>
 <td style="text-align:left">快速排序 (QuickSort) 算法的实现</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>pubsub.c</code></td>
 <td style="text-align:left">发布与订阅功能的实现</td>
 </tr>
 <tr>
+<td style="text-align:left">Y</td>
 <td style="text-align:left"><code>quicklist.c</code>, <code>quicklist.h</code></td>
 <td style="text-align:left">A doubly linked list of ziplists</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>rand.c</code>, <code>rand.h</code></td>
 <td style="text-align:left">伪随机数生成器</td>
 </tr>
 <tr>
+<td style="text-align:left">Y</td>
 <td style="text-align:left"><code>rax_malloc.h</code>, <code>rax.c</code>, <code>rax.h</code></td>
 <td style="text-align:left">A radix tree implementation</td>
 </tr>
 <tr>
+<td style="text-align:left">Y</td>
 <td style="text-align:left"><code>rdb.c</code>, <code>rdb.h</code></td>
 <td style="text-align:left">RDB 持久化功能的实现</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>redis-benchmark.c</code></td>
 <td style="text-align:left">Redis 的性能测试程序</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>redis-check-aof.c</code>, <code>redis-check-dump.c</code></td>
 <td style="text-align:left">RDB 文件和 AOF 文件的合法性检查程序</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>redis-cli.c</code></td>
 <td style="text-align:left">Redis 客户端的实现</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>redis-trib.rb</code></td>
 <td style="text-align:left">Redis 集群的管理程序</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>redisassert.h</code></td>
 <td style="text-align:left">Redis 自建的断言系统</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>release.c</code></td>
 <td style="text-align:left">记录和生成 Redis 的发行版本信息</td>
 </tr>
 <tr>
+<td style="text-align:left">Y</td>
 <td style="text-align:left"><code>replication.c</code></td>
 <td style="text-align:left">异步复制功能的实现</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>rio.c</code>, <code>rio.h</code></td>
 <td style="text-align:left">Redis 对文件 I/O 函数的包装，在普通 I/O 函数的基础上增加了显式缓存、以及计算校验和等功能</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>scripting.c</code></td>
 <td style="text-align:left">脚本功能的实现</td>
 </tr>
 <tr>
+<td style="text-align:left">Y</td>
 <td style="text-align:left"><code>sds.c</code>, <code>sds.h</code>, <code>sdsalloc.h</code></td>
 <td style="text-align:left">SDS 数据结构的实现，SDS 为 Redis 的默认字符串表示</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>sentinel.c</code></td>
 <td style="text-align:left">Redis Sentinel 的实现</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>server.c</code></td>
 <td style="text-align:left">负责服务器的启动、维护和关闭等事项</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>server.h</code></td>
 <td style="text-align:left">Redis 的主要头文件，记录了 Redis 中的大部分数据结构，包括服务器状态和客户端状态</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>setcpuaffinity.c</code>, <code>setproctitle.c</code></td>
 <td style="text-align:left">进程环境设置函数</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>sha1.c</code>, <code>sha1.h</code></td>
 <td style="text-align:left">SHA1 校验和计算函数</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>sha256.c</code>, <code>sha256.h</code></td>
 <td></td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>siphash.c</code></td>
 <td style="text-align:left">Keys hashing functions for <code>dict.c</code> hash tables.</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>slowlog.c</code>, <code>slowlog.h</code></td>
 <td style="text-align:left">慢查询功能的实现</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>solarisfixes.h</code></td>
 <td style="text-align:left">针对 Solaris 系统的补丁</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>sort.c</code></td>
 <td style="text-align:left">SORT 命令的实现</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>sparkline.c</code>, <code>sparkline.h</code></td>
 <td style="text-align:left">ASCII graphs API 及其实现</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>stream.h</code></td>
 <td></td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>syncio.c</code></td>
 <td style="text-align:left">同步 I/O 操作</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>t_hash.c</code>, <code>t_list.c</code>, <code>t_set.c</code>, <code>t_stream.c</code>, <code>t_string.c</code>, <code>t_zset.c</code></td>
 <td style="text-align:left">定义了 Redis 的各种数据类型，以及这些数据类型的命令</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>testhelp.h</code></td>
 <td style="text-align:left">测试辅助宏</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>timeout.c</code></td>
 <td style="text-align:left">Blocked clients timeout and connections timeout.</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>tls.c</code></td>
 <td></td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>tracking.c</code></td>
 <td></td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>util.c</code>, <code>util.h</code></td>
 <td style="text-align:left">各种辅助函数</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>valgrind.sup</code></td>
 <td style="text-align:left">valgrind 的 suppression 文件</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>version.h</code></td>
 <td style="text-align:left">记录了 Redis 的版本号</td>
 </tr>
 <tr>
+<td style="text-align:left">Y</td>
 <td style="text-align:left"><code>ziplist.c</code>, <code>ziplist.h</code></td>
 <td style="text-align:left">Ziplist 数据结构的实现，用于优化 List 类型</td>
 </tr>
 <tr>
+<td style="text-align:left"></td>
 <td style="text-align:left"><code>zipmap.c</code>, <code>zipmap.h</code></td>
 <td style="text-align:left">Zipmap 数据结构的实现，<a href="https://github.com/redis/redis/issues/188#issuecomment-2732599">在 Redis 2.6 以前用于优化 Hash 类型，Redis 2.6 开始已经废弃</a></td>
 </tr>
 <tr>
+<td style="text-align:left">Y</td>
 <td style="text-align:left"><code>zmalloc.c</code>, <code>zmalloc.h</code></td>
 <td style="text-align:left">内存管理程序</td>
 </tr>
@@ -687,10 +775,6 @@
 <li>
 <p><a href="https://tech.meituan.com/2018/03/16/redis-high-concurrency-optimization.html">Redis 高负载下的中断优化</a></p>
 <p>在本文中，介绍了服务器端接受数据包的流程以及 CPU 亲缘性和 NUMA 相关知识。</p>
-</li>
-<li>
-<p><a href="https://k-on.me/post/codis_intro/">Codis 简要介绍</a></p>
-<p>Codis 是一个基于 Proxy 的 Redis 集群化方案，本文简单介绍了 Codis 相关知识。</p>
 </li>
 </ul>
     </div>
@@ -712,7 +796,7 @@
   
   <p class="copyright-item">
     <span class="item-title">License</span>
-    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank">CC BY-NC-ND 4.0</a></span>
   </p>
 </div>
 

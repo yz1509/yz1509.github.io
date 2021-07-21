@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="en" itemscope itemtype="http://schema.org/WebPage">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Redis 源码阅读 --- Database - HTT - ふわふわ時間</title>
+  
+
+<meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta name="MobileOptimized" content="width"/>
+<meta name="HandheldFriendly" content="true"/>
+
+
+<meta name="applicable-device" content="pc,mobile">
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+<meta name="mobile-web-app-capable" content="yes">
+
+<meta name="author" content="765PRO.P" />
+  <meta name="description" content="Redis 数据库实现相关源码阅读笔记，源码文件 server.h &amp;amp; server.c &amp;amp; db.c &amp;amp; evict.c &amp;amp; expire.c &amp;amp; blocked.c。
+" />
+
+  <meta name="keywords" content="K-ON, KyoAni" />
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.85.0" />
+
+
+<link rel="canonical" href="https://k-on.me/post/redis/redis-sourcecode-db/" />
+
+
+
+
+
+
+
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/sass/jane.min.b3a8813c06e6d785beba22bf8264e174fa2cb3a396b22f9ba24e2c00c18aaf7f.css" integrity="sha256-s6iBPAbm14W&#43;uiK/gmThdPoss6OWsi&#43;bok4sAMGKr38=" media="screen" crossorigin="anonymous">
+
+
+
+
+
+<meta property="og:title" content="Redis 源码阅读 --- Database" />
+<meta property="og:description" content="Redis 数据库实现相关源码阅读笔记，源码文件 server.h &amp; server.c &amp; db.c &amp; evict.c &amp; expire.c &amp; blocked.c。" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://k-on.me/post/redis/redis-sourcecode-db/" /><meta property="article:section" content="post" />
+<meta property="article:published_time" content="2020-10-13T17:11:09+08:00" />
+<meta property="article:modified_time" content="2020-10-13T17:11:09+08:00" />
+
+<meta itemprop="name" content="Redis 源码阅读 --- Database">
+<meta itemprop="description" content="Redis 数据库实现相关源码阅读笔记，源码文件 server.h &amp; server.c &amp; db.c &amp; evict.c &amp; expire.c &amp; blocked.c。"><meta itemprop="datePublished" content="2020-10-13T17:11:09+08:00" />
+<meta itemprop="dateModified" content="2020-10-13T17:11:09+08:00" />
+<meta itemprop="wordCount" content="7995">
+<meta itemprop="keywords" content="Redis," /><meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Redis 源码阅读 --- Database"/>
+<meta name="twitter:description" content="Redis 数据库实现相关源码阅读笔记，源码文件 server.h &amp; server.c &amp; db.c &amp; evict.c &amp; expire.c &amp; blocked.c。"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">HTT</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/">Home</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/about/">About</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/post/">Archives</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/tags/">Tags</a>
+          
+        
+      </li><li class="mobile-menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/categories/">Categories</a>
+          
+        
+      </li>
+    
+
+    
+  </ul>
+</nav>
+
+
+  
+    
+
+
+
+
+
+
+  <link rel="stylesheet" href="/lib/photoswipe/photoswipe.min.css" />
+  <link rel="stylesheet" href="/lib/photoswipe/default-skin/default-skin.min.css" />
+
+
+
+
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+<div class="pswp__bg"></div>
+
+<div class="pswp__scroll-wrap">
+    
+    <div class="pswp__container">
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+      <div class="pswp__item"></div>
+    </div>
+    
+    <div class="pswp__ui pswp__ui--hidden">
+    <div class="pswp__top-bar">
+      
+      <div class="pswp__counter"></div>
+      <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+      <button class="pswp__button pswp__button--share" title="Share"></button>
+      <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+      <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+      
+      
+      <div class="pswp__preloader">
+        <div class="pswp__preloader__icn">
+          <div class="pswp__preloader__cut">
+            <div class="pswp__preloader__donut"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+      <div class="pswp__share-tooltip"></div>
+    </div>
+    <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+    </button>
+    <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+    </button>
+    <div class="pswp__caption">
+      <div class="pswp__caption__center"></div>
+    </div>
+    </div>
+    </div>
+</div>
+
+  
+
+  
+
+  
+
+  <header id="header" class="header container">
+    <div class="logo-wrapper">
+  <a href="/" class="logo">
+    
+      HTT
+    
+  </a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/">Home</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/about/">About</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/post/">Archives</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/tags/">Tags</a>
+          
+
+        
+
+      </li>
+    
+        <li class="menu-item">
+        
+          
+          
+            <a class="menu-item-link" href="https://k-on.me/categories/">Categories</a>
+          
+
+        
+
+      </li>
+    
+
+    
+    
+
+    
+  </ul>
+</nav>
+
+  </header>
+
+  <div id="mobile-panel">
+    <main id="main" class="main bg-llight">
+      <div class="content-wrapper">
+        <div id="content" class="content container">
+          <article class="post bg-white">
+    
+    <header class="post-header">
+      <h1 class="post-title">Redis 源码阅读 --- Database</h1>
+      
+      <div class="post-meta">
+        <time datetime="2020-10-13" class="post-time">
+          2020-10-13
+        </time>
+        <div class="post-category">
+            <a href="https://k-on.me/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/"> 数据库 </a>
+            
+          </div>
+        <span class="more-meta"> 7995 words </span>
+          <span class="more-meta"> 16 min read </span>
+
+        
+        
+          <span id="busuanzi_container_page_pv">
+            | 阅读 <span id="busuanzi_value_page_pv"></span>
+          </span>
+        
+
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Table of Contents</h2>
+  <div class="post-toc-content">
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#1-小结">1. 小结</a></li>
+    <li><a href="#2-redisdb">2. redisDb</a></li>
+    <li><a href="#3-redisdb-apis">3. redisDb APIs</a>
+      <ul>
+        <li><a href="#31-查找">3.1. 查找</a></li>
+        <li><a href="#32-添加">3.2. 添加</a></li>
+        <li><a href="#33-删除">3.3. 删除</a></li>
+        <li><a href="#34-utils">3.4. Utils</a></li>
+      </ul>
+    </li>
+    <li><a href="#4-expire">4. expire</a>
+      <ul>
+        <li><a href="#41-expire-apis">4.1. Expire APIs</a></li>
+        <li><a href="#42-主动清理过期键">4.2. 主动清理过期键</a></li>
+        <li><a href="#43-处于可写模式下的从库清理过期键">4.3. 处于可写模式下的从库清理过期键</a></li>
+        <li><a href="#44-expire-commands">4.4. Expire Commands</a></li>
+      </ul>
+    </li>
+    <li><a href="#5-evict">5. evict</a>
+      <ul>
+        <li><a href="#51-least-recently-usedlru">5.1. Least Recently Used(LRU)</a></li>
+        <li><a href="#52-least-frequently-usedlfu">5.2. Least Frequently Used(LFU)</a></li>
+        <li><a href="#53-eviction-pool">5.3. Eviction pool</a></li>
+        <li><a href="#54-free-memory">5.4. Free memory</a></li>
+      </ul>
+    </li>
+  </ul>
+</nav>
+  </div>
+</div>
+
+    
+    <div class="post-content">
+      <p>Redis 数据库实现相关源码阅读笔记，源码文件 <code>server.h</code> &amp; <code>server.c</code> &amp; <code>db.c</code> &amp; <code>evict.c</code> &amp; <code>expire.c</code> &amp; <code>blocked.c</code>。</p>
+<hr>
+<h2 id="1-小结">1. 小结</h2>
+<ul>
+<li>
+<p>Redis 数据库对象主要由以下几部分组成：</p>
+<ul>
+<li><code>id</code>: Database ID，值域为 $0$ 至 <a href="https://github.com/redis/redis/blob/6.0.11/redis.conf#L275">databases</a> $- 1$</li>
+<li><code>dict</code>：数据库具体内容 —— key-value pair
+<ul>
+<li>key 为 sds strings，不使用 redis object 是为了节省内存</li>
+<li>value 为 redis object</li>
+</ul>
+</li>
+<li><code>expires</code>：记录数据对象过期时间的 key-ttl pair
+<ul>
+<li>key 为 sds strings，会复用 <code>dict</code> 中的键值以节省内存</li>
+<li>value 为long long 整型，记录了该 key 将于何时 (absolute unix time in milliseconds) 过期</li>
+<li>被动清理过期键：一般地，在查找 key 是否在 <code>dict</code> 中时，会先判断该 key 是否已过期，若为主库，则会删除已过期键</li>
+<li>主动清理过期键：调用 <code>activeExpireCycle</code></li>
+</ul>
+</li>
+<li><code>avg_ttl</code>：统计过期时间平均值</li>
+<li><code>expires_cursor</code>：用于渐进式主动过期</li>
+<li><code>blocking_keys</code> &amp; <code>ready_keys</code>：用于实现带阻塞的命令</li>
+<li><code>watched_keys</code>：用于实现事务</li>
+<li><code>defrag_later</code>：用于内存碎片整理</li>
+</ul>
+</li>
+<li>
+<p>键过期以被动的方式进行，只会在访问该 key 的时候触发：</p>
+<ul>
+<li>在客户端访问该 key 时调用 <code>expireIfNeeded</code> 触发过期删除操作
+<blockquote>
+<p>当从库处于 read-only 模式时，访问从库的 key 不会触发删除操作</p>
+</blockquote>
+</li>
+<li>Redis 服务器定时调用 <code>activeExpireCycle</code> 主动扫描键空间以清理过期 key
+<blockquote>
+<p>可使用配置项 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L938">active-expire-effort</a> 修改主动清理操作单次执行时间上限</p>
+</blockquote>
+</li>
+</ul>
+</li>
+<li>
+<p>过期 <code>key</code> 的删除分为同步和异步两种方式，由配置项 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L985">lazyfree-lazy-expire</a> 决定采用何种方式。</p>
+</li>
+<li>
+<p>当设置了 <code>maxmemory</code> 限制时，Redis 会根据所设置的内存策略 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L890">maxmemory-policy</a> 决定淘汰 key 的方式。</p>
+</li>
+</ul>
+<p><em>Tips</em></p>
+<ul>
+<li>为性能考虑，应尽量避免调用 <code>gettimeofday</code> 来获取时间，可使用 Redis 缓存的时间值。</li>
+</ul>
+<h2 id="2-redisdb">2. redisDb</h2>
+<p>Redis 数据库由多个 <a href="https://k-on.me/post/redis/redis-sourcecode-dict/">dict</a> 组成，其结构定义如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Redis database representation. There are multiple databases identified
+</span><span class="cm"> * by integers from 0 (the default database) up to the max configured
+</span><span class="cm"> * database. The database number is the &#39;id&#39; field in the structure. */</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="nc">redisDb</span> <span class="p">{</span>
+    <span class="n">dict</span> <span class="o">*</span><span class="n">dict</span><span class="p">;</span>                 <span class="cm">/* The keyspace for this DB */</span>
+    <span class="n">dict</span> <span class="o">*</span><span class="n">expires</span><span class="p">;</span>              <span class="cm">/* Timeout of keys with a timeout set */</span>
+    <span class="n">dict</span> <span class="o">*</span><span class="n">blocking_keys</span><span class="p">;</span>        <span class="cm">/* Keys with clients waiting for data (BLPOP)*/</span>
+    <span class="n">dict</span> <span class="o">*</span><span class="n">ready_keys</span><span class="p">;</span>           <span class="cm">/* Blocked keys that received a PUSH */</span>
+    <span class="n">dict</span> <span class="o">*</span><span class="n">watched_keys</span><span class="p">;</span>         <span class="cm">/* WATCHED keys for MULTI/EXEC CAS */</span>
+    <span class="kt">int</span> <span class="n">id</span><span class="p">;</span>                     <span class="cm">/* Database ID */</span>
+    <span class="kt">long</span> <span class="kt">long</span> <span class="n">avg_ttl</span><span class="p">;</span>          <span class="cm">/* Average TTL, just for stats */</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">expires_cursor</span><span class="p">;</span> <span class="cm">/* Cursor of the active expire cycle. */</span>
+    <span class="n">list</span> <span class="o">*</span><span class="n">defrag_later</span><span class="p">;</span>         <span class="cm">/* List of key names to attempt to defrag
+</span><span class="cm">                                 * one by one, gradually. */</span>
+<span class="p">}</span> <span class="n">redisDb</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在之前 Redis dict 结构的介绍中，我们知道 dict 可以有不同的 <a href="https://k-on.me/post/redis/redis-sourcecode-dict/#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84">dictType</a>，不同类型的 dict 的区别在于 kv 类型及其相关操作不同，在 <code>redisDb</code> 中的各个 dict 其类型如下:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">field</th>
+<th style="text-align:left">dictType</th>
+<th style="text-align:left">key</th>
+<th style="text-align:left">value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>dict</code></td>
+<td style="text-align:left">dbDictType</td>
+<td style="text-align:left">sds strings</td>
+<td style="text-align:left">redis objects</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>expires</code></td>
+<td style="text-align:left">keyptrDictType</td>
+<td style="text-align:left">sds strings</td>
+<td style="text-align:left">long long</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>blocking_keys</code></td>
+<td style="text-align:left">keylistDictType</td>
+<td style="text-align:left">redis objects</td>
+<td style="text-align:left">lists</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>ready_keys</code></td>
+<td style="text-align:left">objectKeyPointerValueDictType</td>
+<td style="text-align:left">redis objects</td>
+<td style="text-align:left">dummy pointers</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>watched_keys</code></td>
+<td style="text-align:left">keylistDictType</td>
+<td style="text-align:left">redis objects</td>
+<td style="text-align:left">lists</td>
+</tr>
+</tbody>
+</table>
+<p><strong>dbDictType</strong></p>
+<p>Redis 数据库 keysapce 的 <code>dictType</code> 为 <code>dbDictType</code>, 其定义如下，键使用 <code>sds</code> 而不使用 <code>robj</code>，可以节省内存。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Db-&gt;dict, keys are sds strings, vals are Redis objects. */</span>
+<span class="n">dictType</span> <span class="n">dbDictType</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">dictSdsHash</span><span class="p">,</span>                <span class="cm">/* hash function */</span>
+    <span class="nb">NULL</span><span class="p">,</span>                       <span class="cm">/* key dup */</span>
+    <span class="nb">NULL</span><span class="p">,</span>                       <span class="cm">/* val dup */</span>
+    <span class="n">dictSdsKeyCompare</span><span class="p">,</span>          <span class="cm">/* key compare */</span>
+    <span class="n">dictSdsDestructor</span><span class="p">,</span>          <span class="cm">/* key destructor */</span>
+    <span class="n">dictObjectDestructor</span>        <span class="cm">/* val destructor */</span>
+<span class="p">};</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>keyptrDictType</strong></p>
+<p>键类型为 <code>sds</code>，会复用 <code>redisDb-&gt;dict</code> 中的键值，值类型为 <code>long long</code>，记录了该对象何时 (absolute unix time in milliseconds) 会过期。</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Db-&gt;expires */</span>
+<span class="n">dictType</span> <span class="n">keyptrDictType</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">dictSdsHash</span><span class="p">,</span>                <span class="cm">/* hash function */</span>
+    <span class="nb">NULL</span><span class="p">,</span>                       <span class="cm">/* key dup */</span>
+    <span class="nb">NULL</span><span class="p">,</span>                       <span class="cm">/* val dup */</span>
+    <span class="n">dictSdsKeyCompare</span><span class="p">,</span>          <span class="cm">/* key compare */</span>
+    <span class="nb">NULL</span><span class="p">,</span>                       <span class="cm">/* key destructor */</span>
+    <span class="nb">NULL</span>                        <span class="cm">/* val destructor */</span>
+<span class="p">};</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>keylistDictType</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Keylist hash table type has unencoded redis objects as keys and
+</span><span class="cm"> * lists as values. It&#39;s used for blocking operations (BLPOP) and to
+</span><span class="cm"> * map swapped keys to a list of clients waiting for this keys to be loaded. */</span>
+<span class="n">dictType</span> <span class="n">keylistDictType</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">dictObjHash</span><span class="p">,</span>                <span class="cm">/* hash function */</span>
+    <span class="nb">NULL</span><span class="p">,</span>                       <span class="cm">/* key dup */</span>
+    <span class="nb">NULL</span><span class="p">,</span>                       <span class="cm">/* val dup */</span>
+    <span class="n">dictObjKeyCompare</span><span class="p">,</span>          <span class="cm">/* key compare */</span>
+    <span class="n">dictObjectDestructor</span><span class="p">,</span>       <span class="cm">/* key destructor */</span>
+    <span class="n">dictListDestructor</span>          <span class="cm">/* val destructor */</span>
+<span class="p">};</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>objectKeyPointerValueDictType</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Generic hash table type where keys are Redis Objects,
+</span><span class="cm"> * Values dummy pointers. */</span>
+<span class="n">dictType</span> <span class="n">objectKeyPointerValueDictType</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">dictEncObjHash</span><span class="p">,</span>            <span class="cm">/* hash function */</span>
+    <span class="nb">NULL</span><span class="p">,</span>                      <span class="cm">/* key dup */</span>
+    <span class="nb">NULL</span><span class="p">,</span>                      <span class="cm">/* val dup */</span>
+    <span class="n">dictEncObjKeyCompare</span><span class="p">,</span>      <span class="cm">/* key compare */</span>
+    <span class="n">dictObjectDestructor</span><span class="p">,</span>      <span class="cm">/* key destructor */</span>
+    <span class="nb">NULL</span>                       <span class="cm">/* val destructor */</span>
+<span class="p">};</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="3-redisdb-apis">3. redisDb APIs</h2>
+<h3 id="31-查找">3.1. 查找</h3>
+<p><strong>lookupKey</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Low level key lookup API, not actually called directly from commands
+</span><span class="cm"> * implementations that should instead rely on lookupKeyRead(),
+</span><span class="cm"> * lookupKeyWrite() and lookupKeyReadWithFlags(). */</span>
+<span class="n">robj</span> <span class="o">*</span><span class="nf">lookupKey</span><span class="p">(</span><span class="n">redisDb</span> <span class="o">*</span><span class="n">db</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>其中 <code>flags</code> 用于指示是否更新 <code>robj-&gt;lru</code>，其取值有二：</p>
+<ul>
+<li><code>LOOKUP_NONE</code>: no special flags are passed.</li>
+<li><code>LOOKUP_NOTOUCH</code>: don&rsquo;t alter the last access time of the key.</li>
+</ul>
+<p>除此之外，若此时正有子线程正在进行保存 RDB、重写 AOF 或加载 module 相关操作时，也不会更新该数据对象的 <code>lru</code> 值，以避免一个数据对象被疯狂复制多次。</p>
+<p><code>key</code> 存在于 <code>db</code> 中时，返回其关联的 value 值，否则返回 <code>NULL</code>。</p>
+<p><strong>lookupKeyReadWithFlags</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Lookup a key for read operations, or return NULL if the key is not found
+</span><span class="cm"> * in the specified DB. */</span>
+<span class="n">robj</span> <span class="o">*</span><span class="nf">lookupKeyReadWithFlags</span><span class="p">(</span><span class="n">redisDb</span> <span class="o">*</span><span class="n">db</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在该函数中，在调用 <code>lookupKey</code> 判断 <code>key</code> 是否存在于 <code>db</code> 中之前，会先调用 <code>expireIfNeeded</code> 判断该 <code>key</code> 是否已过期(有关过期的内容将在下文详述)。从库为了和主库保持数据的一致性，并不会主动清理过期键，而是会同步主库在清理过期键时发送的 <code>DEL</code> 命令，但在该查找操作中，如果 <code>key</code> 已过期，从库虽未删除该 <code>key</code>，但仍然会返回 <code>NULL</code>，表示该 <code>key</code> 逻辑上不存在，以和主库保持一致的视图。</p>
+<p>调用该函数有以下副作用：</p>
+<ul>
+<li>在 Redis 主库中，若 <code>key</code> 达到其过期时间，则会被删除，同步或异步删除则取决于配置的 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L985">lazyfree-lazy-expire</a> 值 (调用 <code>expireIfNeeded</code> 引起)</li>
+<li>可能会更新 <code>robj-&gt;lru</code> (调用 <code>lookupKey</code> 引起)</li>
+<li>会更新数据库的 <code>hits</code> 或 <code>misses</code> 状态信息</li>
+<li>如果启用了键空间通知，则会触发 <code>keymiss</code> 通知</li>
+</ul>
+<p><strong>lookupKeyRead</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Like lookupKeyReadWithFlags(), but does not use any flag, which is the
+</span><span class="cm"> * common case. */</span>
+<span class="n">robj</span> <span class="o">*</span><span class="nf">lookupKeyRead</span><span class="p">(</span><span class="n">redisDb</span> <span class="o">*</span><span class="n">db</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">key</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">lookupKeyReadWithFlags</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">LOOKUP_NONE</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>lookupKeyWriteWithFlags</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Lookup a key for write operations, and as a side effect, if needed, expires
+</span><span class="cm"> * the key if its TTL is reached.
+</span><span class="cm"> *
+</span><span class="cm"> * Returns the linked value object if the key exists or NULL if the key
+</span><span class="cm"> * does not exist in the specified DB. */</span>
+<span class="n">robj</span> <span class="o">*</span><span class="nf">lookupKeyWriteWithFlags</span><span class="p">(</span><span class="n">redisDb</span> <span class="o">*</span><span class="n">db</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">expireIfNeeded</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">key</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">lookupKey</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">flags</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>others</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="n">robj</span> <span class="o">*</span><span class="nf">lookupKeyWrite</span><span class="p">(</span><span class="n">redisDb</span> <span class="o">*</span><span class="n">db</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">key</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">lookupKeyWriteWithFlags</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">LOOKUP_NONE</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="n">robj</span> <span class="o">*</span><span class="nf">lookupKeyReadOrReply</span><span class="p">(</span><span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">reply</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">robj</span> <span class="o">*</span><span class="n">o</span> <span class="o">=</span> <span class="n">lookupKeyRead</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">db</span><span class="p">,</span> <span class="n">key</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">o</span><span class="p">)</span> <span class="n">addReply</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="n">reply</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">o</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">robj</span> <span class="o">*</span><span class="nf">lookupKeyWriteOrReply</span><span class="p">(</span><span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">reply</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">robj</span> <span class="o">*</span><span class="n">o</span> <span class="o">=</span> <span class="n">lookupKeyWrite</span><span class="p">(</span><span class="n">c</span><span class="o">-&gt;</span><span class="n">db</span><span class="p">,</span> <span class="n">key</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">o</span><span class="p">)</span> <span class="n">addReply</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="n">reply</span><span class="p">);</span>
+    <span class="k">return</span> <span class="n">o</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="32-添加">3.2. 添加</h3>
+<p><strong>dbAdd</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Add the key to the DB. It&#39;s up to the caller to increment the reference
+</span><span class="cm"> * counter of the value if needed.
+</span><span class="cm"> *
+</span><span class="cm"> * The program is aborted if the key already exists. */</span>
+<span class="kt">void</span> <span class="nf">dbAdd</span><span class="p">(</span><span class="n">redisDb</span> <span class="o">*</span><span class="n">db</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">val</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>在将 <code>key</code> 加入 <code>db-&gt;dict</code> 时，会复制 <code>key</code> 的字符串值，将 <code>key</code> 以 <code>sds</code> 形式加入 <code>db</code>。</li>
+<li>如果值类型为 list、zset 或 stream，<code>key</code> 此时在 <code>db-&gt;blocking_keys</code> 中且不在 <code>db-&gt;ready_keys</code> 时，会将 <code>key</code> 加入 <code>db-&gt;ready_keys</code> 中</li>
+<li>若 Redis 服务器为 cluster 模式，会将 <code>key</code> 和对应的 <code>slot</code> 建立映射，表示 <code>key</code> 存在于该 <code>slot</code> 中</li>
+</ul>
+<p><strong>dbAddRDBLoad</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* This is a special version of dbAdd() that is used only when loading
+</span><span class="cm"> * keys from the RDB file: the key is passed as an SDS string that is
+</span><span class="cm"> * retained by the function (and not freed by the caller). */</span>
+<span class="kt">int</span> <span class="nf">dbAddRDBLoad</span><span class="p">(</span><span class="n">redisDb</span> <span class="o">*</span><span class="n">db</span><span class="p">,</span> <span class="n">sds</span> <span class="n">key</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">val</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>即使 <code>key</code> 此时在 <code>db-&gt;dict</code> 中，也不会触发 aborted，而是会返回 0</li>
+<li>如果 <code>key</code> 成功加入 <code>db-&gt;dict</code> 中，则返回 1</li>
+<li>由于传入的 <code>key</code> 类型为 <code>sds</code>，所以和 <code>dbAdd</code> 相比并无复制字符串操作，因此在成功加入时，调用方不可对 <code>key</code> 进行释放操作，此时 <code>key</code> 的所有权交予 <code>db-&gt;dict</code>；但在返回 0 时，<code>key</code> 的释放操作需由调用方完成</li>
+<li>若 Redis 服务器为 cluster 模式，会将 <code>key</code> 和对应的 <code>slot</code> 建立映射，表示 <code>key</code> 存在于该 <code>slot</code> 中</li>
+</ul>
+<p><strong>dbOverwrite</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Overwrite an existing key with a new value. Incrementing the reference
+</span><span class="cm"> * count of the new value is up to the caller.
+</span><span class="cm"> * This function does not modify the expire time of the existing key.
+</span><span class="cm"> *
+</span><span class="cm"> * The program is aborted if the key was not already present. */</span>
+<span class="kt">void</span> <span class="nf">dbOverwrite</span><span class="p">(</span><span class="n">redisDb</span> <span class="o">*</span><span class="n">db</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">val</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>setKey &amp; genericSetKey</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Common case for genericSetKey() where the TTL is not retained. */</span>
+<span class="kt">void</span> <span class="nf">setKey</span><span class="p">(</span><span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="n">redisDb</span> <span class="o">*</span><span class="n">db</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">val</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">genericSetKey</span><span class="p">(</span><span class="n">c</span><span class="p">,</span><span class="n">db</span><span class="p">,</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/* High level Set operation. This function can be used in order to set
+</span><span class="cm"> * a key, whatever it was existing or not, to a new object. */</span>
+<span class="kt">void</span> <span class="nf">genericSetKey</span><span class="p">(</span><span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="n">redisDb</span> <span class="o">*</span><span class="n">db</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span>
+                   <span class="n">robj</span> <span class="o">*</span><span class="n">val</span><span class="p">,</span> <span class="kt">int</span> <span class="n">keepttl</span><span class="p">,</span> <span class="kt">int</span> <span class="n">signal</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>在 <code>genericSetKey</code> 中：</p>
+<ul>
+<li><code>keepttl</code> 指示是否保持该 <code>key</code> 的 ttl 不变，其值由具体的写入命令参数决定</li>
+<li><code>signal</code> 指示是否需要调用 <code>signalModifiedKey</code> 通知该 <code>key</code> 已被修改，除了在 redis module 中，该值一直为 1，而在 redis module 中，该值为 0。使用 Redis module 可以通过调用 <code>RedisModule_SignalModifiedKey</code> 通知该 <code>key</code> 已被修改</li>
+<li>在该函数中无论 <code>key</code> 先前是否存在，都会将 <code>key-val</code> 对写入 <code>db</code> 中</li>
+<li><code>val</code> 的引用计数会增加</li>
+<li>在 <code>keepttl</code> 不为 1 时，与 <code>key</code> 关联的过期时间会被移除</li>
+</ul>
+<h3 id="33-删除">3.3. 删除</h3>
+<p><strong>删除某个 key</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Delete a key, value, and associated expiration entry if any, from the DB */</span>
+<span class="kt">int</span> <span class="nf">dbSyncDelete</span><span class="p">(</span><span class="n">redisDb</span> <span class="o">*</span><span class="n">db</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
+
+<span class="cm">/* This is a wrapper whose behavior depends on the Redis lazy free
+</span><span class="cm"> * configuration. Deletes the key synchronously or asynchronously. */</span>
+<span class="kt">int</span> <span class="nf">dbDelete</span><span class="p">(</span><span class="n">redisDb</span> <span class="o">*</span><span class="n">db</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">key</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">server</span><span class="p">.</span><span class="n">lazyfree_lazy_server_del</span> <span class="o">?</span> <span class="n">dbAsyncDelete</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">key</span><span class="p">)</span> <span class="o">:</span>
+                                             <span class="n">dbSyncDelete</span><span class="p">(</span><span class="n">db</span><span class="p">,</span><span class="n">key</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>删除指定的 db</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">long</span> <span class="kt">long</span> <span class="nf">emptyDb</span><span class="p">(</span><span class="kt">int</span> <span class="n">dbnum</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">,</span> <span class="kt">void</span><span class="p">(</span><span class="n">callback</span><span class="p">)(</span><span class="kt">void</span><span class="o">*</span><span class="p">))</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">emptyDbGeneric</span><span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">db</span><span class="p">,</span> <span class="n">dbnum</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">callback</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="cm">/* Remove all keys from all the databases in a Redis server.
+</span><span class="cm"> * If callback is given the function is called from time to time to
+</span><span class="cm"> * signal that work is in progress.
+</span><span class="cm"> *
+</span><span class="cm"> * The dbnum can be -1 if all the DBs should be flushed, or the specified
+</span><span class="cm"> * DB number if we want to flush only a single Redis database number.
+</span><span class="cm"> *
+</span><span class="cm"> * Flags are be EMPTYDB_NO_FLAGS if no special flags are specified or
+</span><span class="cm"> * 1. EMPTYDB_ASYNC if we want the memory to be freed in a different thread.
+</span><span class="cm"> * 2. EMPTYDB_BACKUP if we want to empty the backup dictionaries created by
+</span><span class="cm"> *    disklessLoadMakeBackups. In that case we only free memory and avoid
+</span><span class="cm"> *    firing module events.
+</span><span class="cm"> * and the function to return ASAP.
+</span><span class="cm"> *
+</span><span class="cm"> * On success the fuction returns the number of keys removed from the
+</span><span class="cm"> * database(s). Otherwise -1 is returned in the specific case the
+</span><span class="cm"> * DB number is out of range, and errno is set to EINVAL. */</span>
+<span class="kt">long</span> <span class="kt">long</span> <span class="nf">emptyDbGeneric</span><span class="p">(</span><span class="n">redisDb</span> <span class="o">*</span><span class="n">dbarray</span><span class="p">,</span> <span class="kt">int</span> <span class="n">dbnum</span><span class="p">,</span> <span class="kt">int</span> <span class="n">flags</span><span class="p">,</span>
+                         <span class="kt">void</span><span class="p">(</span><span class="n">callback</span><span class="p">)(</span><span class="kt">void</span><span class="o">*</span><span class="p">));</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="34-utils">3.4. Utils</h3>
+<p><strong>dbRandomKey</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Return a random key, in form of a Redis object.
+</span><span class="cm"> * If there are no keys, NULL is returned.
+</span><span class="cm"> *
+</span><span class="cm"> * The function makes sure to return keys not already expired. */</span>
+<span class="n">robj</span> <span class="o">*</span><span class="nf">dbRandomKey</span><span class="p">(</span><span class="n">redisDb</span> <span class="o">*</span><span class="n">db</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>dbUnshareStringValue</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Prepare the string object stored at &#39;key&#39; to be modified destructively
+</span><span class="cm"> * to implement commands like SETBIT or APPEND.
+</span><span class="cm"> *
+</span><span class="cm"> * An object is usually ready to be modified unless one of the two conditions
+</span><span class="cm"> * are true:
+</span><span class="cm"> *
+</span><span class="cm"> * 1) The object &#39;o&#39; is shared (refcount &gt; 1), we don&#39;t want to affect
+</span><span class="cm"> *    other users.
+</span><span class="cm"> * 2) The object encoding is not &#34;RAW&#34;.
+</span><span class="cm"> *
+</span><span class="cm"> * If the object is found in one of the above conditions (or both) by the
+</span><span class="cm"> * function, an unshared / not-encoded copy of the string object is stored
+</span><span class="cm"> * at &#39;key&#39; in the specified &#39;db&#39;. Otherwise the object &#39;o&#39; itself is
+</span><span class="cm"> * returned. */</span>
+<span class="n">robj</span> <span class="o">*</span><span class="nf">dbUnshareStringValue</span><span class="p">(</span><span class="n">redisDb</span> <span class="o">*</span><span class="n">db</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">o</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h2 id="4-expire">4. expire</h2>
+<p>设置了过期时间的 <code>key</code>，会将 &lt;key, absolute-expire-time&gt; 映射加入到 <code>redisDb-&gt;expires</code> 字典中，以支持后续的键过期行为。Redis 的键过期以被动的方式进行，只会在访问到该 <code>key</code> 的时候触发。访问的方式大致可以分为两种：</p>
+<ul>
+<li>
+<p>在客户端访问到该 <code>key</code> 时调用 <code>expireIfNeeded</code> 触发过期删除操作，例如查找、删除、<a href="https://github.com/redis/redis/blob/6.0.8/src/db.c#L296">随机返回 key</a>和 <a href="https://github.com/redis/redis/blob/6.0.8/src/db.c#L867">Scan</a>操作时</p>
+</li>
+<li>
+<p>为防止有些过期 <code>key</code> 一直未被访问从而无法释放，Redis 主库还会定时调用 <code>activeExpireCycle</code> 主动去扫描过期键空间清理过期 <code>key</code></p>
+<ul>
+<li><a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L5257">main</a>-&gt;<a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L2943">initServer</a>-&gt;<a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L1968">serverCron</a>-&gt;<a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L1698">databasesCron</a>-&gt;<a href="https://github.com/redis/redis/blob/6.0.8/src/expire.c#L123">activeExpireCycle</a></li>
+<li><a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L5257">main</a>-&gt;<a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L2981">initServer</a>-&gt;<a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L2149">beforeSleep</a>-&gt;<a href="https://github.com/redis/redis/blob/6.0.8/src/expire.c#L123">activeExpireCycle</a></li>
+</ul>
+</li>
+</ul>
+<p>过期 <code>key</code> 的删除分为同步和异步两种方式，由配置项 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L985">lazyfree-lazy-expire</a> 决定采用何种方式。</p>
+<h3 id="41-expire-apis">4.1. Expire APIs</h3>
+<p><strong>removeExpire</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Remove an expire fo the specified key. */</span>
+<span class="kt">int</span> <span class="nf">removeExpire</span><span class="p">(</span><span class="n">redisDb</span> <span class="o">*</span><span class="n">db</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>只有当 <code>key</code> 在 <code>redisDb-&gt;dict</code> 中时，才会尝试从 <code>redisDb-&gt;expires</code> 删除与 <code>key</code> 对应的 <code>dictEntry</code> 并释放其占用的内存。</p>
+<p><strong>setExpire</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Set an expire to the specified key. */</span>
+<span class="kt">void</span> <span class="nf">setExpire</span><span class="p">(</span><span class="n">client</span> <span class="o">*</span><span class="n">c</span><span class="p">,</span> <span class="n">redisDb</span> <span class="o">*</span><span class="n">db</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">when</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>当调用请求来自客户端时，<code>c</code> 为客户端上下文，否则 <code>c</code> 为 <code>NULL</code></li>
+<li><code>when</code> 为过期时间，其为 unix time 的绝对值，即 <code>key</code> 在 <code>when</code> 这一时刻过期，单位为 <code>ms</code></li>
+<li><code>redisDb-&gt;expires</code> 复用 <code>redisDb-&gt;dict</code> 的键字符串</li>
+</ul>
+<p><strong>getExpire</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Return the expire time of the specified key, or -1 if no expire
+</span><span class="cm"> * is associated with this key (i.e. the key is non volatile) */</span>
+<span class="kt">long</span> <span class="kt">long</span> <span class="nf">getExpire</span><span class="p">(</span><span class="n">redisDb</span> <span class="o">*</span><span class="n">db</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>propagateExpire</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Propagate expires into slaves and the AOF file.
+</span><span class="cm"> * When a key expires in the master, a DEL operation for this key is sent
+</span><span class="cm"> * to all the slaves and the AOF file if enabled.
+</span><span class="cm"> *
+</span><span class="cm"> * This way the key expiry is centralized in one place, and since both
+</span><span class="cm"> * AOF and the master-&gt;slave link guarantee operation ordering, everything
+</span><span class="cm"> * will be consistent even if we allow write operations against expiring
+</span><span class="cm"> * keys. */</span>
+<span class="kt">void</span> <span class="nf">propagateExpire</span><span class="p">(</span><span class="n">redisDb</span> <span class="o">*</span><span class="n">db</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">key</span><span class="p">,</span> <span class="kt">int</span> <span class="n">lazy</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><strong>keyIsExpired</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Check if the key is expired. */</span>
+<span class="kt">int</span> <span class="nf">keyIsExpired</span><span class="p">(</span><span class="n">redisDb</span> <span class="o">*</span><span class="n">db</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>如果此时正在 loading data，则不会进行过期操作，因此该函数直接返回 0</li>
+<li>如果正在运行 lua 脚本，则会把 lua 脚本开始运行的时间 <code>server.lua_time_start</code> 作为当前时间，这是为了防止在 lua 脚本运行期间 key 过期同步至从库，从而导致在从库上 lua 脚本的运行和主库不一致的情况发生，详情可见 <a href="https://github.com/redis/redis/issues/1525">issue 1525</a></li>
+<li>如果此时正在某个命令运行期间，会使用缓存的 <code>server.mstime</code> 作为当前时间</li>
+</ul>
+<p><strong>expireIfNeeded</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* The return value of the function is 0 if the key is still valid,
+</span><span class="cm"> * otherwise the function returns 1 if the key is expired. */</span>
+<span class="kt">int</span> <span class="nf">expireIfNeeded</span><span class="p">(</span><span class="n">redisDb</span> <span class="o">*</span><span class="n">db</span><span class="p">,</span> <span class="n">robj</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>正如之前所述，在客户端访问 <code>key</code> 时可能需要先调用 <code>expireIfNeeded</code> 检测该 <code>key</code> 是否已过期。该函数的运行模式与 Redis 服务器角色有关：</p>
+<ul>
+<li>在 Redis 主库中，如果此时 <code>key</code> 已过期，会触发删除 <code>key</code> 操作，并将删除操作同步至 salves 和 AOF</li>
+<li>在 Redis 从库中，如果此时 <code>key</code> 已过期，则只会立马返回 1 表示该 <code>key</code> 已过期，但不会执行删除操作，这是因为从库为了和主库的数据保持一致，其过期 <code>key</code> 的清理由同步主库的 del 消息完成</li>
+</ul>
+<h3 id="42-主动清理过期键">4.2. 主动清理过期键</h3>
+<p>之前我们介绍过 Redis 主库除了在访问 key 时触发过期操作，还会定期调用 <code>activeExpireCycle</code> 清理过期 key，其接口如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="nf">activeExpireCycle</span><span class="p">(</span><span class="kt">int</span> <span class="n">type</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p><code>type</code> 参数表示该函数使用何种模式运行，共有两种模式：</p>
+<ul>
+<li><code>ACTIVE_EXPIRE_CYCLE_FAST</code>: 在 <code>beforeSleep</code> 中调用 <code>activeExpireCycle</code> 时使用该模式，将单次清理过期 key 的执行时间限制在 <code>config_cycle_fast_duration</code>(默认为 $1ms$) 之内</li>
+<li><code>ACTIVE_EXPIRE_CYCLE_SLOW</code>: 在 <code>databaseCron</code> 中调用 <code>activeExpireCycle</code> 时使用该模式，将定期清理过期 key 操作使用 CPU 占比控制在 <code>config_cycle_slow_time_perc</code>(默认为 $25%$) 之内，单次执行时间限制为 <code>config_cycle_slow_time_perc*1000000/server.hz/100</code></li>
+</ul>
+<p>上述出现的参数可使用配置项 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L938">active-expire-effort</a> 配置，对应关系如下：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">active-expire-effort</th>
+<th style="text-align:left">fast_duration(ms)</th>
+<th style="text-align:left">slow_time_perc</th>
+<th style="text-align:left">keys_per_loop</th>
+<th style="text-align:left">acceptable_stale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">$a + 1$</td>
+<td style="text-align:left">$1 + \frac{a}{4}$</td>
+<td style="text-align:left">$25\% + 2a\%$</td>
+<td style="text-align:left">$20 + 5a$</td>
+<td style="text-align:left">$10\% - a\%$</td>
+</tr>
+<tr>
+<td style="text-align:left">$[1, 10]$</td>
+<td style="text-align:left">$[1, 3.25]$</td>
+<td style="text-align:left">$[25\%, 43\%]$</td>
+<td style="text-align:left">$[20, 65]$</td>
+<td style="text-align:left">$[10\%, 1\%]$</td>
+</tr>
+</tbody>
+</table>
+<p>其中，keys_per_loop(<code>config_keys_per_loop</code>) 指的是每次迭代扫描的 key 的数量上限，acceptable_stale(<code>config_cycle_acceptable_stale</code>) 指的是可容忍的已过期键比例。从上表可以的值，当 <code>active-expire-effort</code> 值越大时，每次清理过期 key 的调用执行时间上限越长，单个迭代内扫描 key 数量上限越大，对已过期键占比的容忍度越低。</p>
+<p>该函数以“伪增量”(期间写入的过期 key 可能在本次全面遍历中未被访问)形式对过期键空间进行扫描，使用局部静态变量记录上次执行的状态：</p>
+<ul>
+<li><code>current_db</code> 记录上次调用此函数时的 <code>server.db</code> 的位置，每个 <code>redisDb</code> 内部的扫描位置则由 <code>redisDb-&gt;expires_cursor</code> 记录</li>
+<li><code>timelimit_exit</code> 记录上次执行是否超时。每次调用该函数扫描的 db 数量上限默认为 <code>CRON_DBS_PER_CALL</code> 如果该值大于 <code>server.dbnum</code> 或上次该函数执行超时时，每次调用该函数扫描的 db 数量上限则设置为 <code>server.dbnum</code></li>
+<li><code>last_fast_cycle</code> 记录上次以 fast 模式运行该函数的起始时间，以防止上次 fast 模式扫描过程超时且尚未终止时启动新的 fast 模式扫描过程</li>
+</ul>
+<p>在以下情况下，该函数会立马返回，不启动扫描过程：</p>
+<ul>
+<li>在 client paused 期间，Redis 数据库是静态的，其不仅会阻止客户端的写入，也不会执行 evict 和 expire 操作，因此，若 <code>server.clients_paused</code> 为真时，该函数会直接返回</li>
+<li>在 fast 模式下，上次该函数并未超时退出，且此时已过期键占比近似值 <code>server.stat_expired_stale_perc</code> 小于可容忍上限 <code>config_cycle_acceptable_stale</code></li>
+<li>在 fast 模式下，上次 fast 模式扫描过程超时且可能尚未终止</li>
+</ul>
+<p>在扫描过程中，该函数会试图遍历指定的 db 数量，其终止条件有二：</p>
+<ul>
+<li>函数运行时间超出时间限制</li>
+<li>每个 db 在单次迭代中已过期键占比低于可容忍值，则切换至下一 db，遍历 db 数量达到指定上限时扫描终止</li>
+</ul>
+<p>在扫描过程中，该函数还会更新 Redis 运行状态：</p>
+<ul>
+<li><code>server.stat_expiredkeys</code>：已过期键总数</li>
+<li><code>redisDb-&gt;avg_ttl</code>：ttl 近似平均值，先前值为 0 时，使用本次迭代值作为 ttl 近似平均值；否则以先前值权重 $98\%$，单次迭代值权重 $2\%$ 进行加权平均</li>
+<li><code>server.stat_expired_time_cap_reached_count</code>：Expire cycles 超时退出次数</li>
+<li><code>server.stat_expire_cycle_time_used</code>: Expire cycles 使用总时间 (ms)</li>
+<li><code>server.stat_expired_stale_perc</code>：已过期键占比近似值，以先前值占比 $95\%$，本次调用运行值占比 $5\%$ 进行加权平均</li>
+</ul>
+<h3 id="43-处于可写模式下的从库清理过期键">4.3. 处于可写模式下的从库清理过期键</h3>
+<p>TODO</p>
+<h3 id="44-expire-commands">4.4. Expire Commands</h3>
+<p>TODO</p>
+<h2 id="5-evict">5. evict</h2>
+<p>在之前关于 redis object 的介绍中，我们知道 redis obejct 有一个 filed 为 <a href="https://github.com/redis/redis/blob/6.0.8/src/object.c#L51">lru</a>，其在创建时初始化，在<a href="https://github.com/redis/redis/blob/6.0.8/src/db.c#L63">每次查找操作时更新</a>，它的作用就是用于挑选目标 key 进行淘汰。</p>
+<p>Redis 作为内存数据库，通常会设置 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L859">maxmemory</a> 指定可用的最大内存空间大小。若设置了 <code>maxmemory</code> 值，则 Redis Server 会在每次执行命令之前调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L3612">freeMemoryIfNeededAndSafe</a> 以检查目前内存使用量是否已经达到 <code>maxmemory</code>，若为真，会根据设置的 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L890">maxmemory-policy</a> 决定淘汰 key 的方式，可选策略如下：</p>
+<ul>
+<li><code>volatile-lru</code>: Evict using approximated LRU, only keys with an expire set.</li>
+<li><code>allkeys-lru</code>: Evict any key using approximated LRU.</li>
+<li><code>volatile-lfu</code>: Evict using approximated LFU, only keys with an expire set.</li>
+<li><code>allkeys-lfu</code>: Evict any key using approximated LFU.</li>
+<li><code>volatile-random</code>: Remove a random key having an expire set.</li>
+<li><code>allkeys-random</code>: Remove a random key, any key.</li>
+<li><code>volatile-ttl</code>: Remove the key with the nearest expire time (minor TTL)</li>
+<li><code>noeviction</code>: Don&rsquo;t evict anything, just return an error on write operations.</li>
+</ul>
+<p>接下来我们重点介绍在 Redis 中 LRU/LFU 相关策略的实现。</p>
+<h3 id="51-least-recently-usedlru">5.1. Least Recently Used(LRU)</h3>
+<p><strong>获取 lruclock</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Return the LRU clock, based on the clock resolution. This is a time
+</span><span class="cm"> * in a reduced-bits format that can be used to set and check the
+</span><span class="cm"> * object-&gt;lru field of redisObject structures. */</span>
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">getLRUClock</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">mstime</span><span class="p">()</span><span class="o">/</span><span class="n">LRU_CLOCK_RESOLUTION</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">LRU_CLOCK_MAX</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/* This function is used to obtain the current LRU clock.
+</span><span class="cm"> * If the current resolution is lower than the frequency we refresh the
+</span><span class="cm"> * LRU clock (as it should be in production servers) we return the
+</span><span class="cm"> * precomputed value, otherwise we need to resort to a system call. */</span>
+<span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">LRU_CLOCK</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>通过调用 <code>getLRUClock</code> 可以获得此时的 lruclock 值，其精度由 <code>LRU_CLOCK_RESOLUTION</code> 控制，数值最大位数为 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.h#L613">LRU_BITS</a>。</p>
+<p>从 <a href="https://github.com/redis/redis/issues/2552">issues 2552</a> 可知，为性能考虑，应尽量避免调用 <code>gettimeofday</code> 来获取时间，因此 Redis 还提供了 <code>LRU_CLOCK</code> 接口在 <code>LRU_CLOCK_RESOLUTION</code> 精度范围内，返回 Redis Server 此时正缓存的 lruclock 值。</p>
+<p><strong>计算 idle time</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Given an object returns the min number of milliseconds the object was never
+</span><span class="cm"> * requested, using an approximated LRU algorithm. */</span>
+<span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="nf">estimateObjectIdleTime</span><span class="p">(</span><span class="n">robj</span> <span class="o">*</span><span class="n">o</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><h3 id="52-least-frequently-usedlfu">5.2. Least Frequently Used(LFU)</h3>
+<p>从 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.h#L623">redisObject</a> 的定义中，我们知道 LFU 和 LRU 复用同一 field <code>lru</code>，因此在 LFU 中访问频率的大小只可用 <code>LRU_BITS</code> 位来表示。Redis 使用下图所示的结构表示频率：</p>
+<div class="highlight" cmd="true" args=""><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-fallback" data-lang="fallback">         16 bits      8 bits
+    +----------------+--------+
+    + Last decr time | LOG_C  |
+    +----------------+--------+
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>Last decr time</code>: 最近一次访问时间</li>
+<li><code>LOG_C</code>：对数计数器</li>
+</ul>
+<p><strong>增加计数</strong></p>
+<p>因为位数有限，因此 LFU 使用 8-bit 对数计数器 <code>LOG_C</code> 表示访问频率，在初始 <a href="https://github.com/redis/redis/blob/6.0.8/src/object.c#L51">createObject</a> 时，值为 <code>LFU_INIT_VAL</code>，其大小表示其接下来可能会被访问的“潜能”。</p>
+<p>在每次访问 Redis 数据对象时，会调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/db.c#L48">LFULogIncr</a> 尝试增加对数计数，其代码如下所示：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Logarithmically increment a counter. The greater is the current counter value
+</span><span class="cm"> * the less likely is that it gets really implemented. Saturate it at 255. */</span>
+<span class="kt">uint8_t</span> <span class="nf">LFULogIncr</span><span class="p">(</span><span class="kt">uint8_t</span> <span class="n">counter</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">counter</span> <span class="o">==</span> <span class="mi">255</span><span class="p">)</span> <span class="k">return</span> <span class="mi">255</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">r</span> <span class="o">=</span> <span class="p">(</span><span class="kt">double</span><span class="p">)</span><span class="n">rand</span><span class="p">()</span><span class="o">/</span><span class="n">RAND_MAX</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">baseval</span> <span class="o">=</span> <span class="n">counter</span> <span class="o">-</span> <span class="n">LFU_INIT_VAL</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">baseval</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="n">baseval</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="kt">double</span> <span class="n">p</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="n">baseval</span><span class="o">*</span><span class="n">server</span><span class="p">.</span><span class="n">lfu_log_factor</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">r</span> <span class="o">&lt;</span> <span class="n">p</span><span class="p">)</span> <span class="n">counter</span><span class="o">++</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">counter</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看出，counter 增加满足以下公式：</p>
+<p>$$
+NewC =
+\begin{cases}
+255, &amp; curC = 255 \cr
+curC + 1, &amp; curC \le \text{LFU_INIT_VAL} \cr
+curC_{1 - p} \enspace | \enspace (curC + 1)_p, &amp; curC &gt; \text{LFU_INIT_VAL} \cr
+\end{cases}
+$$</p>
+<p>其中当目前计数值大于 <code>LFU_INIT_VAL</code> 时，会以概率 $p$ 加 1，从代码中可以看出 $p$ 的大小和当前计数值大小反相关。代码中出现的常量 <code>lfu_log_factor</code> 可通过 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L1768">redis.conf</a> 配置，其值越大，计数器加 1 的概率就越小，可参考如下表格(表格中 counter 数值非数学期望值)：</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">factor</th>
+<th style="text-align:left">100 hits</th>
+<th style="text-align:left">1000 hits</th>
+<th style="text-align:left">100K hits</th>
+<th style="text-align:left">1M hits</th>
+<th style="text-align:left">10M hits</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">0</td>
+<td style="text-align:left">104</td>
+<td style="text-align:left">255</td>
+<td style="text-align:left">255</td>
+<td style="text-align:left">255</td>
+<td style="text-align:left">255</td>
+</tr>
+<tr>
+<td style="text-align:left">1</td>
+<td style="text-align:left">18</td>
+<td style="text-align:left">49</td>
+<td style="text-align:left">255</td>
+<td style="text-align:left">255</td>
+<td style="text-align:left">255</td>
+</tr>
+<tr>
+<td style="text-align:left">10</td>
+<td style="text-align:left">10</td>
+<td style="text-align:left">18</td>
+<td style="text-align:left">142</td>
+<td style="text-align:left">255</td>
+<td style="text-align:left">255</td>
+</tr>
+<tr>
+<td style="text-align:left">100</td>
+<td style="text-align:left">8</td>
+<td style="text-align:left">11</td>
+<td style="text-align:left">49</td>
+<td style="text-align:left">143</td>
+<td style="text-align:left">255</td>
+</tr>
+</tbody>
+</table>
+<p><strong>减小计数</strong></p>
+<p>使用 LFU 策略时，需要并不是历史总访问频率的大小，而是“最近”访问频率的信息，因此需要设计合理降低对数计数器的方法。Redis 使用 16-bit 的 <code>Last decr time</code> 记录数据对象最近一次被访问的时间(取名为 <code>Last decr time</code> 可能是因为在每次更新 LFU 时会先调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/db.c#L47">LFUDecrAndReturn</a> 下调当前计数值)。相关源码如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* Return the current time in minutes, just taking the least significant
+</span><span class="cm"> * 16 bits. The returned time is suitable to be stored as LDT (last decrement
+</span><span class="cm"> * time) for the LFU implementation. */</span>
+<span class="kt">unsigned</span> <span class="kt">long</span> <span class="nf">LFUGetTimeInMinutes</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">unixtime</span><span class="o">/</span><span class="mi">60</span><span class="p">)</span> <span class="o">&amp;</span> <span class="mi">65535</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/* Given an object last access time, compute the minimum number of minutes
+</span><span class="cm"> * that elapsed since the last access. */</span>
+<span class="kt">unsigned</span> <span class="kt">long</span> <span class="nf">LFUTimeElapsed</span><span class="p">(</span><span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">ldt</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">now</span> <span class="o">=</span> <span class="n">LFUGetTimeInMinutes</span><span class="p">();</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">now</span> <span class="o">&gt;=</span> <span class="n">ldt</span><span class="p">)</span> <span class="k">return</span> <span class="n">now</span><span class="o">-</span><span class="n">ldt</span><span class="p">;</span>
+    <span class="k">return</span> <span class="mi">65535</span><span class="o">-</span><span class="n">ldt</span><span class="o">+</span><span class="n">now</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/* If the object decrement time is reached decrement the LFU counter but
+</span><span class="cm"> * do not update LFU fields of the object, we update the access time
+</span><span class="cm"> * and counter in an explicit way when the object is really accessed. */</span>
+<span class="kt">unsigned</span> <span class="kt">long</span> <span class="nf">LFUDecrAndReturn</span><span class="p">(</span><span class="n">robj</span> <span class="o">*</span><span class="n">o</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">ldt</span> <span class="o">=</span> <span class="n">o</span><span class="o">-&gt;</span><span class="n">lru</span> <span class="o">&gt;&gt;</span> <span class="mi">8</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">counter</span> <span class="o">=</span> <span class="n">o</span><span class="o">-&gt;</span><span class="n">lru</span> <span class="o">&amp;</span> <span class="mi">255</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">num_periods</span> <span class="o">=</span> <span class="n">server</span><span class="p">.</span><span class="n">lfu_decay_time</span> <span class="o">?</span>
+                                <span class="n">LFUTimeElapsed</span><span class="p">(</span><span class="n">ldt</span><span class="p">)</span> <span class="o">/</span> <span class="n">server</span><span class="p">.</span><span class="nl">lfu_decay_time</span> <span class="p">:</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">num_periods</span><span class="p">)</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="p">(</span><span class="n">num_periods</span> <span class="o">&gt;</span> <span class="n">counter</span><span class="p">)</span> <span class="o">?</span> <span class="mi">0</span> <span class="o">:</span> <span class="n">counter</span> <span class="o">-</span> <span class="n">num_periods</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">counter</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看出，在 <code>LFUDecrAndReturn</code> 中，参数 <code>lfu_decay_time</code> 类似于元素的半衰期，控制着计数值随时间流逝而衰减的行为，其值同样可通过 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L1769">redis.conf</a> 配置。</p>
+<ul>
+<li>当 <code>lfu_decay_time</code> 为 0 时，计数器不随时间衰减</li>
+<li>当 <code>lfu_decay_time</code> 大于 0 时，每经过 <code>lfu_decay_time</code> 分钟，计数器减 1，直至为 0</li>
+</ul>
+<p>还可以发现在 <code>LFUDecrAndReturn</code> 中并不会改变 <code>robj-&gt;lru</code> 的值，只是返回此时经过衰减之后的计数值。其值的更改会在每次<a href="https://github.com/redis/redis/blob/6.0.8/src/db.c#L65">真正访问该数据对象</a>时发生。</p>
+<h3 id="53-eviction-pool">5.3. Eviction pool</h3>
+<p>Redis 使用淘汰候选数组 <code>EvictionPoolLRU</code> 保存着可淘汰 key 的信息，其中每个候选 key 的相关信息由 <code>evictionPoolEntry</code> 表示，其结构定义如下:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="k">struct</span> <span class="nc">evictionPoolEntry</span> <span class="p">{</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="kt">long</span> <span class="n">idle</span><span class="p">;</span>    <span class="cm">/* Object idle time (inverse frequency for LFU) */</span>
+    <span class="n">sds</span> <span class="n">key</span><span class="p">;</span>                    <span class="cm">/* Key name. */</span>
+    <span class="n">sds</span> <span class="n">cached</span><span class="p">;</span>                 <span class="cm">/* Cached SDS object for key name. */</span>
+    <span class="kt">int</span> <span class="n">dbid</span><span class="p">;</span>                   <span class="cm">/* Key DB number. */</span>
+<span class="p">};</span>
+
+<span class="k">static</span> <span class="k">struct</span> <span class="nc">evictionPoolEntry</span> <span class="o">*</span><span class="n">EvictionPoolLRU</span><span class="p">;</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>key</code> 字段存储该数据对象的键值，但并不会复用 <code>sds</code>，而是会复制数据对象的键值</li>
+<li><code>cached</code> 字段是为了在键长度小于 <code>EVPOOL_CACHED_SDS_SIZE</code> 时复用之前复制数据对象键值时分配的内存空间，否则会申请新的内存空间来存储数据对象的键值</li>
+</ul>
+<p>在数组 <code>EvictionPoolLRU</code> 中，</p>
+<ul>
+<li>使用 LRU 相关策略时，entry 按照 idle time 从小到大排序</li>
+<li>使用 LFU 相关策略时，entry 按照访问频率从大到小排序</li>
+</ul>
+<p>当 redis server 初始化时，会<a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L2894">调用 evictionPoolAlloc</a> 初始化 <code>EvictionPoolLRU</code>，此时数组中尚无候选 key 信息，<code>cached</code> 字段指向长为 <code>EVPOOL_CACHED_SDS_SIZE</code> 的 <code>sds</code>。数组会在每次需要淘汰 key 时通过调用 <code>evictionPoolPopulate</code> 填充。其接口如下：</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">void</span> <span class="nf">evictionPoolPopulate</span><span class="p">(</span><span class="kt">int</span> <span class="n">dbid</span><span class="p">,</span>
+                          <span class="n">dict</span> <span class="o">*</span><span class="n">sampledict</span><span class="p">,</span>
+                          <span class="n">dict</span> <span class="o">*</span><span class="n">keydict</span><span class="p">,</span>
+                          <span class="k">struct</span> <span class="nc">evictionPoolEntry</span> <span class="o">*</span><span class="n">pool</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li><code>dbid</code>: database ID</li>
+<li><code>sampledict</code>: 采样的 keysapce，随 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L890">maxmemory-policy</a> 而定
+<ul>
+<li>若只能淘汰过期 key，则采样空间为 <code>redisDb-&gt;expires</code></li>
+<li>若所有 key 均可淘汰，则采样空间为 <code>redisDb-&gt;dict</code></li>
+</ul>
+</li>
+<li><code>keydict</code>: redisDb 的 keysapce，即 <code>redisDb-&gt;dict</code></li>
+<li><code>pool</code>: 静态变量 <code>EvictionPoolLRU</code></li>
+</ul>
+<p>该函数的大致处理流程如下：</p>
+<ol>
+<li>
+<p>从采样空间 <code>sampledict</code> 中尝试采样 <code>maxmemory_samples</code> 个数据对象</p>
+<ul>
+<li><code>maxmemory_samples</code> 可由 <a href="https://github.com/redis/redis/blob/6.0.8/redis.conf#L901">redis.conf</a> 配置</li>
+<li>返回的采样结果中，数据对象可能有重复，其总数也可能小于 <code>maxmemory_samples</code></li>
+</ul>
+</li>
+<li>
+<p>获得采样数据对象的 idle 值</p>
+<ul>
+<li>如果淘汰策略为 LRU 相关， <code>idle = estimateObjectIdleTime(o)</code>，即为该对象的 idle time</li>
+<li>如果淘汰策略为 LFU 相关，<code>idle = 255 - LFUDecrAndReturn(o)</code>，此时对数计数器值越大，idle 越小</li>
+<li>如果淘汰策略为 TTL 相关，<code>idle = ULLONG_MAX - expire_unix_time</code>，越早过期，idle 越大</li>
+</ul>
+</li>
+<li>
+<p>根据 idle 值，将该数据对象插入 <code>EvictionPoolLRU</code> 中相应的位置，维持数组的有序性(idle 从小到大)</p>
+</li>
+</ol>
+<h3 id="54-free-memory">5.4. Free memory</h3>
+<p><strong>获得目前数据库内存使用情况</strong></p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span><span class="lnt">5
+</span><span class="lnt">6
+</span><span class="lnt">7
+</span><span class="lnt">8
+</span><span class="lnt">9
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="cm">/* We don&#39;t want to count AOF buffers and slaves output buffers as
+</span><span class="cm"> * used memory: the eviction should use mostly data size. This function
+</span><span class="cm"> * returns the sum of AOF and slaves buffer. */</span>
+<span class="n">size_t</span> <span class="nf">freeMemoryGetNotCountedMemory</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="cm">/* Get the memory status from the point of view of the maxmemory directive:
+</span><span class="cm"> * if the memory used is under the maxmemory setting then C_OK is returned.
+</span><span class="cm"> * Otherwise, if we are over the memory limit, the function returns C_ERR. */</span>
+<span class="kt">int</span> <span class="nf">getMaxmemoryState</span><span class="p">(</span><span class="n">size_t</span> <span class="o">*</span><span class="n">total</span><span class="p">,</span> <span class="n">size_t</span> <span class="o">*</span><span class="n">logical</span><span class="p">,</span> <span class="n">size_t</span> <span class="o">*</span><span class="n">tofree</span><span class="p">,</span> <span class="kt">float</span> <span class="o">*</span><span class="n">level</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>Redis 在进行淘汰 key 操作时，会排除 slave 和 AOF 客户端缓冲区占用的内存，该排除部分的值大小可调用 <code>freeMemoryGetNotCountedMemory</code> 获得。</p>
+<p>在 <code>getMaxmemoryState</code> 中，除了返回 <code>C_OK</code> 或 <code>C_ERR</code> 表示是否超最大内存限制之外，还会视情况填充传入的非 <code>NULL</code> 参数：</p>
+<ul>
+<li><code>total</code>: total amount of bytes used. (Populated both for C_ERR and C_OK)</li>
+<li><code>logical</code>: the amount of memory used minus the slaves/AOF buffers. (Populated when C_ERR is returned)</li>
+<li><code>tofree</code>: the amount of memory that should be released in order to return back into the memory limits. (Populated when C_ERR is returned)</li>
+<li><code>level</code>: the ratio of memory usage (used_memory/maxmemory). (Populated both for C_ERR and C_OK)</li>
+</ul>
+<p><strong>freeMemoryIfNeeded</strong></p>
+<p>正如前文所述，Redis 服务器设置了 <code>maxmemory</code> 值时，会在每次执行命令之前调用 <a href="https://github.com/redis/redis/blob/6.0.8/src/server.c#L3612">freeMemoryIfNeededAndSafe</a> 以检查目前内存使用量是否已经达到 <code>maxmemory</code>，该函数源码如下:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span><span class="lnt">3
+</span><span class="lnt">4
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">int</span> <span class="nf">freeMemoryIfNeededAndSafe</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">server</span><span class="p">.</span><span class="n">lua_timedout</span> <span class="o">||</span> <span class="n">server</span><span class="p">.</span><span class="n">loading</span><span class="p">)</span> <span class="k">return</span> <span class="n">C_OK</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">freeMemoryIfNeeded</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre></td></tr></table>
+</div>
+</div><p>可以看出，<code>freeMemoryIfNeededAndSafe</code> 会在以下两种情况下，不检测当前内存使用状况，直接返回 <code>C_OK</code>:</p>
+<ul>
+<li>当前有执行超时的 lua 脚本</li>
+<li>当前正在加载数据</li>
+</ul>
+<p>在 <code>freeMemoryIfNeeded</code> 函数中，会根据当前内存使用状况和 <code>maxmemory</code> 值尝试进行内存释放操作以使内存使用量满足 <code>maxmemory</code> 的限制。其接口如下:</p>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre class="chroma"><code><span class="lnt">1
+</span></code></pre></td>
+<td class="lntd">
+<pre class="chroma"><code class="language-cpp" data-lang="cpp"><span class="kt">int</span> <span class="nf">freeMemoryIfNeeded</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+</code></pre></td></tr></table>
+</div>
+</div><ul>
+<li>一般情况下，当前内存使用量低于 <code>maxmemory</code> 或在进行释放内存操作后低于 <code>maxmemory</code> 时，函数返回 <code>C_OK</code>，否则返回 <code>C_ERR</code>。</li>
+<li>默认情况下从库无 <code>maxmemory</code> 限制，直接返回 <code>C_OK</code>
+<blockquote>
+<p>可通过将 <a href="https://github.com/redis/redis/blob/6.0.11/redis.conf#L922">replica-ignore-maxmemory</a> 设置为 no，使得从库也执行驱逐策略，但可能会造成主从数据不一致</p>
+</blockquote>
+</li>
+<li>在 client paused 期间，Redis 数据库是静态的，其不仅会阻止客户端的写入，也不会执行 evict 和 expire 操作，因此，若 <code>server.clients_paused</code> 为真时，该函数会直接返回 <code>C_OK</code></li>
+<li>当内存管理策略为 <code>noeviction</code> 时，会检查当前 lazyfree 队列中是否有任务，若为真则等待 <code>lazyfree</code> 任务完成后调用 <code>getMaxmemoryState</code> 得到此时的内存使用状态并返回</li>
+<li>根据内存管理策略采样选择最合适的 key 进行淘汰直至内存使用量低于 <code>maxmemory</code>
+<ul>
+<li>当内存管理策略不为 random 相关类型时，每次删除一个 key 之前都会调用 <code>evictionPoolPopulate</code> 填充 evict pool，随后从后往前遍历得到此时最适合删除的 key</li>
+<li>当内存管略为 volatile 相关类型时，因为采样空间 <code>redisDb-&gt;expires</code> 可能为空，因此可能无法通过淘汰 key 使得内存使用量低于 <code>maxmemory</code>，此时只能和 <code>noeviction</code> 一样，等待 lazyfree 的操作结果</li>
+</ul>
+</li>
+</ul>
+    </div>
+
+    
+    
+<div class="post-copyright">
+  <p class="copyright-item">
+    <span class="item-title">Author</span>
+    <span class="item-content">765PRO.P</span>
+  </p>
+  <p class="copyright-item">
+    <span class="item-title">LastMod</span>
+    <span class="item-content">
+      2020-10-13
+      
+    </span>
+  </p>
+  
+  <p class="copyright-item">
+    <span class="item-title">License</span>
+    <span class="item-content"><a rel="license noopener" href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">CC BY-NC 4.0</a></span>
+  </p>
+</div>
+
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          <a href="https://k-on.me/tags/redis/">Redis</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/redis/redis-sourcecode-persistence/">
+            
+            <i class="iconfont">
+              <svg  class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M691.908486 949.511495l75.369571-89.491197c10.963703-12.998035 10.285251-32.864502-1.499144-44.378743L479.499795 515.267417 757.434875 204.940602c11.338233-12.190647 11.035334-32.285311-0.638543-44.850487l-80.46666-86.564541c-11.680017-12.583596-30.356378-12.893658-41.662889-0.716314L257.233596 494.235404c-11.332093 12.183484-11.041474 32.266891 0.657986 44.844348l80.46666 86.564541c1.772366 1.910513 3.706415 3.533476 5.750981 4.877077l306.620399 321.703933C662.505829 963.726242 680.945807 962.528973 691.908486 949.511495z"></path>
+</svg>
+
+            </i>
+            <span class="prev-text nav-default">Redis 源码阅读 --- 持久化</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/redis/redis-sourcecode-object/">
+            <span class="next-text nav-default">Redis 源码阅读 --- Object</span>
+            <span class="prev-text nav-mobile">Next</span>
+            
+            <i class="iconfont">
+              <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="18" height="18">
+  <path d="M332.091514 74.487481l-75.369571 89.491197c-10.963703 12.998035-10.285251 32.864502 1.499144 44.378743l286.278095 300.375162L266.565125 819.058374c-11.338233 12.190647-11.035334 32.285311 0.638543 44.850487l80.46666 86.564541c11.680017 12.583596 30.356378 12.893658 41.662889 0.716314l377.434212-421.426145c11.332093-12.183484 11.041474-32.266891-0.657986-44.844348l-80.46666-86.564541c-1.772366-1.910513-3.706415-3.533476-5.750981-4.877077L373.270379 71.774697C361.493148 60.273758 343.054193 61.470003 332.091514 74.487481z"></path>
+</svg>
+
+            </i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+
+  
+  
+  
+  
+
+  
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+    
+
+  
+
+        </div>
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="icon-links">
+  
+  
+    <a href="pro-765@qq.com" rel="me noopener" class="iconfont"
+      title="email"  target="_blank"
+      >
+      <svg class="icon" viewBox="0 0 1451 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M664.781909 681.472759 0 97.881301C0 3.997201 71.046997 0 71.046997 0L474.477909 0 961.649408 0 1361.641813 0C1361.641813 0 1432.688811 3.997201 1432.688811 97.881301L771.345323 681.472759C771.345323 681.472759 764.482731 685.154773 753.594283 688.65053L753.594283 688.664858C741.602731 693.493018 729.424896 695.068979 718.077952 694.839748 706.731093 695.068979 694.553173 693.493018 682.561621 688.664858L682.561621 688.65053C671.644501 685.140446 664.781909 681.472759 664.781909 681.472759L664.781909 681.472759ZM718.063616 811.603883C693.779541 811.016482 658.879232 802.205449 619.10784 767.734955 542.989056 701.759633 0 212.052267 0 212.052267L0 942.809523C0 942.809523 0 1024 83.726336 1024L682.532949 1024 753.579947 1024 1348.948139 1024C1432.688811 1024 1432.688811 942.809523 1432.688811 942.809523L1432.688811 212.052267C1432.688811 212.052267 893.138176 701.759633 817.019477 767.734955 777.248 802.205449 742.347691 811.03081 718.063616 811.603883L718.063616 811.603883Z"></path>
+</svg>
+
+    </a>
+  
+    <a href="https://github.com/yz1509" rel="me noopener" class="iconfont"
+      title="github"  target="_blank"
+      >
+      <svg class="icon" style="" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="36" height="36">
+  <path d="M512 12.672c-282.88 0-512 229.248-512 512 0 226.261333 146.688 418.133333 350.08 485.76 25.6 4.821333 34.986667-11.008 34.986667-24.618667 0-12.16-0.426667-44.373333-0.64-87.04-142.421333 30.890667-172.458667-68.693333-172.458667-68.693333C188.672 770.986667 155.008 755.2 155.008 755.2c-46.378667-31.744 3.584-31.104 3.584-31.104 51.413333 3.584 78.421333 52.736 78.421333 52.736 45.653333 78.293333 119.850667 55.68 149.12 42.581333 4.608-33.109333 17.792-55.68 32.426667-68.48-113.706667-12.8-233.216-56.832-233.216-253.013333 0-55.893333 19.84-101.546667 52.693333-137.386667-5.76-12.928-23.04-64.981333 4.48-135.509333 0 0 42.88-13.738667 140.8 52.48 40.96-11.392 84.48-17.024 128-17.28 43.52 0.256 87.04 5.888 128 17.28 97.28-66.218667 140.16-52.48 140.16-52.48 27.52 70.528 10.24 122.581333 5.12 135.509333 32.64 35.84 52.48 81.493333 52.48 137.386667 0 196.693333-119.68 240-233.6 252.586667 17.92 15.36 34.56 46.762667 34.56 94.72 0 68.522667-0.64 123.562667-0.64 140.202666 0 13.44 8.96 29.44 35.2 24.32C877.44 942.592 1024 750.592 1024 524.672c0-282.752-229.248-512-512-512"></path>
+</svg>
+
+    </a>
+
+
+<a href="https://k-on.me/index.xml" rel="noopener alternate" type="application/rss&#43;xml"
+    class="iconfont" title="rss" target="_blank">
+    <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="30" height="30">
+  <path d="M819.157333 1024C819.157333 574.592 449.408 204.8 0 204.8V0c561.706667 0 1024 462.293333 1024 1024h-204.842667zM140.416 743.04a140.8 140.8 0 0 1 140.501333 140.586667A140.928 140.928 0 0 1 140.074667 1024C62.72 1024 0 961.109333 0 883.626667s62.933333-140.544 140.416-140.586667zM678.784 1024h-199.04c0-263.210667-216.533333-479.786667-479.744-479.786667V345.173333c372.352 0 678.784 306.517333 678.784 678.826667z"></path>
+</svg>
+
+  </a>
+   
+</div>
+
+<div class="copyright">
+  <span class="power-by">
+    Powered by <a class="hexo-link" href="https://gohugo.io">Hugo</a>
+  </span>
+  <span class="division">|</span>
+  <span class="theme-info">
+    Theme - <a class="theme-link" href="https://github.com/xianmin/hugo-theme-jane">Jane</a>
+  </span>
+
+  <span class="copyright-year">
+    &copy;
+    
+      2018 -
+    2021
+    <span class="heart">
+      
+      <i class="iconfont">
+        <svg class="icon" viewBox="0 0 1025 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="14" height="14">
+  <path d="M1000.1 247.9c-15.5-37.3-37.6-70.6-65.7-98.9-54.4-54.8-125.8-85-201-85-85.7 0-166 39-221.4 107.4C456.6 103 376.3 64 290.6 64c-75.1 0-146.5 30.4-201.1 85.6-28.2 28.5-50.4 61.9-65.8 99.3-16 38.8-24 79.9-23.6 122.2 0.7 91.7 40.1 177.2 108.1 234.8 3.1 2.6 6 5.1 8.9 7.8 14.9 13.4 58 52.8 112.6 102.7 93.5 85.5 209.9 191.9 257.5 234.2 7 6.1 15.8 9.5 24.9 9.5 9.2 0 18.1-3.4 24.9-9.5 34.5-30.7 105.8-95.9 181.4-165 74.2-67.8 150.9-138 195.8-178.2 69.5-57.9 109.6-144.4 109.9-237.3 0.1-42.5-8-83.6-24-122.2z"
+   fill="#8a8a8a"></path>
+</svg>
+
+      </i>
+    </span><span class="author">
+        765PRO.P
+        
+      </span></span>
+
+  
+  
+    <span id="busuanzi_container">
+      访客数/访问量：<span id="busuanzi_value_site_uv"></span>/<span id="busuanzi_value_site_pv"></span>
+    </span>
+  
+
+  
+</div>
+
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont">
+        
+        <svg class="icon" viewBox="0 0 1024 1024" version="1.1"
+  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  width="35" height="35">
+  <path d="M510.866688 227.694839 95.449397 629.218702l235.761562 0-2.057869 328.796468 362.40389 0L691.55698 628.188232l241.942331-3.089361L510.866688 227.694839zM63.840492 63.962777l894.052392 0 0 131.813095L63.840492 195.775872 63.840492 63.962777 63.840492 63.962777zM63.840492 63.962777"></path>
+</svg>
+
+      </i>
+    </div>
+  </div>
+  
+<script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+
+
+
+
+<script type="text/javascript" src="/js/main.638251f4230630f0335d8c6748e53a96f94b72670920b60c09a56fdc8bece214.js" integrity="sha256-Y4JR9CMGMPAzXYxnSOU6lvlLcmcJILYMCaVv3Ivs4hQ=" crossorigin="anonymous"></script>
+
+
+
+  <script type="text/javascript">
+    window.MathJax = {
+      showProcessingMessages: false,
+      messageStyle: 'none'
+    };
+  </script>
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+
+
+
+
+
+
+
+
+
+  
+    <script type="text/javascript" src="/js/load-photoswipe.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe.min.js"></script>
+    <script type="text/javascript" src="/lib/photoswipe/photoswipe-ui-default.min.js"></script>
+  
+
+
+
+
+  <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
